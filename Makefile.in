@@ -1,0 +1,151 @@
+@SET_MAKE@
+
+srcdir=@srcdir@
+VPATH=@srcdir@
+
+EXECUTABLE	=	pfgw
+CXX			=	@CXX@
+CXXFLAGS	=	@CXXFLAGS@
+
+all:	@gmp_dep@ quick
+		@postbuild_step@
+
+quick:	baselib integer fft glue pfoo io entrypoint prmsieve
+	${CXX} ${CXXFLAGS}	\
+		@pkg_entrypoint_name@  @pkg_io_name@ @pkg_pfoo_name@ @pkg_glue_name@ @pkg_fft_name@ \
+		@pkg_integer_name@ @pkg_baselib_name@ @pkg_prmsieve_name@ @gmp_obj@ \
+		@gmp_linkflag@ -o ${EXECUTABLE}
+
+maintainer-clean:	distclean
+	rm -f configure
+	autoconf
+	rm -f config.h.in
+	autoheader
+	
+distclean:	clean
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.status
+	rm -f config.status.old
+	rm -f config.h
+	rm -f stdtypes.h
+	rm -f pflib.h
+	rm -f pfoo.h
+	rm -f pfio.h
+	rm -f pfmath.h
+	rm -f pfgwlib.h
+	rm -f pfglue.h
+	rm -f prmsieve.h
+	rm -f Makefile
+	${MAKE} -C @pkg_baselib@ distclean
+	${MAKE} -C @pkg_integer@ distclean
+	${MAKE} -C @pkg_fft@ distclean
+	${MAKE} -C @pkg_glue@ distclean
+	${MAKE} -C @pkg_pfoo@ distclean
+	${MAKE} -C @pkg_io@ distclean
+	${MAKE} -C @pkg_entrypoint@ distclean
+	${MAKE} -C @pkg_prmsieve@ distclean
+	
+clean:
+	rm -f ${EXECUTABLE}
+	${MAKE} -C @pkg_baselib@ clean
+	${MAKE} -C @pkg_integer@ clean
+	${MAKE} -C @pkg_fft@ clean
+	${MAKE} -C @pkg_glue@ clean
+	${MAKE} -C @pkg_pfoo@ clean
+	${MAKE} -C @pkg_io@ clean
+	${MAKE} -C @pkg_entrypoint@ clean
+	${MAKE} -C @pkg_prmsieve@ clean
+	
+dependencies:
+	${MAKE} -C @pkg_baselib@ dependencies
+	${MAKE} -C @pkg_integer@ dependencies
+	${MAKE} -C @pkg_fft@ dependencies
+	${MAKE} -C @pkg_glue@ dependencies
+	${MAKE} -C @pkg_pfoo@ dependencies
+	${MAKE} -C @pkg_io@ dependencies
+	${MAKE} -C @pkg_entrypoint@ dependencies
+	${MAKE} -C @pkg_prmsieve@ dependencies
+
+baselib:
+	${MAKE} -C @pkg_baselib@
+	
+integer:
+	${MAKE} -C @pkg_integer@
+	
+fft:
+	${MAKE} -C @pkg_fft@
+
+glue:
+	${MAKE} -C @pkg_glue@
+
+pfoo:
+	${MAKE} -C @pkg_pfoo@
+	
+io:
+	${MAKE} -C @pkg_io@
+
+entrypoint:
+	${MAKE} -C @pkg_entrypoint@
+	
+prmsieve:
+	${MAKE} -C @pkg_prmsieve@
+
+@gmp_depdefine@
+@gmp_rule@
+
+# BLACK optimization MAGIC...  Does it even work ??
+COFT = $(shell if [ -f $(EXECUTABLE) ]; then objdump -h $(EXECUTABLE) | grep _TEXT32 | awk -f arg4.awk ; fi)
+DUMT = $(shell echo $(COFT) | sed -e's/.*\(..\)/\1/' -e's/[2468ace]\(.\)/0\1/' -e's/[3579bdf]\(.\)/1\1/')
+COFD = $(shell if [ -f $(EXECUTABLE) ]; then objdump -h $(EXECUTABLE) | grep '\.data' | awk -f arg4.awk ; fi)
+DUMD = $(shell echo $(COFD) | sed -e's/.*\(..\)/\1/' -e's/[2468ace]\(.\)/0\1/' -e's/[3579bdf]\(.\)/1\1/')
+
+ifeq ("$(COFT)", "")
+optimize:
+	@echo Run \'make\' first first, could not find _TEXT32 section in $(EXECUTABLE)
+else
+ifeq ("$(COFD)", "")
+optimize:
+	@echo Run \'make\' first, could not find .data section in $(EXECUTABLE)
+else
+ifeq ("$(DUMD)", "00")
+dummy0:
+ifeq ("$(DUMT)", "00")
+optimize:
+	@echo "No optimizations needed .data and _TEXT32 already correctly aligned"
+#	@echo $(COFT)
+#	@echo $(DUMT)
+#	@echo $(COFD)
+#	@echo $(DUMD)
+else
+optimize:
+	@echo -n "Optimizing _TEXT32 segment only using dummyt"
+	@echo $(DUMT)
+	${CXX} ${CXXFLAGS}	@dummydirectory@/dummyt${DUMT}.o \
+		@pkg_entrypoint_name@ @pkg_io_name@ @pkg_pfoo_name@ @pkg_glue_name@ @pkg_fft_name@ \
+		@pkg_integer_name@ @pkg_baselib_name@ @pkg_prmsieve_name@ @gmp_obj@ \
+		@gmp_linkflag@ -o ${EXECUTABLE}
+endif
+else
+ifeq ("$(DUMT)", "00")
+optimize:
+	@echo -n "Optimizing .data segment only using dummy"
+	@echo $(DUMD)
+	${CXX} ${CXXFLAGS}	@dummydirectory@/dummy${DUMD}.o \
+		@pkg_entrypoint_name@ @pkg_io_name@ @pkg_pfoo_name@ @pkg_glue_name@ @pkg_fft_name@ \
+		@pkg_integer_name@ @pkg_baselib_name@ @pkg_prmsieve_name@ @gmp_obj@ \
+		@gmp_linkflag@ -o ${EXECUTABLE}
+else
+optimize:
+	@echo -n "Optimizing _TEXT32 segment using dummyt"
+	@echo $(DUMT)
+	@echo -n "Optimizing .data segment using dummy"
+	@echo $(DUMD)
+	${CXX} ${CXXFLAGS}	@dummydirectory@/dummy${DUMD}.o @dummydirectory@/dummyt${DUMT}.o \
+		@pkg_entrypoint_name@ @pkg_io_name@ @pkg_pfoo_name@ @pkg_glue_name@ @pkg_fft_name@ \
+		@pkg_integer_name@ @pkg_baselib_name@ @pkg_prmsieve_name@ @gmp_obj@ \
+		@gmp_linkflag@ -o ${EXECUTABLE}
+endif
+endif
+endif
+endif

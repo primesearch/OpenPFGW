@@ -1,0 +1,25 @@
+PRMSIEVE suite, part of the OpenPFGW project.
+
+(c) Phil Carmody 2001, see terms below
+
+Prime Sieving Utilities
+
+- Atkins sieve, based totally on Bernstein's primegen 
+  Like primegen, but nearly twice as fast once you're up to 10^12
+- Windowed Eratosthenes sieve, based heavily on Bernstein's eratspeed
+  Includes a 'modular' feature, to only return primes of the form
+  ax+b for coprime a,b.
+- Fixed Small Prime Table Compression, home grown.
+  Need a hundred thousand primes, don't store them as a list, compress and 
+  decompress to make your program source and executable smaller.
+
+
+Usage Terms:
+As in the OpenPFGW terms with the following notes.
+Use my code freely (as in love), distribute my code freely (as in beer),
+modify my code freely (as in BSD). However, feel a moral obligation to 
+acknowledge the source of the code. If the changes you make to remove
+references to the original authors are more than the changes you've made 
+to the source - you're doing a /bad thing/.
+
+

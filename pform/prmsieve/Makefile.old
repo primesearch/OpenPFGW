@@ -1,0 +1,53 @@
+include Makedefs
+
+SUBDIRPREREQUISITES=erat/${MAKEDEPFILE} \
+	    	    atkins/${MAKEDEPFILE} \
+	            compress/${MAKEDEPFILE} \
+	            tables/${MAKEDEPFILE} \
+	            arith/${MAKEDEPFILE}
+
+LIB=.libs/prmsieve.a
+
+LIBOBJS=arith/math16.o \
+	atkins/primegen.o atkins/primegen_init.o \
+		atkins/primegen_next.o atkins/primegen_skip.o \
+	compress/compri5.o compress/compri7.o \
+	erat/erat.o \
+	tables/onemeg_cp7.o tables/pmod30.o tables/twiddles.o \
+
+
+all: objs ${LIB}
+
+${LIB}: ${LIBOBJS} 
+	[ -d .libs ] || mkdir .libs
+	${AR} $@ $^
+
+squeakyclean: clean
+	-rm ${SUBDIRPREREQUISITES}
+
+clean:
+	-rm ${LIB}
+	(cd erat; ${MAKE} clean; )
+	(cd atkins; ${MAKE} clean; )
+	(cd compress; ${MAKE} clean; )
+	(cd tables; ${MAKE} clean; )
+	(cd arith; ${MAKE} clean; )
+
+objs:
+	(cd erat; ${MAKE} objs;)
+	(cd atkins; ${MAKE} objs;)
+	(cd compress; ${MAKE} objs;)
+	(cd tables; ${MAKE} objs; )
+	(cd arith; ${MAKE} objs; )
+
+depend: subdirprep
+	(cd erat; ${MAKE} depend; )
+	(cd atkins; ${MAKE} depend; )
+	(cd compress; ${MAKE} depend; )
+	(cd tables; ${MAKE} depend; )
+	(cd arith; ${MAKE} depend; )
+
+subdirprep: ${SUBDIRPREREQUISITES}
+
+%/${MAKEDEPFILE}:
+	touch $@

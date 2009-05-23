@@ -1,0 +1,28 @@
+include ../Makedefs
+
+all: objs
+
+OBJS=primegen.o primegen_init.o primegen_next.o primegen_skip.o
+CSRC=primegen.c primegen_init.c primegen_next.c primegen_skip.c
+
+clean: 
+	-rm ${OBJS}
+
+depend:
+	-${MAKEDEPEND} ${CSRC}
+
+objs: ${OBJS}
+
+primegen.o: primegen.c 
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+primegen_init.o: primegen_init.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+primegen_next.o: primegen_next.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+primegen_skip.o: primegen_skip.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+include ${MAKEDEPFILE}

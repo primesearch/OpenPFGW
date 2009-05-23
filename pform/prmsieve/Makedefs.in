@@ -1,0 +1,37 @@
+CFLAGS 		= @CFLAGS@
+CXXFLAGS	= @CXXFLAGS@
+CC			= @CC@
+CXX			= @CXX@
+AR			= @AR@
+ARFLAGS		= @ARFLAGS@
+RANLIB		= @RANLIB@
+LD			= @LD@
+@SET_MAKE@
+
+.PHONY:	all clean cleanlibs
+
+all:	$(OLIB)
+
+%.o:	%.c
+	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $<
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<
+
+maintainer-clean:	distclean
+	rm -f configure
+	autoconf
+	
+distclean: clean
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.status
+	rm -f config.status.old
+	rm -f Makefile
+	rm -f deps.d
+
+clean:
+	rm -f $(OLIB)
+
+dependencies:
+	$(CC) -MM -I. -I../.. $(CLIB) >deps.d

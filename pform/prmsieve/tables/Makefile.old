@@ -1,0 +1,30 @@
+include ../Makedefs
+
+OBJS=onemeg_cp7.o pmod30.o twiddles.o
+CSRC=onemeg_cp7.c pmod30.c twiddles.c
+
+all: objs
+
+objs: ${OBJS}
+
+depend:
+	-${MAKEDEPEND} ${CSRC}
+
+clean:
+	-rm ${OBJS}
+
+onemeg_cp7.o: onemeg_cp7.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+pmod30.o: pmod30.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+twiddles.o: twiddles.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+# SPECIAL RULES FOR AUTO-GENERATION OF FILES IN /tables
+# onemeg.cp7: should be generated using ../compress/compri
+
+include ${MAKEDEPFILE}
+
+

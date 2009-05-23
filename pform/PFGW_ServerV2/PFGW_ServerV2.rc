@@ -1,0 +1,289 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "green.ico"
+IDI_ICON_RED            ICON    DISCARDABLE     "red.ico"
+IDI_ICON_YELLOW         ICON    DISCARDABLE     "yellow.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About PFGW_ServerV2"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "PFGW_ServerV2 Version 1.10",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2002-2003  Jim Fougeron",IDC_STATIC,40,25,
+                    148,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_PFGW_SERVERV2_DIALOG DIALOGEX 0, 0, 466, 449
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "PFGW Server Version 2"
+MENU IDR_MAIN_MENU
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_ADD_FILE_EDIT,45,82,89,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_ADD_FILE_LINES_EDIT,168,82,42,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Add File",IDC_ADD_FILE,12,81,31,14
+    COMBOBOX        IDC_TEXT_MSG,219,82,240,193,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "Input File(s) Information",IDC_STATIC,7,4,452,93
+    GROUPBOX        "Clients Information",IDC_STATIC,7,419,452,23
+    CTEXT           "100 Known Clients",IDC_NUM_CLIENTS,7,431,104,11,
+                    SS_NOTIFY | SS_SUNKEN | WS_BORDER
+    LTEXT           "Line Cnt",IDC_STATIC,139,84,26,8
+    CONTROL         "Clients Grid",IDC_CLIENTS_GRID,"MFCGridCtrl",WS_GROUP | 
+                    WS_TABSTOP,7,99,452,318
+    CONTROL         "Files Grid",IDC_INP_FILES_GRID,"MFCGridCtrl",WS_TABSTOP,
+                    25,14,434,61
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "PFGW_ServerV2 MFC Application\0"
+            VALUE "FileVersion", "1, 1, 0, 0\0"
+            VALUE "InternalName", "PFGW_ServerV2\0"
+            VALUE "LegalCopyright", "Copyright (C) 2002\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "PFGW_ServerV2.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "PFGW_ServerV2 Application\0"
+            VALUE "ProductVersion", "1, 1, 0, 0\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_PFGW_SERVERV2_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 459
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 442
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAIN_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       IDEXIT
+    END
+    POPUP "Options"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "Tray Icon",                   IDC_USE_TRAY_ICON
+        MENUITEM SEPARATOR
+        MENUITEM "Reset Icon",                  IDC_CLEAR_ICON_ERROR
+    END
+END
+
+IDR_TRAY_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "Test",                        ID_FILE_TEST
+    END
+END
+
+IDR_CLIENTGRID_POPUP_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "Remove client from Grid.",    IDC_REMOVE_CLIENT_FROM_GRID
+        MENUITEM SEPARATOR
+        MENUITEM "Rename Client on next contact", 
+                                                IDC_RENAME_CLIENT_ON_NEXT_CONTACT
+
+        MENUITEM "Send Note to client on next contact", IDC_SEND_CLIENT_NOTE
+        MENUITEM SEPARATOR
+        MENUITEM "Select this client to merge", IDC_MERGE_SELECT_CLIENT
+        MENUITEM "Merge Selected Client HERE",  IDC_MERGE_SELECTED_CLIENT_HERE
+        , GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Reset this client's stats",   IDC_CLEAR_CLIENT_STATS
+        MENUITEM SEPARATOR
+        MENUITEM "View Clients New Found Primes", IDC_VIEW_CLIENT_NEW_PRIMES
+        MENUITEM "Archive Clients New Primes.", IDC_ARCHIVE_CLIENT_PRIMES
+        MENUITEM "View Clients Primes (new && archived)", 
+                                                IDC_VIEW_ALL_CLIENT_PRIMES
+    END
+END
+
+IDR_FILESGRID_POPUP_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "Move File Down",              IDC_MOVE_FILE_DOWN
+        MENUITEM "Move File Up",                IDC_MOVE_FILE_UP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About PFGW_ServerV2..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

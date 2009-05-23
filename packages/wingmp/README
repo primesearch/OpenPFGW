@@ -1,0 +1,64 @@
+This is a custom build of the GNU Multiprecision Library for use
+in Windows projects. It is distributed here in accordance with
+Section 4 of the accompanying GNU Library GPL. In order to
+reduce the size of the package, the corresponding source code
+is available electronically as the 'gmp' package in the OpenPFGW
+project. That source code is an unmodified copy of the original
+package downloaded from
+
+ftp://ftp.gnu.org/gnu/gmp/gmp-4.1.3.tar.gz
+
+This Windows version of the library appears to function
+correctly. The Windows version is done by using MinGW to compile.
+A minor modification of the accompanying gmp.h header file was 
+done to reduce some compiler warnings (in the VC building). The
+change makes no difference to the code produced, it just shuts
+up the compiler from complaining.
+
+NOTE this static linked in code is a "generic" build.  It is
+built for i386 code, with malloc used to allocate temp variables
+within the library.  This is the safest way to get GMP running
+across all Win32 platforms.  However, it may not be the fastest.
+Within the Primeform Yahoo group's file folders, there is a 
+folder that contains many pre-built GMP dlls.  These have been
+built for specific CPU's (PII, PIII, PIV, Athlon, ...).   Also
+these have been built using alloca. The alloca function is much
+faster than malloc at allocating memory.  However, it does so
+by taking that memory (short term) from the programs "stack"
+area. The stack is a very limited resource, and a running program
+also needs to use it for MANY housekeeping functions.  This 
+arrangement is a double edged sword.  You certainly do get 
+more speed, however, if you start working with very complex
+functions (with lots of variables that all end up being "temp"
+variables during the expression parsing), or if you are working
+with very large numbers, then the alloca usage of the stack by
+GMP will use up all (and more than is available) of this limited
+stack resource.  The result is the program will crash.  In
+circumstances where very complex expressions, or very large
+numbers are being worked with, then the static linked in GMP
+should be used.   If PFGW (or WinPFGW) "finds" a libgmp-3.dll
+(the file name of the DLL), it will load and link to the 
+functions contained there.  If that file can not be found,
+then PFGW will link to the "internal" GMP code (the non-alloca
+i386 code).  For most users, this "safe" internal code is
+best.  However GMP is used for these things; expression parser,
+PRP exponentation for smaller numbers (under 2^800 or so).
+If work like this is how you use PFGW, then you most certainly
+will want to use the correct (built for the CPU in your PC)
+libgmp-3.dll due to a significant speed improvement.
+
+---- Notes from GMP's documentation  ----
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA

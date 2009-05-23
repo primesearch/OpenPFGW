@@ -1,0 +1,48 @@
+PRIMEFORM/GW PACKAGING MANIFEST
+  updated to PFGW v1.2 Release (January 30, 2005)
+
+The following files *must* be included with any binary distribution of
+PrimeForm/GW. Wherever possible, distribution media that allow the files
+to be ordered or icons laid out should aim for the following priority:
+
+The pfgw executable
+pfgwdoc.txt
+
+LICENSE.pfgw
+COPYING.LIB     (GMP 4.1.3 licensing)
+README.pfgw
+MANIFEST
+LICENSE         (George Woltman's FFT Licensing "GIMPS Prize Rules")
+
+README specific to your distribution (please add as appropriate)
+INSTALL
+NEWS
+RELNOTES
+OPENPFGW
+AUTHORS
+newpgenformats.txt
+abcfileformats.txt
+pfscriptfileformat.txt
+
+The following files *may*, at your discretion, be included with any binary
+distribution of PrimeForm/GW.
+
+networkformat.txt
+network2format.txt
+
+GMP if needed. Note if it is needed, you must conform to the LGPL, and
+include source code, plus the ability for a user to rebuild it and use
+it with pfgw.
+
+Developers should modify these files as required during the development
+process. In addition, developers should supply entries for the NEWS file.
+New NEWS items will be added to the top of this file. NEWS items should be
+readable by an end-user. They do not reflect detail levels in the ChangeLog.
+  
+Chris Nash
+Lexington KY
+UNITED STATES
+chris_nash@prodigy.net
+
+Jim Fougeron
+jfoug@cox.net

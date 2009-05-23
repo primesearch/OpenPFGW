@@ -1,0 +1,20 @@
+include ../Makedefs
+
+OBJS=erat.o
+CSRC=erat.c
+
+all: objs
+
+objs: ${OBJS}
+
+depend:
+	-${MAKEDEPEND} ${CSRC}
+
+clean:
+	-rm ${OBJS}
+
+erat.o: erat.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+include ${MAKEDEPFILE}
+

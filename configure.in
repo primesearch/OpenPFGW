@@ -1,0 +1,478 @@
+dnl =======================================================
+dnl configure.in
+dnl version 07/18/2004
+dnl (Ulrich Thiel)
+dnl =======================================================
+
+AC_INIT(LICENSE.pfgw)
+AC_CANONICAL_SYSTEM
+
+dnl =======================================================
+dnl initialize compiler flags
+dnl =======================================================
+if test "$CFLAGS" = ""; then
+    AC_SUBST(CFLAGS, "-s -O2")
+fi
+
+if test "$CXXFLAGS" = ""; then
+    AC_SUBST(CXXFLAGS, "-s -O2")
+fi
+
+dnl =======================================================
+dnl initialize compilers
+dnl ======================================================= 
+AC_PROG_CC
+AC_PROG_CC_C_O
+AC_PROG_CXX
+
+dnl create the minimal build environment
+dnl packages, pfconfig/headers, pfconfig/objects, pform
+
+dnl =======================================================
+dnl checks for programs 
+dnl =======================================================
+AC_PROG_AWK
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+dnl =======================================================
+dnl debug symbols
+dnl =======================================================
+AC_ARG_ENABLE(debugsym,
+[  --enable-debugsym       include debugging symbols in output [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-debugsym, need yes or no]) ;;
+esac],
+[enable_debugsym=no])
+
+if test "$enable_debugsym" = "yes" ; then
+	CFLAGS="$CFLAGS -g"
+	CXXFLAGS="$CXXFLAGS -g"
+fi
+
+dnl =======================================================
+dnl pfgw default flags
+dnl =======================================================
+dnl Compiler flags work in the following way.
+dnl 1) pfgw_cv_ cached options are set on a system-specific basis with PFGW_GETDEFAULT_FLAGS
+dnl 2) PFGW_CHECKDEFAULT_FLAGS will check these work and get them into shell variables
+dnl 3) PFGW_APPLY_FLAGS will add them into the compiler string
+
+AC_ARG_ENABLE(defaultflags,
+[  --enable-defaultflags   use pfgw specific default flags [default=yes]],
+[case "${enableval}" in yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-defaultflags, need yes or no]) ;;
+esac],
+[enable_defaultflags=yes])
+
+if test "$enable_defaultflags" = "yes"; then
+    dnl Get defaults
+    PFGW_GETDEFAULT_FLAGS
+
+    dnl Check they work
+
+    PFGW_CHECKDEFAULT_FLAGS
+
+    dnl Apply them
+    PFGW_APPLY_FLAGS
+fi
+
+dnl =======================================================
+dnl checks for libraries
+dnl =======================================================
+
+AC_CHECK_LIB(e, main)
+AC_CHECK_LIB(inks, main)
+AC_CHECK_LIB(m, main)
+gmp_locale=""
+AC_CHECK_LIB(gmp, __gmpz_init,gmp_locale="l$gmp_locale")
+
+dnl Note the existence of gmp changes the makefile substitutions
+dnl and the build instructions. In general packages need to be
+dnl thought out far better.
+
+dnl The general package will have:
+dnl A header file
+dnl A link entry
+dnl A configure subcall
+
+dnl checks for header files 
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(limits.h sys/time.h unistd.h)
+AC_CHECK_HEADERS(gmp.h,gmp_locale="h$gmp_locale")
+
+dnl checks for typedefs/structures/compiler
+
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+
+dnl =======================================================
+dnl CHECK to see if the g++ compiler underscores extern "C"
+dnl data and functions. If it does not we MUST force it to
+dnl using #defines within pform/pfgwlib/asmimp.h
+dnl =======================================================
+
+PFGW_CHECK_ASM_UNDERSCORE(AC_DEFINE(GW_UNDERSCORE))
+
+dnl we need to generate perhaps int16 int32 int64 uint16 uint32 uint64 types
+ 
+dnl checks for library functions 
+
+AC_FUNC_ALLOCA
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_CHECK_FUNCS(strtol strtoul)
+
+dnl =======================================================
+dnl process options
+dnl =======================================================
+
+AC_ARG_ENABLE(inline,
+[  --enable-inline         use inline calls to this module [default=yes]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-inline, need yes or no]) ;;
+esac],
+[enable_inline=yes])
+
+if test "$enable_inline" = "yes" ; then
+	AC_DEFINE(GW_INLINE,inline)
+	AC_DEFINE(GW_INLINE_ENABLED)
+else
+	AC_DEFINE(GW_INLINE,)
+fi
+
+AC_ARG_ENABLE(addcheck,
+[  --enable-addcheck       check adds and subs are safe [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-addcheck, need yes or no]) ;;
+esac],
+[enable_addcheck=no])
+
+if test "$enable_addcheck" = "yes" ; then
+	AC_DEFINE(GW_ADDCHECK)
+fi
+
+AC_ARG_ENABLE(mulcheck,
+[  --enable-mulcheck       check multiplies are safe [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-mulcheck, need yes or no]) ;;
+esac],
+[enable_mulcheck=no])
+if test "$enable_mulcheck" = "yes" ; then
+	AC_DEFINE(GW_MULCHECK)
+fi
+
+AC_ARG_ENABLE(addopt,
+[  --enable-addopt         check adds and subs are optimal [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-addopt, need yes or no]) ;;
+esac],
+[enable_addopt=no])
+
+if test "$enable_addopt" = "yes" ; then
+	AC_DEFINE(GW_ADDOPTIMIZE)
+fi
+
+AC_ARG_ENABLE(fftcheck,
+[  --enable-fftcheck       check FFT semantics are correct [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-fftcheck, need yes or no]) ;;
+esac],
+[enable_fftcheck=no])
+
+if test "$enable_fftcheck" = "yes" ; then
+	AC_DEFINE(GW_FFTCHECK)
+fi
+
+AC_ARG_ENABLE(emulator,
+[  --enable-emulator       use GMP emulation instead of FFT library [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-emulator, need yes or no]) ;;
+esac],
+[enable_emulator=no])
+
+AC_ARG_ENABLE(add_effcpp,
+[  --enable-add_effcpp	  add -Weffc++ to CXXFLAGS [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-add_effcpp, need yes or no]) ;;
+esac],
+[enable_add_effcpp=no])
+
+if test "$enable_add_effcpp" = "yes" ; then
+	AC_DEFINE(GW_ADD_EFFCPP)
+fi
+
+AC_ARG_ENABLE(add_pedantic,
+[  --enable-add_pedantic	  add -pedantic to CFLAGS and CXXFLAGS [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-add_peantic, need yes or no]) ;;
+esac],
+[enable_add_pedantic=no])
+
+if test "$enable_add_pedantic" = "yes" ; then
+	AC_DEFINE(GW_ADD_PEDANTIC)
+fi
+
+AC_ARG_ENABLE(woltman_obj,
+[  --enable-woltman_obj	  link .obj woltman files (defaults are .o) [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-woltman_obj, need yes or no]) ;;
+esac],
+[enable_woltman_obj=no])
+
+if test "$enable_woltman_obj" = "yes" ; then
+	AC_DEFINE(GW_WOLTMAN_OBJ)
+fi
+
+AC_ARG_ENABLE(nasm_win32,
+[  --enable-nasm_win32	  nasm using -fwin32 (default is -felf) [default=no]],
+[case "${enableval}" in
+yes|no) ;;
+*) AC_MSG_ERROR([bad value ${enableval} for --enable-nasm_win32, need yes or no]) ;;
+esac],
+[enable_nasm_win32=no])
+
+if test "$enable_nasm_win32" = "yes" ; then
+	AC_DEFINE(GW_NASM_WIN32)
+fi
+
+dnl change the following lines in the target case below if yours differ
+
+bit8_type="char"
+bit16_type="short"
+bit32_type="int"
+bit64_type="long long"
+
+dnl =======================================================
+dnl Select which modules need to be built
+dnl =======================================================
+
+pkg_baselib="pform/pflib"
+pkg_baselib_name="pflib.a"
+pkg_baselib_header="_pflib.h"
+
+pkg_prmsieve="pform/prmsieve"
+pkg_prmsieve_name="prmsieve.a"
+pkg_prmsieve_header="_prmsieve.h"
+
+pkg_pfoo="pform/pfoo"
+pkg_pfoo_name="pfoo.a"
+pkg_pfoo_header="_pfoo.h"
+
+pkg_entrypoint="pform/pfgw"
+pkg_entrypoint_name="pfgw_main.a"
+
+pkg_io="pform/pfio"
+pkg_io_name="pfio.a"
+pkg_io_header="_pfio.h"
+
+dnl The other objects are more difficult to configure, but typically
+dnl pfgwlib depends on extra1 and pfmath depends on extra2
+
+dnl =======================================================
+dnl The following code will attempt to perform the standard
+dnl ELF object build on all Intel-compatibles. Note it does
+dnl not specify (yet) different options depending on OS.
+dnl They will be added as and when required.
+dnl ====================================================== 
+case $target in
+changequote(<<, >>)dnl
+<<	i[3456]86-pc-* | pentium-pc-* | pentiumpro-pc-* | pentium[234]-pc-* | k5-pc-* | k6-pc-* | k6[23]-pc-* | athlon-pc-*)>>
+changequote([, ])dnl
+		pkg_integer="pform/pfmath"
+		pkg_integer_name="pfmath.a"
+		pkg_integer_header="_pfmath.h"
+
+		pkg_fft="pform/pfgwlib"
+		pkg_fft_name="pfgwlib.a"
+		pkg_fft_header="_pfgwlib.h"
+		
+		pkg_glue="pform/pfglue"
+		pkg_glue_name="pfglue.a"
+		pkg_glue_header="_pfglue.h"
+		
+		postbuild_step="make optimize"
+		
+		;;
+	*)
+		enable_emulator=yes
+		;;
+esac
+
+dnl Process the emulator options
+
+if test "$enable_emulator" = "yes" ; then
+		pkg_integer="pform/pfmath"
+		pkg_integer_name="pfmath.a"
+		pkg_integer_header="_pfmath.h"
+
+		pkg_fft="pform/gmpgwlib"
+		pkg_fft_name="gmpgwlib.a"
+		pkg_fft_header="_gmpgwlib.h"
+		
+		pkg_glue="pform/gmpglue"
+		pkg_glue_name="gmpglue.a"
+		pkg_glue_header="_gmpglue.h"
+		
+		postbuild_step=""
+		
+		AC_DEFINE(GW_EMULATEASSEMBLER)
+fi
+
+if test "$pkg_baselib_name" != "" ; then pkg_baselib_name="$pkg_baselib/.libs/$pkg_baselib_name" ; fi
+if test "$pkg_baselib_header" != "" ; then pkg_baselib_header="#include \"$srcdir/$pkg_baselib/$pkg_baselib_header\"" ; fi
+
+if test "$pkg_pfoo_name" != "" ; then pkg_pfoo_name="$pkg_pfoo/.libs/$pkg_pfoo_name" ; fi
+if test "$pkg_pfoo_header" != "" ; then pkg_pfoo_header="#include \"$srcdir/$pkg_pfoo/$pkg_pfoo_header\"" ; fi
+
+if test "$pkg_entrypoint_name" != "" ; then pkg_entrypoint_name="$pkg_entrypoint/.libs/$pkg_entrypoint_name" ; fi
+
+if test "$pkg_io_name" != "" ; then pkg_io_name="$pkg_io/.libs/$pkg_io_name" ; fi
+if test "$pkg_io_header" != "" ; then pkg_io_header="#include \"$srcdir/$pkg_io/$pkg_io_header\"" ; fi
+
+if test "$pkg_integer_name" != "" ; then pkg_integer_name="$pkg_integer/.libs/$pkg_integer_name" ; fi
+if test "$pkg_integer_header" != "" ; then pkg_integer_header="#include \"$srcdir/$pkg_integer/$pkg_integer_header\"" ; fi
+
+if test "$pkg_fft_name" != "" ; then pkg_fft_name="$pkg_fft/.libs/$pkg_fft_name" ; fi
+if test "$pkg_fft_header" != "" ; then pkg_fft_header="#include \"$srcdir/$pkg_fft/$pkg_fft_header\"" ; fi
+
+if test "$pkg_glue_name" != "" ; then pkg_glue_name="$pkg_glue/.libs/$pkg_glue_name" ; fi
+if test "$pkg_glue_header" != "" ; then pkg_glue_header="#include \"$srcdir/$pkg_glue/$pkg_glue_header\"" ; fi
+
+if test "$pkg_prmsieve_name" != "" ; then pkg_prmsieve_name="$pkg_prmsieve/.libs/$pkg_prmsieve_name" ; fi
+if test "$pkg_prmsieve_header" != "" ; then pkg_prmsieve_header="#include \"$srcdir/$pkg_prmsieve/$pkg_prmsieve_header\"" ; fi
+
+dnl work out substitutions for the types.h file
+
+int8_type=""
+uint8_type=""
+if test "$bit8_type" != "" ; then
+	int8_type="typedef signed $bit8_type int8;"
+	uint8_type="typedef unsigned $bit8_type uint8;"
+fi
+int16_type=""
+uint16_type=""
+if test "$bit16_type" != "" ; then
+	int16_type="typedef signed $bit16_type int16;"
+	uint16_type="typedef unsigned $bit16_type uint16;"
+fi
+int32_type=""
+uint32_type=""
+if test "$bit32_type" != "" ; then
+	int32_type="typedef signed $bit32_type int32;"
+	uint32_type="typedef unsigned $bit32_type uint32;"
+fi
+int64_type=""
+uint64_type=""
+if test "$bit64_type" != "" ; then
+	int64_type="typedef signed $bit64_type int64;"
+	uint64_type="typedef unsigned $bit64_type uint64;"
+fi
+
+dnl Define formatting strings required for 64-bit sprintf
+
+uint64_decimal="\"%lld\",n"
+uint64_hexlower="\"%llx\",n"
+uint64_hexupper="\"%llX\",n"
+
+AC_SUBST(int8_type)
+AC_SUBST(int16_type)
+AC_SUBST(int32_type)
+AC_SUBST(int64_type)
+AC_SUBST(uint8_type)
+AC_SUBST(uint16_type)
+AC_SUBST(uint32_type)
+AC_SUBST(uint64_type)
+
+AC_SUBST(uint64_decimal)
+AC_SUBST(uint64_hexlower)
+AC_SUBST(uint64_hexupper)
+
+dnl Notes on package names and common header files. The standard header file names are
+dnl pflib pfoo (pfgw) pffile pfmath pfgwlib pfglue
+
+dnl Rules to add GMP to the bundle
+
+if test "$gmp_locale" = "hl"
+then
+	gmp_header="#include <gmp.h>"
+	gmp_dep=""
+	gmp_depdefine=""
+	gmp_rule=""
+	gmp_linkflag="-lgmp"
+	gmp_obj=""
+	gmp_config=""
+else
+	gmp_header="#include \"$srcdir/packages/gmp/gmp.h\""
+	gmp_dep="gmp"
+	gmp_depdefine="gmp:"
+	gmp_rule="	\${MAKE} -C packages/gmp"
+	gmp_linkflag=""
+	gmp_obj="packages/gmp/.libs/libgmp.a"
+	gmp_config="packages/gmp"
+fi
+
+AC_SUBST(gmp_header)
+AC_SUBST(gmp_dep)
+AC_SUBST(gmp_depdefine)
+AC_SUBST(gmp_rule)
+AC_SUBST(gmp_linkflag)
+AC_SUBST(gmp_obj)
+
+AC_SUBST(pkg_baselib)
+AC_SUBST(pkg_baselib_name)
+AC_SUBST(pkg_baselib_header)
+
+AC_SUBST(pkg_pfoo)
+AC_SUBST(pkg_pfoo_name)
+AC_SUBST(pkg_pfoo_header)
+
+AC_SUBST(pkg_entrypoint)
+AC_SUBST(pkg_entrypoint_name)
+
+AC_SUBST(pkg_io)
+AC_SUBST(pkg_io_name)
+AC_SUBST(pkg_io_header)
+
+AC_SUBST(pkg_integer)
+AC_SUBST(pkg_integer_name)
+AC_SUBST(pkg_integer_header)
+
+AC_SUBST(pkg_fft)
+AC_SUBST(pkg_fft_name)
+AC_SUBST(pkg_fft_header)
+
+AC_SUBST(pkg_glue)
+AC_SUBST(pkg_glue_name)
+AC_SUBST(pkg_glue_header)
+
+AC_SUBST(pkg_prmsieve)
+AC_SUBST(pkg_prmsieve_name)
+AC_SUBST(pkg_prmsieve_header)
+
+AC_SUBST(postbuild_step)
+
+dummydirectory=$srcdir/packages/woltobj
+AC_SUBST(dummydirectory)
+
+AC_CONFIG_HEADER(config.h)
+
+dnl AC_CONFIG_SUBDIRS is not guaranteed to work with shell expansion
+dnl so these packages are expanded in full here
+
+AC_CONFIG_SUBDIRS(pform/pflib pform/pfmath pform/pfgwlib pform/pfglue pform/pfoo pform/pfio pform/pfgw pform/prmsieve)
+AC_OUTPUT(Makefile stdtypes.h pflib.h pfoo.h pfio.h pfmath.h pfgwlib.h pfglue.h prmsieve.h)

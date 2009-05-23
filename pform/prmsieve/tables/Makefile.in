@@ -1,0 +1,11 @@
+srcdir=@srcdir@
+vpath %.c @srcdir@
+vpath %.cpp @srcdir@
+vpath %.h @srcdir@
+vpath %.cp7 @srcdir@
+
+OLIB = onemeg_cp7.o pmod30.o twiddles.o
+CLIB = $(srcdir)/onemeg_cp7.c $(srcdir)/pmod30.c $(srcdir)/twiddles.c
+
+include ../Makedefs
+include deps.d

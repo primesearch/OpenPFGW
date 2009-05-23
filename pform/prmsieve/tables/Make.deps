@@ -1,0 +1,1 @@
+twiddles.o: twiddles.c twiddles.h ../types/uint32.h

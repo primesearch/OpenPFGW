@@ -1,0 +1,14 @@
+// I am seriously impressed by how PFGW handles this number, which
+// is the sum of 3 cubes, each with more than 6 million digits.
+// I recommend this as a testfile for Lucas series. It takes about
+// 1 GHz-minute, running PFGW Version 20040107.x86_Dev under Linux.
+
+((-1517343305934237*lucasV(292142,1,389433)+443258498800664823960*\
+lucasU(292142,1,389433)+21661455645594)/10/2246917^2)^3\
++((715310410999368*lucasV(292142,1,389433)-208927220415284227680*\
+lucasU(292142,1,389433)+21661455645594)/10/2246917^2)^3\
++((1462291904268351*lucasV(292142,1,389433)-427240245959764350120*\
+lucasU(292142,1,389433)-28501350867362)/10/2246917^2)^3
+
+// David Broadhurst
+

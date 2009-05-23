@@ -1,0 +1,294 @@
+$Header: /usr/cvsroot/openpfgw/pform/pfgwlib/ChangeLog,v 1.4 2002/03/11 05:26:58 spider Exp $
+$Log: ChangeLog,v $
+Revision 1.4  2002/03/11 05:26:58  spider
+sheepdipped those pesky CRLFS out again
+
+Revision 1.3  2002/03/11 05:11:00  spider
+Merged in scripting branch changes
+
+
+Revision 1.2  2002/03/09 22:59:10  fougeron
+Total snapshot of the Jim Fougeron tree
+
+Revision 1.1.1.1  2002/01/29 01:37:40  crnash
+Initial import
+
+Revision 1.31  2001/07/25 00:27:22  fougeron
+Updated FFT sizes and limits
+
+Revision 1.30  2001/06/27 02:44:15  fougeron
+Added new gwcontext finder
+
+Revision 1.29  2001/06/27 01:39:43  crnash
+Added new Mersenne modular reduction
+
+Revision 1.28  2001/06/11 00:35:59  fougeron
+Added GW prothmod support
+
+Revision 1.27  2001/05/26 21:53:53  fougeron
+Synchronized with dev version
+
+Revision 1.26  2001/05/26 21:26:31  crnash
+Merged in x-fft
+
+Revision 1.25.4.5  2001/05/26 21:19:40  fougeron
+Revised fgwcontext to support PRP tests in the main dev line
+
+Revision 1.25.4.4  2001/05/26 21:12:24  crnash
+Checked for zero carry to exit normalizer
+
+Revision 1.25.4.3  2001/05/25 06:03:23  crnash
+Moved the normalizers into assembler
+
+Revision 1.25.4.2  2001/05/21 01:59:28  crnash
+Implemented workarounds to do radix b DWT
+
+Revision 1.25.4.1  2001/05/20 05:08:35  crnash
+Added beginnings of the Woltman GFN adaptation
+
+Revision 1.25  2001/03/11 03:57:53  fougeron
+Added support for -a composite verification
+
+Revision 1.24  2001/03/11 03:14:26  fougeron
+Knocked smallest FFT down to 23 bits to avoid roundoff
+
+Revision 1.23  2001/01/28 05:03:05  spider
+ChangeLog cleanup
+
+Revision 1.22  2001/01/28 04:57:35  spider
+Merged changes on branch fougeron-20010127
+
+Revision 1.21.2.1  2001/01/28 02:32:31  fougeron
+Added selfexclusion to gwinteger.h
+
+Revision 1.21.2.1  2001/01/28 02:32:31  fougeron
+Added selfexclusion to gwinteger.h
+
+Revision 1.21  2001/01/14 21:27:04  crnash
+Made gwinteger.h self-excluding
+
+Revision 1.20  2001/01/07 02:48:40  fougeron
+Added invalid FFT size detection message
+
+Revision 1.19  2001/01/06 04:02:48  fougeron
+Changed gwcontext to guard against memory overflow bug found by Philip Poplin
+
+Revision 1.18  2000/12/05 23:10:46  crnash
+Downsized 16384 and 20480 element FFTs following a roundoff error
+
+Revision 1.17  2000/12/03 07:27:50  crnash
+Merged in vpath changes
+
+Revision 1.16.2.1  2000/12/03 06:48:02  crnash
+Completed changeover to vpath build
+
+Revision 1.16  2000/11/27 00:37:20  crnash
+Removed Windows build files
+
+Revision 1.15  2000/11/15 00:28:24  crnash
+Added reverse flag to try to workaround addsub problems
+
+Revision 1.14  2000/11/11 18:09:24  crnash
+Tweaked FFT40 to guard against N+1 overflows
+
+Revision 1.13  2000/11/11 00:44:34  crnash
+Fixed up addsub and abbsubquick calling conventions
+
+Revision 1.12  2000/11/07 07:25:53  fougeron
+Updated windows project files
+
+Revision 1.11  2000/11/06 03:37:19  crnash
+Merged proth-like reciprocal changes
+
+Revision 1.10.2.1  2000/11/05 23:36:38  crnash
+Added the limb table for the Woltman memory map
+
+Revision 1.10  2000/11/04 00:49:46  fougeron
+Added Windows makefile
+
+Revision 1.9  2000/11/03 03:59:07  fougeron
+Added Windows build environment
+
+Revision 1.8  2000/11/01 23:25:01  fougeron
+Revised gwpublic to include config.h
+
+Revision 1.7  2000/11/01 23:07:00  fougeron
+Fixed gwpublic.c for Windows compilation
+
+Revision 1.6  2000/10/30 02:42:28  crnash
+Merged nminus1
+
+Revision 1.5.2.1  2000/10/29 08:00:22  crnash
+Added GWInteger copy constructor
+
+Revision 1.5  2000/10/23 00:54:44  crnash
+Merged optimized GW changes
+
+Revision 1.4.2.2  2000/10/23 00:01:06  crnash
+Added dependency generator
+
+Revision 1.4.2.1  2000/10/22 22:21:57  crnash
+Changed context to use the configurable FFT matrix
+
+Revision 1.4  2000/10/17 03:46:44  crnash
+Removed WIN32 ifdefs
+
+Revision 1.3  2000/10/16 06:13:35  crnash
+Added common header changes
+
+Revision 1.2  2000/10/14 04:55:33  crnash
+Merged in gwwrap branch
+
+Revision 1.1.2.3  2000/10/14 03:23:48  crnash
+added new gwinteger interface
+
+Revision 1.1.2.2  2000/10/13 07:58:18  crnash
+Began cleanup of gw interface
+
+Revision 1.1.2.1  2000/10/13 05:30:16  crnash
+added acconfig and autoheader for build options
+
+Revision 1.1  2000/10/08 13:53:09  baron
+added ChangeLog
+=======
+Revision 1.1.1.1  2002/01/29 01:37:40  crnash
+Initial import
+
+Revision 1.31  2001/07/25 00:27:22  fougeron
+Updated FFT sizes and limits
+
+Revision 1.30  2001/06/27 02:44:15  fougeron
+Added new gwcontext finder
+
+Revision 1.29  2001/06/27 01:39:43  crnash
+Added new Mersenne modular reduction
+
+Revision 1.28  2001/06/11 00:35:59  fougeron
+Added GW prothmod support
+
+Revision 1.27  2001/05/26 21:53:53  fougeron
+Synchronized with dev version
+
+Revision 1.26  2001/05/26 21:26:31  crnash
+Merged in x-fft
+
+Revision 1.25.4.5  2001/05/26 21:19:40  fougeron
+Revised fgwcontext to support PRP tests in the main dev line
+
+Revision 1.25.4.4  2001/05/26 21:12:24  crnash
+Checked for zero carry to exit normalizer
+
+Revision 1.25.4.3  2001/05/25 06:03:23  crnash
+Moved the normalizers into assembler
+
+Revision 1.25.4.2  2001/05/21 01:59:28  crnash
+Implemented workarounds to do radix b DWT
+
+Revision 1.25.4.1  2001/05/20 05:08:35  crnash
+Added beginnings of the Woltman GFN adaptation
+
+Revision 1.25  2001/03/11 03:57:53  fougeron
+Added support for -a composite verification
+
+Revision 1.24  2001/03/11 03:14:26  fougeron
+Knocked smallest FFT down to 23 bits to avoid roundoff
+
+Revision 1.23  2001/01/28 05:03:05  spider
+ChangeLog cleanup
+
+Revision 1.22  2001/01/28 04:57:35  spider
+Merged changes on branch fougeron-20010127
+
+Revision 1.21.2.1  2001/01/28 02:32:31  fougeron
+Added selfexclusion to gwinteger.h
+
+Revision 1.21.2.1  2001/01/28 02:32:31  fougeron
+Added selfexclusion to gwinteger.h
+
+Revision 1.21  2001/01/14 21:27:04  crnash
+Made gwinteger.h self-excluding
+
+Revision 1.20  2001/01/07 02:48:40  fougeron
+Added invalid FFT size detection message
+
+Revision 1.19  2001/01/06 04:02:48  fougeron
+Changed gwcontext to guard against memory overflow bug found by Philip Poplin
+
+Revision 1.18  2000/12/05 23:10:46  crnash
+Downsized 16384 and 20480 element FFTs following a roundoff error
+
+Revision 1.17  2000/12/03 07:27:50  crnash
+Merged in vpath changes
+
+Revision 1.16.2.1  2000/12/03 06:48:02  crnash
+Completed changeover to vpath build
+
+Revision 1.16  2000/11/27 00:37:20  crnash
+Removed Windows build files
+
+Revision 1.15  2000/11/15 00:28:24  crnash
+Added reverse flag to try to workaround addsub problems
+
+Revision 1.14  2000/11/11 18:09:24  crnash
+Tweaked FFT40 to guard against N+1 overflows
+
+Revision 1.13  2000/11/11 00:44:34  crnash
+Fixed up addsub and abbsubquick calling conventions
+
+Revision 1.12  2000/11/07 07:25:53  fougeron
+Updated windows project files
+
+Revision 1.11  2000/11/06 03:37:19  crnash
+Merged proth-like reciprocal changes
+
+Revision 1.10.2.1  2000/11/05 23:36:38  crnash
+Added the limb table for the Woltman memory map
+
+Revision 1.10  2000/11/04 00:49:46  fougeron
+Added Windows makefile
+
+Revision 1.9  2000/11/03 03:59:07  fougeron
+Added Windows build environment
+
+Revision 1.8  2000/11/01 23:25:01  fougeron
+Revised gwpublic to include config.h
+
+Revision 1.7  2000/11/01 23:07:00  fougeron
+Fixed gwpublic.c for Windows compilation
+
+Revision 1.6  2000/10/30 02:42:28  crnash
+Merged nminus1
+
+Revision 1.5.2.1  2000/10/29 08:00:22  crnash
+Added GWInteger copy constructor
+
+Revision 1.5  2000/10/23 00:54:44  crnash
+Merged optimized GW changes
+
+Revision 1.4.2.2  2000/10/23 00:01:06  crnash
+Added dependency generator
+
+Revision 1.4.2.1  2000/10/22 22:21:57  crnash
+Changed context to use the configurable FFT matrix
+
+Revision 1.4  2000/10/17 03:46:44  crnash
+Removed WIN32 ifdefs
+
+Revision 1.3  2000/10/16 06:13:35  crnash
+Added common header changes
+
+Revision 1.2  2000/10/14 04:55:33  crnash
+Merged in gwwrap branch
+
+Revision 1.1.2.3  2000/10/14 03:23:48  crnash
+added new gwinteger interface
+
+Revision 1.1.2.2  2000/10/13 07:58:18  crnash
+Began cleanup of gw interface
+
+Revision 1.1.2.1  2000/10/13 05:30:16  crnash
+added acconfig and autoheader for build options
+
+Revision 1.1  2000/10/08 13:53:09  baron
+added ChangeLog
+>>>>>>> 1.1.1.1

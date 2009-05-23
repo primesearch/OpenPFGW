@@ -1,0 +1,1 @@
+compri5.o: compri5.c compri5.h ../tables/pmod30.h

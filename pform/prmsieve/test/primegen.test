@@ -1,0 +1,4 @@
+#!/bin/sh
+. ../primegen/primegen.test
+
+diff ../primegen/primegen.res primegen.res

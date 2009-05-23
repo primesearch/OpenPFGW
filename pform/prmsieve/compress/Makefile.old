@@ -1,0 +1,26 @@
+include ../Makedefs
+
+all: objs
+
+OBJS=compri7.o compri5.o
+CSRC=compri7.c compri5.c
+
+objs: ${OBJS}
+
+depend:
+	-${MAKEDEPEND} ${CSRC}
+
+clean:
+	-rm ${OBJS}
+
+compri7.o: compri7.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+compri5.o: compri5.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+compri.o: compri.c
+	${CC} ${CC_OUT} $@ ${CC_INP} $<
+
+include ${MAKEDEPFILE}
+

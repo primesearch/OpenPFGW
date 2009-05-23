@@ -1,0 +1,27 @@
+The code in this directory uses parts of George Woltman's FFT implementation
+as used in the prime95 Mersenne primality-testing program. Mr Woltman made
+several additions to the program to allow support for PrimeForm/GW's general
+testing algorithms. The files in this package are primarily the C interface
+to George Woltman's highly-optimized assembler. The files have been modified
+for compatibility with PrimeForm/GW.
+
+George Woltman's text from the prime95 source code download page is included
+here for your reference. Be sure to also read the accompanying LICENSE file
+for the terms and conditions regarding the distribution and use of this
+module. Mr Woltman has kindly clarified the terms and conditions and has
+explicitly stated that the GIMPS prize rules apply to Mersenne prime
+discoveries only.
+
+The source code for George Woltman's program is highly optimized Intel
+assembly language, there are many more readable FFT algorithms available on
+the web and in textbooks. The program is also completely non-portable. If you
+are curious anyway, you can download all the source code(1129K) at
+http://www.mersenne.org/source.htm. This file includes all the version 20
+source code for Windows 95, Windows NT, and Linux. Sorry, no source for
+Windows 3.1 and the screen savers. Use the -d option in pkunzip to unzip the
+source.
+
+George Woltman's program is very loosely based on C code written by
+Richard Crandall. Luke Welsh has started a web page that points to Richard
+Crandall's program and other available source code you can use to help 
+search for Mersenne primes. This is a great place for UNIX users to go.

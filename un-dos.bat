@@ -1,0 +1,29 @@
+@echo off
+todos -d -q -u config.*
+todos -d -q -u *.in
+todos -d -q -u *.cpp
+todos -d -q -u *.c
+todos -d -q -u *.h
+todos -d -q -u *.m4
+todos -d -q -u *.
+todos -d -q -u *.txt
+todos -d -q -u *.asm
+todos -d -q -u *.html
+todos -d -q -u *.dox
+todos -d -q -u *.css
+todos -d -q -u *.inl
+todos -d -q -u copying.lib
+todos -d -q -u *.cxx
+todos -d -q -u *.g++
+todos -d -q -u *.gcc
+todos -d -q -u *.patch
+
+todos -d -q -u *.old
+todos -d -q -u *.deps
+todos -d -q -u *.cp7
+todos -d -q -u primegen.res
+todos -d -q -u *.tst?
+todos -d -q -u *.test
+todos -d -q -u *.pl
+todos -d -q -u *.sh
+todos -d -q -u *.pfgw

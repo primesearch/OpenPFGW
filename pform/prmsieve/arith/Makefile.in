@@ -1,0 +1,11 @@
+srcdir=@srcdir@
+vpath %.c @srcdir@
+vpath %.cpp @srcdir@
+vpath %.h @srcdir@
+vpath %.cp7 @srcdir@
+
+OLIB = math16.o
+CLIB = $(srcdir)/math16.c
+
+include ../Makedefs
+include deps.d

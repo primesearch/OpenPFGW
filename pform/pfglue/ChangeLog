@@ -1,0 +1,318 @@
+$Header: /usr/cvsroot/openpfgw/pform/pfglue/ChangeLog,v 1.4 2002/03/11 05:26:34 spider Exp $
+$Log: ChangeLog,v $
+Revision 1.4  2002/03/11 05:26:34  spider
+sheepdipped those pesky CRLFS out again
+
+Revision 1.3  2002/03/11 05:10:59  spider
+Merged in scripting branch changes
+
+
+Revision 1.2  2002/03/09 22:58:39  fougeron
+Total snapshot of the Jim Fougeron tree
+
+Revision 1.1.1.1  2002/01/29 01:37:39  crnash
+Initial import
+
+Revision 1.37  2001/06/11 00:51:13  crnash
+Added some FFT strategy description
+
+Revision 1.36  2001/06/11 00:50:28  crnash
+Added quick reciprocal class for proth forms
+
+Revision 1.35  2001/06/11 00:30:37  fougeron
+Added code for GW proth modular reduction
+
+Revision 1.34  2001/06/07 05:31:46  fougeron
+Added recent WinPFGW modifications
+
+Revision 1.33  2001/05/26 21:28:24  crnash
+Merged x-fft
+
+Revision 1.32  2001/05/26 19:29:24  crnash
+Merged version 1.1 changes
+
+Revision 1.31.4.1  2001/05/21 02:00:18  crnash
+Cast pointers for GWContext functions
+
+Revision 1.31  2001/03/11 03:59:03  fougeron
+Added support for -a composite verification
+
+Revision 1.30  2001/01/28 04:58:35  spider
+Merged changes on branch fougeron-20010127
+
+Revision 1.29  2001/01/14 22:13:31  crnash
+Removed some spurious carriage-returns from preprocessing directives
+
+Revision 1.28  2001/01/14 21:57:20  crnash
+Added self-exclusion to smallmul.h
+
+Revision 1.27  2001/01/14 21:40:33  crnash
+Added self-exclusion to primegenerator.h
+
+Revision 1.26  2001/01/14 20:08:18  spider
+Merged differences from branch crnash-20010111
+
+Revision 1.25.2.1  2001/01/11 07:46:38  crnash
+Standardized module header to prmsieve.h
+
+Revision 1.25  2001/01/09 06:45:29  fougeron
+Added calls to the Phil Carmody erat in primegenerator.cpp
+
+Revision 1.24  2001/01/07 02:47:31  fougeron
+Added negative reduced PRP detection mesage
+
+Revision 1.23  2001/01/06 03:54:37  fougeron
+December 29 modification to prothmod to allow 42 bit c
+
+Revision 1.22  2000/12/08 06:18:12  fougeron
+Merged pfprintf changes
+
+Revision 1.21.2.1  2000/12/08 05:33:17  fougeron
+Merged on PFPrintf changes
+
+Revision 1.21  2000/12/06 00:53:23  crnash
+Checked in fixed-up checks for assembler support
+
+Revision 1.20  2000/12/03 07:27:21  crnash
+Merged in vpath changes
+
+Revision 1.19.2.1  2000/12/03 06:48:58  crnash
+Completed changeover to vpath build
+
+Revision 1.19  2000/11/27 00:38:57  crnash
+Removed Windows build files
+
+Revision 1.18  2000/11/25 05:56:17  crnash
+Added small multiplier for Woltman
+
+Revision 1.17  2000/11/15 00:27:22  crnash
+Added checking code for gwprothreciprocal
+
+Revision 1.16  2000/11/11 18:08:56  crnash
+Verified reciprocal for accuracy
+
+Revision 1.15  2000/11/10 05:28:49  crnash
+Merged preliminary N+1 implementation
+
+Revision 1.14.2.1  2000/11/10 05:01:14  crnash
+Added GWDEBUG and INTDEBUG macros for live bug tracking
+
+Revision 1.14  2000/11/07 07:22:31  fougeron
+Updated Windows project files
+
+Revision 1.13  2000/11/06 03:50:45  crnash
+Declared prothblock in asmimport.h to correct assembler prototype
+
+Revision 1.12  2000/11/06 03:36:47  crnash
+Merged proth-like reciprocal changes
+
+Revision 1.11  2000/11/04 00:49:19  fougeron
+Added Windows makefile
+
+Revision 1.10.2.3  2000/11/06 03:26:15  crnash
+Added correct k size determination for proth-like reciprocal
+
+Revision 1.10.2.2  2000/11/05 23:35:03  crnash
+Fixed assembler bug and added GW_NOASSEMBLER switch
+
+Revision 1.10.2.1  2000/11/05 10:38:43  crnash
+Initial attempt at assempler proth reciprocal
+
+Revision 1.10  2000/11/03 03:57:58  fougeron
+Added Windows build environment
+
+Revision 1.9  2000/11/02 04:09:17  crnash
+Verified finalReduce does not take too many iterations
+
+Revision 1.8  2000/11/02 00:57:10  crnash
+Added extra word to gwreciprocal convergence routine
+
+Revision 1.7  2000/11/01 23:21:46  crnash
+Declared loop variables separately for VC
+
+Revision 1.6  2000/10/30 02:42:04  crnash
+Merged nminus1
+
+Revision 1.5.2.1  2000/10/29 07:59:08  crnash
+cleaned away dead code
+
+Revision 1.5  2000/10/23 00:54:39  crnash
+Merged optimized GW changes
+
+Revision 1.4.2.3  2000/10/23 00:01:25  crnash
+Added dependency generator
+
+Revision 1.4.2.2  2000/10/22 22:05:38  crnash
+Added catch-all in reciprocal
+
+Revision 1.4.2.1  2000/10/19 03:28:42  crnash
+Removed primegen
+
+Revision 1.4  2000/10/17 03:47:27  crnash
+Removed WIN32 ifdefs
+
+Revision 1.3  2000/10/14 04:55:30  crnash
+Merged in gwwrap branch
+
+Revision 1.2.2.1  2000/10/14 03:22:46  crnash
+updated to gw interface
+
+Revision 1.2  2000/10/08 13:51:43  baron
+Checking log file correctly archives real name
+
+Revision 1.1  2000/10/08 13:50:31  baron
+added changelog
+=======
+Revision 1.1.1.1  2002/01/29 01:37:39  crnash
+Initial import
+
+Revision 1.37  2001/06/11 00:51:13  crnash
+Added some FFT strategy description
+
+Revision 1.36  2001/06/11 00:50:28  crnash
+Added quick reciprocal class for proth forms
+
+Revision 1.35  2001/06/11 00:30:37  fougeron
+Added code for GW proth modular reduction
+
+Revision 1.34  2001/06/07 05:31:46  fougeron
+Added recent WinPFGW modifications
+
+Revision 1.33  2001/05/26 21:28:24  crnash
+Merged x-fft
+
+Revision 1.32  2001/05/26 19:29:24  crnash
+Merged version 1.1 changes
+
+Revision 1.31.4.1  2001/05/21 02:00:18  crnash
+Cast pointers for GWContext functions
+
+Revision 1.31  2001/03/11 03:59:03  fougeron
+Added support for -a composite verification
+
+Revision 1.30  2001/01/28 04:58:35  spider
+Merged changes on branch fougeron-20010127
+
+Revision 1.29  2001/01/14 22:13:31  crnash
+Removed some spurious carriage-returns from preprocessing directives
+
+Revision 1.28  2001/01/14 21:57:20  crnash
+Added self-exclusion to smallmul.h
+
+Revision 1.27  2001/01/14 21:40:33  crnash
+Added self-exclusion to primegenerator.h
+
+Revision 1.26  2001/01/14 20:08:18  spider
+Merged differences from branch crnash-20010111
+
+Revision 1.25.2.1  2001/01/11 07:46:38  crnash
+Standardized module header to prmsieve.h
+
+Revision 1.25  2001/01/09 06:45:29  fougeron
+Added calls to the Phil Carmody erat in primegenerator.cpp
+
+Revision 1.24  2001/01/07 02:47:31  fougeron
+Added negative reduced PRP detection mesage
+
+Revision 1.23  2001/01/06 03:54:37  fougeron
+December 29 modification to prothmod to allow 42 bit c
+
+Revision 1.22  2000/12/08 06:18:12  fougeron
+Merged pfprintf changes
+
+Revision 1.21.2.1  2000/12/08 05:33:17  fougeron
+Merged on PFPrintf changes
+
+Revision 1.21  2000/12/06 00:53:23  crnash
+Checked in fixed-up checks for assembler support
+
+Revision 1.20  2000/12/03 07:27:21  crnash
+Merged in vpath changes
+
+Revision 1.19.2.1  2000/12/03 06:48:58  crnash
+Completed changeover to vpath build
+
+Revision 1.19  2000/11/27 00:38:57  crnash
+Removed Windows build files
+
+Revision 1.18  2000/11/25 05:56:17  crnash
+Added small multiplier for Woltman
+
+Revision 1.17  2000/11/15 00:27:22  crnash
+Added checking code for gwprothreciprocal
+
+Revision 1.16  2000/11/11 18:08:56  crnash
+Verified reciprocal for accuracy
+
+Revision 1.15  2000/11/10 05:28:49  crnash
+Merged preliminary N+1 implementation
+
+Revision 1.14.2.1  2000/11/10 05:01:14  crnash
+Added GWDEBUG and INTDEBUG macros for live bug tracking
+
+Revision 1.14  2000/11/07 07:22:31  fougeron
+Updated Windows project files
+
+Revision 1.13  2000/11/06 03:50:45  crnash
+Declared prothblock in asmimport.h to correct assembler prototype
+
+Revision 1.12  2000/11/06 03:36:47  crnash
+Merged proth-like reciprocal changes
+
+Revision 1.11  2000/11/04 00:49:19  fougeron
+Added Windows makefile
+
+Revision 1.10.2.3  2000/11/06 03:26:15  crnash
+Added correct k size determination for proth-like reciprocal
+
+Revision 1.10.2.2  2000/11/05 23:35:03  crnash
+Fixed assembler bug and added GW_NOASSEMBLER switch
+
+Revision 1.10.2.1  2000/11/05 10:38:43  crnash
+Initial attempt at assempler proth reciprocal
+
+Revision 1.10  2000/11/03 03:57:58  fougeron
+Added Windows build environment
+
+Revision 1.9  2000/11/02 04:09:17  crnash
+Verified finalReduce does not take too many iterations
+
+Revision 1.8  2000/11/02 00:57:10  crnash
+Added extra word to gwreciprocal convergence routine
+
+Revision 1.7  2000/11/01 23:21:46  crnash
+Declared loop variables separately for VC
+
+Revision 1.6  2000/10/30 02:42:04  crnash
+Merged nminus1
+
+Revision 1.5.2.1  2000/10/29 07:59:08  crnash
+cleaned away dead code
+
+Revision 1.5  2000/10/23 00:54:39  crnash
+Merged optimized GW changes
+
+Revision 1.4.2.3  2000/10/23 00:01:25  crnash
+Added dependency generator
+
+Revision 1.4.2.2  2000/10/22 22:05:38  crnash
+Added catch-all in reciprocal
+
+Revision 1.4.2.1  2000/10/19 03:28:42  crnash
+Removed primegen
+
+Revision 1.4  2000/10/17 03:47:27  crnash
+Removed WIN32 ifdefs
+
+Revision 1.3  2000/10/14 04:55:30  crnash
+Merged in gwwrap branch
+
+Revision 1.2.2.1  2000/10/14 03:22:46  crnash
+updated to gw interface
+
+Revision 1.2  2000/10/08 13:51:43  baron
+Checking log file correctly archives real name
+
+Revision 1.1  2000/10/08 13:50:31  baron
+added changelog
+>>>>>>> 1.1.1.1

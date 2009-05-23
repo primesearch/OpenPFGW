@@ -1,0 +1,68 @@
+srcdir=@srcdir@
+vpath %.c @srcdir@
+vpath %.cpp @srcdir@
+vpath %.h @srcdir@
+vpath %.asm @srcdir@
+@precompiledobjects@
+
+OSPECIAL = @ospecial@
+OLIB = pfutil.o recip.o glue.o \
+	igwreciprocal.o gwgenreciprocal.o gwprothreciprocal.o \
+	primegen.o primegen_init.o primegen_next.o primegen_skip.o \
+	primegenerator.o smallmul.o qpreciprocal.o \
+	@oextra@
+OUTDIR = .libs
+ALIB = $(OUTDIR)/pfglue.a
+
+CFLAGS 		= @CFLAGS@
+CXXFLAGS	= @CXXFLAGS@
+CC			= @CC@
+CXX			= @CXX@
+AR			= @AR@
+ARFLAGS		= @ARFLAGS@
+RANLIB		= @RANLIB@
+LD			= @LD@
+@SET_MAKE@
+
+.PHONY:	all clean cleanlibs
+
+all:	$(ALIB)
+
+$(ALIB):	$(OLIB) $(OSPECIAL)
+	mkdir -p $(OUTDIR)
+	$(AR) ${ARFLAGS} $(ALIB) $^
+	$(RANLIB) $(ALIB)
+
+%.o:	%.c
+	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $<
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<
+
+@nasmrule@
+
+maintainer-clean:	distclean
+	rm -f configure
+	autoconf
+	
+distclean: clean
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.status
+	rm -f config.status.old
+	rm -f Makefile
+	rm -f nasmrule
+	rm -f _pfglue.h
+	rm -f deps.d
+
+clean:
+	rm -f $(ALIB) $(OLIB)
+
+cleanlibs:
+	rm -f $(ALIB)
+
+dependencies:
+	$(CC) -MM -I. -I../.. $(srcdir)/*.c $(srcdir)/*.cpp >deps.d
+	
+include deps.d
+

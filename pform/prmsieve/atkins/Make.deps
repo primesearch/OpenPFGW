@@ -1,0 +1,3 @@
+primegen_skip.o: primegen_skip.c primegen.h ../types/uint32.h \
+ ../types/uint64.h ../types/int64.h primegen_impl.h \
+ ../tables/twiddles.h ../tables/../types/uint32.h

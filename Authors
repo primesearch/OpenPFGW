@@ -1,0 +1,47 @@
+The following people have made programming or algorithmic
+contributions to the OpenPFGW project.
+
+Michael Bell
+	File format support, pfgw core
+	
+David Broadhurst
+	Proving algorithms, beta testing
+	
+Chris Caldwell
+	Proving algorithms, p* prover code support
+
+Phil Carmody
+	Prime sieving, pfgw core
+	
+Greg Childers
+	Linux and FreeBSD version builds
+	
+Micha Fleuren
+	Documentation, beta testing
+	
+Jim Fougeron
+	Windows maintainer, pfgw core
+	
+Yves Gallot
+	FFT libraries for "PrimeForm for Windows"
+
+Paul Jobling
+        NewPGen trial factoring program, and file format support
+
+Peter Kosinar
+	Linux maintainer
+	
+Preda Mihailescu
+	Binary tree proving algorithm
+	
+Chris Nash
+	Tree maintainer, BeOS maintainer, pfgw core
+	
+Andy Steward
+	Beta testing
+
+Ulrich Thiel
+        Linux maintainer
+	
+George Woltman
+	FFT libraries for pfgw based on "prime95"

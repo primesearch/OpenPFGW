@@ -1,0 +1,25 @@
+PFGW can now support networking using TCP/IP (only in the Win32 executable)
+
+To use this feature simply write a file of this format:
+NETWORK
+<host>
+<port>
+<lines of work to buffer>
+
+eg:
+NETWORK
+127.0.0.1
+12984
+100
+
+The protocol is very simple.  Once PFGW has connected to a server it sends
+"GN <number of expressions it wants>" to the server.  eg. "GN 100".  It then
+expects a list of expresions back, separated by carriage returns - it may be
+any number of expressions up to the requested number.  If any are prime then
+it will return "PR <expression>".  If it does not test an expression then it
+sends "ND <expression>" (this is only sent when PFGW is exited using Ctrl-C).
+It does not confirm expressions are composite to save on bandwidth, but this
+may change in the future if anyone feels it is necessary.
+
+A very basic server is available on the Yahoogroups site, feel free to make
+your own, mail me if you want any more details (mdb36@cam.ac.uk).

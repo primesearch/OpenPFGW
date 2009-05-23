@@ -1,0 +1,17 @@
+The following changes were made from Phil Carmody's original
+distributions in order to fall in line with the other openpfgw
+components and allow VPATH builds:
+
+1) All Makefiles called as part of the build of prmsieve.a have
+been moved to Makefile.old and replaced by Makefile.in and a
+configuration script.
+
+2) Makedefs has also been moved to Makedefs.old and is built by
+configuration.
+
+3) A full set of configuration requirements is added to these
+directories (config.sub, config.guess, install-sh).
+
+4) The header file "prmsieve.h" produced a path-search conflict
+with the openpfgw project file of the same name. It's been renamed
+to prmsieve_local.h to see if this is indeed the issue.

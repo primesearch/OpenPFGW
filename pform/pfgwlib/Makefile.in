@@ -1,0 +1,68 @@
+srcdir=@srcdir@
+vpath %.c @srcdir@
+vpath %.cpp @srcdir@
+vpath %.h @srcdir@
+vpath %.asm @srcdir@
+vpath %.o @srcdir@/../../packages/woltobj
+@precompiledobjects@
+
+OSPECIAL =	mult.o mult1.o mult1aux.o mult1p.o \
+		mult2.o mult2a.o mult2ap.o mult2aux.o mult2p.o \
+		mult3.o mult3a.o mult3ap.o mult3aux.o mult3p.o mult3aq.o mult3auq.o mult3q.o \
+		mult4.o mult4a.o mult4ap.o mult4aux.o mult4b.o mult4bp.o mult4p.o mult4aq.o mult4auq.o mult4bq.o mult4q.o \
+		xmult1.o xmult1ax.o xmult2.o xmult2a.o xmult2ax.o xmult3.o xmult3a.o xmult3ax.o cpuid.o @ospecial@
+OLIB = igwcontext.o gwcontext.o gwinteger.o gwpublic.o fgwcontext.o mgwcontext.o @oextra@
+OUTDIR = .libs
+ALIB = $(OUTDIR)/pfgwlib.a
+
+CFLAGS 		= @CFLAGS@
+CXXFLAGS	= @CXXFLAGS@
+CC			= @CC@
+CXX			= @CXX@
+AR			= @AR@
+ARFLAGS		= @ARFLAGS@
+RANLIB		= @RANLIB@
+LD			= @LD@
+@SET_MAKE@
+
+.PHONY:	all clean cleanlibs
+
+all:	$(ALIB)
+
+$(ALIB):	$(OLIB) $(OSPECIAL)
+	mkdir -p $(OUTDIR)
+	$(AR) ${ARFLAGS} $(ALIB) $^
+	$(RANLIB) $(ALIB)
+
+%.o:	%.c
+	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $<
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<
+
+@nasmrule@
+
+maintainer-clean:	distclean
+	rm -f configure
+	autoconf
+	
+distclean: clean
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.status
+	rm -f config.status.old
+	rm -f Makefile
+	rm -f config.h
+	rm -f deps.d
+	rm -f _pfgwlib.h
+	
+clean:
+	rm -f $(ALIB) $(OLIB)
+
+cleanlibs:
+	rm -f $(ALIB)
+
+dependencies:
+	$(CC) -MM -I. -I../.. $(srcdir)/*.c $(srcdir)/*.cpp >deps.d
+	
+include deps.d

@@ -1,0 +1,68 @@
+srcdir=@srcdir@
+vpath %.c @srcdir@
+vpath %.cpp @srcdir@
+vpath %.h @srcdir@
+vpath %.asm @srcdir@
+
+OUTDIR = .libs
+OLIB = $(OUTDIR)/prmsieve.a
+
+LIBOBJS=arith/math16.o \
+	atkins/primegen.o atkins/primegen_init.o \
+		atkins/primegen_next.o atkins/primegen_skip.o \
+	compress/compri5.o compress/compri7.o \
+	erat/erat.o \
+	tables/onemeg_cp7.o tables/pmod30.o tables/twiddles.o
+	
+CFLAGS 		= @CFLAGS@
+CXXFLAGS	= @CXXFLAGS@
+CC			= @CC@
+CXX			= @CXX@
+AR			= @AR@
+ARFLAGS		= @ARFLAGS@
+RANLIB		= @RANLIB@
+LD			= @LD@
+@SET_MAKE@
+
+.PHONY:	all clean cleanlibs
+
+all:
+	${MAKE} -C erat
+	${MAKE} -C atkins
+	${MAKE} -C compress
+	${MAKE} -C tables
+	${MAKE} -C arith
+	mkdir -p $(OUTDIR)
+	$(AR) ${ARFLAGS} $(OLIB) $(LIBOBJS)
+	$(RANLIB) $(OLIB)
+
+maintainer-clean:	distclean
+	rm -f configure
+	autoconf
+	
+distclean: clean
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.status
+	rm -f config.status.old
+	rm -f Makefile
+	${MAKE} -C erat distclean
+	${MAKE} -C atkins distclean
+	${MAKE} -C compress distclean
+	${MAKE} -C tables distclean
+	${MAKE} -C arith distclean
+
+clean:
+	rm -f $(OLIB)
+	${MAKE} -C erat clean
+	${MAKE} -C atkins clean
+	${MAKE} -C compress clean
+	${MAKE} -C tables clean
+	${MAKE} -C arith clean
+
+dependencies:
+	${MAKE} -C erat dependencies
+	${MAKE} -C atkins dependencies
+	${MAKE} -C compress dependencies
+	${MAKE} -C tables dependencies
+	${MAKE} -C arith dependencies
