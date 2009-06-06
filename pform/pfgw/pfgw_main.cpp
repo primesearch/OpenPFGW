@@ -165,37 +165,38 @@ enum CLOption
 struct CLOptionElement
 {
 	enum CLOption type;
+   int  required;
 	LPCTSTR sSymbol;
 };
 
 CLOptionElement clList[]=
 {
-	{cl_integer,	"_ATHENTICATION"},	// a
-	{cl_integer,	"_BASE"},			// b
-	{cl_string,		"_CERTIFICATE"},	// c
-	{cl_boolean,	"_DEEPFACTOR"},		// d
-	{cl_integer,	"_PMAX"},			// e
-	{cl_string,		"_FACTORIZE_STR"},	// f
-	{cl_string,		"_FERMFACTOR"},		// g (Also -gap= gapper code, and now -gx for extended GF divisiblity)
-	{cl_string,		"_HELPER"},			// h
-	{cl_boolean,	"_INFO"},			// i lists info such as GMP.dll, and CPU information (from Woltman v22 code)
-	{cl_string,		"_JBC"},			// j (Base 2 Phi test code, remove when done, well, maybe it stays as a Mersenne override)
-	{cl_illegal,	""},				// k
-	{cl_string,		"_LOGFILE"},		// l
-	{cl_boolean,	"_BENCH"},			// m
-	{cl_boolean,	"_NICE"},			// n
-	{cl_string,		"_ONLYFACTORS"},	// o
-	{cl_illegal,	""},				// p
-	{cl_string,		"_QUIKEXPR"},		// q
-	{cl_string,		"_ROUNDOFFCHK"},	// r
-	{cl_integer,	"_PMIN"},			// s
-	{cl_string,		"_TESTMODE"},		// t
-	{cl_integer,	"_UPDATEINTERVAL"},	// u partial screen update. Set the interval (or turn it off with 0)
-	{cl_boolean,	"_VECTORMODE"},		// v
-	{cl_illegal,	""},				// w
-	{cl_integer,	"_EXTRA_SQFREE"},	// x
-	{cl_illegal,	""},				// y
-	{cl_boolean,	"_OPTIMIZER"}		// z
+	{cl_integer,	true,    "_ATHENTICATION"},	// a
+	{cl_integer,	true,    "_BASE"},			// b
+	{cl_string,		false,   "_CERTIFICATE"},	// c
+	{cl_boolean,	false,   "_DEEPFACTOR"},		// d
+	{cl_integer,	true,    "_PMAX"},			// e
+	{cl_string,		false,   "_FACTORIZE_STR"},	// f
+	{cl_string,		false,   "_FERMFACTOR"},		// g (Also -gap= gapper code, and now -gx for extended GF divisiblity)
+	{cl_string,		false,   "_HELPER"},			// h
+	{cl_boolean,	false,   "_INFO"},			// i lists info such as GMP.dll, and CPU information (from Woltman v22 code)
+	{cl_string,		true,    "_JBC"},			// j (Base 2 Phi test code, remove when done, well, maybe it stays as a Mersenne override)
+	{cl_illegal,	false,   ""},				// k
+	{cl_string,		false,   "_LOGFILE"},		// l
+	{cl_boolean,	false,   "_BENCH"},			// m
+	{cl_boolean,	false,   "_NICE"},			// n
+	{cl_string,		false,   "_ONLYFACTORS"},	// o
+	{cl_illegal,	false,   ""},				// p
+	{cl_string,		true,    "_QUIKEXPR"},		// q
+	{cl_string,		false,   "_ROUNDOFFCHK"},	// r
+	{cl_integer,	false,   "_PMIN"},			// s
+	{cl_string,		false,   "_TESTMODE"},		// t
+	{cl_integer,	true,    "_UPDATEINTERVAL"},	// u partial screen update. Set the interval (or turn it off with 0)
+	{cl_boolean,	false,   "_VECTORMODE"},		// v
+	{cl_illegal,	false,   ""},				// w
+	{cl_integer,	false,   "_EXTRA_SQFREE"},	// x
+	{cl_illegal,	false,   ""},				// y
+	{cl_illegal,	false,   "_OPTIMIZER"}		// z
 };
 
 static bool bIsWinPFGW = false;
@@ -424,8 +425,12 @@ ProcessAgain:;
 		if(((LPCTSTR)s)[0]=='-')
 		{
 			TCHAR c=((LPCTSTR)s)[1];
+         TCHAR cParameter=((LPCTSTR)s)[2];
 			int iIndex=-1;
-			if((c>='A')&&(c<='Z')) iIndex=c-'A';
+         uint64 iValue;
+
+         if (cParameter == ' ') cParameter = 0;
+         if((c>='A')&&(c<='Z')) iIndex=c-'A';
 			if((c>='a')&&(c<='z')) iIndex=c-'a';
 			if(c == '?')
 			{
@@ -462,16 +467,45 @@ ProcessAgain:;
 				switch(clList[iIndex].type)
 				{
 				case cl_boolean:
+               if (cParameter != 0)
+               {
+                  PFOutput::EnableOneLineForceScreenOutput();
+                  PFPrintfStderr("Switch %s does not take any parameters\n", LPCTSTR(s));
+                  return false;
+               }
+
 					pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(1)));
 					break;
 				case cl_integer:
-					{
-						uint64 iValue = _atou64(s.Mid(2));
-						pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(iValue)));
-					}
+               if (cParameter == 0 && clList[iIndex].required)
+               {
+                  PFOutput::EnableOneLineForceScreenOutput();
+                  PFPrintfStderr("Switch %s requires a string parameter\n", LPCTSTR(s));
+                  return false;
+               };
+
+               iValue = _atou64(s.Mid(2));
+               pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(iValue)));
 					break;
 				case cl_string:
-					if (iIndex == 'h'-'a')
+               if (cParameter == 0 && clList[iIndex].required)
+               {
+                  PFOutput::EnableOneLineForceScreenOutput();
+                  PFPrintfStderr("Switch %s requires a string parameter\n", LPCTSTR(s));
+                  return false;
+               }
+
+               if (iIndex == 't'-'a' && cParameter != 0)
+               {
+                  if (cParameter != 'p' && cParameter != 'm' && cParameter != 'c')
+                  {
+                     PFOutput::EnableOneLineForceScreenOutput();
+                     PFPrintfStderr("Switch %s only takes 'p', 'm' or 'c'\n", LPCTSTR(s));
+                     return false;
+                  }
+               }
+
+               if (iIndex == 'h'-'a')
 					{
 						if ('H' == ((LPCTSTR)s)[1])
 							g_bReLoadFactorFile=true;
@@ -489,8 +523,15 @@ ProcessAgain:;
 						pTable->AddSymbol(new PFStringSymbol(clList[iIndex].sSymbol,s.Mid(2)));
 					break;
 				default:
-					PFOutput::EnableOneLineForceScreenOutput();
+               if (iIndex == 'o'-'a' && cParameter != 'd')
+               {
+                  PFOutput::EnableOneLineForceScreenOutput();
+                  PFPrintfStderr("Switch %s only takes 'd'\n", LPCTSTR(s));
+                  return false;
+               }
+               PFOutput::EnableOneLineForceScreenOutput();
 					PFPrintfStderr("Illegal option %s\n",LPCTSTR(s));
+               return false;
 					break;
 				}
 			}
@@ -1522,7 +1563,7 @@ int pfgw_main(int argc,char *argv[])
 						t2 = ExtraOverhead_Timer.GetSecs ();
 						ExtraOverhead_Timer.Start();
 						if (!Retval)
-							PFPrintf("%s is composite: [%08lX%08lX] (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),(uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF),t, t2-t);
+							PFPrintf("%s is composite: RES64: [%08lX%08lX] (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),(uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF),t, t2-t);
 						else
 							PFPrintf("%s ERROR DURING PROCESSING! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),t, t2-t);
 						if (bMsgValid)
