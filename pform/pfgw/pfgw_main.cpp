@@ -8,6 +8,8 @@
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
+#else
+#include <resource.h>
 #endif
 
 // Variables which allow "forced" stoppage.  Allows ^C to have more control in the console app, and allow
@@ -172,31 +174,31 @@ struct CLOptionElement
 CLOptionElement clList[]=
 {
 	{cl_integer,	true,    "_ATHENTICATION"},	// a
-	{cl_integer,	true,    "_BASE"},			// b
-	{cl_string,		false,   "_CERTIFICATE"},	// c
-	{cl_boolean,	false,   "_DEEPFACTOR"},		// d
-	{cl_integer,	true,    "_PMAX"},			// e
+	{cl_integer,	true,    "_BASE"},			   // b
+	{cl_string,		false,   "_CERTIFICATE"},	   // c
+	{cl_boolean,	false,   "_DEEPFACTOR"},      // d
+	{cl_integer,	true,    "_PMAX"},			   // e
 	{cl_string,		false,   "_FACTORIZE_STR"},	// f
-	{cl_string,		false,   "_FERMFACTOR"},		// g (Also -gap= gapper code, and now -gx for extended GF divisiblity)
-	{cl_string,		false,   "_HELPER"},			// h
-	{cl_boolean,	false,   "_INFO"},			// i lists info such as GMP.dll, and CPU information (from Woltman v22 code)
-	{cl_string,		true,    "_JBC"},			// j (Base 2 Phi test code, remove when done, well, maybe it stays as a Mersenne override)
-	{cl_illegal,	false,   ""},				// k
-	{cl_string,		false,   "_LOGFILE"},		// l
-	{cl_boolean,	false,   "_BENCH"},			// m
-	{cl_boolean,	false,   "_NICE"},			// n
-	{cl_string,		false,   "_ONLYFACTORS"},	// o
-	{cl_illegal,	false,   ""},				// p
-	{cl_string,		true,    "_QUIKEXPR"},		// q
-	{cl_string,		false,   "_ROUNDOFFCHK"},	// r
-	{cl_integer,	false,   "_PMIN"},			// s
-	{cl_string,		false,   "_TESTMODE"},		// t
+	{cl_string,		false,   "_FERMFACTOR"},   	// g (Also -gap= gapper code, and now -gx for extended GF divisiblity)
+	{cl_string,		false,   "_HELPER"},	   		// h
+	{cl_boolean,	false,   "_INFO"},		   	// i lists info such as GMP.dll, and CPU information (from Woltman v22 code)
+	{cl_string,		true,    "_JBC"},			      // j (Base 2 Phi test code, remove when done, well, maybe it stays as a Mersenne override)
+	{cl_boolean,	false,   "_TERSE_OUTPUT"},	   // k
+	{cl_string,		false,   "_LOGFILE"},   		// l
+	{cl_boolean,	false,   "_BENCH"},		   	// m
+	{cl_boolean,	false,   "_NICE"},		   	// n
+	{cl_string,		false,   "_ONLYFACTORS"},	   // o
+	{cl_illegal,	false,   ""},     	   		// p
+	{cl_string,		true,    "_QUIKEXPR"},	   	// q
+	{cl_string,		false,   "_ROUNDOFFCHK"},	   // r
+	{cl_integer,	false,   "_PMIN"},	   		// s
+	{cl_string,		false,   "_TESTMODE"},	   	// t
 	{cl_integer,	true,    "_UPDATEINTERVAL"},	// u partial screen update. Set the interval (or turn it off with 0)
-	{cl_boolean,	false,   "_VECTORMODE"},		// v
-	{cl_illegal,	false,   ""},				// w
-	{cl_integer,	false,   "_EXTRA_SQFREE"},	// x
-	{cl_illegal,	false,   ""},				// y
-	{cl_illegal,	false,   "_OPTIMIZER"}		// z
+	{cl_boolean,	false,   "_VECTORMODE"},	   // v
+	{cl_illegal,	false,   ""},				      // w
+	{cl_integer,	false,   "_EXTRA_SQFREE"},    // x
+	{cl_illegal,	false,   ""},				      // y
+	{cl_illegal,	false,   "_OPTIMIZER"}		   // z
 };
 
 static bool bIsWinPFGW = false;
@@ -268,6 +270,8 @@ test.\n\
 Used in conjunction with the -f and -v flags, the minimum and maximum\n\
 values for trial-factoring can be set. The defaults are -s0, and -e\n\
 determined by an internal algorithm.\n\
+\n\
+-k produces terse output\n\
 \n\
 -o (or -od) factor [O]nly mode. In this mode instead of performing a primality\n\
 test, the expression or factors are written to stdout.  If the switch -od is\n\
@@ -462,7 +466,8 @@ ProcessAgain:;
 				fTmp->WriteToString(Line);
 				continue;
 			}
-			if(iIndex!=-1)
+
+         if (iIndex!=-1)
 			{
 				switch(clList[iIndex].type)
 				{
@@ -584,10 +589,7 @@ PFSymbolTable *psymRuntime=0;
 
 int pfgw_main(int argc,char *argv[])
 {
-	//3396
-
-	//_crtBreakAlloc = 50;
-//	{,,msvcrtd.dll}_crtBreakAlloc = 3380;
+	IPFSymbol *pTerseOutput;
 
 	pfgw_main_init();
 
@@ -608,13 +610,21 @@ int pfgw_main(int argc,char *argv[])
 		bAtExitRegistered = true;
 	}
 
+	if (!parseCommandLine(psymRuntime,argc,argv))
+	{
+		pfgw_main_cleanup();
+		return 4;
+	}
 
-	PFOutput::EnableOneLineForceScreenOutput();
- 	PFPrintfStderr ("PFGW Version %s %s\n\n", VERSION_STRING, SPECIAL_BUILD);
+   PFOutput::EnableOneLineForceScreenOutput();
+   pTerseOutput = psymRuntime->LookupSymbol("_TERSE_OUTPUT");
+   if (!pTerseOutput)
+    	PFPrintfStderr ("PFGW Version %s %s\n\n", VERSION_STRING, SPECIAL_BUILD);
 
-	// Get the cpu type from the INI file.  I don't know how big of an impact this makes on PFGW, but on PRP.exe
-	// changing the CPU type seemed to make significant differences on certain PC's.  There is no "automatic" 
-	// changing feature yet, you simple have to "know" what the constants are, and then hand patch the .ini entry.
+	// Get the cpu type from the INI file.  I don't know how big of an impact this
+   // makes on PFGW, but on PRP.exe changing the CPU type seemed to make significant
+   // differences on certain PC's.  There is no "automatic" changing feature yet,
+   // you simple have to "know" what the constants are, and then hand patch the .ini entry.
 	if (g_pIni)
 	{
 		PFString s;
@@ -629,11 +639,6 @@ int pfgw_main(int argc,char *argv[])
 #endif
 	{
 
-	if (!parseCommandLine(psymRuntime,argc,argv))
-	{
-		pfgw_main_cleanup();
-		return 4;
-	}
 	s_bCommandLineParse=true;
 
 	// this section adds the evaluator functions to the symbol table. Note this
@@ -649,14 +654,13 @@ int pfgw_main(int argc,char *argv[])
 	IPFSymbol *pSymbol;
 
 	pSymbol=psymRuntime->LookupSymbol("_NICE");
-	if(pSymbol)
+	//if(pSymbol)
 	{
 #ifdef _MSC_VER
 		::SetPriorityClass(::GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 		::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_IDLE);
 #else
-		// *nix guys need to update this please
-		// nice(-20);
+		setpriority(PRIO_PROCESS, 0, 20);
 #endif
 	}
 	
@@ -693,7 +697,7 @@ int pfgw_main(int argc,char *argv[])
 		if (s == "")
 			s = "pfgw.out";
 		if (pOutputObj)
-			pOutputObj->InitLogFile(LPCTSTR(s));
+			pOutputObj->InitLogFile(LPCTSTR(s), (pTerseOutput != 0));
 		else
 		{
 			PFOutput::EnableOneLineForceScreenOutput();
@@ -771,7 +775,8 @@ int pfgw_main(int argc,char *argv[])
 			{
 				// If 0% factoring, then do not even trial factor.
 				PFOutput::EnableOneLineForceScreenOutput();
-				PFPrintfStderr("No factoring at all, not even trivial division\n");
+            if (!pTerseOutput)
+   				PFPrintfStderr("No factoring at all, not even trivial division\n");
 				g_bTrialFactor=false;
 				bFactor=PFBoolean::b_false;
 				*g_ModularSieveString = 0;
