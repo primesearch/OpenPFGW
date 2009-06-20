@@ -774,12 +774,7 @@ void CWinPFGWDlg::ThreadProc(void *m_ThisPointer)
 	else if (This->m_nMode == -2)
 	{
 		argv[argc] = new char[20];
-		strcpy(argv[argc++], "-fo");
-	}
-	else if (This->m_nMode == -3)
-	{
-		argv[argc] = new char[20];
-		strcpy(argv[argc++], "--ko");
+		strcpy(argv[argc++], "-f0");
 	}
 
 	if (This->m_bFactor)
@@ -787,11 +782,7 @@ void CWinPFGWDlg::ThreadProc(void *m_ThisPointer)
 		argv[argc] = new char [20];
 		strcpy(argv[argc++], "-f");
 	}
-	if (This->m_bFFactor)
-	{
-		argv[argc] = new char [20];
-		strcpy(argv[argc++], "-k");
-	}
+
 	if (This->m_bVerboseFile)
 	{
 		argv[argc] = new char [20];
