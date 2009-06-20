@@ -4,6 +4,17 @@ This file includes late-breaking release details that did not make it into
 other documentation in the package.  ALSO check the file News for additional
 late breaking information.
 
+Version (dev) 1.3 dev_20090605
+================================
+Put source into SourceForge (project name is OpenPFGW)
+Updated to v25.10 of George Woltman's gwnum library.
+Ported to MacIntel.
+Addressed inconsistent handling of switches as some require parameters
+  and others have optional parameters
+Print leading zeros on residues so that they are always 16 characters
+Added -k option for terse output.
+
+
 PFGW v1.2 released Jan 30, 2005 
 ================================
 
