@@ -26,6 +26,7 @@ int CreateModulus(Integer *NN)
 	mpz_ptr gmp = NN->gmp();
 	int	error_code;
 
+   gwset_safety_margin(&gwdata, g_CompositeAthenticationLevel);
 	if (sizeof (mp_limb_t) == sizeof (uint32_t))
 		error_code = gwsetup_general_mod (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size);
 	else
