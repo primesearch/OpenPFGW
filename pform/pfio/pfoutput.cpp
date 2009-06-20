@@ -48,14 +48,15 @@ PFOutput::~PFOutput()
 	m_BitsTotal = BitsTotal;
 }
 
-void PFOutput::InitLogFile(const char *FName)
+void PFOutput::InitLogFile(const char *FName, const int terseOutput)
 {
 	if (!FName)
 		return;
 	char *cpTmp = new char [strlen(FName)+1];
 	strcpy(cpTmp, FName);
 	m_bForcePrint = true;
-	::PFPrintfStderr("Output logging to file %s\n", cpTmp);
+   if (!terseOutput)
+   	::PFPrintfStderr("Output logging to file %s\n", cpTmp);
 	m_fpOutputLog = fopen(cpTmp, "a+t");
 	if (!m_fpOutputLog)
 	{

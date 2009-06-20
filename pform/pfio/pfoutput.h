@@ -45,7 +45,7 @@ class PFOutput
 		virtual void PFPrintfClearCurLine(int line_len)=0;
 		virtual int PFfflush(FILE *) = 0;
 
-		void InitLogFile(const char *FName);
+		void InitLogFile(const char *FName, const int terseOutput);
 		void CloseLogFile();
 		int  PFLogPrintf (const char *Fmt, const va_list &va);
 
