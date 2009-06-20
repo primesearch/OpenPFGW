@@ -270,10 +270,11 @@ void optimize(PFSymbolTable *pContext)
 	ERRCHK=1;
 	g_bCollectStats = true;
 	
-	int x;
 	// first find out how many there are
 #ifdef NOT_WORKING
-	FFTEntryNew *_fftMatrix = fftMatrixNew;
+	int x;
+
+   FFTEntryNew *_fftMatrix = fftMatrixNew;
 	if (CPU_FLAGS & CPU_SSE2)
 	{
 		_fftMatrix = fftMatrixNewSSE2;
