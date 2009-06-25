@@ -64,17 +64,8 @@ if test "$AR" = ":"
 	then AC_MSG_ERROR("ar is required")
 	else ARFLAGS="rc"
 fi
-	
-dnl =======================================================
-dnl substitutions
-dnl =======================================================
-AC_SUBST(precompiledobjects)
-AC_SUBST(ospecial)
-AC_SUBST(oextra)
-AC_SUBST(nasmpath)
-AC_SUBST(nasmflags)
+
 AC_SUBST(ARFLAGS)
-AC_SUBST_FILE(nasmrule)
 
 dnl =======================================================
 dnl dependencies (not needed at the moment)
@@ -85,4 +76,3 @@ dnl =======================================================
 dnl output
 dnl =======================================================
 AC_OUTPUT(Makefile)
-
