@@ -6,11 +6,7 @@ vpath %.asm @srcdir@
 @precompiledobjects@
 
 OSPECIAL = @ospecial@
-OLIB = pfutil.o recip.o glue.o \
-	igwreciprocal.o gwgenreciprocal.o gwprothreciprocal.o \
-	primegen.o primegen_init.o primegen_next.o primegen_skip.o \
-	primegenerator.o smallmul.o qpreciprocal.o \
-	@oextra@
+OLIB = pfutil.o recip.o primegenerator.o @oextra@
 OUTDIR = .libs
 ALIB = $(OUTDIR)/pfglue.a
 
