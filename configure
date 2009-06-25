@@ -5906,7 +5906,7 @@ pkg_io_header="_pfio.h"
 
 
 case $target in
-	i[3456]86-pc-* | pentium-pc-* | pentiumpro-pc-* | pentium[234]-pc-* | k5-pc-* | k6-pc-* | k6[23]-pc-* | athlon-pc-*)
+	i[3456]86-pc-* | i386-apple-* | pentium-pc-* | pentiumpro-pc-* | pentium[234]-pc-* | k5-pc-* | k6-pc-* | k6[23]-pc-* | athlon-pc-*)
 		pkg_integer="pform/pfmath"
 		pkg_integer_name="pfmath.a"
 		pkg_integer_header="_pfmath.h"
