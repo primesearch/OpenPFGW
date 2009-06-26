@@ -9,6 +9,10 @@
 #include "pfgw_zlib.h"
 #include "pffile.h"
 
+#if _MSC_VER
+#define access _access
+#endif
+
 // External data needed for linkages to PFGW libraries (for first-line file processing)
 unsigned __int64 g_u64ResidueVal;
 int g_nIterationCnt;
@@ -78,14 +82,14 @@ void CClientData::AddNewClient(const char *Name)
 	char Ini[256];
 	sprintf (Ini, "data/%s/clientstats.ini", Name);
     strcpy(m_Clients[m_nCurClient].ClientName, Name);
-	if (!_access(Ini, 0))
+	if (!access(Ini, 0))
 	{
 		char Buf[200];
 		GetPrivateProfileString("Stats", "Score", "0.0", Buf, sizeof(Buf), Ini);
 		m_Clients[m_nCurClient].Score = atof(Buf);
 		GetPrivateProfileString("Stats", "AveRate", "0.0", Buf, sizeof(Buf), Ini);
 		m_Clients[m_nCurClient].dAveRate = atof(Buf);
-		m_Clients[m_nCurClient].tLastContact = GetPrivateProfileInt("Stats", "tLastContact", time(0), Ini);
+		m_Clients[m_nCurClient].tLastContact = GetPrivateProfileInt("Stats", "tLastContact", (int) time(0), Ini);
 		m_Clients[m_nCurClient].nWip = GetPrivateProfileInt("Stats", "nWip", 0, Ini);
 		m_Clients[m_nCurClient].nDone = GetPrivateProfileInt("Stats", "nDone", 0, Ini);
 	}
@@ -292,7 +296,7 @@ void CClientData::LoadExistingWork()
 	// See if we found any of the "global" missing primes.
 	sprintf(FName, "%s/wasmissing.wip", m_pAccum->ClientDir);
 
-	if (!_access(FName, 0))
+	if (!access(FName, 0))
 	{
 		// Remove this so we don't handle this next time (which might not have any "missing" data.
 		remove(FName);
