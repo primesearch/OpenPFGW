@@ -1,6 +1,7 @@
 #include "primeformpch.h"
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
+#include "pfgw_globals.h"
 
 //#define JBC_BUILD
 
@@ -9,8 +10,6 @@
 #else
 #define JBC()
 #endif
-
-#include "pfgw_globals.h"
 
 extern int g_CompositeAthenticationLevel;
 
@@ -230,7 +229,11 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
 		// i MUST be handled outside of the loop below, since the resume code will have to modify it.
 		int i=iTotal;
 		// Check for "existance" of a file which matches the hash pattern of this number.
-		if (*RestoreName && !_access(RestoreName, 0))
+#ifdef _MSC_VER
+      if (*RestoreName && !_access_s(RestoreName, 0))
+#else
+      if (*RestoreName && !access(RestoreName, 0))
+#endif
 		{
 			uint32 DoneBits;
 			if (RestoreState(e_gwPRP, RestoreName, &DoneBits, &gwX, iBase, e_gwnum))
