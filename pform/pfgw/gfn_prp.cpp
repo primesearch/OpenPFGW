@@ -66,10 +66,13 @@ bool IsValidGFN(const char *sNum, uint32 *GFN_Base, uint32 *GFN_Exp)
 // code stolen from gwPRP
 bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 _exp, uint64 *p_n64ValidationResidue, uint32 /*dwOverride*/)
 {
-	// create a context
+   // create a context
 	gwinit (&gwdata);
 	gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
 	if (CreateModulus(1.0,base,_exp,1)) return FALSE;
 
-	return (prp_using_gwnum (N, iBase, sNumStr, p_n64ValidationResidue));
+   if (prp_using_gwnum (N, iBase, sNumStr, p_n64ValidationResidue))
+      return TRUE;
+   else
+	   return FALSE;
 }
