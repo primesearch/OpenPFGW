@@ -17,6 +17,10 @@
 #include <varargs.h>
 #endif
 
+#if _MSC_VER
+#define access _access
+#endif
+
 #include "../../pform/pflib/pfstring.h"
 
 extern "C" {
