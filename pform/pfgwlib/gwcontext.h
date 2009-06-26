@@ -1,8 +1,14 @@
 #ifndef GWCONTEXT_H
 #define GWCONTEXT_H
 
+#ifdef _MSC_VER
 #include "gwnum.h"
 #include "cpuid.h"
+#else
+#include "../../packages/gwnum/gwnum.h"
+#include "../../packages/gwnum/cpuid.h"
+#endif
+
 void getCpuInfo (void);
 void getCpuDescription (
 			char	*buf,			/* A 512 byte buffer */
