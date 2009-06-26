@@ -792,7 +792,7 @@ void CPFGW_ServerV2Dlg::OnAddFile()
 		m_AddFileBtn.EnableWindow(FALSE);
 		return;
 	}
-	if (!_access(m_AddFileString, 0))
+	if (!access(m_AddFileString, 0))
 	{
 		FILE *in = fopen(m_AddFileString, "rt");
 		if (!in)
@@ -1457,7 +1457,7 @@ FindMeAgain:;
             This->m_ClientData[(uint16)nCurClient].nDone += WorkDones;
             if (WorkDones)
             {
-                unsigned t = time(0) - This->m_ClientData[nCurClient].tLastContact;
+                long t = (long) (time(0) - This->m_ClientData[nCurClient].tLastContact);
                 This->m_ClientData[(uint16)nCurClient].dAveRate = t;
                 This->m_ClientData[(uint16)nCurClient].dAveRate /= WorkDones;
                 This->m_ClientData[(uint16)nCurClient].tLastContact = time(0);
