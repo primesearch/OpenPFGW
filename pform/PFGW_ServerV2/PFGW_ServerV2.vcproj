@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\packages\gwnum\gwnum.lib ..\..\packages\nasmobj\mod.obj nafxcw.lib libcmt.lib"
-				OutputFile=".\..\../PFGW_ServerV2.exe"
+				OutputFile=".\..\..\distribution\PFGW_ServerV2.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\packages\wingmp"
