@@ -162,7 +162,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="pform\pfgw\release\newmain.obj packages\gwnum\gwnum.lib nafxcw.lib libcmt.lib"
-				OutputFile="pfgw.exe"
+				OutputFile="distribution\pfgw.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\packages\wingmp"
@@ -274,10 +274,6 @@
 			</File>
 			<File
 				RelativePath="newpgenformats.txt"
-				>
-			</File>
-			<File
-				RelativePath="News_PFGW_Version_1_2"
 				>
 			</File>
 			<File
