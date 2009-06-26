@@ -26,7 +26,7 @@
 #define	STABLE_VERSION		"20050130"
 #define	RELEASE_CANDIDATE	"1e"
 // for sta and release level
-#define	RELEASE_VERSION		"3.0.0"
+#define	RELEASE_VERSION		"3.1.0"
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
 
 #define SPECIAL_BUILD
@@ -36,7 +36,7 @@
 
 #ifndef SPECIAL_ENABLED
 #undef SPECIAL_BUILD
-#define SPECIAL_BUILD		"[FFT v25.10]"
+#define SPECIAL_BUILD		"[FFT v25.11]"
 #endif
 
 #if defined (JBC_BUILD)
