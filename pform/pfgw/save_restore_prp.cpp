@@ -10,7 +10,7 @@ static clock_t NextSave;
 
 #define SAVE_TIMEOUT_MINUTES 20
 
-#define SAVE_SIGNATURE "PFGW Restore V1.3\r\n\x1A"
+#define SAVE_SIGNATURE "PFGW Restore V3.1.0\r\n\x1A"
 #define SAVE_SIGNATURE_LEN (strlen(SAVE_SIGNATURE)+1)
 
 void CreateRestoreName(Integer *N, char RestoreName[13])
