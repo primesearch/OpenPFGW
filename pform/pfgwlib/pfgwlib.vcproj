@@ -202,10 +202,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\gwnum.c"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -221,10 +217,6 @@
 			</File>
 			<File
 				RelativePath="gwinteger.inl"
-				>
-			</File>
-			<File
-				RelativePath=".\gwnum.h"
 				>
 			</File>
 			<File
