@@ -52,7 +52,6 @@ distclean: clean
 	rm -f nasmrule
 	rm -f lconfig.h
 	rm -f deps.d
-	rm -f _pfmath.h
 	
 clean:
 	rm -f $(ALIB) $(OLIB)

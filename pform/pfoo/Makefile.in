@@ -50,7 +50,6 @@ distclean: clean
 	rm -f config.status
 	rm -f config.status.old
 	rm -f Makefile
-	rm -f _pfoo.h
 	rm -f deps.d
 
 clean:

@@ -48,7 +48,6 @@ distclean: clean
 	rm -f config.status.old
 	rm -f Makefile
 	rm -f nasmrule
-	rm -f _pfglue.h
 	rm -f deps.d
 
 clean:

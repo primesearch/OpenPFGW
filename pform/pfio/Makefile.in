@@ -46,7 +46,6 @@ distclean: clean
 	rm -f config.status
 	rm -f config.status.old
 	rm -f Makefile
-	rm -f _pfio.h
 	rm -f deps.d
 
 clean:

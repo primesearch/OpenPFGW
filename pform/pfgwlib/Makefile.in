@@ -50,7 +50,6 @@ distclean: clean
 	rm -f Makefile
 	rm -f config.h
 	rm -f deps.d
-	rm -f _pfgwlib.h
 	
 clean:
 	rm -f $(ALIB) $(OLIB)
