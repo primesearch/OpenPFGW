@@ -4,12 +4,16 @@
 #include "pfgw_version.h"
 #include "pfgw_globals.h"
 #include "../../pform/pfgwlib/asmimp.h"
+#ifdef _MSC_VER
 #include "cpuid.h"
+#else
+#include "../../packages/gwnum/cpuid.h"
+#endif
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
 #else
-#include <resource.h>
+#include <sys/resource.h>
 #endif
 
 // Variables which allow "forced" stoppage.  Allows ^C to have more control in the console app, and allow
