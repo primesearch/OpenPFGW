@@ -2,6 +2,7 @@
 
 #include "gwcontext.h"
 #include "gwinteger.h"
+#include "../pfgw/pfgw_globals.h"
 
 #include "gmp.h"
 #include "pfio.h"
@@ -24,7 +25,16 @@ extern bool g_bVerbose;
 int CreateModulus(Integer *NN)
 {
 	mpz_ptr gmp = NN->gmp();
-	int	error_code;
+
+   char testString[100];
+   int	error_code;
+   double   k;
+   unsigned long b, n;
+   long c;
+
+   sprintf(testString, "%send", g_cpTestString);
+   if (sscanf(testString, "%lf*%u^%u%dend", &k, &b, &n, &c) == 4)
+      return CreateModulus(k, b, n, c);
 
    gwset_safety_margin(&gwdata, g_CompositeAthenticationLevel);
 	if (sizeof (mp_limb_t) == sizeof (uint32_t))
@@ -49,6 +59,7 @@ int CreateModulus(double k, unsigned long b, unsigned long n, signed long c)
 {
 	int	error_code;
 
+   gwset_safety_margin(&gwdata, g_CompositeAthenticationLevel);
 	error_code = gwsetup (&gwdata, k, b, n, c);
 
 	// debugging output
