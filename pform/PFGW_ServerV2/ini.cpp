@@ -3,12 +3,16 @@
 
 #include "ini.h"
 
+#if _MSC_VER
+#define access _access
+#endif
+
 // class IniFile
 IniFile::IniFile(const char *IniFileName)
 {
 	_fullpath(m_FName, IniFileName, sizeof(m_FName)-1);
 	m_Valid = false;
-	if (!_access(m_FName, 0))
+	if (!access(m_FName, 0))
 	{
 		m_Valid = true;
 		m_bIsWin95 = (GetVersion() > 0x80000000);
