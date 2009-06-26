@@ -173,7 +173,11 @@ static bool gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 	{
 		char GF_IntermedFName[120];
 		sprintf (GF_IntermedFName, "%s_%d_%d.gfi", k_text, n, GF_Subs[j].prime);
-		if (!_access(GF_IntermedFName, 0))
+#ifdef _MSC_VER
+      if (!_access_s(GF_IntermedFName, 0))
+#else
+      if (!access(GF_IntermedFName, 0))
+#endif
 		{
 			// The file was saved from a prior run, so load it and continue
 			FILE *in = fopen(GF_IntermedFName, "rb");
