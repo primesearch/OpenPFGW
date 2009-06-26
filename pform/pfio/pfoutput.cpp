@@ -61,7 +61,7 @@ void PFOutput::InitLogFile(const char *FName, const int terseOutput)
 	if (!m_fpOutputLog)
 	{
 		m_bForcePrint = true;
-		PFPrintfStderr("Error opening output logging file %s, logging skipped\n", cpTmp);
+		::PFPrintfStderr("Error opening output logging file %s, logging skipped\n", cpTmp);
 		delete[] cpTmp;
 		cpTmp = 0;
 	}
