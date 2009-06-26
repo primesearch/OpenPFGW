@@ -44,7 +44,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\..\packages\wingmp;..\..\packages\gwnum"
-				PreprocessorDefinitions="NDEBUG;_LIB;WIN32;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="NDEBUG;_LIB;WIN32;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
