@@ -32,8 +32,8 @@ int CreateModulus(Integer *NN)
    unsigned long b, n;
    long c;
 
-   sprintf(testString, "%send", g_cpTestString);
-   if (sscanf(testString, "%lf*%u^%u%dend", &k, &b, &n, &c) == 4)
+   sprintf(testString, "%send1", g_cpTestString);
+   if (sscanf(testString, "%lf*%u^%u%dend%d", &k, &b, &n, &c, &error_code) == 5)
       return CreateModulus(k, b, n, c);
 
    gwset_safety_margin(&gwdata, g_CompositeAthenticationLevel);
