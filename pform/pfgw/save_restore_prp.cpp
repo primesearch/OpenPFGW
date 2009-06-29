@@ -133,7 +133,7 @@ bool RestoreState(ePRPType ePRP, char *RestoreName, uint32 *iDone, GWInteger *gw
 	updatecrcbuf(crc_val, Buffer, n);
 
 	// now read the file data
-	fread(Buffer, 1, 4 + 4*sizeof(uint32) +10*sizeof(uint32), in);
+	fread(Buffer, 1, 4 + 2*sizeof(uint32) +10*sizeof(uint32), in);
 
 	if (*cp++ != ePRP) goto BailOut;
 	if (*cp++ != eCType) goto BailOut;
