@@ -3610,10 +3610,8 @@ precompiledobjects=""
 
 if test "$nasmpath" = ""
 then
-        ospecial="$ospecial prothrec.o sminline.o"
 	precompiledobjects="vpath %.o $srcdir/../../packages/nasmobj"
 else
-        oextra="$oextra prothrec.o sminline.o"
 	nasmrule="nasmrule"
 fi
 
