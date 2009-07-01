@@ -80,10 +80,8 @@ precompiledobjects=""
 
 if test "$nasmpath" = ""
 then
-	ospecial="$ospecial internal.o"
 	precompiledobjects="vpath %.o $srcdir/../../packages/nasmobj"
 else
-	oextra="$oextra internal.o"
 	nasmrule="nasmrule"
 fi
 
