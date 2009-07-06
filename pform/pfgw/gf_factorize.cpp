@@ -16,6 +16,8 @@ bool GF_b_DoGFFactors;  // tells WinPFGW that we are USING GFFactors.
 static uint32 *pMap_GF, *_pMap_GF;
 static uint32 *pMap_xGF[401], *_pMap_xGF[401];
 static bool bGFNMapInit=false;
+extern int g_CompositeAthenticationLevel;
+bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX, int currentIteration, int maxIterations);
 
 // Not super efficient, but it will not be called enough to make much difference
 static uint32 gcd(uint32 x, uint32 y)
@@ -152,9 +154,9 @@ struct GF_SubFactor
 	int		prime;
 }*GF_Subs;
 
-static bool gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
+static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 {
-	bool bRetval = false;
+	int bRetval = 0;
 
 	static Integer XX, X, Nm1;
 	static uint32 last_N;
@@ -195,9 +197,25 @@ static bool gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 		}
 
 		// create a context
-		gwinit (&gwdata);
+      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+      if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+      {
+		   PFOutput::EnableOneLineForceScreenOutput();
+		   PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+         g_bExitNow = true;
+         return -1;
+      }
+
+      if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+      {
+		   PFOutput::EnableOneLineForceScreenOutput();
+		   PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+         g_bExitNow = true;
+         return -1;
+      }
+
 		gwsetmaxmulbyconst(&gwdata, GF_Subs[j].prime);	// maximum multiplier
-		if (CreateModulus(N)) return false;
+		if (CreateModulus(N)) return 0;
 		
 		// everything with a GWInteger has a scope brace, so that
 		// GWIntegers are destroyed before the context they live in
@@ -217,7 +235,10 @@ static bool gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 			//bool bFirst=true;
 			for(uint32 i=iTotal;i--;)
 			{
-				gwsetnormroutine(&gwdata,0,ERRCHK,bit(X,i));
+            int errchk = ErrorCheck(iDone, n);
+
+            gw_clear_maxerr(&gwdata);
+				gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
 				gwsquare(gwX);
 		
 				iDone++;
@@ -238,17 +259,20 @@ static bool gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 					PFPrintfStderr("%s", Buf);
 					PFfflush(stderr);
 				}
-				if (g_bExitNow)
+            if (CheckForFatalError("gwGF_LoadSubs", sNumStr, &gwX, iDone, iTotal))
+               return -1;
+
+            if (g_bExitNow)
 				{
 					// zap the gw  (Good place to "save" the context to be loaded on a restart.
 					DestroyModulus();
 					delete[] k_text;
-					return bRetval;
+					return 0;
 				}
 			}
 			GF_Subs[j].subN = gwX;
 
-			if (GF_b_SaveIntermed)
+         if (GF_b_SaveIntermed)
 			{
 				FILE *out = fopen(GF_IntermedFName, "wt");
 				char *pTmp = GF_Subs[j].subN.Itoa();
@@ -265,9 +289,9 @@ static bool gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 	return bRetval;
 }
 
-static bool gwGF_LoadSubs_gmp(Integer *N, uint32 n)
+static int gwGF_LoadSubs_gmp(Integer *N, uint32 n)
 {
-	bool bRetval = false;
+	int bRetval = 0;
 
 	static Integer X, Nm1;
 	static uint32 last_N;
@@ -288,9 +312,9 @@ static bool gwGF_LoadSubs_gmp(Integer *N, uint32 n)
 }
 
 // This function is only called from ProcessGF_Factor
-static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, const char *sNumStr)
+static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, const char *sNumStr)
 {
-	bool bRetval=false;
+	int bRetval=0;
 
 	static Integer XX, X, Nm1, XXa;
 	static uint32 last_N;
@@ -322,9 +346,25 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 		Nm1 = (*N)-1;
 
 		// create a context
-		gwinit (&gwdata);
+      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+      if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+      {
+		   PFOutput::EnableOneLineForceScreenOutput();
+		   PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+         g_bExitNow = true;
+         return -1;
+      }
+
+      if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+      {
+		   PFOutput::EnableOneLineForceScreenOutput();
+		   PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+         g_bExitNow = true;
+         return -1;
+      }
+
 		gwsetmaxmulbyconst(&gwdata, gfn_base);	// maximum multiplier
-		if (CreateModulus(N)) return false;
+		if (CreateModulus(N)) return 0;
 		
 		// everything with a GWInteger has a scope brace, so that
 		// GWIntegers are destroyed before the context they live in
@@ -343,7 +383,10 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 			//bool bFirst=true;
 			for(uint32 i=n;i--;)
 			{
-				gwsetnormroutine(&gwdata,0,ERRCHK,bit(X,i));
+            int errchk = ErrorCheck(iDone, n);
+
+            gw_clear_maxerr(&gwdata);
+				gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
 				gwsquare(gwX);
 		
 				iDone++;
@@ -364,11 +407,14 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 					PFPrintfStderr("%s", Buf);
 					PFfflush(stderr);
 				}
-				if (g_bExitNow)
+            if (CheckForFatalError("gwGF_Factor", sNumStr, &gwX, iDone, n))
+               return -1;
+
+            if (g_bExitNow)
 				{
 					// zap the gw  (Good place to "save" the context to be loaded on a restart.
 					DestroyModulus();
-					return bRetval;
+					return 0;
 				}
 			}
 			
@@ -377,7 +423,7 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 			XX = gwX;
 			if (XX == 1)
 			{
-				bRetval=true;
+				bRetval=1;
 				// This is NOT right, but it is as close as we can get.  The base was MORE than 20 less than
 				// the exponent.  Even if the "answer" is not correct, at least inform the user of the found factor.
 				PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", n-1);
@@ -393,14 +439,14 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 				}
 				if(XX==Nm1)
 				{
-					bRetval=true;
+					bRetval=1;
 					*gfn_exp = n;
 				}
 			}
 		}
 				// zap the gw
 		DestroyModulus();
-		return bRetval;
+		return 0;
 	}
 	// Extended GFN search
 	if(n > 30)
@@ -421,9 +467,25 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 	Nm1 = (*N)-1;
 
 	// create a context  (gfn_base^2^(n-20))%n
-	gwinit (&gwdata);
+   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+      g_bExitNow = true;
+      return -1;
+   }
+
+   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+      g_bExitNow = true;
+      return -1;
+   }
+
 	gwsetmaxmulbyconst(&gwdata, gfn_base);	// maximum multiplier
-	if (CreateModulus(N)) return false;
+	if (CreateModulus(N)) return 0;
 
 	// everything with a GWInteger has a scope brace, so that
 	// GWIntegers are destroyed before the context they live in
@@ -442,7 +504,10 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 		//bool bFirst=true;
 		for(uint32 i=n;i--;)
 		{
-			gwsetnormroutine(&gwdata,0,ERRCHK,bit(X,i));
+         int errchk = ErrorCheck(iDone, n);
+
+         gw_clear_maxerr(&gwdata);
+			gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
 			gwsquare(gwX);
 	
 			iDone++;
@@ -463,11 +528,15 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 				PFPrintfStderr("%s", Buf);
 				PFfflush(stderr);
 			}
-			if (g_bExitNow)
+
+         if (CheckForFatalError("gwGF_Factor", sNumStr, &gwX, iDone, n))
+            return -1;
+
+         if (g_bExitNow)
 			{
 				// zap the gw  (Good place to "save" the context to be loaded on a restart.
 				DestroyModulus();
-				return bRetval;
+				return 0;
 			}
 		}
 		
@@ -478,10 +547,25 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 
 	DestroyModulus();
 
-	// create a context  (gfn_base^2^(n-20))%n
-	gwinit (&gwdata);
+	gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+      g_bExitNow = true;
+      return -1;
+   }
+
+   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+      g_bExitNow = true;
+      return -1;
+   }
+
 	gwsetmaxmulbyconst(&gwdata, nCur_a);	// maximum multiplier
-	if (CreateModulus(N)) return false;
+	if (CreateModulus(N)) return 0;
 
 	// everything with a GWInteger has a scope brace, so that
 	// GWIntegers are destroyed before the context they live in
@@ -500,7 +584,10 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 		//bool bFirst=true;
 		for(uint32 i=n;i--;)
 		{
-			gwsetnormroutine(&gwdata,0,ERRCHK,bit(X,i));
+         int errchk = ErrorCheck(iDone, n);
+
+         gw_clear_maxerr(&gwdata);
+			gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
 			gwsquare(gwX);
 	
 			iDone++;
@@ -521,11 +608,15 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 				PFPrintfStderr("%s", Buf);
 				PFfflush(stderr);
 			}
-			if (g_bExitNow)
+
+         if (CheckForFatalError("gwGF_Factor", sNumStr, &gwX, iDone, n))
+            return -1;
+         
+         if (g_bExitNow)
 			{
 				// zap the gw  (Good place to "save" the context to be loaded on a restart.
 				DestroyModulus();
-				return bRetval;
+				return 0;
 			}
 		}
 		
@@ -546,12 +637,12 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 	}
 	if((XX+XXa) % *(N) == 0)
 	{
-		bRetval=true;
+		bRetval=1;
 		*gfn_exp = n;
 	}
 	else
 	{
-		bRetval=true;
+		bRetval=1;
 		*gfn_exp = nStart-1;
 		PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", *gfn_exp);
 	}
@@ -561,9 +652,9 @@ static bool gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, 
 }
 
 // This function is only called from ProcessGF_Factor
-static bool gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp)
+static int gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp)
 {
-	bool bRetval=false;
+	int bRetval=0;
 
 	static Integer XX, XXa, X, Nm1;
 	static uint32 last_N;
@@ -599,7 +690,7 @@ static bool gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_e
 
 		if (XX==1)
 		{
-			bRetval=true;
+			bRetval=1;
 			// This is NOT right, but it is as close as we can get.  The base was MORE than 20 less than
 			// the exponent.  Even if the "answer" is not correct, at least inform the user of the found factor.
 			PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", n-1);
@@ -615,7 +706,7 @@ static bool gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_e
 			}
 			if(XX==Nm1)
 			{
-				bRetval=true;
+				bRetval=1;
 				*gfn_exp = n;
 			}
 		}
@@ -655,12 +746,12 @@ static bool gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_e
 	}
 	if((XX+XXa) % *(N) == 0)
 	{
-		bRetval=true;
+		bRetval=1;
 		*gfn_exp = n;
 	}
 	else
 	{
-		bRetval=true;
+		bRetval=1;
 		*gfn_exp = nStart-1;
 		PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", *gfn_exp);
 	}
@@ -897,20 +988,24 @@ static void ProcessGF_Factor(Integer *N, const char *sNumStr, uint32 n, uint32 g
 {
 	clock_t start=clock();
 	uint32 gfn_exp;
-	bool bRetVal;
+	int bRetVal;
 
 	if (lg(*N) < 800)
 		bRetVal = gwGF_Factor_gmp(N, n, gfn_base, &gfn_exp);
 	else
 		bRetVal = gwGF_Factor(N, n, gfn_base, &gfn_exp, sNumStr);
-	if (g_bExitNow)
+
+   if (bRetVal == -1)
+      return;
+
+   if (g_bExitNow)
 	{
 		g_bExited = true;
 		return;
 	}
 	double t=double(clock()-start)/clocks_per_sec;
 	
-	if(bRetVal)
+	if (bRetVal)
 	{
 		// use factor as "Factor" so that the non-verbose mode of WinPFGW does not throw these
 		// strings away.
@@ -952,7 +1047,10 @@ static void ProcessGF_Factor(Integer *N, const char *sNumStr, uint32 n, uint32 g
 bool ProcessGF_Factors(Integer *N, const char *sNumStr)
 {
 	static Integer k;  // we don't need to call constructor every time.
+	static Integer OrigI;
 	uint32 n, b;
+   int    bRetval;
+   Integer I, J;
 
 	if (!IsValidGF_FactorForm(LPCTSTR(sNumStr), &k, &n))
 		return false;
@@ -978,9 +1076,12 @@ bool ProcessGF_Factors(Integer *N, const char *sNumStr)
 	}
 
 	if (lg(*N) < 800)
-		gwGF_LoadSubs_gmp(N, n);
+		bRetval = gwGF_LoadSubs_gmp(N, n);
 	else
-		gwGF_LoadSubs(N, sNumStr, &k, n);
+		bRetval = gwGF_LoadSubs(N, sNumStr, &k, n);
+
+   if (bRetval == -1)
+      return true;
 
 	PFPrintfClearCurLine();
 	Integer Nm1 = (*N) - 1;
@@ -1022,21 +1123,17 @@ bool ProcessGF_Factors(Integer *N, const char *sNumStr)
 				PFPrintfStderr("GFx_chk_%d:   \r", b);
 			}
 
-			Integer I = pIntegerVals[b];
+			I = pIntegerVals[b];
 Try_Next_a:;
 			if (GF_bExtendedGFNLogic)
 			{
-				static Integer OrigI;
 				if (nCur_a == 1)
 					OrigI = I;
 				else
 				{
 					if (OnlySmallFactors(nCur_a))
 					{
-						Integer J = pIntegerVals[nCur_a];
-						//printf ("b=%d a=%d\n", b,nCur_a);
-						//INTDEBUG(I);
-						//INTDEBUG(J);
+						J = pIntegerVals[nCur_a];
 						if (J == OrigI)
 						{
 							// Not sure why, but J can == OrigI, and if so, then attempt to find a factor.
@@ -1048,7 +1145,7 @@ Try_Next_a:;
 						}
 						else
 						{
-						    I = J+OrigI;
+						   I = J+OrigI;
 							// since we check for N-1 and 1 below, we MUST adjust I by 1.  We don't do this
 							// in the nCur_a==1 case, but in that case we also don't add the 1 (and the logic
 							// stays in the "original" GFN logic).
@@ -1060,7 +1157,8 @@ Try_Next_a:;
 						I = 0;
 				}
 			}
-			if (I == Nm1)
+
+         if (I == Nm1)
 			{
 				double t=double(clock()-start)/clocks_per_sec;
 				start=clock();
