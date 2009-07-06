@@ -21,9 +21,8 @@ extern PFString g_sTestMode;				// This will hold things like "PRP: ", "N+1: ", 
 
 #undef GWDEBUG
 #undef INTDEBUG
-#define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp();printf(" ");}
-#define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
-
+#define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp());printf(" ");}
+#define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp());printf("\n");}
 
 // in save_restore_prp.cpp
 enum ePRPType {e_gwPRP, e_GFN_DTWPRP, e_Phi_DTWPRP, e_GFN_Factorize};
@@ -64,5 +63,23 @@ void optimize(PFSymbolTable *p);
 extern "C" int pfgw_main(int argc,char *argv[]);
 void pfgw_main_init();
 void pfgw_main_cleanup();
+
+inline int ErrorCheck(int current, int max)
+{
+   // Automatically error check all iterations
+   if (g_bErrorCheckAllTests || g_bErrorCheckThisTest)
+      return 1;
+
+   // Error check first 50 and last 50 iterations
+   if (current < 50 || current > max - 50)
+      return 1;
+
+   if (current & 0x7f)
+      return 0;
+
+   // Error check every 128th iteration
+   return 1;
+}
+
 
 #endif // PFGW_GLOBALS_H__
