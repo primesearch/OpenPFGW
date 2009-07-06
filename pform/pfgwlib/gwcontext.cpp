@@ -12,12 +12,14 @@
 #endif
 
 gwhandle gwdata;				// Global variables - quite common in PFGW
-int ERRCHK=0;
-double MAXERR=0.0;
-int	g_bCollectStats =0;			// Stats collection - no longer supported
-double	sumX =0.0;
-double	sumXX =0.0;
-double	sumN =0.0;
+bool g_bErrorCheckAllTests = false;
+bool g_bErrorCheckThisTest = false;
+double MAXERR = 0.0;
+const double maxErrorAllowed = 0.45;
+int	g_bCollectStats = 0;			// Stats collection - no longer supported
+double	sumX = 0.0;
+double	sumXX = 0.0;
+double	sumN = 0.0;
 
 extern int g_CompositeAthenticationLevel;
 extern bool g_bVerbose;
@@ -35,6 +37,8 @@ int CreateModulus(Integer *NN)
    sprintf(testString, "%send1", g_cpTestString);
    if (sscanf(testString, "%lf*%u^%u%dend%d", &k, &b, &n, &c, &error_code) == 5)
       return CreateModulus(k, b, n, c);
+   if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
+      return CreateModulus(1.0, b, n, c);
 
    gwset_safety_margin(&gwdata, g_CompositeAthenticationLevel);
 	if (sizeof (mp_limb_t) == sizeof (uint32_t))
@@ -52,6 +56,13 @@ int CreateModulus(Integer *NN)
 		PFPrintf("Using %s on %s: ", buf, gwmodulo_as_string(&gwdata));
 	}
 
+	if (gwnear_fft_limit (&gwdata, 2.0))
+		g_bErrorCheckThisTest = true;		// Getting close to max bits (within 2%)
+
+   // Tell GWNUM to use square carefully for the first few iterations
+   // Passing -1 will tell GWNUM to determine how many based upon the
+   // size of the modulus
+   gwset_square_carefully_count(&gwdata, -1);
 	return error_code;
 }
 
@@ -72,6 +83,13 @@ int CreateModulus(double k, unsigned long b, unsigned long n, signed long c)
 		PFPrintf("Using %s on %s: ", buf, gwmodulo_as_string(&gwdata));
 	}
 
+	if (gwnear_fft_limit (&gwdata, 2.0))
+		g_bErrorCheckThisTest = true;		// Getting close to max bits (within 2%)
+
+   // Tell GWNUM to use square carefully for the first few iterations
+   // Passing -1 will tell GWNUM to determine how many based upon the
+   // size of the modulus
+   gwset_square_carefully_count(&gwdata, -1);
 	return error_code;
 }
 
