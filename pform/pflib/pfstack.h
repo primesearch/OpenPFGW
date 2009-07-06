@@ -43,13 +43,13 @@ void PFStack<T>::Push(T* pObject)
 template<class T>
 T* PFStack<T>::Pop()
 {
-	return RemoveTail();
+	return this->RemoveTail();
 }
 
 template<class T>
 void PFStack<T>::Remove()
 {
-	RemoveTail();
+	this->RemoveTail();
 }
 
 template<class T>
