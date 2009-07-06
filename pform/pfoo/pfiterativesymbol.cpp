@@ -1,6 +1,7 @@
 #include "pfoopch.h"
 #include "pfiterativesymbol.h"
 #include "pfintegersymbol.h"
+#include "pfgw_globals.h"
 
 char g_cpTestString[70];
 PFString g_sTestMode;				// This will hold things like "PRP: ", "N+1: ", "F: ", "GF(b,3): ", ...
@@ -77,7 +78,7 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
 						bFirst=false;
 						// 120 bytes will not overflow, since we "force" the max size below
 						char Buf[120];
-						if (ERRCHK)
+						if (ErrorCheck(m_dwStepsDone, m_dwStepsTotal))
 						{
 							if (*g_cpTestString)
 								sprintf(Buf,"%s%.50s %lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal, MAXERR);
@@ -126,7 +127,7 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
 			}
 			else
 			{
-				if (MAXERR > .40)
+				if (MAXERR > maxErrorAllowed)
 				{
 					PFPrintfClearCurLine(lastLineLen);
 					lastLineLen = 0;
