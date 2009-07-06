@@ -72,8 +72,24 @@ bool IsPrp(Integer *N)
 	}
 
 	// create a context
-	gwinit (&gwdata);
-	gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
+   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+      g_bExitNow = true;
+      return false;
+   }
+
+   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+      g_bExitNow = true;
+      return false;
+   }
+
+   gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
 	if (CreateModulus(N)) return false;
 
 	// everything with a GWInteger has a scope brace, so that
@@ -88,7 +104,7 @@ bool IsPrp(Integer *N)
 
 		for(;iTotal--;)
 		{
-			gwsetnormroutine(&gwdata,0,ERRCHK,bit(X,iTotal));
+			gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,bit(X,iTotal));
 			gwsquare(gwX);
 		}		
 		Integer XX;
