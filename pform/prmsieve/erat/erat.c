@@ -692,7 +692,7 @@ static void fillBitmap()
             register int k;
             
             /* register uint32 bs11 = bit32_11s[nexti[1]]; */ /* eleven */
-	    { /*int q=7*/; DEBUG(("7 begines with bitmap %08x\n", bs7)); }
+	    { /*int q=7*/; DEBUG(("7 begins with bitmap %08x\n", bs7)); }
 
             for(k=ERAT_W; --k>=0;)
             {
