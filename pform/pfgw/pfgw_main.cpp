@@ -47,7 +47,6 @@ int g_Cert_Type = -1;
 int g_Cert_Delete = -1;
 bool g_bVerbose = false;
 bool g_bTestingMode = false;
-bool g_bForceNoRoundOffChecking=false;
 bool g_bForceRoundOffChecking=false;
 char g_ModularSieveString[256];
 char g_szInputFileName[1024];
@@ -194,7 +193,7 @@ CLOptionElement clList[]=
 	{cl_string,		false,   "_ONLYFACTORS"},	   // o
 	{cl_illegal,	false,   ""},     	   		// p
 	{cl_string,		true,    "_QUIKEXPR"},	   	// q
-	{cl_string,		false,   "_ROUNDOFFCHK"},	   // r
+	{cl_boolean,	false,   "_ROUNDOFFCHK"},	   // r
 	{cl_integer,	false,   "_PMIN"},	   		// s
 	{cl_string,		false,   "_TESTMODE"},	   	// t
 	{cl_integer,	true,    "_UPDATEINTERVAL"},	// u partial screen update. Set the interval (or turn it off with 0)
@@ -330,9 +329,9 @@ rerun with -x24000\" then rerun the proof using the -x switch with whatever\n\
 number pfgw stated.  PFGW will attempt to perform some square free loops to\n\
 attempt to prove the number (even though it is just short of 33%% factorized)\n\
 \n\
--r[r][m] enables round off error checking and modular checking (still WIP)\n\
+-r enables round off error checking for all iterations of all tests\n\
 \n\
--a<number> Athenticates composites.  Using a -a0 will PRP test using the\n\
+-a<number> Authenticates composites.  Using a -a0 will PRP test using the\n\
 \"normal\" FFT sizes.  A switch of -a1 will test using 1 less bit per\n\
 FFT limb.  This will take more time but will also eliminate any chance of\n\
 rounding errors inherant with FFT multiplies.  The lower 62 bits of the\n\
@@ -623,7 +622,7 @@ int pfgw_main(int argc,char *argv[])
    PFOutput::EnableOneLineForceScreenOutput();
    pTerseOutput = psymRuntime->LookupSymbol("_TERSE_OUTPUT");
    if (!pTerseOutput)
-    	PFPrintfStderr ("PFGW Version %s %s\n\n", VERSION_STRING, SPECIAL_BUILD);
+    	PFPrintfStderr ("PFGW Version %s [GWNUM %s]\n\n", VERSION_STRING, GWNUM_VERSION);
 
 	// Get the cpu type from the INI file.  I don't know how big of an impact this
    // makes on PFGW, but on PRP.exe changing the CPU type seemed to make significant
@@ -661,8 +660,8 @@ int pfgw_main(int argc,char *argv[])
 	//if(pSymbol)
 	{
 #ifdef _MSC_VER
-		::SetPriorityClass(::GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-		::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_IDLE);
+		::SetPriorityClass(::GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
+		::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #else
 		setpriority(PRIO_PROCESS, 0, 20);
 #endif
@@ -849,48 +848,11 @@ int pfgw_main(int argc,char *argv[])
 	if (pSymbol)
 		sOnlyFactorType=pSymbol->GetStringValue();
 
-
-	ERRCHK=0; // turn off by default.
-	g_PFGW_Mod_Checking = 0; // turn off by default
-	pSymbol=psymRuntime->LookupSymbol("_ROUNDOFFCHK");
-	if (pSymbol)
-	{
-		// Now check for -rm  (which is used for Modular reduction checking)
-		PFString s = pSymbol->GetStringValue();
-		const char *cp = s;
-		size_t i = 0;
-		for (; i < strlen(cp); ++i)
-		{
-			if (cp[i] == 'm')
-				g_PFGW_Mod_Checking = 1;
-			if (cp[i] == 'M')
-				g_PFGW_Mod_Checking = 2;
-			if (cp[i] == 'r' || cp[i] == 'R')
-			{
-				if (cp[i+1] == '-')
-				{
-					g_bForceNoRoundOffChecking=true;
-					ERRCHK=0;
-					++i;
-				}
-				else
-				{
-					g_bForceRoundOffChecking=true;
-					ERRCHK=1;
-				}
-			}
-			if (cp[i] == '-')
-			{
-				g_bForceNoRoundOffChecking=true;
-				ERRCHK=0;
-			}
-		}
-		if (!i)	// The default for just -r is the same as -rr (which is round off checking.
-		{
-			g_bForceRoundOffChecking=true;
-			ERRCHK=1;
-		}
-	}
+   pSymbol = psymRuntime->LookupSymbol("_ROUNDOFFCHK");
+   if (pSymbol)
+      g_bErrorCheckAllTests = true;
+   else
+   	g_bErrorCheckAllTests = false;
 
 	pSymbol=psymRuntime->LookupSymbol("_BASE");
 	if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
@@ -1025,35 +987,8 @@ int pfgw_main(int argc,char *argv[])
 		PFString sMessage;
 		bool bMsgValid=false;
 		bool bResultValid;
-		bool bGFNMode=false;
 		bResultValid=false;
 		Integer Result;
-
-		/* 
-		// code used to test the file input methods, to make sure that SeekToLine() is working
-		int jj;
-		for (jj = 1; jj < 2000; jj++)
-		{
-			pFile->SeekToLine(jj);
-			sNumber = "";
-			if (jj == 100)
-				sNumber = " ";
-			if (pFile->GetNextLine(sNumber, &Result, &bResultValid) == PFSimpleFile::e_ok)
-			{
-				printf ("%d == %s\n", jj, LPCTSTR(sNumber));
-			}
-		}
-		for (jj = 2000; jj >= 1; jj--)
-		{
-			pFile->SeekToLine(jj);
-			sNumber = "";
-			if (pFile->GetNextLine(sNumber, &Result, &bResultValid) == PFSimpleFile::e_ok)
-			{
-				printf ("%d == %s\n", jj, LPCTSTR(sNumber));
-			}
-		}
-		exit(0);
-		*/
 
 		CTimer ExtraOverhead_Timer;
 		ExtraOverhead_Timer.Start();
@@ -1062,19 +997,6 @@ int pfgw_main(int argc,char *argv[])
 		{
 		while(pFile->GetNextLine(sNumber, &Result, &bResultValid) == PFSimpleFile::e_ok)
 		{
-			/* 
-			// Some "garbage" code that will add a little time.  Used to test the "ExtraOverhead_Timer" stuff
-			// to make sure that it did look like it was presenting us with the additional overhead within pfgw
-			uint32 Cnt=0;
-			for (int zz = 0; zz < 100; ++zz)
-			for (uint16 x = 0; x != 85; )
-			{
-				x = x * 101 + 1; 
-				++Cnt;
-			}
-			printf ("Cnt=%d\n", Cnt);
-			*/
-
 			g_PRP_ReturnCode = 5;  // set to an "unknown" error code
 
 			if (g_bExitNow)
@@ -1164,10 +1086,10 @@ int pfgw_main(int argc,char *argv[])
 				g_sTestMode = sTestShortName;
 				g_sTestMode += ": ";
 				// Force on error checking during testing mode NO MATTER WHAT.
-				ERRCHK=1;
+				g_bErrorCheckAllTests = true;
 				int iRetval=PFFunctionSymbol::CallSubroutine(sTestName,pSubContext);
 				if (!g_bForceRoundOffChecking)
-					ERRCHK=0;
+					g_bErrorCheckAllTests = false;
 				g_sTestMode = "";
 
 				CPU_FLAGS = oldCPU_FLAGS;
@@ -1511,31 +1433,10 @@ int pfgw_main(int argc,char *argv[])
 					CTimer Timer;
 					Timer.Start ();
 
-					bool bRetval;
 					int Retval;
-					uint32 GFN_Base, GFN_Exp;
-					if (IsValidGFN(LPCTSTR(sNumber), &GFN_Base, &GFN_Exp))
-					{
-						if (!bGFNMode)
-							PFPrintf ("Switching to special GFN DWT logic\n");
-						bGFNMode = true;
-						bRetval=gwPRP_GFN(pResult, g_cpTestString,GFN_Base, GFN_Exp, &g_u64ResidueVal);
-						if (bRetval == false)
-							Retval = 0;
-						else
-							Retval = 1;
-					}
-					else
-					{
-						if (bGFNMode)
-							PFPrintf ("Quitting use of special GFN DWT logic\n");
-						bGFNMode = false;
-						Retval=gwPRP(pResult, g_cpTestString,&g_u64ResidueVal);
-					}
+				   Retval=gwPRP(pResult, g_cpTestString,&g_u64ResidueVal);
 					if (g_bExitNow)
-					{
 						break;
-					}
 
 					double t;
 					t = Timer.GetSecs ();
@@ -1628,12 +1529,10 @@ void pfgw_main_init()
 	getCpuInfo();
 	crc_init();
 
-//	Integer::InitProthMods();
-
 	g_bExitNow = g_bExited = false;
 	g_bGMPMode = false;
 
-	ERRCHK=0;
+	g_bErrorCheckAllTests = false;
 
 	PFIntegerSymbol::Startup();
 	psymRuntime=new PFSymbolTable;
@@ -1657,6 +1556,4 @@ void pfgw_main_cleanup()
 	pOutputObj->CloseLogFile();
 	g_bExited = true;
 	CleanupGFs();
-
-//	Integer::FreeProthMods();
 }
