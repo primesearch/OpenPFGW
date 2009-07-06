@@ -158,7 +158,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 					klast=k;
 					// 120 bytes will not overflow, since we "force" the max size within the sprintf()
 					char Buf[120];
-					if (ERRCHK)
+					if (g_bErrorCheckAllTests)
 						sprintf(Buf, "%.60s %d/%d mro=%0.10g\r",g_cpTestString,k,kmax, gw_get_maxerr(&gwdata));
 					else
 						sprintf(Buf, "%.60s %d/%d\r",g_cpTestString,k,kmax);
@@ -205,7 +205,23 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 				while(iLog+iNext<=320);		// amass up to 320 bits in Q.
 				
 				// calculate 2^iPhi mod Q
-				gwinit (&gwdata);
+            gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+            if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+            {
+		         PFOutput::EnableOneLineForceScreenOutput();
+		         PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+               g_bExitNow = true;
+               return;
+            }
+
+            if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+            {
+		         PFOutput::EnableOneLineForceScreenOutput();
+		         PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+               g_bExitNow = true;
+               return;
+            }
+
 				gwsetmaxmulbyconst(&gwdata, 2);	// maximum multiplier
 				if (CreateModulus(&Q)) return;
 				{
@@ -215,7 +231,8 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 
 					for(int i=iTotal;i--;)
 					{
-						gwsetnormroutine(&gwdata,0,ERRCHK,bit(POW,i));
+                  int errchk = ErrorCheck(iTotal-i, iTotal);
+						gwsetnormroutine(&gwdata,0,errchk,bit(POW,i));
 						gwsquare(gwX);
 					}
 					R = gwX;
@@ -261,7 +278,21 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
  		// Let's begin the experiment by creating a Context
 		if(iPhi>1)
 		{
-			gwinit (&gwdata);
+         gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+         if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+         {
+		      PFOutput::EnableOneLineForceScreenOutput();
+		      PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+            g_bExitNow = true;
+         }
+
+         if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+         {
+		      PFOutput::EnableOneLineForceScreenOutput();
+		      PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+            g_bExitNow = true;
+         }
+
 			gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
 			if (CreateModulus(1.0,2,iPhi,-1)) return;
 			prp_using_gwnum (N, iBase, sExpression, NULL);
