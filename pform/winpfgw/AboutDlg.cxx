@@ -61,7 +61,7 @@ BOOL CAboutDlg::OnInitDialog()
 	S.LoadString(IDS_WINPFGW_VERSION_STRING);
 	GetDlgItem(IDC_STATIC_WINPFGW_VERSION)->SetWindowText(S);
 
-	S.Format("PFGW Version %s %s", WINPFGW_ABOUT_VERSION_STRING, SPECIAL_BUILD);
+	S.Format("PFGW Version %s [GWNUM %s]", WINPFGW_ABOUT_VERSION_STRING, GWNUM_VERSION);
 	GetDlgItem(IDC_STATIC_PFGW_VERSION)->SetWindowText(S);
 
 	getCpuInfo();
