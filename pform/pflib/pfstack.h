@@ -55,6 +55,6 @@ void PFStack<T>::Remove()
 template<class T>
 T* PFStack<T>::Peek()
 {
-	return Tail();
+	return this->Tail();
 }
 #endif
