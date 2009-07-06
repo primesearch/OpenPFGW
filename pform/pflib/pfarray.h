@@ -32,7 +32,7 @@ template<class C,class T>
 void PFArray<C,T>::Add(const T& t)
 {
 	// gcc is b0rked, and the [] didn't work correctly
-	AccessElement(m_dwSize)=t;
+	this->AccessElement(m_dwSize)=t;
 	m_dwSize++;
 }
 
@@ -46,15 +46,15 @@ template<class C,class T>
 void PFArray<C,T>::InsertAt(const T& t,DWORD dwIndex)
 {
 	m_dwSize++;
-	Resize(m_dwSize);
-	InsertCell(dwIndex,m_dwSize);
-	AccessElement(dwIndex)=t; // work around gcc const/nonconst [] bug
+	this->Resize(m_dwSize);
+	this->InsertCell(dwIndex,m_dwSize);
+	this->AccessElement(dwIndex)=t; // work around gcc const/nonconst [] bug
 }
 
 template<class C,class T>
 void PFArray<C,T>::RemoveAt(DWORD dwIndex)
 {
-	RemoveCell(dwIndex,m_dwSize);
+	this->RemoveCell(dwIndex,m_dwSize);
 	m_dwSize--;
 }
 

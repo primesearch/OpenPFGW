@@ -81,7 +81,7 @@ void PFGenericString<T>::Set(DWORD dwValue,const PFBoolean &bHex)
 	}
 	
 	GuaranteeBuffer(12);
-	T* p=&AccessElement(0);
+	T* p=&this->AccessElement(0);
 
 	char *pCopy=sBuffer;
 	dwLength=0;
@@ -97,7 +97,7 @@ void PFGenericString<T>::Set(long int iValue)
 	sprintf(sBuffer,"%ld",iValue);
 
 	GuaranteeBuffer(12);
-	T* p=&AccessElement(0);
+	T* p=&this->AccessElement(0);
 
 	char *pCopy=sBuffer;
 	dwLength=0;
@@ -109,7 +109,7 @@ void PFGenericString<T>::Set(long int iValue)
 template<class T>
 PFGenericString<T>::operator const T*() const
 {
-	return GetBasePointer();
+	return this->GetBasePointer();
 }
 
 template<class T>
@@ -121,7 +121,7 @@ int PFGenericString<T>::ComparisonHelper(const PFGenericString<T> &s) const
 	
 	while(iRetval==0)	// until a decision is made
 	{
-		T t1=operator[](dwIndex);
+		T t1=this->operator[](dwIndex);
 		T t2=s.operator[](dwIndex);
 		dwIndex++;
 		
@@ -198,7 +198,7 @@ PFGenericString<T> PFGenericString<T>::SlicerHelper(DWORD dwStart,DWORD dwEnd) c
 	{
 		sRetval.GuaranteeBuffer(dwEnd-dwStart);
 		T* p=&sRetval.AccessElement(0);
-		memcpy(p,&operator[](dwStart),(dwEnd-dwStart)*sizeof(T));
+		memcpy(p,&this->operator[](dwStart),(dwEnd-dwStart)*sizeof(T));
 		sRetval.SetLength();
 	}
 	return sRetval;
@@ -245,7 +245,7 @@ DWORD PFGenericString<T>::LengthHelper(const T* pT)
 template<class T>
 void PFGenericString<T>::SetLength()
 {
-	dwLength = LengthHelper(GetBasePointer());
+	dwLength = LengthHelper(this->GetBasePointer());
 }
 
 // Phil - blid faith initialisation of dwLength
@@ -261,7 +261,7 @@ PFGenericString<T>::PFGenericString(const T* pT)
 	: dwLength(LengthHelper(pT)) // Phil - get member right from the outset
 {
 	GuaranteeBuffer(dwLength);
-	T* p=&AccessElement(0);
+	T* p=&this->AccessElement(0);
 	if(dwLength)
 	{
 		memcpy(p,pT,dwLength*sizeof(T));
@@ -274,7 +274,7 @@ PFGenericString<T>::PFGenericString(const T& t)
 	: dwLength(t!=0) // Phil - value 0 has length zero.
 {
 	GuaranteeBuffer(1);
-	AccessElement(0)=t;
+	this->AccessElement(0)=t;
 }
 
 // Phil - invariant not really important in the destructor
@@ -298,7 +298,7 @@ PFGenericString<T>& PFGenericString<T>::operator=(const PFGenericString<T> &t2)
 template<class T>
 void PFGenericString<T>::GuaranteeBuffer(DWORD dwSize)
 {
-	AccessElement(dwSize)=0;
+	this->AccessElement(dwSize)=0;
 }
 
 // Phil - and now a quick answer to the simple question...
@@ -326,7 +326,7 @@ PFGenericString<T> & PFGenericString<T>::operator+=(const PFGenericString<T> &t2
 	{
 		DWORD l1=GetLength();
 		GuaranteeBuffer(l1+l2);
-		T* pNew=&AccessElement(0);
+		T* pNew=&this->AccessElement(0);
 		const T* pNew2=t2.GetBasePointer();
 
 		memcpy(pNew+l1,pNew2,l2*sizeof(T));
@@ -381,11 +381,11 @@ void PFGenericString<T>::ToUpper()
 	
 	for(DWORD dw=0;dw<dwMyLength;dw++)
 	{
-		T t=operator[](dw);
+		T t=this->operator[](dw);
 		if((t>=ta)&&(t<=tz))
 		{
 			// Phil - gcc didn't let const and non-const [] coexist
-			AccessElement(dw)=(T) (t+(tA-ta));
+			this->AccessElement(dw)=(T) (t+(tA-ta));
 		}
 	}
 }

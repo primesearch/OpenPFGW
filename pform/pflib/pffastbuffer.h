@@ -70,7 +70,7 @@ void PFFastBuffer<T>::Resize(DWORD dwSize)
 		DWORD dwOldSize=m_dwAllocated;
 		T* pOldData=m_pBuffer;
 		m_pBuffer=NULL;
-		Allocate(dwSize);
+		this->Allocate(dwSize);
 
 		memcpy(m_pBuffer,pOldData,dwOldSize*sizeof(T));
 		delete[] pOldData;
