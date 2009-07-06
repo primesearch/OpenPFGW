@@ -516,7 +516,7 @@ void PFNetworkFile2::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringI
 			// Note this will cause the resuming to "fail" and possibly reprocess composites
 			return;
 		if (m_bSendResidues)
-			nBufLen = sprintf(Buf, "PR C_%s [%lX%08lX]\n", LPCTSTR(m_sCurrentExpression), 
+			nBufLen = sprintf(Buf, "PR C_%s [%08lX%08lX]\n", LPCTSTR(m_sCurrentExpression), 
 							 (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF));
 		else
 			nBufLen = sprintf (Buf, "PR C_%s\n", LPCTSTR(m_sCurrentExpression));
