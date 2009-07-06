@@ -15,8 +15,10 @@ void getCpuDescription (
 			int	long_desc);		/* True for a very long description */
 
 extern gwhandle gwdata;				// Global variable to store gwnum state
-extern int ERRCHK;
 extern double MAXERR;				// Overall roundoff error during the run
+extern const double maxErrorAllowed;
+extern bool g_bErrorCheckAllTests;
+extern bool g_bErrorCheckThisTest;
 extern int g_bCollectStats;			// Stats collection - no longer supported
 extern double sumX;
 extern double sumXX;
