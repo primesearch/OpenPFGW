@@ -6,8 +6,10 @@
 
 #define NEW_TIMER
 
+#ifndef GWDEBUG
 #define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp();printf(" ");}
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
+#endif
 
 void vectorout(PFString &sFilename,PFSymbolTable *psymRuntime)
 {
@@ -267,7 +269,7 @@ void optimize(PFSymbolTable *pContext)
 	PFPrintf("Benchmarking PrimeForm/GW! This may take several minutes.\n");
 
 	// enable error checking within this routine
-	ERRCHK=1;
+	g_bErrorCheckAllTests = true;
 	g_bCollectStats = true;
 	
 	// first find out how many there are
