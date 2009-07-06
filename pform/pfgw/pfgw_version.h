@@ -1,5 +1,5 @@
 // This single file is the file to edit when a version is changed.  PFGW simply
-// printf's the VERSION_STRING macro and the SPECIAL_BUILD macro when it starts
+// printf's the VERSION_STRING macro when it starts
 
 #if defined (_MSC_VER)
  #define	SHORT_OS_NAME	"Win"
@@ -16,35 +16,18 @@
 
 // 0-dev 1-stable 2-release
 
-//#define	RELEASE_LEVEL	0
+#define	RELEASE_LEVEL	0
 //#define	RELEASE_LEVEL	1
-#define	RELEASE_LEVEL	2
+//#define	RELEASE_LEVEL	2
 
 // for dev level
-#define DEVELOPMENT_VERSION     "20041020"
+#define DEVELOPMENT_VERSION      "20090706"
 // for sta level
-#define	STABLE_VERSION		"20050130"
-#define	RELEASE_CANDIDATE	"1e"
+#define	STABLE_VERSION          "20090706"
+#define	RELEASE_CANDIDATE       "1b"
 // for sta and release level
-#define	RELEASE_VERSION		"3.1.0"
+#define	RELEASE_VERSION         "3.1.0"
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
-
-#define SPECIAL_BUILD
-// to enable a special build, decomment the following line. Release builds SHOULD NOT define this.
-// This is required for gcc, which doesn't allow string tests on #defines
-//#define	SPECIAL_ENABLED
-
-#ifndef SPECIAL_ENABLED
-#undef SPECIAL_BUILD
-#define SPECIAL_BUILD		"[FFT v25.11]"
-#endif
-
-#if defined (JBC_BUILD)
-#undef  SPECIAL_BUILD
-#define SPECIAL_BUILD		"[JBC code]"
-#undef  SPECIAL_ENABLED
-#define	SPECIAL_ENABLED
-#endif
 
 //
 // Put all of the #if(RELEASE_LEVEL==?) logic here, and not inside of the .cpp file.
@@ -53,9 +36,6 @@
 //
 
 #if(RELEASE_LEVEL==2)
- #ifdef SPECIAL_ENABLED
-  #error "SPECIAL_ENABLED must not be defined for RELEASE builds.  If you REALLY want to have a release/special build, then comment out the error line"
- #endif
  #define VERSION_STRING RELEASE_VERSION" for "LONG_OS_NAME
  #define WINPFGW_ABOUT_VERSION_STRING RELEASE_VERSION" for "LONG_OS_NAME
 #elif(RELEASE_LEVEL==1)	
