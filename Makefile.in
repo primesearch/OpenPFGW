@@ -14,7 +14,7 @@ quick:	baselib integer fft glue pfoo io entrypoint prmsieve
 	${CXX} ${CXXFLAGS}	\
 		@pkg_entrypoint_name@  @pkg_io_name@ @pkg_pfoo_name@ @pkg_glue_name@ @pkg_fft_name@ \
 		@pkg_integer_name@ @pkg_baselib_name@ @pkg_prmsieve_name@ @gmp_obj@ \
-		@gmp_linkflag@ -o ${EXECUTABLE}
+		packages/gwnum/gwnum.o packages/gwnum/multutil.o @gmp_linkflag@ -o ${EXECUTABLE}
 
 maintainer-clean:	distclean
 	rm -f configure
