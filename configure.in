@@ -11,11 +11,11 @@ dnl =======================================================
 dnl initialize compiler flags
 dnl =======================================================
 if test "$CFLAGS" = ""; then
-    AC_SUBST(CFLAGS, "-s -O2")
+    AC_SUBST(CFLAGS, "-O2")
 fi
 
 if test "$CXXFLAGS" = ""; then
-    AC_SUBST(CXXFLAGS, "-s -O2")
+    AC_SUBST(CXXFLAGS, "-O2")
 fi
 
 dnl =======================================================

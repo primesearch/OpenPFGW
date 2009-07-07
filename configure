@@ -1425,12 +1425,12 @@ test -n "$target_alias" &&
   program_prefix=${target_alias}-
 
 if test "$CFLAGS" = ""; then
-    CFLAGS="-s -O2"
+    CFLAGS="-O2"
 
 fi
 
 if test "$CXXFLAGS" = ""; then
-    CXXFLAGS="-s -O2"
+    CXXFLAGS="-O2"
 
 fi
 
