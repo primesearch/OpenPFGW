@@ -186,6 +186,7 @@ PFBoolean Exponentiator::OnInitialize()
 PFBoolean Exponentiator::Iterate()
 {
 	PFBoolean bExit=PFBoolean::b_false;
+   char buffer[200];
 	
 // lg(1)=0 lg(2,3)=1, lg(4-7)=2....
 	if(bitindex==0)
@@ -286,10 +287,11 @@ PFBoolean Exponentiator::Iterate()
 		{
 			pResidue->square();
 		}
-		if (gw_get_maxerr(&gwdata) > .40)
+		if (gw_get_maxerr(&gwdata) > maxErrorAllowed)
 		{
+         sprintf(buffer, "Detected MAXERR>%.2f (round off check) in exponentiator.cpp (Testing) ", maxErrorAllowed);
 			PFOutput::EnableOneLineForceScreenOutput();
-			PFOutput::OutputToErrorFileAlso("Detected MAXERR>0.4 (round off check) in exponentiator.cpp (Testing) ", g_cpTestString, lg(exponent)-bitindex, lg(exponent));
+			PFOutput::OutputToErrorFileAlso(buffer, g_cpTestString, lg(exponent)-bitindex, lg(exponent));
 			PFPrintfStderr("Error, roundoff was (%.10g)  near Iteration %d/%d\n", gw_get_maxerr(&gwdata), lg(exponent)-bitindex, lg(exponent));
 			bExit=PFBoolean::b_true;
 		}
@@ -328,7 +330,7 @@ PFBoolean Exponentiator::AimForTarget(PFFactorizationSymbol *pSymbol,const Integ
 	// now take the nodes off
 	pResult=new PFList<FactorNode>(PFBoolean::b_false);
 	
-	FactorNode *pRoot;
+	FactorNode *pRoot = 0;
 	R=1;
 
 	while((R<T)&&(NULL!=(pRoot=fa.remove(PFBoolean::b_true))))
