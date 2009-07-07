@@ -6,6 +6,8 @@
 #define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp());printf("\n");}
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,X.gmp());printf("\n");}
 
+extern bool volatile g_bExitNow;
+
 FiniteField::~FiniteField()
 {
 }
@@ -30,8 +32,22 @@ void Residue::squaremultiply(Multiplier *m)
 
 FieldZ::FieldZ(Integer *N)
 {
-	gwinit (&gwdata);
-	gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);	// maximum multiplier
+   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+      g_bExitNow = true;
+   }
+
+   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+      g_bExitNow = true;
+   }
+
+   gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);	// maximum multiplier
 	CreateModulus(N);
 }
 
@@ -106,7 +122,7 @@ OutputResidue *IntegerResidue::collapse()
 
 void IntegerResidue::square()
 {
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwsquare(R);
 }
 
@@ -145,15 +161,15 @@ IntegerMultiplier::~IntegerMultiplier()
 
 void IntegerMultiplier::mulInteger(GWInteger &X)
 {
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(M,X);
 }
 
 void IntegerMultiplier::squaremulInteger(GWInteger &X)
 {
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwsquare(X);
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(M,X);
 }
 
@@ -173,14 +189,14 @@ void SmallIntegerMultiplier::mulInteger(GWInteger &X)
 	GWInteger gwM;
 	gwM=mm;
 	
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(gwM,X);
 }
 
 void SmallIntegerMultiplier::squaremulInteger(GWInteger &X)
 {
 	gwsetmulbyconst(&gwdata,mm);
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 	gwsquare(X);
 }
 
@@ -193,7 +209,21 @@ void SmallIntegerMultiplier::squaremulInteger(GWInteger &X)
 FieldLucas::FieldLucas(Integer *N)
 	: ps1(NULL), ps2(NULL)
 {
-	gwinit (&gwdata);
+   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+      g_bExitNow = true;
+   }
+
+   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+   {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+      g_bExitNow = true;
+   }
+
 	gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);	// maximum multiplier
 	CreateModulus(N);
 	
@@ -266,7 +296,7 @@ void FieldLucasSmall::mulcross2(FieldLucasMultiplier *mm,GWInteger &u)
 void FieldLucasSmall::squarecross(GWInteger &ufft)
 {
 	// 2Du^2
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 	gwsetmulbyconst(&gwdata,D*2);
 	gwfftfftmul(ufft,ufft,ufft);
 }
@@ -274,7 +304,7 @@ void FieldLucasSmall::squarecross(GWInteger &ufft)
 void FieldLucasSmall::squaremulcross(GWInteger &u)
 {
 	// 2(D-1)u^2
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);		// b(u) = n+2
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);		// b(u) = n+2
 	gwsetmulbyconst(&gwdata,(D-1)*2);	
 	gwsquare(u);									// b(u) = 2n+d+5
 }	
@@ -305,7 +335,7 @@ void FieldLucasMedium::mulcross2(FieldLucasMultiplier *mm,GWInteger &u)
 void FieldLucasMedium::squarecross(GWInteger &ufft)
 {
 	// 2Du^2
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftfftmul(ufft,ufft,ufft);
 	gwsmallmul(D*2.0,ufft);
 }
@@ -313,7 +343,7 @@ void FieldLucasMedium::squarecross(GWInteger &ufft)
 void FieldLucasMedium::squaremulcross(GWInteger &u)
 {
 	// 2(D-1)u^2
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);		// b(u) = n+2
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);		// b(u) = n+2
 	gwsquare(u);									// b(u) = 2n+d+5
 	gwsmallmul(2.0*(D-1.0),u);
 }
@@ -352,19 +382,19 @@ void FieldLucasLarge::mulcross2(FieldLucasMultiplier *mm,GWInteger &u)
 void FieldLucasLarge::squarecross(GWInteger &ufft)
 {
 	// 2Du^2
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftfftmul(ufft,ufft,ufft);
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(twod,ufft);
 }
 
 void FieldLucasLarge::squaremulcross(GWInteger &u)
 {
 	// 2(D-1)u^2
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);	// b(u) n+2
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);	// b(u) n+2
 	gwsquare(u);								// b(u) 2n+4
 										// b(u) n+2
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 	gwsetmulbyconst(&gwdata,2);
 	gwfftmul(dminus1,u);						// b(u) n+d+3
 }	
@@ -420,7 +450,7 @@ void IntegerLucasResidue::square()
 // u' = 4uv
 	gwfft(u,s1);			// s1 is the FFT of u
 	gwfft(v,u);				// u is the FFT of v
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 	gwsetmulbyconst(&gwdata,2);
 	gwfftfftmul(u,u,v);		// v' is 2v^2
 	gwsetmulbyconst(&gwdata,4);
@@ -438,7 +468,7 @@ void IntegerLucasResidue::squaremultiply(Multiplier *x)
 	f->squaremulcross(s1);									//                   b(s1) 2n+d+5 or n+d+3
 	gwaddsub(v,u);										// b(u) n+3 b(v) n+3
 
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 	gwsetmulbyconst(&gwdata,2);
 	gwsquare(v);										// b(u) 2n+7 b(v) 2n+7
 	gwsquare(u);
@@ -506,21 +536,21 @@ WideLucasMultiplier::~WideLucasMultiplier()
 
 void WideLucasMultiplier::mulResidues(GWInteger &v,GWInteger &u)
 {
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(bpa,v);
 	gwfftmul(bma,u);
 }	
 
 void WideLucasMultiplier::mulad(GWInteger &u,int D)
 {
-	gwsetnormroutine(&gwdata,0,ERRCHK,1);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 	gwsetmulbyconst(&gwdata,D);
 	gwfftmul(a,u);
 }
 
 void WideLucasMultiplier::mulad(GWInteger &u,double D)
 {
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(a,u);
 	gwsmallmul(D,u);
 }
@@ -529,15 +559,15 @@ void WideLucasMultiplier::mulad(GWInteger &u,GWInteger &dfft,double dd)
 {
 	if(dd!=1.0)
 	{
-		gwsetnormroutine(&gwdata,0,ERRCHK,1);
+		gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 		gwsetmulbyconst(&gwdata,(int)(dd));
 	}
 	else
 	{
-		gwsetnormroutine(&gwdata,0,ERRCHK,0);
+		gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	}
 	gwfftmul(a,u);
-	gwsetnormroutine(&gwdata,0,ERRCHK,0);
+	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	gwfftmul(dfft,u);
 }
 
@@ -606,7 +636,7 @@ void NarrowLucasMultiplier::mulad(GWInteger &u,GWInteger &dfft,double dd)
 	
 	if(aa>=-GWMULBYCONST_MAX && aa<=GWMULBYCONST_MAX)
 	{
-		gwsetnormroutine(&gwdata,0,ERRCHK,1);
+		gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
 		gwsetmulbyconst(&gwdata,(int)(aa));
 	}
 	else
@@ -615,7 +645,7 @@ void NarrowLucasMultiplier::mulad(GWInteger &u,GWInteger &dfft,double dd)
 		{
 			gwsmallmul(aa,u);
 		}
-		gwsetnormroutine(&gwdata,0,ERRCHK,0);
+		gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
 	}
 					
 	gwfftmul(dfft,u);
