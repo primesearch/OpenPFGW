@@ -51,7 +51,7 @@ void PrimeGenerator::restart()
 void PrimeGenerator::skip(uint64 to)
 {
 #if defined (_USE_PHIL_ERAT)
-	if (to > 128849018000) // 128849018880 is max, due to 2^32*30 "bands" used in erat.c  If we seek over that, erat.c will crash (on 32 bit systems)
+	if (to > 128849018000ULL) // 128849018880 is max, due to 2^32*30 "bands" used in erat.c  If we seek over that, erat.c will crash (on 32 bit systems)
 	{
 		static bool once = false;
 		if (!once)
@@ -59,7 +59,7 @@ void PrimeGenerator::skip(uint64 to)
 			once = true;
 			fprintf (stderr, "\nERROR, primegen can not seek beyond 128849018000.\nWe will only seek that far, which may be WAY less than you expect.\nThis causes an infinite loop with ABC2 files using the \"prime\" modifier\n\n");
 		}
-		to = 128849018000;
+		to = 128849018000ULL;
 	}
 	erat_skipto(to);
 	#if defined (_DEBUG_PHIL_ERAT)
