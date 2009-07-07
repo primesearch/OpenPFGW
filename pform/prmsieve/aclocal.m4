@@ -106,10 +106,10 @@ AC_CACHE_CHECK([project-required C++ flags],pfgw_cv_cxxflags,[
 pfgw_cv_cxxflags="-ffloat-store"
 ])
 AC_CACHE_CHECK([project-preferred C optimizations],pfgw_cv_coptflags,[
-pfgw_cv_coptflags="-funroll-loops -fomit-frame-pointer"
+pfgw_cv_coptflags="-funroll-loops -fomit-frame-pointer -malign-double"
 ])
 AC_CACHE_CHECK([project-preferred C++ optimizations],pfgw_cv_cxxoptflags,[
-pfgw_cv_cxxoptflags="-funroll-loops -fomit-frame-pointer"
+pfgw_cv_cxxoptflags="-funroll-loops -fomit-frame-pointer -malign-double"
 ])
 AC_CACHE_CHECK([project-preferred C warnings],pfgw_cv_cwarnflags,[
 pfgw_cv_cwarnflags="-Wall -Wno-multichar -Wno-long-long -Wshadow -Wbad-function-cast -Wcast-qual -Wconversion  -Winline -Wextern-inline  -Wwrite-strings"
