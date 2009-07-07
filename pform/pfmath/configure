@@ -2679,7 +2679,7 @@ if test "${pfgw_cv_coptflags+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
 
-pfgw_cv_coptflags="-funroll-loops -fomit-frame-pointer"
+pfgw_cv_coptflags="-funroll-loops -fomit-frame-pointer -malign-double"
 
 fi
 echo "$as_me:$LINENO: result: $pfgw_cv_coptflags" >&5
@@ -2690,7 +2690,7 @@ if test "${pfgw_cv_cxxoptflags+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
 
-pfgw_cv_cxxoptflags="-funroll-loops -fomit-frame-pointer"
+pfgw_cv_cxxoptflags="-funroll-loops -fomit-frame-pointer -malign-double"
 
 fi
 echo "$as_me:$LINENO: result: $pfgw_cv_cxxoptflags" >&5
@@ -3609,7 +3609,7 @@ nasmrule=""
 nasmflags=""
 precompiledobjects=""
 
-nasmflags="-felf"
+nasmflags="-fmacho"
 if test "$nasmpath" = ""
 then
 	precompiledobjects="vpath %.o $srcdir/../../packages/nasmobj"
