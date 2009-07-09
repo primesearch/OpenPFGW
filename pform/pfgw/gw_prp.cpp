@@ -199,7 +199,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
 				bFirst=false;
 				// 120 bytes will not overflow, since we "force" the max size within the sprintf()
 				char Buf[160];
-				if (errchk)
+				if (errchk && gwdata.MAXDIFF > -1e10 && gwdata.MAXDIFF < 1e10)
 					sprintf(Buf, "PRP: %.36s %d/%d mro=%.5g sum=%.2f/%.2f\r",
                        sNumStr,iDone,iTotal, gw_get_maxerr(&gwdata), gwdata.MAXDIFF, MaxSeenDiff);
 				else
@@ -317,3 +317,4 @@ bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX,
 
    return haveFatalError;
 }
+
