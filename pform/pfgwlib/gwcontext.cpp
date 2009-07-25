@@ -2,7 +2,7 @@
 
 #include "gwcontext.h"
 #include "gwinteger.h"
-#include "../pfgw/pfgw_globals.h"
+#include "pfgw_globals.h"
 
 #include "gmp.h"
 #include "pfio.h"
