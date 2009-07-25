@@ -81,9 +81,9 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
 						if (ErrorCheck(m_dwStepsDone, m_dwStepsTotal))
 						{
 							if (*g_cpTestString)
-								sprintf(Buf,"%s%.50s %lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal, MAXERR);
+								sprintf(Buf,"%s%.50s %lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal, g_dMaxError);
 							else
-								sprintf(Buf,"%s%lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal, MAXERR);
+								sprintf(Buf,"%s%lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal, g_dMaxError);
 						}
 						else
 						{
@@ -127,7 +127,7 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
 			}
 			else
 			{
-				if (MAXERR > maxErrorAllowed)
+				if (g_dMaxError > g_dMaxErrorAllowed)
 				{
 					PFPrintfClearCurLine(lastLineLen);
 					lastLineLen = 0;
