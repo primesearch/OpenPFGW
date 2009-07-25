@@ -287,9 +287,9 @@ PFBoolean Exponentiator::Iterate()
 		{
 			pResidue->square();
 		}
-		if (gw_get_maxerr(&gwdata) > maxErrorAllowed)
+		if (gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
 		{
-         sprintf(buffer, "Detected MAXERR>%.2f (round off check) in exponentiator.cpp (Testing) ", maxErrorAllowed);
+         sprintf(buffer, "Detected MAXERR>%.2f (round off check) in exponentiator.cpp (Testing) ", g_dMaxErrorAllowed);
 			PFOutput::EnableOneLineForceScreenOutput();
 			PFOutput::OutputToErrorFileAlso(buffer, g_cpTestString, lg(exponent)-bitindex, lg(exponent));
 			PFPrintfStderr("Error, roundoff was (%.10g)  near Iteration %d/%d\n", gw_get_maxerr(&gwdata), lg(exponent)-bitindex, lg(exponent));
