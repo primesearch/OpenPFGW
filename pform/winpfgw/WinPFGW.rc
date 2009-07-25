@@ -349,7 +349,7 @@ STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About WinPFGW..."
     IDS_WINPFGW_VERSION_STRING 
-                            "Open WinPFGW Version 3.1.0 with save/restore + improved NETWORK2 + flashing icon completion"
+                            "Open WinPFGW Version 3.2.0 with save/restore + improved NETWORK2 + flashing icon completion"
 END
 
 #endif    // English (U.S.) resources
