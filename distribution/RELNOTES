@@ -1,0 +1,188 @@
+PRIMEFORM/GW RELEASE NOTES
+
+This file includes late-breaking release details that did not make it into
+other documentation in the package.  ALSO check the file News for additional
+late breaking information.
+
+Version (dev) 3.2 dev_20090723
+================================
+Built with version 25.12 of gwnum.  This version of gwnum addresses
+  SUMOUT errors that occur on some tests.
+Modify tray icon to show current number and its progress.
+Generate 64 bit residues instead of 62 bit residues.
+Added -N option for command line version.  When used PFGW will
+  execute with NORMAL priority (1.2 behavior).  Without it, PFGW
+  will execute in IDLE priority.  WinPFGW will execute in IDLE priority.
+Added -V option so that command line version of PFGW can output
+  diagnostic information.
+Only show max round off line if MAXDIFF < 1e10 because a large MAXDIFF
+  could wrap.
+When using -q in WinPFGW, ensure that the results of the test are output
+  when the number is composite.
+Use special modular reduction code when PRP testing (k*b^n+/-c)/d forms.
+Call gwset_larger_fftlen_count instead of gwset_safety_margin as it will
+  guarantee that gwnum will use the next larger FFT size.
+
+
+Version (dev) 3.1 dev_20090706
+================================
+Updated external version to meet intenal version.
+Updated to v25.11 of George Woltman's gwnum library.
+Use new modular reduction routines in gwnum for k*b^n+/-c forms.  This
+  is about twice as fast as prior releases when k > 1 and almost 6 times
+  as fast when k = 1 (except for GFNs, which use separate code).
+Removed special GFN PRP code as it is no longer necessary due to new
+  modular reduction code for k*b^n+/-c forms (which it was already using).
+Set default priority class to BELOW_NORMAL (instead of NORMAL) on Windows.
+Set priority to 20 (low) on *nix and MacIntel.
+Increased limits for factorials to 1,000,000.
+Increased limits for primorials to 20,000,000.
+Modified -r switch to act as a boolean.  Using it will force PFGW to do
+  roundoff checking for all iterations of all tests.
+Enhanced error checking so that PFGW can conditionally do MAXERR testing
+  on individual tests or specific iterations of tests.  In this release 
+  PFGW will do MAXERR checking on the first and last 50 itererations of
+  each test and every 128th iteration of each test.  It can test all
+  iterations of each test if the -r switch is used or if the number being
+  testing is within 2% of the limit of the chosen FFT size.  This will be
+  much more in-line with how Prime95 does MAXERR testing.
+GFN factoring now checks for ROUNDOFF, SUMOUT, and MAXERR conditions so
+  that it can be aborted if a problem is detected.  This means that PFGW
+  will now tell the user that they must use the -a switch when an problem
+  is detected.
+Add call to gwset_square_carefully_count() after creating the modulus so
+  that gwnum can use "safe" squaring on the first few iterations of PRP
+  tests or GFN factoring.  This will significantly reduce the likelihood
+  that the -a switch will be needed.
+Based upon George's recommendation (due to the improved error checking),
+  MAXERR is now set to 0.45 instead of 0.40.
+Call new gwinit2() function so that PFGW can verify that it is linked
+  against the correct version of the gwnum library and so that it can
+  verify that PFGW uses the same compiler switches that were used to build
+  gwnum.
+
+
+Version (dev) 1.3 dev_20090605
+================================
+Put source into SourceForge (project name is OpenPFGW).
+Updated to v25.10 of George Woltman's gwnum library.
+Ported to MacIntel.
+Addressed inconsistent handling of switches as some require parameters
+  and others have optional parameters
+Print leading zeros on residues so that they are always 16 characters
+Added -k option for terse output.
+
+
+PFGW v1.2 released Jan 30, 2005 
+================================
+
+PFGW Stable (v1.2 Release Candidate 0), 04 July 2004
+================================
+See "NEWS" file for most recent changes to this program.
+This is now the "stable release" code.  Soon, PFGW 1.2 will be released, 
+  based upon this source tree.
+
+Version (dev) 1.2 dev_20030604
+================================
+Added PrZ file support (compressed ABCD/NewPGen)
+Added a way in ABC type files to stop processing a certain variable, once
+  a prime is found.
+Extended the ABC2 format to allow a "downto" reverse search.
+
+
+Version (dev) 1.2 dev_20030425
+================================
+Re-enabled SSE2 code in -tc and -tp (using Woltman 22.13 library).  This
+  SSE2 code seems to be very stable. 
+Ported current project to unix.  It has not been buildable under unix since
+  March 2002.
+WinPFGW has color changing Tray icon (tells whether it is working or not)
+Primality TESTING now defaults to -a1 "mode".
+
+
+Version (dev) 1.2 dev_20030108
+================================
+Woltman v22.12 library linked into the Win32 version.
+Modified unary minus behavior.  -10^6 now reported as -100000 and not 100000
+The multiple exponentiation problem still exists (i.e. PFGW sees 2^2^3 as
+  64 and not as 256)
+The code which does the SUMINP!=SUMOUT logic check has been relaxed (as per
+  recommendation from George).  The Woltman code is optimized to be VERY
+  strict about this, because it is just doing squaring of very large Mersenne
+  numbers.  Within PFGW, we perform much more math, and are seeing spurious
+  SUMINP!=SUMOUT errors from time to time.  This should eliminate those
+  spurious errors, while still provide a very robust "quick" check for
+  hardware errors.
+The -tc -tp -t -tm use the SSE2 FFT's.  This was re-introduced during
+  version dev_20021107, but was not documented there.
+ALL testing modes (-t -tp -tc -tm), now force finding a FFT that is one
+  bit per limb less than it is for other PRP testing.  This change is due
+  to the fact that the testing mode logic puts much more stress on the FFTs
+  than the simply Fermat PRP testing code does.  This modification is very
+  similar to the -a1 level.  This change does slow down the testing somewhat,
+  but should remove most if not all of the "Number is composite" problems
+  (seen when testing "real" primes) due to rounding issues.  NOTE -a1 and
+  -a2 will still work fine, and they will provide an FFT with even fewer
+  bits per limb being used.  -a-1 would put the testing code right back
+  where it was (faster, but higher chance of rounding problems)
+Signficant cleanup and small bug fixing in the factoring code.  
+
+Version (dev) 1.2 dev_20021107
+================================
+CPU Speed not being reported correct (changes to new v22-8 lib that needed addressed)
+Several changes to WinPFGW (about box, verbose screen mode and some spelling errors)
+
+Version (dev) 1.2 dev_20021031
+================================
+Updated The Woltman SSE2 code working much better. Still needs MORE testing
+
+Version (dev) 1.2 dev_20020515
+================================
+Save/Restore code re-introduced again.
+
+New Woltman code (v22 code), including SSE2 (Pentium4) support.
+!!!NEED LOTS OF TESTING!!!
+
+-tc and -tp are not using SSE2 code on a P4 (yet).
+GFN DWT is not using SSE2 code yet.
+
+There may be problems caused by the default GMP being built with alloca for
+temporary storage.  This is due to the fact that GMP is using the stack for
+local storage, and when this goes about 1MB, then the program will crash.
+For very large numbers this is seen during the factoring stage (and probably
+at other places also).  If experiencing problems such as this, simpy putting
+the libgmp-3-naa.dll (no alloca verion of the dll) compiled for the correct
+CPU into the directory with PFGW (or WinPFGW) will cause that dll to be
+loaded and used by pfgw.  This should solve any problems relating to GMP.
+Note that libgmp-3-naa.dll is about 1/2 the speed of libgmp-3.dll (for
+the correct CPU), so it is not the default.  Also the "linked" in GMP is
+a i386 build, which uses alloca.
+
+Version 1.1 - 20020311
+======================
+Save/restore code has been disabled.
+
+Version 1.1 - 20010511
+======================
+Order of processing on multiple exponentiations may not be what you 
+would expect.  PFGW uses a left-right parsing, while exponentiations
+"should" be processed right-left.  So  13*2^10^3+1 "should" be 
+13*2^1000+1 which is prime but pfgw will process this number as
+13*1024^3+1 which is not the same number.  When doing work with more
+than one exponentation, be sure to use parenthesis to "help" pfgw get
+your number right.  13*2^(10^3)+1 will get you the right results.
+
+
+The '-n' nice flag is for Windows systems only. Users of unixlike systems
+should use shell tools to change task priority as required.
+
+-tc mode may incorrectly report composite results if N-1 is completely
+factored. The problem has been fixed in the current development version,
+but has not been fully regression tested. The problem only occurs in this
+extreme case - suitable workarounds include removing an unnecessary factor
+or using the -tm mode which will automatically make optimal choices.
+
+Version 1.0 - 20001129
+======================
+The new prime generator code did not make it in time for this release. Users
+are advised to manually set factoring limits to avoid factoring too deeply.
