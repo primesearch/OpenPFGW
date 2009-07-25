@@ -11,6 +11,8 @@
 
 #define countof(x)	(sizeof(x)/sizeof(x[0]))
 
+extern char g_cpTrayMsg[200];
+
 //////////////////
 // Windows sends this message when the taskbar is created. This can happen
 // if it crashes and Windows has to restart it. CTrayIcon responds by
@@ -136,11 +138,14 @@ LRESULT CTrayIcon::CTrayHook::WindowProc(UINT msg, WPARAM wp, LPARAM lp)
 //
 LRESULT CTrayIcon::OnTrayNotify(WPARAM wID, LPARAM lEvent)
 {
-	if (wID!=m_nid.uID ||
+   if (strlen(g_cpTrayMsg) > 0)
+      SetToolTipString(g_cpTrayMsg);
+
+   if (wID!=m_nid.uID ||
 		(lEvent!=WM_RBUTTONUP && lEvent!=WM_LBUTTONDBLCLK))
 		return 0;
 
-	// If there's a resource menu with the same ID as the icon, use it as 
+   // If there's a resource menu with the same ID as the icon, use it as 
 	// the right-button popup menu. CTrayIcon will interprets the first
 	// item in the menu as the default command for WM_LBUTTONDBLCLK
 	// 
