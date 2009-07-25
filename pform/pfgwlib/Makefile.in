@@ -31,10 +31,10 @@ $(ALIB):	$(OLIB) $(OSPECIAL)
 	$(RANLIB) $(ALIB)
 
 %.o:	%.c
-	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $<
+	$(CC) $(CFLAGS) -I. -I../.. -I../pfgw -c -o $@ $<
 
 %.o:	%.cpp
-	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -I. -I../.. -I../pfgw -c -o $@ $<
 
 @nasmrule@
 
