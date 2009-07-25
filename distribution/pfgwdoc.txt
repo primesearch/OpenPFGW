@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v1.3 Release (June 6, 2009)
+PrimeForm/GW documentation  PFGW v3.2 Release (July 25, 2009)
 
    ---------
    - Index -
@@ -20,12 +20,14 @@ A.1. What is PrimeForm/GW?
  Woltman, the person who made the extremely fast modular code available
  for this project (well he made it for Prime95, but allows us to use it ;)
  It is a command line (DOS Box) utility. It is an 'Open Source' project,
- and is ported to Win32, Unix, Linux, BeOS, and possibly other platforms.
+ and is ported to Win32, Unix, Linux, BeOS, MacIntel, and possibly other
+ platforms.
+
  The source code can be obtained at:
-  http://groups.yahoo.com/group/openpfgw/files/
+  http://sourceforge.net/projects/openpfgw/
  The most current development version, and the release version of PFGW 
- for Win32 can be obtained at:
-  http://groups.yahoo.com/group/primeform/files/ 
+ can be obtained at:
+  http://openpfgw.svn.sourceforge.net/viewvc/openpfgw/ 
  There are two mailing-lists concerned with PFGW:
   http://groups.yahoo.com/group/primeform/
    which is the "user's group"
@@ -298,10 +300,13 @@ B.4. The options.
       It will show you how long a trial-factoring run, or a prp test will
       take (approximately) with a certain FFT-size.
 
- -n   Nice mode.
-      Use this to make sure the program doesn't get into your
-      daily job's time. It will put the program on idle priotity.
-      This option is always enabled as of PFGW 1.3.
+ -N   Normal mode
+      Use this to force the command line version of PFGW to execute with
+      normal priority.  If not specified, PFGW will execute with idle priority.
+
+ -V   Verbose mode
+      Use this to tell PFGW to output diagnotic information for each test
+      such as the FFT size chosen by gwnum.
 
  -v   Modular vector mode.
       This will make pfgw output the number modulo each prime between
