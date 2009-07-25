@@ -8,7 +8,7 @@
 
 #include "pfintegersymbol.h"
 #include "pffactorizationsymbol.h"
-#include "../../pform/pfgw/pfgw_globals.h"
+#include "pfgw_globals.h"
 
 #undef GWDEBUG
 #undef INTDEBUG
