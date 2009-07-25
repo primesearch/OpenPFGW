@@ -38,7 +38,7 @@ $(ALIB):	$(OLIB) $(OSPECIAL)
 	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $<
 
 %.o:	%.cpp
-	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -I. -I../.. -I../pfgw -c -o $@ $<
 
 maintainer-clean:	distclean
 	rm -f configure
