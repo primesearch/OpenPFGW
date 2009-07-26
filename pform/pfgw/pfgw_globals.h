@@ -19,6 +19,10 @@ extern PFString g_sTestMode;				// This will hold things like "PRP: ", "N+1: ", 
 #include <io.h>
 #endif
 
+#ifndef _MSC_VER
+#define Sleep(x) usleep((x)*1000)
+#endif
+
 #undef GWDEBUG
 #undef INTDEBUG
 #define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp());printf(" ");}
