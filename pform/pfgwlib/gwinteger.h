@@ -1,7 +1,7 @@
 #if !defined (GW_INTEGER_H)
 #define GW_INTEGER_H
 
-#include "GWContext.h"
+#include "gwcontext.h"
 #undef gwadd
 #undef gwaddsub
 
