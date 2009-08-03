@@ -239,7 +239,10 @@ static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 
             gw_clear_maxerr(&gwdata);
 				gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-				gwsquare(gwX);
+            if (i < 30)
+               gwsquare_carefully(gwX);
+            else
+   				gwsquare(gwX);
 		
 				iDone++;
 				if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
@@ -387,7 +390,10 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 
             gw_clear_maxerr(&gwdata);
 				gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-				gwsquare(gwX);
+            if (i < 30)
+               gwsquare_carefully(gwX);
+            else
+               gwsquare(gwX);
 		
 				iDone++;
 				if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
@@ -508,7 +514,10 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 
          gw_clear_maxerr(&gwdata);
 			gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-			gwsquare(gwX);
+         if (i < 30)
+            gwsquare_carefully(gwX);
+         else
+            gwsquare(gwX);
 	
 			iDone++;
 			if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
@@ -588,7 +597,10 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 
          gw_clear_maxerr(&gwdata);
 			gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-			gwsquare(gwX);
+         if (i < 30)
+            gwsquare_carefully(gwX);
+         else
+            gwsquare(gwX);
 	
 			iDone++;
 			if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
