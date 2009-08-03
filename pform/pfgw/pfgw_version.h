@@ -9,6 +9,10 @@
  #define SHORT_OS_NAME	"BeOS"
  #define	LONG_OS_NAME	"BeOS R5 x86"
 #else
+#if defined __APPLE__
+ #define SHORT_OS_NAME	"Mac"
+ #define LONG_OS_NAME	"MacIntel"
+#else
  #define SHORT_OS_NAME	"x86"
  #define LONG_OS_NAME	"Pentium and compatibles"
 #endif
@@ -21,12 +25,12 @@
 //#define	RELEASE_LEVEL	2
 
 // for dev level
-#define DEVELOPMENT_VERSION      "20090725"
+#define DEVELOPMENT_VERSION      "20090803"
 // for sta level
-#define	STABLE_VERSION          "20090725"
-#define	RELEASE_CANDIDATE       "1c"
+#define	STABLE_VERSION          "20090803"
+#define	RELEASE_CANDIDATE       "1d"
 // for sta and release level
-#define	RELEASE_VERSION         "3.2.0"
+#define	RELEASE_VERSION         "3.2.1"
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
 
 //
