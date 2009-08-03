@@ -17,6 +17,7 @@
  #define LONG_OS_NAME	"Pentium and compatibles"
 #endif
 #endif
+#endif
 
 // 0-dev 1-stable 2-release
 
