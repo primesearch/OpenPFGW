@@ -18,8 +18,8 @@ public:
 	virtual ~Residue();
 
 	virtual void multiply(Multiplier *)=0;
-	virtual void square()=0;
-	virtual void squaremultiply(Multiplier *);
+	virtual void square(int maxSteps, int stepsLeft)=0;
+	virtual void squaremultiply(Multiplier *, int maxSteps, int stepsLeft);
 
 	virtual OutputResidue *collapse()=0;
 
@@ -59,8 +59,8 @@ protected:
     Multiplier *cloneMul();
 public:
 	void multiply(Multiplier *);
-	void square();
-	void squaremultiply(Multiplier *);
+	void square(int maxSteps, int stepsLeft);
+	void squaremultiply(Multiplier *, int maxSteps, int stepsLeft);
 
 	OutputResidue *collapse();
 };
@@ -78,7 +78,7 @@ class FieldZMultiplier : public Multiplier
 {
 public:
     virtual void mulInteger(GWInteger &X)=0;
-    virtual void squaremulInteger(GWInteger &X)=0;
+    virtual void squaremulInteger(GWInteger &X, int maxSteps, int stepsLeft)=0;
 };
 
 class IntegerMultiplier : public FieldZMultiplier
@@ -90,7 +90,7 @@ public:
     ~IntegerMultiplier();
 
     void mulInteger(GWInteger &X);
-    void squaremulInteger(GWInteger &X);
+    void squaremulInteger(GWInteger &X, int maxSteps, int stepsLeft);
 };
 
 class SmallIntegerMultiplier : public FieldZMultiplier
@@ -101,7 +101,7 @@ public:
     ~SmallIntegerMultiplier();
 
     void mulInteger(GWInteger &X);
-    void squaremulInteger(GWInteger &X);
+    void squaremulInteger(GWInteger &X, int maxSteps, int stepsLeft);
 };
 
 
@@ -130,8 +130,8 @@ protected:
     Multiplier *cloneMul();
 public:
 	void multiply(Multiplier *);
-	void square();
-	void squaremultiply(Multiplier *);
+	void square(int maxSteps, int stepsLeft);
+	void squaremultiply(Multiplier *, int maxSteps, int stepsLeft);
 
 	OutputResidue *collapse();
 };
@@ -235,7 +235,7 @@ public:
 	virtual void mulcross(FieldLucasMultiplier *mm,GWInteger &u)=0;
 	virtual void mulcross2(FieldLucasMultiplier *mm,GWInteger &u)=0;
 	virtual void squarecross(GWInteger &ufft)=0;
-	virtual void squaremulcross(GWInteger &u)=0;
+	virtual void squaremulcross(GWInteger &u, int maxSteps, int stepsLeft)=0;
 private:
 	FieldLucas(const FieldLucas &);
 	FieldLucas &operator=(const FieldLucas &);
@@ -252,7 +252,7 @@ public:
 	virtual void mulcross(FieldLucasMultiplier *mm,GWInteger &u);
 	virtual void mulcross2(FieldLucasMultiplier *mm,GWInteger &u);
 	virtual void squarecross(GWInteger &ufft);
-	virtual void squaremulcross(GWInteger &u);
+	virtual void squaremulcross(GWInteger &u, int maxSteps, int stepsLeft);
 };
 
 class FieldLucasMedium : public FieldLucas
@@ -265,7 +265,7 @@ public:
 	virtual void mulcross(FieldLucasMultiplier *mm,GWInteger &u);
 	virtual void mulcross2(FieldLucasMultiplier *mm,GWInteger &u);
 	virtual void squarecross(GWInteger &ufft);
-	virtual void squaremulcross(GWInteger &u);
+	virtual void squaremulcross(GWInteger &u, int maxSteps, int stepsLeft);
 };	
 
 class FieldLucasLarge : public FieldLucas
@@ -279,7 +279,7 @@ public:
 	virtual void mulcross(FieldLucasMultiplier *mm,GWInteger &u);
 	virtual void mulcross2(FieldLucasMultiplier *mm,GWInteger &u);
 	virtual void squarecross(GWInteger &ufft);
-	virtual void squaremulcross(GWInteger &u);
+	virtual void squaremulcross(GWInteger &u, int maxSteps, int stepsLeft);
 };
 
 #endif
