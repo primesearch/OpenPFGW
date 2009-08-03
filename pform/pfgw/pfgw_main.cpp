@@ -686,8 +686,10 @@ int pfgw_main(int argc,char *argv[])
 
    if (!pSymbol)
 #ifdef _MSC_VER
+   {
       ::SetPriorityClass(::GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-      //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_IDLE);
+      ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_IDLE);
+   }
 #else
       setpriority(PRIO_PROCESS, 0, 20);
 #endif
