@@ -119,7 +119,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\pfio;..\..\packages\wingmp;..\..\packages\gwnum"
+				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\pfio;..\pfgw;..\..\packages\wingmp;..\..\packages\gwnum"
 				PreprocessorDefinitions="_DEBUG;_LIB;GW_INLINE_ENABLED;WIN32;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
