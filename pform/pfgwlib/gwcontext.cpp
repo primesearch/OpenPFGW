@@ -3,6 +3,7 @@
 #include "gwcontext.h"
 #include "gwinteger.h"
 #include "pfgw_globals.h"
+#include "pfini.h"
 
 #include "gmp.h"
 #include "pfio.h"
@@ -25,6 +26,20 @@ extern int g_CompositeAthenticationLevel;
 extern bool g_bVerbose;
 extern bool g_bWinPFGW_Verbose;
 
+bool EvenlyDivides(uint64 k, uint32 b, uint32 n, int32 c, int32 d)
+{
+   Integer tempInteger(b);
+
+   tempInteger = pow(tempInteger, n);
+   tempInteger *= k;
+   tempInteger += c;
+
+   if (tempInteger % d == 0)
+      return true;
+   else
+      return false;
+}
+
 int CreateModulus(Integer *NN, bool kbncdEligible)
 {
    mpz_ptr gmp = NN->gmp();
@@ -33,22 +48,59 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    int   error_code;
    double   k;
    unsigned long b, n;
-   long c;
+   long c, d;
 
    sprintf(testString, "%send1", g_cpTestString);
+
    if (sscanf(testString, "%lf*%u^%u%dend%d", &k, &b, &n, &c, &error_code) == 5)
-      return CreateModulus(k, b, n, c);
+   {
+      // We can potentially use the faster modular reduction, but we need to
+      // ensure that k, b, n, and c were correctly scanned as it is possible
+      // that
+      sprintf(testString, "%.0lf*%u^%u%d", k, b, n, c);
+      if (!strcmp(testString, g_cpTestString) && k < 1e53)
+         return CreateModulus(k, b, n, c);
+   }
+
    if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
-      return CreateModulus(1.0, b, n, c);
+   {
+      sprintf(testString, "%u^%u%d", b, n, c);
+      if (!strcmp(testString, g_cpTestString))
+         return CreateModulus(1.0, b, n, c);
+   }
 
    // If this flag is set, then we will mod by (k*b^n+c)/d after the last
    // square to determine if the number is PRP.
    if (kbncdEligible)
    {
-      if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &error_code, &error_code) == 6)
-         return CreateModulus(k, b, n, c);
-      if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &error_code, &error_code) == 5)
-         return CreateModulus(1.0, b, n, c);
+      if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &d, &error_code) == 6)
+      {
+         sprintf(testString, "%(%lf*%u^%u%d)/%d", k, b, n, c, d);
+         if (!strcmp(testString, g_cpTestString) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
+            return CreateModulus(k, b, n, c);
+      }
+
+      if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &d, &error_code) == 5)
+      {
+         sprintf(testString, "(%u^%u%d)/%d", b, n, c, d);
+         if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, c, d))
+            return CreateModulus(1.0, b, n, c);
+      }
+
+      // Phi(p,b) = (b^p-1)/(b-1)
+      if (sscanf(testString, "Phi(%u,%u)/%dend%d", &n, &b, &d, &error_code) == 4)
+      {
+         sprintf(testString, "Phi(%u,%u)/%d", n, b, d);
+         if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, -1, d))
+            return CreateModulus(1.0, b, n, -1);
+      }
+
+      if (sscanf(testString, "Phi(%u,%u)end%d", &n, &b, &error_code) == 3)
+      {
+         sprintf(testString, "Phi(%u,%u)", n, b);
+         if (!strcmp(testString, g_cpTestString))
+            return CreateModulus(1.0, b, n, -1);
+      }
    }
 
    gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
@@ -65,7 +117,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    {
       char   buf[200];
       gwfft_description (&gwdata, buf);
-      PFPrintf("Using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
+      PFPrintf("Generic modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
    }
 
    if (gwnear_fft_limit (&gwdata, 2.0))
@@ -92,7 +144,7 @@ int CreateModulus(double k, unsigned long b, unsigned long n, signed long c)
    {
       char   buf[200];
       gwfft_description (&gwdata, buf);
-      PFPrintf("Using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
+      PFPrintf("Special modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
    }
 
    if (gwnear_fft_limit (&gwdata, 2.0))
@@ -112,8 +164,6 @@ void DestroyModulus()
 }
 
 // Code stolen from prime95's commonc.c to determine CPU type
-
-#include "../pfio/pfini.h"
 
 // These wrappers are used to wrap George's ini code with our ini class
 #define INI_FILE 0
