@@ -223,7 +223,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
             }
 
 				gwsetmaxmulbyconst(&gwdata, 2);	// maximum multiplier
-				if (CreateModulus(&Q)) return;
+				if (CreateModulus(&Q, true)) return;
 				{
 					GWInteger gwX;
 					gwX=2;
@@ -239,6 +239,11 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 					--R;
 				}
 				DestroyModulus();
+
+            // Phi(p,b) = (b^p-1)/(b-1)
+            // Q < R only when Q is of the form Phi(p,b) as we used the modulus
+            // (b^p-1) in the loop above.
+            R %= Q;
 
 				// factors of N are possibly in gcd(Q,R)
 				R=gcd(Q,R);
