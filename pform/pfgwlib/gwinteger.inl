@@ -25,6 +25,16 @@ GW_INLINE void gwsquare_carefully(GWInteger &s)
    gwsquare_carefully (&gwdata, s.g);
 }
 
+GW_INLINE void gwmul(GWInteger &s, GWInteger &d)
+{
+   gwmul (&gwdata, s.g, d.g);
+}
+
+GW_INLINE void gwmul_carefully(GWInteger &s, GWInteger &d)
+{
+   gwmul_carefully (&gwdata, s.g, d.g);
+}
+
 GW_INLINE void gwfftmul(GWInteger &s,GWInteger &d)
 {
    gwfftmul (&gwdata, s.g, d.g);

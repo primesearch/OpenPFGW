@@ -29,6 +29,9 @@ public:
 	friend void gwfft(const GWInteger &s,GWInteger &d);
 	friend void gwsquare(GWInteger &s);
    friend void gwsquare_carefully(GWInteger &s);
+	friend void gwmul(GWInteger &s, GWInteger &d);
+	friend void gwmul_carefully(GWInteger &s, GWInteger &d);
+	friend void gwsquare(GWInteger &s);
 	friend void gwfftmul(GWInteger &s,GWInteger &d);
 	friend void gwfftfftmul(const GWInteger &s,const GWInteger &s2,GWInteger &d);
 	friend void gwadd(const GWInteger &s,GWInteger &d);
