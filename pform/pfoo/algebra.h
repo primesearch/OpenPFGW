@@ -224,7 +224,9 @@ class FieldLucas : public FiniteField
 {
 public:
 	GWInteger *ps1;
-	GWInteger *ps2;		// scratch variables
+	GWInteger *ps2;
+	GWInteger *ps3;
+	GWInteger *ps4;		// scratch variables
 public:
 	FieldLucas(Integer *N);
     virtual ~FieldLucas();
