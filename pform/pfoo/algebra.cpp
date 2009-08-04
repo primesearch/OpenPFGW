@@ -219,7 +219,7 @@ void SmallIntegerMultiplier::squaremulInteger(GWInteger &X, int maxSteps, int st
 //==============================================================
 
 FieldLucas::FieldLucas(Integer *N)
-	: ps1(NULL), ps2(NULL)
+	: ps1(NULL), ps2(NULL), ps3(NULL), ps4(NULL)
 {
    gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
    if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
@@ -241,12 +241,16 @@ FieldLucas::FieldLucas(Integer *N)
 	
 	ps1=new GWInteger;
 	ps2=new GWInteger;
+	ps3=new GWInteger;
+	ps4=new GWInteger;
 }
 
 FieldLucas::~FieldLucas()
 {
 	delete ps1;
 	delete ps2;
+	delete ps3;
+	delete ps4;
 	DestroyModulus();
 }
 
@@ -452,6 +456,8 @@ Multiplier *IntegerLucasResidue::cloneMul()
 
 #define s1 		*f->ps1
 #define s2 		*f->ps2
+#define s3 		*f->ps3
+#define s4		*f->ps4
 
 void IntegerLucasResidue::multiply(Multiplier *x)
 {
@@ -472,16 +478,24 @@ void IntegerLucasResidue::square(int maxSteps, int stepsLeft)
 // uninspired method suggests
 // v' = 2v^2 + 2Du^2
 // u' = 4uv
-	gwfft(u,s1);			// s1 is the FFT of u
-	gwfft(v,u);				// u is the FFT of v
-	gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
-	gwsetmulbyconst(&gwdata,2);
-	gwfftfftmul(u,u,v);		// v' is 2v^2
-	gwsetmulbyconst(&gwdata,4);
-	gwfftfftmul(s1,u,u);
-					// u' is 4uv
+	gwfft(u, s1);              // s1 is the FFT of u
+   gwcopy(v, s2);
+	gwsetnormroutine(&gwdata, 0, g_bErrorCheckAllTests, 1);
+
+	gwsetmulbyconst(&gwdata, 2);
+   if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
+      gwsquare_carefully(v);
+   else
+      gwsquare(v);            // v' is 2v^2
+
+	gwsetmulbyconst(&gwdata, 4);
+   if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
+      gwmul_carefully(s2, u);
+   else
+      gwmul(s2, u);           // u' is 4uv
+
 	f->squarecross(s1);
-	gwadd(s1,v);
+	gwadd(s1, v);
 }
 
 #define DEBUGBITS(X)	{Integer XX;XX=X;printf(#X ":%ld\n",lg(XX+1));}
