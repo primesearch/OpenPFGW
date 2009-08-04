@@ -478,21 +478,26 @@ void IntegerLucasResidue::square(int maxSteps, int stepsLeft)
 // uninspired method suggests
 // v' = 2v^2 + 2Du^2
 // u' = 4uv
-	gwfft(u, s1);              // s1 is the FFT of u
-   gwcopy(v, s2);
-	gwsetnormroutine(&gwdata, 0, g_bErrorCheckAllTests, 1);
-
-	gwsetmulbyconst(&gwdata, 2);
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(v);
+   { 
+	   gwfft(u,s1);                  // s1 is the FFT of u 
+	   gwcopy(v,s2); 
+	   gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1); 
+	   gwsetmulbyconst(&gwdata,2); 
+	   gwsquare_carefully(v);        // v' is 2v^2 
+	   gwsetmulbyconst(&gwdata,4); 
+	   gwmul_carefully(s2,u);        // u' is 4uv 
+   }
    else
-      gwsquare(v);            // v' is 2v^2
-
-	gwsetmulbyconst(&gwdata, 4);
-   if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwmul_carefully(s2, u);
-   else
-      gwmul(s2, u);           // u' is 4uv
+   { 
+	   gwfft(u,s1);                  // s1 is the FFT of u 
+	   gwfft(v,u);	                  // u is the FFT of v 
+	   gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1); 
+	   gwsetmulbyconst(&gwdata,2); 
+	   gwfftfftmul(u,u,v);		      // v' is 2v^2 
+	   gwsetmulbyconst(&gwdata,4); 
+	   gwfftfftmul(s1,u,u);		      // u' is 4uv 
+   }
 
 	f->squarecross(s1);
 	gwadd(s1, v);
