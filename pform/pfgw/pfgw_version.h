@@ -26,9 +26,9 @@
 //#define	RELEASE_LEVEL	2
 
 // for dev level
-#define DEVELOPMENT_VERSION      "20090803"
+#define DEVELOPMENT_VERSION      "20090809"
 // for sta level
-#define	STABLE_VERSION          "20090803"
+#define	STABLE_VERSION          "20090809"
 #define	RELEASE_CANDIDATE       "1d"
 // for sta and release level
 #define	RELEASE_VERSION         "3.2.1"
