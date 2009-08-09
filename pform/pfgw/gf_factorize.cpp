@@ -452,7 +452,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 		}
 				// zap the gw
 		DestroyModulus();
-		return 0;
+		return bRetval;
 	}
 	// Extended GFN search
 	if(n > 30)
