@@ -250,7 +250,7 @@ Copyright 1995-2009 Mersenne Research, Inc., all rights reserved.\n\
 See the accomanying LICENSE file, (also see http://www.mersenne.org/prize.htm)\n\
 \n\
 This product uses the GNU Multiple Precision Library (version 4.1.3).\n\
-Copyright (C) 1991-2004 Free Software Foundation, Inc.\n\
+Copyright (C) 1991-2009 Free Software Foundation, Inc.\n\
 See the accompanying COPYING.LIB for Terms and Conditions.\n\
 \n\
 ";
