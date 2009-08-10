@@ -57,7 +57,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
       // We can potentially use the faster modular reduction, but we need to
       // ensure that k, b, n, and c were correctly scanned as it is possible
       // that
-      sprintf(testString, "%.0lf*%u^%u%d", k, b, n, c);
+      sprintf(testString, "%.0lf*%u^%u%+d", k, b, n, c);
       if (!strcmp(testString, g_cpTestString) && k < 1e53)
          return CreateModulus(k, b, n, c);
    }
@@ -75,14 +75,14 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    {
       if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &d, &error_code) == 6)
       {
-         sprintf(testString, "%(%lf*%u^%u%d)/%d", k, b, n, c, d);
+         sprintf(testString, "%(%lf*%u^%u%+d)/%d", k, b, n, c, d);
          if (!strcmp(testString, g_cpTestString) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
             return CreateModulus(k, b, n, c);
       }
 
       if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &d, &error_code) == 5)
       {
-         sprintf(testString, "(%u^%u%d)/%d", b, n, c, d);
+         sprintf(testString, "(%u^%u%+d)/%d", b, n, c, d);
          if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, c, d))
             return CreateModulus(1.0, b, n, c);
       }
