@@ -1,4 +1,7 @@
-Released as version 3.2.1   August 9, 2009
+Released as version 3.2.2   August 9, 2009
+
+Enhancements to: v3.2.2 RC 1e
+   - Fixed +1 check for using fast modular reduction
 
 Enhancements to: v3.2.1 RC 1d
 	- Built with updated 25.12 gwnum library.
