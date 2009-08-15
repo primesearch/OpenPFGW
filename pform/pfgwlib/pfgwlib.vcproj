@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\pfio;..\..\packages\wingmp;..\..\packages\gwnum"
+				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\pfio;..\pfgw;..\..\packages\wingmp;..\..\packages\gwnum"
 				PreprocessorDefinitions="NDEBUG;_LIB;WIN32;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
