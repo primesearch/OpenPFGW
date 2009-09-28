@@ -129,8 +129,6 @@ void PFFunctionSymbol::LoadAllFunctions(PFSymbolTable *psymRuntime)
 	
 	psymRuntime->AddSymbol(new NMinus1Exponentiator);
 	psymRuntime->AddSymbol(new NPlus1Exponentiator);
-	
-	psymRuntime->AddSymbol(new PFSamplerSymbol);
 
 	psymRuntime->AddSymbol(new F_EndMinus1);
 	psymRuntime->AddSymbol(new F_EndPlus1);
