@@ -26,12 +26,12 @@
 //#define	RELEASE_LEVEL	2
 
 // for dev level
-#define DEVELOPMENT_VERSION      "20090809"
+#define DEVELOPMENT_VERSION      "20090928"
 // for sta level
-#define	STABLE_VERSION          "20090809"
-#define	RELEASE_CANDIDATE       "1d"
+#define	STABLE_VERSION          "20090928"
+#define	RELEASE_CANDIDATE       "1f"
 // for sta and release level
-#define	RELEASE_VERSION         "3.2.1"
+#define	RELEASE_VERSION         "3.2.3"
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
 
 //
