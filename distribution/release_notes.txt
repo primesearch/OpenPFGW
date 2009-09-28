@@ -5,6 +5,7 @@ Enhancements to: v3.2.3 RC 1f
      reuse bases, thus re-ordering the file would yiled different
      results.  PFGW would use different bases for each test as it
      not reuse the same base for different numbers.
+   - Check for sumout errors during primality tests.
 
 
 Enhancements to: v3.2.2 RC 1e
