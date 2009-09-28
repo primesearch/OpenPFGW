@@ -714,8 +714,11 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 	{
 		pN=((PFIntegerSymbol*)pSymbolN)->GetValue();
 		
-		PFSymbolTable *pSubContext=new PFSymbolTable(pContext);
-		
+		PFSymbolTable *pSubContext = new PFSymbolTable(pContext);
+      PFSamplerSymbol *pSampler = new PFSamplerSymbol();
+
+      pSubContext->AddSymbol(pSampler);
+
 		if(bRetval && !bProcessed)
 		{
 			pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
@@ -895,8 +898,6 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 			
 			// an unusual curio. For the N+1 test the discriminant _D and a non-residue
 			// _B+sqrt(D) get set
-			IPFSymbol *psSampler=pSubContext->LookupSymbol("_SAMPLER");
-			PFSamplerSymbol *pSampler=(PFSamplerSymbol *)psSampler;
 			uint32 d=pSampler->ask(*pN);
 			do
 			{
@@ -1109,15 +1110,18 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 	PFFactorizationSymbol *pMinus=NULL;
 	PFFactorizationSymbol *pUs=NULL;
 	PFFactorizationSymbol *pFactorization;
-	
-	// the trivial test is identical for all test cases
+
+   // the trivial test is identical for all test cases
 	if(pSymbolN && pSymbolN->GetSymbolType()==INTEGER_SYMBOL_TYPE)
 	{
 		pN=((PFIntegerSymbol*)pSymbolN)->GetValue();
 		
-		PFSymbolTable *pSubContext=new PFSymbolTable(pContext);
-		
-		if(bRetval && !bProcessed)
+		PFSymbolTable *pSubContext = new PFSymbolTable(pContext);
+      PFSamplerSymbol *pSampler = new PFSamplerSymbol();
+
+      pSubContext->AddSymbol(pSampler);
+
+      if(bRetval && !bProcessed)
 		{
 			pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
 			int iRetval=CallSubroutine("@trivial",pSubContext);
@@ -1296,6 +1300,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 
 			// do the N-1 tests first. They are faster.
 			PFFactorizationSymbol *pFactor2=new PFFactorizationSymbol("_NMINUS1FACTOR2");
+
 			pSubContext->AddSymbol(pFactor2);
 			PFString sActive	="_NMINUS1FACTOR";
 			PFString sActive2	="_NMINUS1FACTOR2";
@@ -1371,8 +1376,6 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 				
 				// an unusual curio. For the N+1 test the discriminant _D and a non-residue
 				// _B+sqrt(D) get set
-				IPFSymbol *psSampler=pSubContext->LookupSymbol("_SAMPLER");
-				PFSamplerSymbol *pSampler=(PFSamplerSymbol *)psSampler;
 				uint32 d=pSampler->ask(*pN);
 				do
 				{
