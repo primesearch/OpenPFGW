@@ -284,13 +284,21 @@ PFBoolean Exponentiator::Iterate()
       else
          pResidue->square(m_dwStepsTotal, bitindex);
 
-      if (gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
+      if (gw_test_illegal_sumout (&gwdata))
+      {
+         sprintf(buffer, "Detected SUMOUT error in exponentiator.cpp");
+         PFOutput::EnableOneLineForceScreenOutput();
+         PFOutput::OutputToErrorFileAlso(buffer, g_cpTestString, lg(exponent)-bitindex, lg(exponent));
+         PFPrintfStderr("ERROR, ILLEGAL SUMOUT near Iteration %d/%d\n", lg(exponent)-bitindex, lg(exponent));
+         bExit = PFBoolean::b_true;
+      }
+      if (!bExit && gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
       {
          sprintf(buffer, "Detected MAXERR>%.2f (round off check) in exponentiator.cpp", g_dMaxErrorAllowed);
          PFOutput::EnableOneLineForceScreenOutput();
          PFOutput::OutputToErrorFileAlso(buffer, g_cpTestString, lg(exponent)-bitindex, lg(exponent));
-         PFPrintfStderr("Error, roundoff was (%.10g)  near Iteration %d/%d\n", gw_get_maxerr(&gwdata), lg(exponent)-bitindex, lg(exponent));
-         bExit=PFBoolean::b_true;
+         PFPrintfStderr("ERROR, roundoff was (%.10g)  near Iteration %d/%d\n", gw_get_maxerr(&gwdata), lg(exponent)-bitindex, lg(exponent));
+         bExit = PFBoolean::b_true;
       }
    }
 
