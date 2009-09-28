@@ -1,7 +1,15 @@
-Released as version 3.2.2   August 9, 2009
+Released as version 3.2.3   September 28, 2009
+
+Enhancements to: v3.2.3 RC 1f
+   - Fix an issue with -t when using an input file, PFGW would not
+     reuse bases, thus re-ordering the file would yiled different
+     results.  PFGW would use different bases for each test as it
+     not reuse the same base for different numbers.
+
 
 Enhancements to: v3.2.2 RC 1e
    - Fixed +1 check for using fast modular reduction
+
 
 Enhancements to: v3.2.1 RC 1d
 	- Built with updated 25.12 gwnum library.
@@ -15,6 +23,7 @@ Enhancements to: v3.2.1 RC 1d
 	- Fixed a bug intorduced in 3.1 that prevented PFGW from finding
 	  Fermat factors.
 	- Renamed this file to release_notes.txt.  Removed RELNOTES.
+
 
 Enhancements to: v3.2.0 RC 1c
 	- Built with version 25.12 of gwnum.  This version of gwnum addresses
