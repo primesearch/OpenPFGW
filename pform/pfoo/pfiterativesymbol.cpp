@@ -4,6 +4,7 @@
 #include "pfgw_globals.h"
 
 char g_cpTestString[70];
+bool g_bHaveFatalError;
 PFString g_sTestMode;				// This will hold things like "PRP: ", "N+1: ", "F: ", "GF(b,3): ", ...
 
 int PFIterativeSymbol::lastLineLen;
@@ -37,10 +38,7 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
 	PFBoolean bRetval=OnExecute(pContext);
 	DWORD dwFrom=0;
 	
-	if(bRetval)
-	{
-		// deserialize and get the sequence code here
-	}
+   g_bHaveFatalError = false;
 	
 	if(dwFrom==0)
 	{
@@ -127,7 +125,7 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
 			}
 			else
 			{
-				if (g_dMaxError > g_dMaxErrorAllowed)
+				if (g_bHaveFatalError)
 				{
 					PFPrintfClearCurLine(lastLineLen);
 					lastLineLen = 0;
