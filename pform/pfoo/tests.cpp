@@ -347,8 +347,10 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 		pN=((PFIntegerSymbol*)pSymbolN)->GetValue();
 		
 		PFSymbolTable *pSubContext=new PFSymbolTable(pContext);
-		
-		if(bRetval && !bProcessed)
+
+      pSubContext->AddSymbol(new PFSamplerSymbol());
+
+      if(bRetval && !bProcessed)
 		{
 			pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
 			int iRetval=CallSubroutine("@trivial",pSubContext);
