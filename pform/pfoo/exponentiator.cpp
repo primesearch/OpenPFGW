@@ -15,6 +15,10 @@
 #define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp();printf("\n");}
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
 
+extern char g_cpTestString[70];
+extern int g_CompositeAthenticationLevel;
+extern bool g_bHaveFatalError;
+
 //========================================
 // Exponentiator constructor and destructor
 //========================================
@@ -171,6 +175,7 @@ PFBoolean Exponentiator::OnInitialize()
          }
       }
    }
+
    return bRetval;
 }
 
@@ -186,10 +191,9 @@ PFBoolean Exponentiator::OnInitialize()
 PFBoolean Exponentiator::Iterate()
 {
    PFBoolean bExit=PFBoolean::b_false;
-   char buffer[200];
 
 // lg(1)=0 lg(2,3)=1, lg(4-7)=2....
-   if(bitindex==0)
+   if (bitindex==0)
    {   // the current calculation is finished, we have arrived at our destination
 
       // callouts depend if we are at a leaf or not
@@ -200,14 +204,13 @@ PFBoolean Exponentiator::Iterate()
             bExit=testFinal();
             delete pResidue;
             delete pMultiplier;
-       pResidue=NULL;
-       pMultiplier=NULL;
+            pResidue=NULL;
+            pMultiplier=NULL;
 
             // if there is an item on the stack, then switch to
             // it. If not, then we are done
             if(!bExit)
             {
-
                 if(itemStack.GetSize())
                 {
                     Exponentiation *pEx=itemStack.Pop();
@@ -225,21 +228,21 @@ PFBoolean Exponentiator::Iterate()
       }
       else if(pDestination->isLeaf())
       {
-       bExit=testLeaf();
-       delete pMultiplier;
-       pMultiplier=NULL;
+         bExit=testLeaf();
+         delete pMultiplier;
+         pMultiplier=NULL;
 
-       if(!bExit)
-            {
-                // residue continues, but the multiplier changes
+         if(!bExit)
+         {
+             // residue continues, but the multiplier changes
 
-                pMultiplier=pResidue->duplicateAsMultiplier();
+             pMultiplier=pResidue->duplicateAsMultiplier();
 
-                exponent=pDestination->prime();
-                pDestination=NULL;
-                bitindex=lg(exponent);
-            }
-            else
+             exponent=pDestination->prime();
+             pDestination=NULL;
+             bitindex=lg(exponent);
+         }
+         else
          {
             delete pResidue;
             pResidue=NULL;
@@ -247,29 +250,29 @@ PFBoolean Exponentiator::Iterate()
       }
       else
       {
-       bExit=testInternal();
-       delete pMultiplier;
-       pMultiplier=NULL;
+         bExit=testInternal();
+         delete pMultiplier;
+         pMultiplier=NULL;
 
-       if(!bExit)
-            {
-                // stack a recursion down the right, and continue
-                // down the left
-                Exponentiation *pEx=new Exponentiation;
-                pEx->setResidue(pResidue);
-                pEx->setMultiplier(pResidue);
-                pEx->setExponent(pDestination->child1->prime());
-                pEx->setDestination(pDestination->child2);
-                itemStack.Push(pEx);
+         if(!bExit)
+         {
+             // stack a recursion down the right, and continue
+             // down the left
+             Exponentiation *pEx=new Exponentiation;
+             pEx->setResidue(pResidue);
+             pEx->setMultiplier(pResidue);
+             pEx->setExponent(pDestination->child1->prime());
+             pEx->setDestination(pDestination->child2);
+             itemStack.Push(pEx);
 
 
-                pMultiplier=pResidue->duplicateAsMultiplier();
+             pMultiplier=pResidue->duplicateAsMultiplier();
 
-                exponent=pDestination->child2->prime();
-                pDestination=pDestination->child1;
-                bitindex=lg(exponent);
-            }
-            else
+             exponent=pDestination->child2->prime();
+             pDestination=pDestination->child1;
+             bitindex=lg(exponent);
+         }
+         else
          {
             delete pResidue;
             pResidue=NULL;
@@ -279,31 +282,17 @@ PFBoolean Exponentiator::Iterate()
    else
    {
       bitindex--;
-      if (bit(exponent,bitindex))
-         pResidue->squaremultiply(pMultiplier, m_dwStepsTotal, bitindex);
-      else
-         pResidue->square(m_dwStepsTotal, bitindex);
 
-      if (gw_test_illegal_sumout (&gwdata))
-      {
-         sprintf(buffer, "Detected SUMOUT error in exponentiator.cpp");
-         PFOutput::EnableOneLineForceScreenOutput();
-         PFOutput::OutputToErrorFileAlso(buffer, g_cpTestString, lg(exponent)-bitindex, lg(exponent));
-         PFPrintfStderr("ERROR, ILLEGAL SUMOUT near Iteration %d/%d\n", lg(exponent)-bitindex, lg(exponent));
-         bExit = PFBoolean::b_true;
-      }
-      if (!bExit && gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
-      {
-         sprintf(buffer, "Detected MAXERR>%.2f (round off check) in exponentiator.cpp", g_dMaxErrorAllowed);
-         PFOutput::EnableOneLineForceScreenOutput();
-         PFOutput::OutputToErrorFileAlso(buffer, g_cpTestString, lg(exponent)-bitindex, lg(exponent));
-         PFPrintfStderr("ERROR, roundoff was (%.10g)  near Iteration %d/%d\n", gw_get_maxerr(&gwdata), lg(exponent)-bitindex, lg(exponent));
-         bExit = PFBoolean::b_true;
-      }
+      if (bit(exponent,bitindex))
+         pResidue->squaremultiply(pMultiplier, m_dwStepsTotal, m_dwStepsDone);
+      else
+         pResidue->square(m_dwStepsTotal, m_dwStepsDone);
+
+      bExit = this->CheckForFatalError("Exponentiator::Iterate", m_dwStepsDone, m_dwStepsTotal);
    }
 
     // if a premature exit was called, clear the stack
-    if(bExit)
+    if (bExit)
     {
         while(itemStack.GetSize())
         {
@@ -312,7 +301,7 @@ PFBoolean Exponentiator::Iterate()
         }
     }
 
-   return(bExit);      // no premature exit
+   return bExit;      // no premature exit
 }
 
 PFBoolean Exponentiator::AimForTarget(PFFactorizationSymbol *pSymbol,const Integer &T,
@@ -430,4 +419,54 @@ void Exponentiator::AddToResults(FactorNode *pFactor)
    {
       m_PROVED*=pRetval->power();
    }
+}
+
+PFBoolean Exponentiator::CheckForFatalError(const char *caller, int currentIteration, int maxIterations)
+{
+   char  buffer1[200], buffer2[200];
+   PFBoolean  haveFatalError = PFBoolean::b_false;
+
+   // Code "straight" from PRP.
+   if (gw_test_illegal_sumout (&gwdata))
+   {
+      sprintf(buffer1, "Detected in gw_test_illegal_sumout() in %s", caller);
+      sprintf(buffer2, "Iteration: %d/%d ERROR: ILLEGAL SUMOUT", currentIteration, maxIterations);
+      haveFatalError = PFBoolean::b_true;
+   }
+
+   if (!haveFatalError && gw_test_mismatched_sums (&gwdata))
+   {
+      sprintf(buffer1, "Detected in gw_test_mismatched_sums() in %s", caller);
+      sprintf(buffer2, "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
+      haveFatalError = PFBoolean::b_true;
+   }
+
+   if (gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
+   {
+      sprintf(buffer1, "Detected in MAXERR>%.2f (round off check) in %s", g_dMaxErrorAllowed, caller);
+      sprintf(buffer2, "Iteration: %d/%d ERROR: ROUND OFF %.5g>%.2f", currentIteration, maxIterations, gw_get_maxerr(&gwdata), g_dMaxErrorAllowed);
+      haveFatalError = PFBoolean::b_true;
+   }
+
+   if (haveFatalError)
+   {
+      PFOutput::EnableOneLineForceScreenOutput();
+      PFPrintfStderr("\n");
+      PFOutput::EnableOneLineForceScreenOutput();
+      PFOutput::OutputToErrorFileAlso(buffer1, g_cpTestString, currentIteration, maxIterations);
+
+      PFPrintfStderr("%s\n  ", buffer2);
+
+      if (g_CompositeAthenticationLevel == 1)
+         PFPrintfStderr("(Test aborted, try again using the -a2 (or possibly -a0) switch)\n");
+      else if (g_CompositeAthenticationLevel == 0)
+         PFPrintfStderr("(Test aborted, try again using the -a1 switch)\n");
+      else
+         PFPrintfStderr("(Test aborted)\n");
+
+      g_dMaxError = gw_get_maxerr(&gwdata);
+      g_bHaveFatalError = true;
+   }
+
+   return haveFatalError;
 }

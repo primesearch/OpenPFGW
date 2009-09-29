@@ -28,6 +28,7 @@ protected:
 	// stacked tasks
     ExponentStack itemStack;    // stack of in progress items
 
+    PFBoolean CheckForFatalError(const char *caller, int currentIteration, int maxIterations);
 protected:
     Integer 	m_N;					// the value under test
     Integer		m_F;					// factored part used by the algorithm
@@ -47,7 +48,7 @@ public:
     Exponentiator(const Exponentiator &);
     Exponentiator &operator=(const Exponentiator &);
 
-	PFBoolean OnExecute(PFSymbolTable *pContext);
+   PFBoolean OnExecute(PFSymbolTable *pContext);
 	PFBoolean OnInitialize();
 
 	PFBoolean OnCompleted(PFSymbolTable *pContext);
