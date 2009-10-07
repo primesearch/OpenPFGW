@@ -274,7 +274,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
 
 bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX, int currentIteration, int maxIterations)
 {
-   char  buffer1[200], buffer2[200], buffer3[200];
+   char  buffer1[200], buffer2[200], buffer3[200], buffer4[200];
    bool  haveFatalError = false;
 
    // Code "straight" from PRP.
@@ -308,21 +308,19 @@ bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX,
 
    if (haveFatalError)
    {
-      PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr("\n");
-      PFOutput::EnableOneLineForceScreenOutput();
-      PFOutput::OutputToErrorFileAlso(buffer1, sNumStr, currentIteration, maxIterations);
-
-      PFPrintfStderr("%s\n  ", buffer2);
-      if (buffer3[0] != 0)
-         PFPrintfStderr("%s\n  ", buffer3);
-
       if (g_CompositeAthenticationLevel == 1)
-         PFPrintfStderr("(Test aborted, try again using the -a2 (or possibly -a0) switch)\n");
+         strcpy(buffer4, "(Test aborted, try again using the -a2 (or possibly -a0) switch)");
       else if (g_CompositeAthenticationLevel == 0)
-         PFPrintfStderr("(Test aborted, try again using the -a1 switch)\n");
+         strcpy(buffer4, "(Test aborted, try again using the -a1 switch)");
       else
-         PFPrintfStderr("(Test aborted)\n");
+         strcpy(buffer4, "(Test aborted");
+
+      PFWriteErrorToLog(g_cpTestString, buffer1, buffer2, buffer3, buffer4);
+
+      PFPrintf("%s\n", buffer1);
+      PFPrintf("%s\n", buffer2);
+      PFPrintf("%s\n", buffer3);
+      PFPrintf("%s\n", buffer4);
 
       DestroyModulus();
    }
