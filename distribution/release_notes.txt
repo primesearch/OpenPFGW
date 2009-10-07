@@ -1,4 +1,4 @@
-Released as version 3.2.3   September 28, 2009
+Released as version 3.2.3   October 7, 2009
 
 Enhancements to: v3.2.3 RC 1f
    - Fix an issue with -t when using an input file, PFGW would not
@@ -6,6 +6,11 @@ Enhancements to: v3.2.3 RC 1f
      results.  PFGW would use different bases for each test as it
      not reuse the same base for different numbers.
    - Check for sumout errors during primality tests.
+   - Modified output to pfgw_err.log to match the output shown in GUI.
+   - Fixed the GUI to show reason that a test has failed.
+   - When using -a1 or -a2, multiply MAXDIFF by 1000 to help avoid
+     SUMOUT errors.
+   - Updated to gwnum 25.13 library.
 
 
 Enhancements to: v3.2.2 RC 1e
