@@ -29,6 +29,7 @@ extern "C" {
 // line feed ever (unless less than 80 columns!)
 void PFPrintfClearCurLine(int line_len=79); 
 int PFfflush(FILE *); 
+void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4);
 
 #ifdef ANSI             /* ANSI compatible version          */
 int PFPrintfStderr(const char *Fmt, ...);
@@ -70,10 +71,7 @@ class PFOutput
 
 		static void EnableOneLineForceScreenOutput() {m_bForcePrint=true;}
 
-		// Within the exponentiation loops, if errors are detected, then before printing them
-		// this function is called.  This will "trigger" the next PFPrintfStderr to write
-		// some error information to the file pfgw_err.log  that file gets errors of this type.
-		static void OutputToErrorFileAlso(const char *Msg, const char *Expr, int BitsDone, int BitsTotal);
+      static void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4);
 
 #ifdef ANSI             /* ANSI compatible version          */
 		virtual int PFPrintfStderr(const char *Fmt, const va_list &va)=0;
@@ -85,11 +83,6 @@ class PFOutput
 
 	protected:
 		static bool m_bForcePrint;
-
-		// Used to put the Error output to file
-		static bool m_bErrorPrint;
-		static PFString m_ErrMsg, m_ErrExpr;
-		static int m_BitsDone, m_BitsTotal;
 
 	private:
 		char *m_OutputLogFileName;

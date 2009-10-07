@@ -19,12 +19,6 @@ PFOutput *pOutputObj;
 
 bool PFOutput::m_bForcePrint=false;
 
-bool PFOutput::m_bErrorPrint;
-PFString PFOutput::m_ErrMsg;
-PFString PFOutput::m_ErrExpr;
-int PFOutput::m_BitsDone;
-int PFOutput::m_BitsTotal;
-
 // Nothing in the base class, just a place holder pure virtual class.
 PFOutput::PFOutput() 
 {
@@ -37,15 +31,6 @@ PFOutput::PFOutput()
 PFOutput::~PFOutput()
 {
 	CloseLogFile();
-}
-
-/*static */void PFOutput::OutputToErrorFileAlso(const char *Msg, const char *Expr, int BitsDone, int BitsTotal)
-{
-	m_bErrorPrint = true;
-	m_ErrMsg = Msg;
-	m_ErrExpr = Expr;
-	m_BitsDone = BitsDone;
-	m_BitsTotal = BitsTotal;
 }
 
 void PFOutput::InitLogFile(const char *FName, const int terseOutput)
@@ -103,27 +88,6 @@ int  PFOutput::PFLogPrintf (const char *Fmt, const va_list &va)
 	return ret;
 }
 
-// I am not going to "mess" with varargs.h crap at this time.  If you
-// don't have stdargs.h, then it is DAMN time that you upgrade your
-// compiler!
-
-//#ifdef ANSI
-//int PFPrintfStderr(const char *Fmt, ...)
-///#else
-//int PFPrintfStderr( va_list )
-//#endif
-//{
-//}
-//
-//#ifdef ANSI
-//int PFPrintf(const char *Fmt, ...)
-//#else
-//int PFPrintf( va_list )
-//#endif
-//{
-//	vprintf(
-//}
-
 int PFPrintfStderr(const char *Fmt, ...)
 {
 	va_list va;
@@ -154,4 +118,23 @@ int PFfflush(FILE *f)
 {
 	// this is a "no-op" for the GUI version, but does a fflush(f) for the console mode
 	return pOutputObj->PFfflush(f);
+}
+
+void  PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4)
+{
+	FILE *out = fopen("pfgw_err.log", "a");
+
+   if (out)
+	{
+		time_t t = time(NULL);
+		fprintf(out, "-----------------------------------------------------------------------\n");
+		fprintf(out, "Error occuring in PFGW at %s", ctime(&t));
+		fprintf(out, "Expr = %s\n", expr);
+	   fprintf(out, "%s\n", msg1);
+	   fprintf(out, "%s\n", msg2);
+      if (msg3)
+         fprintf(out, "%s\n", msg3);
+	   fprintf(out, "%s\n", msg4);
+		fclose(out);
+	}
 }
