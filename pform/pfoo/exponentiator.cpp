@@ -423,7 +423,7 @@ void Exponentiator::AddToResults(FactorNode *pFactor)
 
 PFBoolean Exponentiator::CheckForFatalError(const char *caller, int currentIteration, int maxIterations)
 {
-   char  buffer1[200], buffer2[200];
+   char  buffer1[200], buffer2[200], buffer3[200];
    PFBoolean  haveFatalError = PFBoolean::b_false;
 
    // Code "straight" from PRP.
@@ -450,19 +450,19 @@ PFBoolean Exponentiator::CheckForFatalError(const char *caller, int currentItera
 
    if (haveFatalError)
    {
-      PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr("\n");
-      PFOutput::EnableOneLineForceScreenOutput();
-      PFOutput::OutputToErrorFileAlso(buffer1, g_cpTestString, currentIteration, maxIterations);
-
-      PFPrintfStderr("%s\n  ", buffer2);
 
       if (g_CompositeAthenticationLevel == 1)
-         PFPrintfStderr("(Test aborted, try again using the -a2 (or possibly -a0) switch)\n");
+         strcpy(buffer3, "(Test aborted, try again using the -a2 (or possibly -a0) switch)");
       else if (g_CompositeAthenticationLevel == 0)
-         PFPrintfStderr("(Test aborted, try again using the -a1 switch)\n");
+         strcpy(buffer3, "(Test aborted, try again using the -a1 switch)");
       else
-         PFPrintfStderr("(Test aborted)\n");
+         strcpy(buffer3, "(Test aborted");
+
+      PFWriteErrorToLog(g_cpTestString, buffer1, buffer2, 0, buffer3);
+
+      PFPrintf("%s\n", buffer1);
+      PFPrintf("%s\n", buffer2);
+      PFPrintf("%s\n", buffer3);
 
       g_dMaxError = gw_get_maxerr(&gwdata);
       g_bHaveFatalError = true;
