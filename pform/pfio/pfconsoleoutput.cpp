@@ -23,24 +23,6 @@ int PFConsoleOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
 	int x = vfprintf(stderr, Fmt, va);
 	fflush(stderr);
 
-	if (m_bErrorPrint)
-	{
-		m_bErrorPrint = false;  // clear so the next print does not print this.
-		FILE *out = fopen("pfgw_err.log", "a");
-		if (out)
-		{
-			time_t t = time(NULL);
-			fprintf(out, "-----------------------------------------------------------------------\n");
-			fprintf(out, "Error occuring in PFGW at %s", ctime(&t));
-			fprintf(out, "Expr = %s\n", (const char*)m_ErrExpr);
-			fprintf(out, "Failed at bit %d of %d\n", m_BitsDone, m_BitsTotal);
-			if (m_ErrMsg)
-				fprintf(out, "Msg = %s\n", (const char*)m_ErrMsg);
-			vfprintf(out, Fmt, va);
-			fprintf(out, "\n");
-			fclose(out);
-		}
-	}
 	return x;
 }
 

@@ -55,25 +55,6 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
       ret = _vsnprintf(Buffer, BufLen, Fmt, va);
    }
 
-   if (m_bErrorPrint)
-   {
-      m_bErrorPrint = false;  // clear so the next print does not print this.
-      FILE *out = fopen("pfgw_err.log", "a");
-      if (out)
-      {
-         time_t t = time(NULL);
-         fprintf(out, "-----------------------------------------------------------------------\n");
-         fprintf(out, "Error occuring in PFGW at %s", ctime(&t));
-         fprintf(out, "Expr = %s\n", (const char*)m_ErrExpr);
-         fprintf(out, "Failed at bit %d of %d\n", m_BitsDone, m_BitsTotal);
-         if (m_ErrMsg)
-            fprintf(out, "Msg = %s\n", (const char*)m_ErrMsg);
-         vfprintf(out, Fmt, va);
-         fprintf(out, "\n");
-         fclose(out);
-      }
-   }
-
    if (strlen(Buffer) < 150 && memcmp(Buffer, "PFGW", 4))
    {
       sprintf(g_cpTrayMsg, "WinPFGW: %s", Buffer);
