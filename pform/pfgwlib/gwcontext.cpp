@@ -127,6 +127,10 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    // Passing -1 will tell GWNUM to determine how many based upon the
    // size of the modulus
    gwset_square_carefully_count(&gwdata, -1);
+
+   if (g_CompositeAthenticationLevel > 0)
+      gwdata.MAXDIFF *= 1000.0;
+
    return error_code;
 }
 
@@ -154,6 +158,10 @@ int CreateModulus(double k, unsigned long b, unsigned long n, signed long c)
    // Passing -1 will tell GWNUM to determine how many based upon the
    // size of the modulus
    gwset_square_carefully_count(&gwdata, -1);
+
+   if (g_CompositeAthenticationLevel > 0)
+      gwdata.MAXDIFF *= 1000.0;
+
    return error_code;
 }
 
