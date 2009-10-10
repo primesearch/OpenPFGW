@@ -1,4 +1,4 @@
-Released as version 3.2.3   October 7, 2009
+Released as version 3.2.3   October 10, 2009
 
 Enhancements to: v3.2.3 RC 1f
    - Fix an issue with -t when using an input file, PFGW would not
@@ -8,9 +8,11 @@ Enhancements to: v3.2.3 RC 1f
    - Check for sumout errors during primality tests.
    - Modified output to pfgw_err.log to match the output shown in GUI.
    - Fixed the GUI to show reason that a test has failed.
-   - When using -a1 or -a2, multiply MAXDIFF by 1000 to help avoid
-     SUMOUT errors.
+   - Multiply MAXDIFF by 1000 to help avoid SUMOUT errors when
+     for generic forms or when -a1 or -a2 is used.
    - Updated to gwnum 25.13 library.
+   - Attempt to fix issue that prevents WinPFGW from showing result
+     of the test when in quick mode.
 
 
 Enhancements to: v3.2.2 RC 1e
