@@ -64,7 +64,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
 
    if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
    {
-      sprintf(testString, "%u^%u%d", b, n, c);
+      sprintf(testString, "%u^%u%+d", b, n, c);
       if (!strcmp(testString, g_cpTestString))
          return CreateModulus(1.0, b, n, c);
    }
@@ -128,8 +128,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    // size of the modulus
    gwset_square_carefully_count(&gwdata, -1);
 
-   if (g_CompositeAthenticationLevel > 0)
-      gwdata.MAXDIFF *= 1000.0;
+   gwdata.MAXDIFF *= 1000.0;
 
    return error_code;
 }
