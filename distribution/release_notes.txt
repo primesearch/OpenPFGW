@@ -1,4 +1,8 @@
-Released as version 3.2.3   October 10, 2009
+Released as version 3.2.4   December 1, 2009
+
+Enhancements to: v3.2.4 Release
+   - Fixed b^n+1 check for using fast modular reduction
+
 
 Enhancements to: v3.2.3 RC 1f
    - Fix an issue with -t when using an input file, PFGW would not
@@ -16,7 +20,7 @@ Enhancements to: v3.2.3 RC 1f
 
 
 Enhancements to: v3.2.2 RC 1e
-   - Fixed +1 check for using fast modular reduction
+   - Fixed k*b^n+1 check for using fast modular reduction
 
 
 Enhancements to: v3.2.1 RC 1d
