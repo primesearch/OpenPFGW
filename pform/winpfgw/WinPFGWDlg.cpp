@@ -687,7 +687,9 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
 						}
 					}
 				}
-				if (NextUpdate < GetTickCount())
+            if (bShowStr)
+					m_SmartEdit.AddString(cp);
+				else if (NextUpdate < GetTickCount())
 				{
 					NextUpdate = GetTickCount() + 2000;
 					char Buf[40];
@@ -695,8 +697,6 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
 					GetDlgItem(IDC_LINE_IN_FILE)->SetWindowText(Buf);
 					m_SmartEdit.AddString(cp);
 				}
-				else if (bShowStr)
-					m_SmartEdit.AddString(cp);
 				else
 					/* If in "SuperQuiet" mode, we MUSt clean up this string, or we will leak to death! */
 					delete[] cp;

@@ -81,7 +81,7 @@ CAPTION "About WinPFGW"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_ICON_GREEN,IDC_STATIC,7,21,20,20
-    LTEXT           "Change String Resource, NOT this!   Open WinPFGW Version 3.2.3 with save/restore code",IDC_STATIC_WINPFGW_VERSION,41,10,225,18,SS_NOPREFIX
+    LTEXT           "Change String Resource, NOT this!   Open WinPFGW Version 3.2.4 with save/restore code",IDC_STATIC_WINPFGW_VERSION,41,10,225,18,SS_NOPREFIX
     LTEXT           "Copyright (C) 2000/2009 OpenPFGW group",IDC_STATIC,41,49,142,8
     DEFPUSHBUTTON   "OK",IDOK,7,136,33,14,WS_GROUP
     LTEXT           "GUI Developed by Jim Fougeron",IDC_STATIC,41,59,119,8
@@ -175,12 +175,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "WinPFGW"
-            VALUE "FileVersion", "3, 2, 2, 0"
+            VALUE "FileVersion", "3, 2, 4, 0"
             VALUE "InternalName", "WinPFGW"
             VALUE "LegalCopyright", "Copyright (C) 2000-2009 OpenPFGW project.  Written by Jim Fougeron"
             VALUE "OriginalFilename", "WinPFGW.EXE"
             VALUE "ProductName", "WinPFGW (OpenPFGW Application)"
-            VALUE "ProductVersion", "3, 2, 3, 0"
+            VALUE "ProductVersion", "3, 2, 4, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -349,7 +349,7 @@ STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About WinPFGW..."
     IDS_WINPFGW_VERSION_STRING 
-                            "Open WinPFGW Version 3.2.3 with save/restore + improved NETWORK2 + flashing icon completion"
+                            "Open WinPFGW Version 3.2.4 with save/restore + improved NETWORK2 + flashing icon completion"
 END
 
 #endif    // English (U.S.) resources
