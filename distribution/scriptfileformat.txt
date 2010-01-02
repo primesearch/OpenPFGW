@@ -1,9 +1,9 @@
-Specifics compatible with PFGW v1.2 Release (January 30, 2005)
+Specifics compatible with PFGW v3.3 Release (December 18, 2009)
 
 NOTE the scriptify project, is a Perl program that converts a "C" like
 language, into PFGW scripts.  Scriptify handle functions, symbol scoping,
-and C conditional structures (for, which, if/else, ...).  See Scriptify.0.04.pl
-which is the source program, and scriptify.0.7.htm which is the documentation.
+and C conditional structures (for, which, if/else, ...).  See Scriptify.0.95.pl
+which is the source program, and scriptify.0.8.htm which is the documentation.
 
 Script file format:
 SCRIPT
@@ -29,11 +29,28 @@ Also totally blank lines are ignored.  They (comments and blank lines) can
 be used to make the script code more readable.
 
     PRP <value>[, <strvarname>]
-Tests the given value.  Note PRP may not be used in an IF statement.  The
-optional <strvarname> argument must be a string variable, if it is specified
-then this is output to the log file instead of the decimal expansion of the
-<value>.   The PRP function uses the -f -s -e values passed into PFGW on
-the command line (i.e. factorization will take place if asked for).
+    PRP <strvarname>
+Perform a PRP test on the given value.  Note PRP may not be used in an IF
+statement.  The <strvarname> argument must be a string variable.  It is 
+optional for the first form, but required for the second form.  Note that the
+second form can take advantage of special modular reduction logic for 
+expressions in the form k*b^n+/-c.  If specified then this is output to
+the log file instead of the decimal expansion of <value>.  PRP will set
+the variable ISPRP to true of the value is PRP.  It will set ISPRIME to
+true if the value is trivially prime.
+
+    PRIMEC <strvarname>
+    PRIMEP <strvarname>
+    PRIMEM <strvarname>
+Perform a primality test on the given value.  PRIMEC does a combined test
+(argument -tc).  PRIMEP does a +1 test (argument -tp).  PRIMEM does a
+-1 test (argument -tm).  None of these can be used in an IF statement.  The
+<strvarname> argument must be a string variable and can hold an expression
+rather than a decimal expansion.  The test will set ISPRIME to true if the
+value is prime.  The test will set ISPRP to true if the value is PRP.  This
+can happen on numbers that PFGW cannot prove primality on (Lucas PRPs for 
+example) or if the wrong function is called, such as using PRIMEP for
+k*b^n+1 values.
 
     FACTORIZE <value>
 Attempts to factorized a number.  FACTORIZE will use the passed in -e -s 
@@ -57,11 +74,11 @@ but just that factoring to the level specified DID NOT prove the number
 prime.  If a factor was found (FACTORFOUND > 1), then the ISPRIME == 0
 will of course mean the original number WAS composite.
 
-** Any call to the PRP function WILL use the command line -s -e and modular
-string (if they were provided). If ALL factoring is to be done within the
-script file's FACTORIZE, then using -f0 (for no factoring at all), might be 
-appropriate.  However, if a script file is used to "build" a number form,
-which itself might need factoring, then simply allowing the PRP to perform
+** Any call to the PRP or PRIME functions WILL use the command line -s -e
+and modular string (if they were provided). If ALL factoring is to be done
+within the script file's FACTORIZE, then using -f0 (for no factoring at all),
+might be  appropriate.  However, if a script file is used to "build" a number
+form, which itself might need factoring, then simply allowing the PRP to perform
 it's normal factoring might be the right thing to do.
 
     DIM <varname>[, <value>]
@@ -227,6 +244,9 @@ is stored in the variable ERRORLEVEL.
 
 Other notes:
 
+The variable ISPRP is set to 1 (true) if the last number tested was PRP
+and 0 (false) otherwise.
+
 The variable ISPRIME is set to 1 (true) if the last number tested was prime,
 0 (false) otherwise.
 
@@ -262,6 +282,9 @@ OPENFILEOUT
 OPENFILEAPP
 P
 PHI
+PRIMEC
+PRIMEM
+PRIMEP
 PRIMU
 PRIMV
 PRINT
@@ -282,9 +305,10 @@ WRITE
 
 These variables are PRE defined.  They can not be defined again, but can be 
 used, and certain functions will "set" them:
-ISPRIME      (number  Set by PRP and FACTORIZE)
+ISPRP        (number  Set by PRP, PRIMEC, PRIMEM, PRIMEP and FACTORIZE)
+ISPRIME      (number  Set by PRP, PRIMEC, PRIMEM, PRIMEP and FACTORIZE)
 ERRORLEVEL   (number  Set by call to SHELL command, errorlevel return to shell)
 FACTORFOUND  (number  Set by FACTORIZE)
 MINF         (number  input used by FACTORIZE)
 MAXF         (number  input used by FACTORIZE)
-MODF	     (string  input used by FACTORIZE, modular factoring string)
+MODF	       (string  input used by FACTORIZE, modular factoring string)

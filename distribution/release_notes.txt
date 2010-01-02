@@ -1,7 +1,10 @@
-Released as version 3.2.4   December 1, 2009
+Released as version 3.2.4   December 4, 2009
 
 Enhancements to: v3.2.4 Release
    - Fixed b^n+1 check for using fast modular reduction
+   - Some prime numbers silently fail (i.e. no errors detected)
+     when testing for primality.  To address this, PFGW will tell
+     gwnum to use an irrational FFT for all tests.
 
 
 Enhancements to: v3.2.3 RC 1f
