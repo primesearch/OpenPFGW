@@ -1,6 +1,7 @@
-#include "pfiopch.h"
 #include <string.h>
 #include <ctype.h>
+
+#include "pfiopch.h"
 #include "pfscriptfile.h"
 
 extern bool volatile g_bExitNow;
@@ -31,10 +32,14 @@ PFScriptFile::PFScriptFile(const char* FileName)
 	m_pTable->AddSymbol(pNewStr);
 
 	Integer *iVal=new Integer(0);
+	pNew=new PFIntegerSymbol("ISPRP",iVal);
+	m_pTable->AddSymbol(pNew);
+
+   iVal=new Integer(0);
 	pNew=new PFIntegerSymbol("ISPRIME",iVal);
 	m_pTable->AddSymbol(pNew);
 
-	Integer *iRetVal=new Integer(0);
+   Integer *iRetVal=new Integer(0);
 	pNew=new PFIntegerSymbol("ERRORLEVEL",iRetVal);
 	m_pTable->AddSymbol(pNew);
 
@@ -106,7 +111,7 @@ void PFScriptFile::LoadFirstLine()
 	}
 }
 
-int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid)
+int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid, PFSymbolTable *psymRuntime)
 {
 	bool doTest=false,end=false;
 	char *scrPtr;
@@ -158,45 +163,113 @@ int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid)
 		
 			// command name now in buff, arguments pointed to by scrPtr.
 		end=false;
-		if (!strcmp(buff,"PRP")) 
-		{
+      psymRuntime->RemoveSymbol("_TESTMODE");
+      if (!strcmp(buff, "PRIMEP"))
+      {
+         IPFSymbol *pSymbol=m_pTable->LookupSymbol(scrPtr);
+
+         // If the line is an expression, then we don't need to do any
+         // special evaluation
+         if (pSymbol != NULL)
+         {
+            m_pTable->AddSymbol(new PFStringSymbol("_TESTMODE", "P"));
+            doTest=true;
+            m_sCurrentExpression = pSymbol->GetStringValue();
+         }
+         else
+         {
+			   PFOutput::EnableOneLineForceScreenOutput();
+			   PFPrintfStderr("Unknown variable name on line %d",m_nInstrPtr+1);
+			   end=true;
+         }
+      }
+      else if (!strcmp(buff, "PRIMEM"))
+      {
+         IPFSymbol *pSymbol=m_pTable->LookupSymbol(scrPtr);
+
+         // If the line is an expression, then we don't need to do any
+         // special evaluation
+         if (pSymbol != NULL)
+         {
+            psymRuntime->AddSymbol(new PFStringSymbol("_TESTMODE", "M"));
+            doTest=true;
+            m_sCurrentExpression = pSymbol->GetStringValue();
+         }
+         else
+         {
+			   PFOutput::EnableOneLineForceScreenOutput();
+			   PFPrintfStderr("Unknown variable name on line %d",m_nInstrPtr+1);
+			   end=true;
+         }
+      }
+      else if (!strcmp(buff, "PRIMEC"))
+      {
+         IPFSymbol *pSymbol=m_pTable->LookupSymbol(scrPtr);
+
+         // If the line is an expression, then we don't need to do any
+         // special evaluation
+         if (pSymbol != NULL)
+         {
+            psymRuntime->AddSymbol(new PFStringSymbol("_TESTMODE", "C"));
+            doTest=true;
+            m_sCurrentExpression = pSymbol->GetStringValue();
+         }
+         else
+         {
+			   PFOutput::EnableOneLineForceScreenOutput();
+			   PFPrintfStderr("Unknown variable name on line %d",m_nInstrPtr+1);
+			   end=true;
+         }
+      }
+      else if (!strcmp(buff,"PRP")) 
+      {
 			char *ptr2,*valptr;
 			doTest=true;
 			bool bText=false;
-			if ((ptr2=strchr(scrPtr,','))!=NULL) {
-				bText = true;
-				*ptr2=0;
-				ptr2++;
-				while (isspace(*ptr2))
-					ptr2++;
-				IPFSymbol *pSymbol=m_pTable->LookupSymbol(ptr2);
-				if (pSymbol==NULL) {
-					PFOutput::EnableOneLineForceScreenOutput();
-					PFPrintfStderr("Unknown variable name on line %d",m_nInstrPtr+1);
-					end=true;
-					break;
-				}
-	
-				PFString tStr=pSymbol->GetStringValue();
 
-				m_sCurrentExpression=tStr;
-			}
-			Integer *toPrp=ex_evaluate(m_pTable,scrPtr);
-			if (toPrp==NULL) {
-				*pbIntValid=false;
-				m_sCurrentExpression="";
-				PFOutput::EnableOneLineForceScreenOutput();
-				PFPrintfStderr("Bad expression to PRP on line %d",m_nInstrPtr);
-				end=true;
-			}
-			*pInt=*toPrp;
-			if (!bText) {
-				valptr=pInt->Itoa();
-				m_sCurrentExpression=valptr;
-				delete[] valptr;
-			}
-			*pbIntValid=true;
-			delete toPrp;
+         IPFSymbol *pSymbol=m_pTable->LookupSymbol(scrPtr);
+
+         // If the line is an expression, then we don't need to do any
+         // special evaluation
+         if (pSymbol != NULL)
+            m_sCurrentExpression = pSymbol->GetStringValue();
+         else
+         {
+			   if ((ptr2=strchr(scrPtr,','))!=NULL) {
+				   bText = true;
+				   *ptr2=0;
+				   ptr2++;
+				   while (isspace(*ptr2))
+					   ptr2++;
+				   pSymbol=m_pTable->LookupSymbol(ptr2);
+				   if (pSymbol==NULL) {
+					   PFOutput::EnableOneLineForceScreenOutput();
+					   PFPrintfStderr("Unknown variable name on line %d",m_nInstrPtr+1);
+					   end=true;
+					   break;
+				   }
+   	
+				   PFString tStr=pSymbol->GetStringValue();
+
+				   m_sCurrentExpression=tStr;
+			   }
+			   Integer *toPrp=ex_evaluate(m_pTable,scrPtr);
+			   if (toPrp==NULL) {
+				   *pbIntValid=false;
+				   m_sCurrentExpression="";
+				   PFOutput::EnableOneLineForceScreenOutput();
+				   PFPrintfStderr("Bad expression to PRP on line %d",m_nInstrPtr);
+				   end=true;
+			   }
+			   *pInt=*toPrp;
+			   if (!bText) {
+				   valptr=pInt->Itoa();
+				   m_sCurrentExpression=valptr;
+				   delete[] valptr;
+			   }
+			   *pbIntValid=true;
+			   delete toPrp;
+         }
 		} else if (doCommand(buff,scrPtr)) 
 			end=true;
 	} while (!doTest && !end);
@@ -211,26 +284,42 @@ int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid)
 	return e_ok;
 }
 
-void PFScriptFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString * /*p_MessageString*/) 
+void PFScriptFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString * /*p_MessageString*/) 
 {
-	IPFSymbol *pSymbol=m_pTable->LookupSymbol("ISPRIME");
-	if (pSymbol==NULL || pSymbol->GetSymbolType()!=INTEGER_SYMBOL_TYPE) {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr("Internal error, ISPRIME not set correctly.");
-	} else {
-		PFIntegerSymbol *pVar=(PFIntegerSymbol *)pSymbol;
-		Integer *iVal;
-		if (bIsPrime)
-			iVal=new Integer(1);
-		else
-			iVal=new Integer(0);
+   IPFSymbol *pSymbol=m_pTable->LookupSymbol("ISPRP");
+   if (pSymbol==NULL || pSymbol->GetSymbolType()!=INTEGER_SYMBOL_TYPE) {
+	   PFOutput::EnableOneLineForceScreenOutput();
+	   PFPrintfStderr("Internal error, ISPRP not set correctly.");
+   } else {
+	   PFIntegerSymbol *pVar=(PFIntegerSymbol *)pSymbol;
+	   Integer *iVal;
+	   if (bIsPRP)
+		   iVal=new Integer(1);
+	   else
+		   iVal=new Integer(0);
 
-		iVal=pVar->SetValue(iVal);
-		delete iVal;
-	}
+	   iVal=pVar->SetValue(iVal);
+	   delete iVal;
+   }
 
-	if (p_bMessageStringIsValid)
-		*p_bMessageStringIsValid=false;
+   pSymbol=m_pTable->LookupSymbol("ISPRIME");
+   if (pSymbol==NULL || pSymbol->GetSymbolType()!=INTEGER_SYMBOL_TYPE) {
+	   PFOutput::EnableOneLineForceScreenOutput();
+	   PFPrintfStderr("Internal error, ISPRIME not set correctly.");
+   } else {
+	   PFIntegerSymbol *pVar=(PFIntegerSymbol *)pSymbol;
+	   Integer *iVal;
+	   if (bIsPrime)
+		   iVal=new Integer(1);
+	   else
+		   iVal=new Integer(0);
+
+	   iVal=pVar->SetValue(iVal);
+	   delete iVal;
+   }
+
+   if (p_bMessageStringIsValid)
+	   *p_bMessageStringIsValid=false;
 }
 
 	// SeekToLine is not supported, but must override to stop it seeking about the file!

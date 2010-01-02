@@ -18,10 +18,10 @@ class PFCPAPFile : public PFSimpleFile
 		PFCPAPFile(const char* FileName);
 		~PFCPAPFile();
 		int SeekToLine(int LineNumber);
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
 		// This virtual function does something in this class
-		void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
+		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 	protected:
 		// This virtual function does something in this class.

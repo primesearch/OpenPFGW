@@ -244,7 +244,7 @@ PFABCFile::~PFABCFile()
 		delete[] s_array[i];
 }
 
-int PFABCFile::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid)
+int PFABCFile::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid, PFSymbolTable *psymRuntime)
 {
 	char *tempPtr;
 	int i;
@@ -361,16 +361,15 @@ int PFABCFile::SeekToLine(int LineNumber)
 	return e_ok;
 }
 
-
-void PFABCFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
+void PFABCFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
 {
 	if (m_pCompleted)
-		m_pCompleted->AddPrimeOrComposite(s_array, bIsPrime);
+		m_pCompleted->AddPrimeOrComposite(s_array, bIsPRP || bIsPrime);
 
-	m_bLastNumberPrime = bIsPrime;
+	m_bLastNumberPrime = bIsPrime || bIsPRP;
 	if (p_bMessageStringIsValid)
 		*p_bMessageStringIsValid = false;
-	if (bIsPrime) {
+	if (bIsPrime || bIsPRP) {
 		m_nCurrentMultiPrime++;
 		m_nCurrentPrimeCount++;
 	} else {

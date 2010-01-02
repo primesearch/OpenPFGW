@@ -866,7 +866,13 @@ bool PFScriptFile::Factorize(char *args) {
 	}
 	PFIntegerSymbol *pSymbolFF = (PFIntegerSymbol *)pSymbolTmp;
 
-	pSymbolTmp=m_pTable->LookupSymbol("ISPRIME");
+	pSymbolTmp=m_pTable->LookupSymbol("ISPRP");
+	if (pSymbolTmp==NULL || pSymbolTmp->GetSymbolType()!=INTEGER_SYMBOL_TYPE) {
+		PFOutput::EnableOneLineForceScreenOutput();
+		PFPrintfStderr("Internal error, ISPRP not set correctly.");
+	}
+
+   pSymbolTmp=m_pTable->LookupSymbol("ISPRIME");
 	if (pSymbolTmp==NULL || pSymbolTmp->GetSymbolType()!=INTEGER_SYMBOL_TYPE) {
 		PFOutput::EnableOneLineForceScreenOutput();
 		PFPrintfStderr("Internal error, ISPRIME not set correctly.");

@@ -27,7 +27,7 @@ PFNetworkFile::~PFNetworkFile()
 
 int PFNetworkFile::SeekToLine(int /*LineNumber*/) { return e_ok; }
 
-int PFNetworkFile::GetNextLine(PFString &sLine, Integer * /*num*/, bool *b)
+int PFNetworkFile::GetNextLine(PFString &sLine, Integer * /*num*/, bool *b, PFSymbolTable *)
 {
 	char *ptr1=NULL, *ptr2, sendStr[80];
 	int count=0,i;
@@ -127,14 +127,14 @@ void PFNetworkFile::LoadFirstLine()
 	m_nCurrentLineNum=0;  //And it always will be!!
 }
 
-void PFNetworkFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString * /*p_MessageString*/)
+void PFNetworkFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString * /*p_MessageString*/)
 {
 	char str[NETLINELEN];
 
 	if (p_bMessageStringIsValid)
 		*p_bMessageStringIsValid = false;
 
-	if (!bIsPrime)
+	if (!bIsPrime && !bIsPRP)
 		return;
 	
 	strcpy(str,"PR ");

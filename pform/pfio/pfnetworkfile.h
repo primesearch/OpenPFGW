@@ -18,10 +18,11 @@ class PFNetworkFile : public PFSimpleFile
 		~PFNetworkFile();
 
 		int SeekToLine(int LineNumber);
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
-		void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
-	protected:
+		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
+
+   protected:
 		tcpip_client *cli;
 		char expr[MAXEXPRS][NETLINELEN];
 		int curExpr,maxExpr;

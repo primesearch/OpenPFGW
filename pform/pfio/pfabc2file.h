@@ -12,7 +12,7 @@ class PFABC2File : public PFABCFile
 		~PFABC2File();
 		
 		int SeekToLine(int LineNumber);
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
 	protected:
 		void LoadFirstLine();

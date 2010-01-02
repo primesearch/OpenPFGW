@@ -11,7 +11,8 @@ PFCheckFile::PFCheckFile(const char *FileName) : PFSimpleFile(FileName)
 PFCheckFile::~PFCheckFile() {
 }
 
-int PFCheckFile::GetNextLine(PFString &sLine, Integer * /*i*/, bool *b) {
+int PFCheckFile::GetNextLine(PFString &sLine, Integer * /*i*/, bool *b, PFSymbolTable *psymRuntime)
+{
 	if (b)
 		*b = false;			// this simple file class does not "remember" or "fill in" the Integer value, ever
 Start:
@@ -140,23 +141,24 @@ ReadRestOfThisLine:;
 	return e_ok;
 }
 
-void PFCheckFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString) {
+void PFCheckFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
+{
 	if (!p_bMessageStringIsValid || !p_MessageString)
 		return;
 
-	if (bIsPrime && !m_bPrime) {
+	if ((bIsPrime || bIsPRP) && !m_bPrime) {
 		*p_MessageString = PFString("\n!!!Double Verify ERROR!!! testing ")+m_sCurrentExpression+": PRP result NOT expected.\n";
 		*p_bMessageStringIsValid=true;
 		return;
 	}
 
-	if (!bIsPrime && m_bPrime) {
+	if (!(bIsPrime || bIsPRP) && m_bPrime) {
 		*p_MessageString = PFString("\n!!!Double Verify ERROR!!! testing ")+m_sCurrentExpression+": PRP result WAS expected.\n";
 		*p_bMessageStringIsValid=true;
 		return;
 	}
 
-	if (!bIsPrime && m_nResidue!=g_u64ResidueVal && g_u64ResidueVal!=0) {	// note u64Res=0 happens when composites are tossed at one of the  "test" modes.
+	if (!(bIsPrime || bIsPRP) && m_nResidue!=g_u64ResidueVal && g_u64ResidueVal!=0) {	// note u64Res=0 happens when composites are tossed at one of the  "test" modes.
 		char residue1[40], residue2[40];
 		sprintf(residue1,"[%08lX%08lX]",(uint32)(m_nResidue>>32),(uint32)(m_nResidue&0xFFFFFFFF));
 		sprintf(residue2,"[%08lX%08lX]\n",(uint32)(g_u64ResidueVal>>32),(uint32)(g_u64ResidueVal&0xFFFFFFFF));

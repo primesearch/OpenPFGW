@@ -132,7 +132,7 @@ int PFCPAPFile::SeekToLine(int LineNumber)
 	return ret;
 }
 
-int PFCPAPFile::GetNextLine(PFString &sLine, Integer *i, bool *b)
+int PFCPAPFile::GetNextLine(PFString &sLine, Integer *i, bool *b, PFSymbolTable *psymRuntime)
 {
 	int n;
 	char TmpBuf[128], *_TmpBuf;  // no worry about buffer overflow.  NewPGen expressions will be short.
@@ -276,22 +276,22 @@ TryNextLine:;
 	return e_unknown;
 }
 
-void PFCPAPFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
+void PFCPAPFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
 {
-	m_bLastNumberPrime = bIsPrime;
+	m_bLastNumberPrime = (bIsPrime || bIsPRP);
 	if (p_bMessageStringIsValid)
 		*p_bMessageStringIsValid = false;
 	char TmpBuf[256];
 
 	// searching the "first" number and it is not prime.  Simply read the next value from the file.
-	if (!bIsPrime && e_cur == m_eSearching)
+	if (!(bIsPrime || bIsPRP) && e_cur == m_eSearching)
 	{
 		m_LastCompositeNum = m_fBaseInc + m_nGap*(m_nCurLo-1);
 		m_nCurNumFound = 0;
 		return;
 	}
 
-	m_bLastNumberPrime = bIsPrime;
+	m_bLastNumberPrime = (bIsPrime || bIsPRP);
 
 	m_LastCompositeNum = -1;
 

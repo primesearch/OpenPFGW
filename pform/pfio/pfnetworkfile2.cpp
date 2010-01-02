@@ -247,7 +247,7 @@ bool PFNetworkFile2::LogoutOfServer()
 	return true;
 }
 
-int PFNetworkFile2::GetNextLine(PFString &sLine, Integer *num, bool *b)
+int PFNetworkFile2::GetNextLine(PFString &sLine, Integer *num, bool *b, PFSymbolTable *)
 {
 	char sendStr[80];
 	tcp_ver2_xfer *pRecvPtr;
@@ -496,7 +496,7 @@ void PFNetworkFile2::LoadFirstLine()
 
 char OutBuf[50000];
 
-void PFNetworkFile2::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString * /*p_MsgStr*/)
+void PFNetworkFile2::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString * /*p_MsgStr*/)
 {
 	if (p_bMessageStringIsValid)
 		*p_bMessageStringIsValid = false;
@@ -510,7 +510,7 @@ void PFNetworkFile2::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringI
 	static DWORD dwLastSend;
 
 	// ALSO store to a local file, so that a stop/restart will still have this data.
-	if (!bIsPrime)
+	if (!bIsPrime && !bIsPRP)
 	{
 		if (!m_bSendCompositesAlso)
 			// Note this will cause the resuming to "fail" and possibly reprocess composites
@@ -567,41 +567,41 @@ void PFNetworkFile2::SendIfTimedOut()
 //	if (GetTickCount() < m_WaitTil)
 		return;
 
-TryAgain:;
-
-	int Err;
-	while ( (Err=cli->Connect(Host, Port)) != 0)
-	{
-		PFPrintf ("Trying to connect to host to send PRP.  Return %d Error %d\n", Err, cli->Error);
-		// Wait 5 seconds, and try again.  Try until the user exits.
-		for (int Cnt = 0; Cnt < 50; Cnt++)
-		{
-			Sleep(100);
-			if (g_bExitNow)
-				return;
-		}
-	}
-	if (cli->Send(m_SendStr)!=0)
-	{
-		PFPrintf ("Error sending PRP to server.  Return %d Error %d\n", Err, cli->Error);
-		cli->Close();
-		// Wait 5 seconds, and try again.  Try until the user exits.
-		for (int Cnt = 0; Cnt < 50; Cnt++)
-		{
-			Sleep(100);
-			if (g_bExitNow)
-				return;
-		}
-		goto TryAgain;
-	}
-	*m_SendStr = 0;
-	// Since the data was sent, we need to truncate the file (we are "starting over");
-	fclose(m_fpSendStr);
-	m_fpSendStr = fopen(NET2_DONEFILE, "wt");
-
-	m_WaitTil = GetTickCount() + 30*60*1000;  // Only send data once every 30 minutes
-	Sleep(500); // sleep a little before closing the socket
-	cli->Close();
+//TryAgain:;
+//
+//	int Err;
+//	while ( (Err=cli->Connect(Host, Port)) != 0)
+//	{
+//		PFPrintf ("Trying to connect to host to send PRP.  Return %d Error %d\n", Err, cli->Error);
+//		// Wait 5 seconds, and try again.  Try until the user exits.
+//		for (int Cnt = 0; Cnt < 50; Cnt++)
+//		{
+//			Sleep(100);
+//			if (g_bExitNow)
+//				return;
+//		}
+//	}
+//	if (cli->Send(m_SendStr)!=0)
+//	{
+//		PFPrintf ("Error sending PRP to server.  Return %d Error %d\n", Err, cli->Error);
+//		cli->Close();
+//		// Wait 5 seconds, and try again.  Try until the user exits.
+//		for (int Cnt = 0; Cnt < 50; Cnt++)
+//		{
+//			Sleep(100);
+//			if (g_bExitNow)
+//				return;
+//		}
+//		goto TryAgain;
+//	}
+//	*m_SendStr = 0;
+//	// Since the data was sent, we need to truncate the file (we are "starting over");
+//	fclose(m_fpSendStr);
+//	m_fpSendStr = fopen(NET2_DONEFILE, "wt");
+//
+//	m_WaitTil = GetTickCount() + 30*60*1000;  // Only send data once every 30 minutes
+//	Sleep(500); // sleep a little before closing the socket
+//	cli->Close();
 }
 
 #endif

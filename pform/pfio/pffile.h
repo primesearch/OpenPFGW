@@ -24,7 +24,7 @@ class PFSimpleFile
 
 		virtual ~PFSimpleFile();
 
-		virtual int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		virtual int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 		virtual int GetCurrentLineNumbers(int &nVirtualLineNumber, int &nPhysicalLineNumber);
 		virtual int Rewind();
 		virtual int SeekToLine(int LineNumber);
@@ -34,7 +34,7 @@ class PFSimpleFile
 		// a PFSimpleFile *v pointer can be used and ALL possible functions will work fine (even if
 		// they do nothing in this base class).
 		virtual int GetKNB(uint64 &k, uint64 &n, unsigned &b);
-		virtual void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
+      virtual void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 	protected:
 		// in the base class, this is a no-op, but a derived class should PFPrintf who it is.
@@ -96,7 +96,7 @@ class PFStringFile : public PFSimpleFile
 		PFStringFile();
 		~PFStringFile();
 
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 		int Rewind();
 		int SeekToLine(int LineNumber);
 

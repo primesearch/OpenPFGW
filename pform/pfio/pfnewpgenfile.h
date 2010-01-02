@@ -62,7 +62,7 @@ class PFNewPGenFile : public PFSimpleFile
 
 		// These virtual functions do something in this class
 		int GetKNB(uint64 &k, uint64 &n, unsigned &b);
-		void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
+      void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 	protected:
 		// This virtual function does something in this class.
@@ -168,7 +168,7 @@ class PFNewPGenDeepFile : public PFNewPGenFile
 		PFNewPGenDeepFile(const char* FileName);
 		~PFNewPGenDeepFile();
 
-		void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
+		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
 
 	protected:

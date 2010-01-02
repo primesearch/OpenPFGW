@@ -9,9 +9,9 @@ class PFCheckFile : public PFSimpleFile
 		PFCheckFile(const char* FileName);
 		~PFCheckFile();
 
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
-		void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
+		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 		void Printf_WhoAmIsString() {PFOutput::EnableOneLineForceScreenOutput();PFPrintfStderr("Check File\n");}	// you may want to un-inline this
 		PFString SignatureString() {return "CHECK_FILE";}

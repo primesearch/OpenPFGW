@@ -18,10 +18,9 @@ class PFScriptFile : public PFSimpleFile {
 			// SeekToLine is not supported, but must override to stop it seeking about the file!
 		int SeekToLine(int LineNumber);
 
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
-		void CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
-
+		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 	protected:
 		void LoadFirstLine();

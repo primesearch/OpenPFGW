@@ -158,7 +158,7 @@ int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
 	return Line[0] == 0 && feof(m_fpInputFile);
 }
 
-int PFSimpleFile::GetNextLine(PFString &sLine, Integer *, bool *b)
+int PFSimpleFile::GetNextLine(PFString &sLine, Integer *, bool *b, PFSymbolTable *)
 {
 	if (b)
 		*b = false;			// this simple file class does not "remember" or "fill in" the Integer value, ever
@@ -304,7 +304,7 @@ int PFSimpleFile::GetKNB(uint64 & /*k*/, uint64 & /*n*/, unsigned & /*b*/)
 	return e_unknown;
 }
 
-void PFSimpleFile::CurrentNumberIsPrime(bool /*bIsPrime*/, bool *p_bMessageStringIsValid, PFString * /*p_MessageString*/)
+void PFSimpleFile::CurrentNumberIsPRPOrPrime(bool /*bIsPRP*/, bool /*bIsPrime*/, bool *p_bMessageStringIsValid, PFString * /*p_MessageString*/)
 {
 	if (p_bMessageStringIsValid)
 		*p_bMessageStringIsValid = false;
@@ -330,7 +330,7 @@ PFStringFile::~PFStringFile()
 {
 }
 
-int PFStringFile::GetNextLine(PFString &sLine, Integer *, bool *b)
+int PFStringFile::GetNextLine(PFString &sLine, Integer *, bool *b, PFSymbolTable *)
 {
 	if (b)
 		*b = false;			// this string file class does not "remember" or "fill in" the Integer value, ever

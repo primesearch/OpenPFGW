@@ -946,12 +946,12 @@ int PFNewPGenFile::GetKNB(uint64 &k, uint64 &n, unsigned &b)
 	return e_ok;
 }
 
-void PFNewPGenFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
+void PFNewPGenFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
 {
-	m_bGoOnToNextMuli = bIsPrime;
+	m_bGoOnToNextMuli = (bIsPrime || bIsPRP);
 	if (p_bMessageStringIsValid)
 		*p_bMessageStringIsValid = false;
-	if (!bIsPrime)
+	if (!(bIsPrime || bIsPRP))
 	{
 		// For twin/SG, twin/CC, LP, and LM, do not reset the count. Instead, go on to the next expression.
 		if (m_nCurrentMultiPrime && (m_npg_c == 'J' || m_npg_c == 'K' || m_npg_c == 'Y' || m_npg_c == 'Z'))
@@ -1271,10 +1271,10 @@ PFNewPGenDeepFile::~PFNewPGenDeepFile()
 {
 }
 
-void PFNewPGenDeepFile::CurrentNumberIsPrime(bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
+void PFNewPGenDeepFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid, PFString *p_MessageString)
 {
 	if (!m_bSpecialDeepFactoringNeeded && !m_bSimpleDeepFactoringNeeded)
-		PFNewPGenFile::CurrentNumberIsPrime(bIsPrime, p_bMessageStringIsValid, p_MessageString);
+		PFNewPGenFile::CurrentNumberIsPRPOrPrime(bIsPRP, bIsPrime, p_bMessageStringIsValid, p_MessageString);
 	else if (m_bSimpleDeepFactoringNeeded)
 	{
 	}
