@@ -7,6 +7,10 @@ Enhancements to: v3.2.5 RC 1g
      read scriptfileformat.txt for more information on how to
      use these new features.  Note that old PFGW scripts might not
      work correctly with this version of PFGW.
+   - PFGW scripts can now use forms (input as strings) for the PRP
+     test.  Previous releases handled decimal expansions only.  With
+     this release PFGW scripts can take advantage of fast modular
+     reduction.
 
 
 Enhancements to: v3.2.4 Release
