@@ -17,7 +17,7 @@ static uint32 *pMap_GF, *_pMap_GF;
 static uint32 *pMap_xGF[401], *_pMap_xGF[401];
 static bool bGFNMapInit=false;
 extern int g_CompositeAthenticationLevel;
-bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX, int currentIteration, int maxIterations);
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations);
 
 // Not super efficient, but it will not be called enough to make much difference
 static uint32 gcd(uint32 x, uint32 y)
@@ -262,7 +262,7 @@ static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 					PFPrintfStderr("%s", Buf);
 					PFfflush(stderr);
 				}
-            if (CheckForFatalError("gwGF_LoadSubs", sNumStr, &gwX, iDone, iTotal))
+            if (CheckForFatalError("gwGF_LoadSubs", &gwX, iDone, iTotal))
                return -1;
 
             if (g_bExitNow)
@@ -413,7 +413,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 					PFPrintfStderr("%s", Buf);
 					PFfflush(stderr);
 				}
-            if (CheckForFatalError("gwGF_Factor", sNumStr, &gwX, iDone, n))
+            if (CheckForFatalError("gwGF_Factor", &gwX, iDone, n))
                return -1;
 
             if (g_bExitNow)
@@ -538,7 +538,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 				PFfflush(stderr);
 			}
 
-         if (CheckForFatalError("gwGF_Factor", sNumStr, &gwX, iDone, n))
+         if (CheckForFatalError("gwGF_Factor", &gwX, iDone, n))
             return -1;
 
          if (g_bExitNow)
@@ -621,7 +621,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 				PFfflush(stderr);
 			}
 
-         if (CheckForFatalError("gwGF_Factor", sNumStr, &gwX, iDone, n))
+         if (CheckForFatalError("gwGF_Factor", &gwX, iDone, n))
             return -1;
          
          if (g_bExitNow)
