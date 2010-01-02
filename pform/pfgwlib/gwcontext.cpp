@@ -104,6 +104,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    }
 
    gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   gwset_irrational_general_mod(&gwdata, false);
 
    if (sizeof (mp_limb_t) == sizeof (uint32_t))
       error_code = gwsetup_general_mod (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size);
@@ -138,6 +139,7 @@ int CreateModulus(double k, unsigned long b, unsigned long n, signed long c)
    int   error_code;
 
    gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   gwset_irrational_general_mod(&gwdata, false);
    error_code = gwsetup (&gwdata, k, b, n, c);
 
    // debugging output
