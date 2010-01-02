@@ -1,4 +1,13 @@
-Released as version 3.2.4   December 4, 2009
+Released as version 3.2.5   December 19, 2009
+
+Enhancements to: v3.2.5 RC 1g
+   - Added new options for PFGW scripts.  It can now do primality
+     tests.  It will also differentiate between numbers that are
+     PRP and numbers that are prime based upon those tests.  Please
+     read scriptfileformat.txt for more information on how to
+     use these new features.  Note that old PFGW scripts might not
+     work correctly with this version of PFGW.
+
 
 Enhancements to: v3.2.4 Release
    - Fixed b^n+1 check for using fast modular reduction
