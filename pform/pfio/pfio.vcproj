@@ -119,7 +119,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\..\pform\pflib;..\..\packages\wingmp;..\..\packages\zlib121;..\..\packages\gwnum"
+				AdditionalIncludeDirectories="..\..\pfconfig\headers;..\..\;..\..\pform\pflib;..\..\packages\wingmp;..\..\packages\zlib121;..\..\packages\gwnum;..\..\pform\pfgw"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_NETWORK;ZLIB_DLL;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
