@@ -240,12 +240,12 @@ LPCTSTR Help_Text1 = "\
 --===COPYRIGHT AND LICENSE===--\n\
 \n\
 PrimeForm/GW - a program to perform a variety of primality tests.\n\
-Copyright (C) 1999-2009, The OpenPFGW project at primeform.net.\n\
+Copyright (C) 1999-2009, The OpenPFGW project at sourceforge.\n\
 \n\
 See the accompanying LICENSE.pfgw for the Terms and Conditions\n\
 regarding the use of this product and third-party libraries therein.\n\
 \n\
-This product uses the prime95 (version 25) libraries by George Woltman.\n\
+This product uses the gwnum libraries (version 25) by George Woltman.\n\
 Copyright 1995-2009 Mersenne Research, Inc., all rights reserved.\n\
 See the accomanying LICENSE file, (also see http://www.mersenne.org/prize.htm)\n\
 \n\
@@ -1019,7 +1019,7 @@ int pfgw_main(int argc,char *argv[])
 
       try
       {
-      while(pFile->GetNextLine(sNumber, &Result, &bResultValid) == PFSimpleFile::e_ok)
+      while(pFile->GetNextLine(sNumber, &Result, &bResultValid, psymRuntime) == PFSimpleFile::e_ok)
       {
          g_PRP_ReturnCode = 5;  // set to an "unknown" error code
 
@@ -1060,7 +1060,7 @@ int pfgw_main(int argc,char *argv[])
          // -t, test the current feature
          pSymbol=psymRuntime->LookupSymbol("_TESTMODE");
          g_bTestingMode = false;
-         if(pSymbol)
+         if (pSymbol)
          {
             g_bTestingMode = true;
             // decide which test to run
@@ -1078,22 +1078,12 @@ int pfgw_main(int argc,char *argv[])
                sTestName="morrison";
                sTestShortName="N+1";
                sTestResult="Lucas PRP!";
-
-               // Version 22.13 "seems" have fixed this bug.  We will leave the removal code 
-               // commented out just in case we need to "re-enable" this.
-
-               //CPU_FLAGS &= ~CPU_SSE2;
             }
             else if((c=='c')||(c=='C'))
             {
                sTestName="combined";
                sTestShortName="N-1/N+1";
                sTestResult="Fermat and Lucas PRP!";
-
-               // Version 22.13 "seems" have fixed this bug.  We will leave the removal code 
-               // commented out just in case we need to "re-enable" this.
-
-               //CPU_FLAGS &= ~CPU_SSE2;
             }
             
             PFPrintf("Primality testing %s [%s, Brillhart-Lehmer-Selfridge]\n",LPCTSTR(sNumber),LPCTSTR(sTestShortName));
@@ -1133,8 +1123,11 @@ int pfgw_main(int argc,char *argv[])
             {
             case PT_INCONCLUSIVE:
                {
+               // This case can happen if the primality test failed to prove
+               // primality.  An example would be a +1 test for a k*b^n+1
+               // number.  Other examples would be the PRP cases above.
                FILE *f=fopen("pfgw.log","at");
-               pFile->CurrentNumberIsPrime(true, &bMsgValid, &sMessage);
+               pFile->CurrentNumberIsPRPOrPrime(true, false, &bMsgValid, &sMessage);
                g_PRP_ReturnCode = 0;
                bIsPrimeOrPRP=true;
                if(f)
@@ -1150,24 +1143,23 @@ int pfgw_main(int argc,char *argv[])
                }
             case PT_COMPOSITE:
                sResult="composite";
-               pFile->CurrentNumberIsPrime(false, &bMsgValid, &sMessage);
+               pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                g_PRP_ReturnCode = 1;
                if (bMsgValid)
                {
                   FILE *f=fopen("pfgw.log","at");
-                  if(f)
+                  if (f)
                   {   
                      fseek(f,0L,SEEK_END);
                      fprintf (f, "%s\n", LPCTSTR(sMessage));
                      fclose(f);
                   }
                }
-
                break;
             case PT_FACTOR:
                sResult="factored";
                // Would the "TRIVIAL_FACTORED" primes play a part here?
-               pFile->CurrentNumberIsPrime(false, &bMsgValid, &sMessage);
+               pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                g_PRP_ReturnCode = 1;
                if (bMsgValid)
                {
@@ -1184,7 +1176,7 @@ int pfgw_main(int argc,char *argv[])
                {
                FILE *f=fopen("pfgw-prime.log","at");
                bIsPrimeOrPRP = true;
-               pFile->CurrentNumberIsPrime(true, &bMsgValid, &sMessage);
+               pFile->CurrentNumberIsPRPOrPrime(false, true, &bMsgValid, &sMessage);
                g_PRP_ReturnCode = 0;
                if(f)
                {   
@@ -1198,7 +1190,7 @@ int pfgw_main(int argc,char *argv[])
                break;
                }
             default:
-               pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+               pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                g_PRP_ReturnCode = 1;
                break;
             }
@@ -1244,7 +1236,7 @@ int pfgw_main(int argc,char *argv[])
             }
             
             pSymbol=psymRuntime->LookupSymbol("_TRIVIALFACTOR");
-            if(pSymbol && pSymbol->GetSymbolType()==FACTORIZATION_SYMBOL_TYPE)
+            if (pSymbol && pSymbol->GetSymbolType()==FACTORIZATION_SYMBOL_TYPE)
             {
                PFFactorizationSymbol *pF=(PFFactorizationSymbol*)pSymbol;
                PFList<FactorNode> *pList=pF->AccessList();
@@ -1257,13 +1249,13 @@ int pfgw_main(int argc,char *argv[])
                      if (sTrivial == "1")
                      {
                         PFPrintf("%s is Unity (1)\n",LPCTSTR(sNumber));
-                        pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+                        pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                         g_PRP_ReturnCode = 1;
                      }
                      else if (sTrivial == "0")
                      {
                         PFPrintf("%s is Zero (0)\n",LPCTSTR(sNumber));
-                        pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+                        pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                         g_PRP_ReturnCode = 1;
                      }
                      else
@@ -1271,7 +1263,8 @@ int pfgw_main(int argc,char *argv[])
                         // Only one factor, but is it a "power" or simply a single prime.
                         // stupid way to check for power, but it works.
                         FILE *f=fopen("pfgw-prime.log","at");
-                        pFile->CurrentNumberIsPrime(true,  &bMsgValid, &sMessage);
+                        PFPrintf("%s is trivially prime!\n", LPCTSTR(sNumber));
+                        pFile->CurrentNumberIsPRPOrPrime(false, true, &bMsgValid, &sMessage);
                         g_PRP_ReturnCode = 0;
                         if (bMsgValid)
                            PFPrintf ("%s\n", LPCTSTR(sMessage));
@@ -1291,15 +1284,18 @@ int pfgw_main(int argc,char *argv[])
                   }
                   else
                   {
-                     pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
-                     g_PRP_ReturnCode = 1;
+                     pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                      if (bMsgValid)
                      {
-                        FILE *f=fopen("pfgw-prime.log","at");
-                        fseek(f,0L,SEEK_END);
-                        fprintf (f, "%s\n", LPCTSTR(sMessage));
-                        fclose(f);
+                        FILE *f=fopen("pfgw.log","at");
+                        if (f)
+                        {   
+                           fseek(f,0L,SEEK_END);
+                           fprintf (f, "%s\n", LPCTSTR(sMessage));
+                           fclose(f);
+                        }
                      }
+                     g_PRP_ReturnCode = 1;
                      PFPrintf("%s trivially factors as: %s\n",LPCTSTR(sNumber),LPCTSTR(sTrivial));
                   }
                   PFfflush(stdout);
@@ -1324,14 +1320,14 @@ int pfgw_main(int argc,char *argv[])
                if (*_pN == 0)
                {
                   PFPrintf("%s is Zero (0)\n",LPCTSTR(sNumber));
-                  pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+                  pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 1;
                   bTrivial=PFBoolean::b_true;
                }
                else if (*_pN == 1)
                {
                   PFPrintf("%s is Unity (1)\n",LPCTSTR(sNumber));
-                  pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+                  pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 1;
                   bTrivial=PFBoolean::b_true;
                }
@@ -1372,7 +1368,7 @@ int pfgw_main(int argc,char *argv[])
                {
                   // Have a prime number, maybe caused by -f switch being used.
                   FILE *f=fopen("pfgw-prime.log","at");
-                  pFile->CurrentNumberIsPrime(true,  &bMsgValid, &sMessage);
+                  pFile->CurrentNumberIsPRPOrPrime(false, true, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 0;
                   bTrivial=PFBoolean::b_true;
                   if (bMsgValid)
@@ -1394,7 +1390,8 @@ int pfgw_main(int argc,char *argv[])
                {
                   PFPrintf("%s has factors: %s\n",LPCTSTR(sNumber),LPCTSTR(sFactorization));
                   if (!bDeep || _Q==1)
-                       pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+                     pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
+
                   g_PRP_ReturnCode = 1;
                   if (bMsgValid)
                   {
@@ -1436,7 +1433,7 @@ int pfgw_main(int argc,char *argv[])
             if (bOnlyFactors)
             {
                // just squirt sNumber and its value
-               pFile->CurrentNumberIsPrime(false,  &bMsgValid, &sMessage);
+               pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                g_PRP_ReturnCode = 0;
                if (sOnlyFactorType=="d"||sOnlyFactorType=="D")
                {
@@ -1467,7 +1464,7 @@ int pfgw_main(int argc,char *argv[])
 
                if(Retval == 1)
                {
-                  pFile->CurrentNumberIsPrime(true, &bMsgValid, &sMessage);
+                  pFile->CurrentNumberIsPRPOrPrime(true, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 0;
                   double t2;
                   t2 = ExtraOverhead_Timer.GetSecs ();
@@ -1491,7 +1488,7 @@ int pfgw_main(int argc,char *argv[])
                }
                else
                {
-                  pFile->CurrentNumberIsPrime(false, &bMsgValid, &sMessage);
+                  pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 1;
                   double t2;
                   t2 = ExtraOverhead_Timer.GetSecs ();
