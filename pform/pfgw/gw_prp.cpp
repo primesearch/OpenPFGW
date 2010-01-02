@@ -13,7 +13,7 @@
 
 extern int g_CompositeAthenticationLevel;
 extern const double g_dMaxErrorAllowed;
-bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX, int currentIteration, int maxIterations);
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations);
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
@@ -230,7 +230,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
                MaxSeenDiff = d;
          }
 
-         if (CheckForFatalError("prp_using_gwnum", sNumStr, &gwX, iDone, iTotal))
+         if (CheckForFatalError("prp_using_gwnum", &gwX, iDone, iTotal))
             return -1;
 
          if (g_bExitNow)
@@ -272,7 +272,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
    return retval;
 }
 
-bool CheckForFatalError(const char *caller, const char *sNumStr, GWInteger *gwX, int currentIteration, int maxIterations)
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations)
 {
    char  buffer1[200], buffer2[200], buffer3[200], buffer4[200];
    bool  haveFatalError = false;
