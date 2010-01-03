@@ -12,6 +12,8 @@
 #define JBC()
 #endif
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+
 void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors)
 {
 	char sExpression[100];

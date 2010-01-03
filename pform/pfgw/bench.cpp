@@ -11,6 +11,8 @@
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
 #endif
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+
 void vectorout(PFString &sFilename,PFSymbolTable *psymRuntime)
 {
 	const char *cpError;

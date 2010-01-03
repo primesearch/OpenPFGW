@@ -25,6 +25,8 @@ bool volatile g_bExitNow;
 bool volatile g_bExited;
 uint64 g_u64ResidueVal;
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+
 int g_PRP_ReturnCode;
 int g_PFGW_Mod_Checking;
 
