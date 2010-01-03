@@ -13,6 +13,8 @@ extern int g_nIterationCnt;		// located in pfgw_main.cpp
 bool g_bHideNoFactor=false;
 bool g_bReLoadFactorFile=false;
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+
 //#define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp();printf("\n");}
 #undef INTDEBUG
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
@@ -544,7 +546,7 @@ BailOut:;
 				if(sNumber.IsEmpty()) continue;
 				if (!bResultValid)
 				{
-					Integer *pResult=ex_evaluate(pTable,LPCTSTR(sNumber));
+					Integer *pResult=ex_evaluate(pTable,LPCTSTR(sNumber), 0);
 					if(pResult==NULL) continue;
 					pHelperArray->AddFactor(pResult);
 					delete pResult;

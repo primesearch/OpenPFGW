@@ -15,6 +15,7 @@
 //extern CString g_recur1, g_recur2, g_recur3, g_recur4, g_pockBase;
 //extern volatile long g_a, g_b, g_c;
 
+PFBoolean ex_parseArguments(PFString &w,PFStringArray& tfArguments);
 
 //************************************************************************************************
 // NOTES on memory usage.
