@@ -6,6 +6,8 @@
 
 extern bool volatile g_bExitNow;
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+
 PFScriptFile::PFScriptFile(const char* FileName) 
 	: PFSimpleFile(FileName), script(0)
 {
