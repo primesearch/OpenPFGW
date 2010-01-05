@@ -58,7 +58,7 @@ class PFNewPGenFile : public PFSimpleFile
 		PFNewPGenFile(const char* FileName);
 		~PFNewPGenFile();
 		int SeekToLine(int LineNumber);
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
 		// These virtual functions do something in this class
 		int GetKNB(uint64 &k, uint64 &n, unsigned &b);
@@ -169,7 +169,7 @@ class PFNewPGenDeepFile : public PFNewPGenFile
 		~PFNewPGenDeepFile();
 
 		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
-		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
+		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
 	protected:
 		void LoadFirstLine();

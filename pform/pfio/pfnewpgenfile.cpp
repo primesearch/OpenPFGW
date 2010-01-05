@@ -834,7 +834,7 @@ int PFNewPGenFile::SeekToLine(int LineNumber)
 	return ret;
 }
 
-int PFNewPGenFile::GetNextLine(PFString &sLine, Integer *i, bool *b)
+int PFNewPGenFile::GetNextLine(PFString &sLine, Integer *i, bool *b, PFSymbolTable *)
 {
 	char TmpBuf[128];  // no worry about buffer overflow.  NewPGen expressions will be short.
 	sLine = "";
@@ -1280,7 +1280,7 @@ void PFNewPGenDeepFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bo
 	}
 }
 
-int PFNewPGenDeepFile::GetNextLine(PFString & /*sLine*/, Integer * /*i*/, bool * /*b*/)
+int PFNewPGenDeepFile::GetNextLine(PFString & /*sLine*/, Integer * /*i*/, bool * /*b*/, PFSymbolTable *)
 {
 	return 0;
 }
