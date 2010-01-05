@@ -25,13 +25,10 @@
 //#define	RELEASE_LEVEL	1
 //#define	RELEASE_LEVEL	2
 
-// for dev level
-#define DEVELOPMENT_VERSION      "20091218"
-// for sta level
-#define	STABLE_VERSION          "20091218"
-#define	RELEASE_CANDIDATE       "1f"
+#define	RELEASE_VERSION         "3.2.6"
+#define	BUILD_DATE              "20100104"
+
 // for sta and release level
-#define	RELEASE_VERSION         "3.2.5"
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
 
 //
@@ -41,12 +38,12 @@
 //
 
 #if(RELEASE_LEVEL==2)
- #define VERSION_STRING RELEASE_VERSION" for "LONG_OS_NAME
- #define WINPFGW_ABOUT_VERSION_STRING RELEASE_VERSION" for "LONG_OS_NAME
+ #define VERSION_STRING                RELEASE_VERSION"."BUILD_DATE"."SHORT_OS_NAME"_Release" for "LONG_OS_NAME
+ #define WINPFGW_ABOUT_VERSION_STRING  RELEASE_VERSION" for "LONG_OS_NAME
 #elif(RELEASE_LEVEL==1)	
- #define VERSION_STRING STABLE_VERSION"."SHORT_OS_NAME"_Stable (v"RELEASE_VERSION" RC"RELEASE_CANDIDATE")"
- #define WINPFGW_ABOUT_VERSION_STRING STABLE_VERSION"."SHORT_OS_NAME"_Stable (v"RELEASE_VERSION" RC"RELEASE_CANDIDATE")"
+ #define VERSION_STRING                RELEASE_VERSION"."BUILD_DATE"."SHORT_OS_NAME"_Stable"
+ #define WINPFGW_ABOUT_VERSION_STRING  BUILD_DATE"."SHORT_OS_NAME"_Stable"
 #elif(RELEASE_LEVEL==0)	
- #define VERSION_STRING DEVELOPMENT_VERSION"."SHORT_OS_NAME"_Dev (Beta 'caveat utilitor')"
- #define WINPFGW_ABOUT_VERSION_STRING DEVELOPMENT_VERSION"."SHORT_OS_NAME"_Dev (Beta)"
+ #define VERSION_STRING                RELEASE_VERSION"."BUILD_DATE"."SHORT_OS_NAME"_Dev"
+ #define WINPFGW_ABOUT_VERSION_STRING  BUILD_DATE"."SHORT_OS_NAME"_Dev (Beta)"
 #endif	
