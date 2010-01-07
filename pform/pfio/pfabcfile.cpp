@@ -246,7 +246,7 @@ PFABCFile::~PFABCFile()
 		delete[] s_array[i];
 }
 
-int PFABCFile::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid, PFSymbolTable *psymRuntime)
+int PFABCFile::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid, PFSymbolTable *)
 {
 	char *tempPtr;
 	int i;
