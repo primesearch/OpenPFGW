@@ -174,7 +174,7 @@ int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid, 
          // special evaluation
          if (pSymbol != NULL)
          {
-            m_pTable->AddSymbol(new PFStringSymbol("_TESTMODE", "P"));
+            psymRuntime->AddSymbol(new PFStringSymbol("_TESTMODE", "P"));
             doTest=true;
             m_sCurrentExpression = pSymbol->GetStringValue();
          }
@@ -196,6 +196,7 @@ int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid, 
             psymRuntime->AddSymbol(new PFStringSymbol("_TESTMODE", "M"));
             doTest=true;
             m_sCurrentExpression = pSymbol->GetStringValue();
+            *pbIntValid=false;
          }
          else
          {
@@ -215,6 +216,7 @@ int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid, 
             psymRuntime->AddSymbol(new PFStringSymbol("_TESTMODE", "C"));
             doTest=true;
             m_sCurrentExpression = pSymbol->GetStringValue();
+            *pbIntValid=false;
          }
          else
          {
@@ -234,7 +236,10 @@ int PFScriptFile::GetNextLine(PFString &sLine, Integer *pInt, bool *pbIntValid, 
          // If the line is an expression, then we don't need to do any
          // special evaluation
          if (pSymbol != NULL)
+         {
             m_sCurrentExpression = pSymbol->GetStringValue();
+            *pbIntValid=false;
+         }
          else
          {
 			   if ((ptr2=strchr(scrPtr,','))!=NULL) {
