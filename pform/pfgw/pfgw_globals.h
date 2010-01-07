@@ -39,10 +39,6 @@ bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32 iDone, GWInteger *gwX
 int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue, uint32 dwOverride=0);
 int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue);
 
-// in gfn_prp.cpp
-bool IsValidGFN(const char *sNum, uint32 *GFN_Base, uint32 *GFN_Exp);
-bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 exp, uint64 *p_n64ValidationResidue, uint32 dwOverride=0);
-
 // in phi_prp.cpp
 void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors);
 
