@@ -1,5 +1,9 @@
 Released as version 3.2.6   January 5, 2010
 
+Enhancements to: v3.2.7 Development release
+   - Fixed new PRIMEP script function.
+   - Fixed issue with scripts where strings would not be evaluated.
+
 Enhancements to: v3.2.6 Development release
    - Fixed NewPGen file handling as it was broken by changes to 3.2.5.
 
