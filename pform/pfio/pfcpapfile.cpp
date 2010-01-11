@@ -14,7 +14,6 @@
 
 PFBoolean bRequestFactorize;
 
-Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 
 int PFCPAPFile::m_nStartingPoint[13] = { 0, 0, 0, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6 };
 
@@ -133,7 +132,7 @@ int PFCPAPFile::SeekToLine(int LineNumber)
 	return ret;
 }
 
-int PFCPAPFile::GetNextLine(PFString &sLine, Integer *i, bool *b, PFSymbolTable *psymRuntime)
+int PFCPAPFile::GetNextLine(PFString &sLine, Integer *i, bool *b, PFSymbolTable *)
 {
 	int n;
 	char TmpBuf[128], *_TmpBuf;  // no worry about buffer overflow.  NewPGen expressions will be short.
@@ -258,7 +257,7 @@ TryNextLine:;
 			{
 				// Factor found
 				//2^3320+1909228381+540+474 has factors: 7
-				PFPrintf ("%s has factors: %d\n", TmpBuf, m_pnFactors[m_nCurTestIntervalData++]);
+				PFPrintfLog ("%s has factors: %d\n", TmpBuf, m_pnFactors[m_nCurTestIntervalData++]);
 				goto TryNextLine;
 			}
 			sLine = TmpBuf;

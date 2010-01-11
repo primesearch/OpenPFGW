@@ -1,6 +1,6 @@
 // PFConsoleOutput.cpp
 //
-//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintf(const char *Fmt, ...)
+//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintfLog(const char *Fmt, ...)
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
@@ -26,7 +26,7 @@ int PFConsoleOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
 	return x;
 }
 
-int PFConsoleOutput::PFPrintf(const char *Fmt, const va_list &va)
+int PFConsoleOutput::PFPrintfLog(const char *Fmt, const va_list &va)
 {
 	int x = vprintf(Fmt, va);
 	fflush(stdout);

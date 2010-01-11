@@ -49,7 +49,7 @@ tcpip_client2::~tcpip_client2()
 	{
 		Close();
 		if (Error == -3)
-			PFPrintf("in tcpip_client2::~tcpip_client2, Close read data Error code%d\n", Error);
+			PFPrintfLog("in tcpip_client2::~tcpip_client2, Close read data Error code%d\n", Error);
 	}
 
 	
@@ -109,7 +109,7 @@ void tcpip_client2::Close()
 			int retval=recv(conn_socket,cp,sizeof(cp),0);
 			if (retval==SOCKET_ERROR || retval == 0)
 				break;  // all data has been read.
-			PFPrintf("in tcpip_client2::Close, We got %d bytes of data when we wanted to close!\n", retval);
+			PFPrintfLog("in tcpip_client2::Close, We got %d bytes of data when we wanted to close!\n", retval);
 			Error=-3;
 		}
 		closesocket(conn_socket);
@@ -133,7 +133,7 @@ int tcpip_client2::Connect(char *host,unsigned short remoteport)
 	{
 		if (remoteport==0)
 		{
-			PFPrintf("in tcpip_client2::Connect, Remote port is zero, so failing!\n", Error);
+			PFPrintfLog("in tcpip_client2::Connect, Remote port is zero, so failing!\n", Error);
 			return -1;
 		}
 		hp=GetHost(host);
@@ -141,7 +141,7 @@ int tcpip_client2::Connect(char *host,unsigned short remoteport)
 		if (hp == NULL ) 
 		{
 			Error=WSAGetLastError();
-			PFPrintf("in tcpip_client2::Connect, GetHost() failed with error code %d\n", Error);
+			PFPrintfLog("in tcpip_client2::Connect, GetHost() failed with error code %d\n", Error);
 			return -2;
 		}
 
@@ -156,18 +156,18 @@ int tcpip_client2::Connect(char *host,unsigned short remoteport)
 		conn_socket = socket(AF_INET,SOCK_STREAM,0); /* Open a socket */
 		if (conn_socket <0 )
 		{
-			PFPrintf("in tcpip_client2::Connect, socket() failed with error code %d  (socket=%d)\n", WSAGetLastError(), conn_socket);
+			PFPrintfLog("in tcpip_client2::Connect, socket() failed with error code %d  (socket=%d)\n", WSAGetLastError(), conn_socket);
 			return -3;
 		}
 
 		if (connect(conn_socket,(struct sockaddr*)&server,sizeof(server)) != 0)
 		{
 			Error=WSAGetLastError();
-			PFPrintf("in tcpip_client2::Connect, connect() failed with error code %d\n", Error);
+			PFPrintfLog("in tcpip_client2::Connect, connect() failed with error code %d\n", Error);
 			isConnected = true;
 			Close();
 			if (Error == -3)
-				PFPrintf("in tcpip_client2::Connect, Close (#1) read data Error code%d\n", Error);
+				PFPrintfLog("in tcpip_client2::Connect, Close (#1) read data Error code%d\n", Error);
 
 			return -4;
 		}
@@ -186,7 +186,7 @@ int tcpip_client2::Connect(char *host,unsigned short remoteport)
 			isConnected = true;
 			Close();
 			if (Error == -3)
-				PFPrintf("in tcpip_client2::Connect, Close (#2) read data Error code%d\n", Error);
+				PFPrintfLog("in tcpip_client2::Connect, Close (#2) read data Error code%d\n", Error);
 		}
 		return -5;
 	}
@@ -310,13 +310,13 @@ tcp_ver2_xfer * tcpip_client2::Recv()
 		retval=recv(conn_socket,cp,BytesToGet, 0);
 		if (retval==SOCKET_ERROR)
 		{
-			PFPrintf("Socket Error %d arrived after getting %d bytes of %d needed of data", WSAGetLastError(), xBase.u32PackedLen-BytesToGet, xBase.u32PackedLen);
+			PFPrintfLog("Socket Error %d arrived after getting %d bytes of %d needed of data", WSAGetLastError(), xBase.u32PackedLen-BytesToGet, xBase.u32PackedLen);
 			pXfer->cpData[xBase.u32PackedLen-BytesToGet] = 0;  // null terminate (since we have a broken packet.
 			return pXfer;
 		}
 		if (retval==0)
 		{
-			PFPrintf("Socket closed out on us %d arrived after getting %d bytes of %d needed of data", WSAGetLastError(), xBase.u32PackedLen-BytesToGet, xBase.u32PackedLen);
+			PFPrintfLog("Socket closed out on us %d arrived after getting %d bytes of %d needed of data", WSAGetLastError(), xBase.u32PackedLen-BytesToGet, xBase.u32PackedLen);
 			pXfer->cpData[xBase.u32PackedLen-BytesToGet] = 0;  // null terminate (since we have a broken packet.
 			return pXfer;
 		}
@@ -330,7 +330,7 @@ tcp_ver2_xfer * tcpip_client2::Recv()
 		if (!m_bCompressionOK)
 		{
 			// Damn, we don't have the DLL and the server sent us data compressed (it should NOT do that)
-			PFPrintf("Error, server replied to us with compressed data & we can't handle it!! Find the zLib.dll and restart PFGW\n");
+			PFPrintfLog("Error, server replied to us with compressed data & we can't handle it!! Find the zLib.dll and restart PFGW\n");
 			free(Buf);
 			return NULL;
 		}

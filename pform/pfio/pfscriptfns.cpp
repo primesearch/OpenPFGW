@@ -9,8 +9,6 @@
 extern char g_ModularSieveString[256];
 extern int g_nIterationCnt;
 
-Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
-
 // these are used by SCRIPTFile's since they do not have access to the "global" 
 uint64 g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
 
@@ -971,7 +969,7 @@ bool PFScriptFile::Print(char *args) {
 		tStr+="\n";
 
 	PFOutput::EnableOneLineForceScreenOutput();
-	PFPrintf("%s",(const char *)tStr);
+	PFPrintfLog("%s",(const char *)tStr);
 	return true;
 }
 
@@ -1452,12 +1450,12 @@ bool PFScriptFile::Shell(char *args) {
 	{
 		*cp++ = 0;
 		_fullpath(App, Buf, sizeof(App));
-		//PFPrintf("LaunchApp: %s\n", tStr);
+		//PFPrintfLog("LaunchApp: %s\n", tStr);
 		ret=LaunchApp(App, cp, TRUE, INFINITE);
 	}
 	else
 	{
-		//PFPrintf ("system: %s\n", tStr);
+		//PFPrintfLog ("system: %s\n", tStr);
 		ret=system(tStr);
 	}
 #else

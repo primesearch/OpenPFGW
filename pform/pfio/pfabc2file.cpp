@@ -148,7 +148,7 @@ void PFABC2File::LoadFirstLine()
 	}
 }
 
-int PFABC2File::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid, PFSymbolTable *psymRuntime)
+int PFABC2File::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid, PFSymbolTable *)
 {
 	int i;
 	

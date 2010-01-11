@@ -115,7 +115,7 @@ PFNetworkFile2::~PFNetworkFile2()
 	int Err;
 	Err = cli->Connect(Host, Port);
 	if (Err)
-		PFPrintf ("Error connecting to server to send the DID NOT DO results.  Return %d Error %d\n", Err, cli->Error);
+		PFPrintfLog ("Error connecting to server to send the DID NOT DO results.  Return %d Error %d\n", Err, cli->Error);
 	else
 	{
 		// Now also send the done information.
@@ -130,7 +130,7 @@ PFNetworkFile2::~PFNetworkFile2()
 		if (cli->Send(m_SendStr)!=0)
 		{
 			Err = cli->Error;
-			PFPrintf ("Error sending PRP data to server.  Return %d Error %d ", Err, cli->Error);
+			PFPrintfLog ("Error sending PRP data to server.  Return %d Error %d ", Err, cli->Error);
 		}
 		else
 		{
@@ -180,12 +180,12 @@ bool PFNetworkFile2::ConnectToServer()
 	int Err;
 #if defined (_DEBUG)
 	if (m_bVerboseMode)
-		PFPrintf ("Connecting to host  ");
+		PFPrintfLog ("Connecting to host  ");
 #endif
 
 	while ( (Err=cli->Connect(Host, Port)) != 0)
 	{
-		PFPrintf ("Trying to connect to server.  Return %d Error %d\n", Err, cli->Error);
+		PFPrintfLog ("Trying to connect to server.  Return %d Error %d\n", Err, cli->Error);
 		// Wait 30 seconds, and try again.  Try until the user exits.
 		for (int Cnt = 0; Cnt < 300; Cnt++)
 		{
@@ -199,7 +199,7 @@ bool PFNetworkFile2::ConnectToServer()
 
 #if defined (_DEBUG)
 	if (m_bVerboseMode)
-		PFPrintf ("Connected  ");
+		PFPrintfLog ("Connected  ");
 #endif
 
 	return Err == 0;
@@ -213,7 +213,7 @@ bool PFNetworkFile2::SendRequestToServer(char *Str)
 
 #if defined (_DEBUG)
 		if (m_bVerboseMode)
-			PFPrintf ("Sending Data ");
+			PFPrintfLog ("Sending Data ");
 #endif
 		if (cli->Send(Str)!=0)
 		{
@@ -223,10 +223,10 @@ bool PFNetworkFile2::SendRequestToServer(char *Str)
 			{
 				// 10054 An existing connection was forcibly closed by the remote host. 
 				if (m_bVerboseMode)
-					PFPrintf ("Error sending PRP to server.  Return %d Error %d ", Err, cli->Error);
+					PFPrintfLog ("Error sending PRP to server.  Return %d Error %d ", Err, cli->Error);
 				return TryAgain_in5seconds();
 			}
-			PFPrintf ("Error sending PRP to server.  Return %d Error %d ", Err, cli->Error);
+			PFPrintfLog ("Error sending PRP to server.  Return %d Error %d ", Err, cli->Error);
 			return TryAgain_in60seconds();
 		}
 	}
@@ -297,7 +297,7 @@ TryAgain:;
 		}
 
 		if (m_bVerboseMode)
-			PFPrintf ("Getting %d expressions ", GetThisTime);
+			PFPrintfLog ("Getting %d expressions ", GetThisTime);
 		sprintf(sendStr,"GN %d\n",int(GetThisTime));
 		if (!SendRequestToServer(sendStr))
 			goto TryAgain;
@@ -306,7 +306,7 @@ TryAgain:;
 
 		if (pRecvPtr==NULL)
 		{
-			PFPrintf (" No work from server at this time, ");
+			PFPrintfLog (" No work from server at this time, ");
 			TryAgain_in60seconds();
 			goto TryAgain;
 		}
@@ -357,9 +357,9 @@ bool PFNetworkFile2::TryAgain_in60seconds()
 	if (cli)
 	cli->Close();
 #if defined (_DEBUG)
-	PFPrintf ("will retry in ~5 seconds\n");
+	PFPrintfLog ("will retry in ~5 seconds\n");
 #else
-	PFPrintf ("will retry in %d minutes\n", NoDataTimeoutMin);
+	PFPrintfLog ("will retry in %d minutes\n", NoDataTimeoutMin);
 #endif
 	// Wait 60 seconds, and try again.  Try until the user exits.
 	int Cnt;
@@ -381,7 +381,7 @@ bool PFNetworkFile2::TryAgain_in5seconds()
 	if (cli)
 		cli->Close();
 	if (m_bVerboseMode)
-		PFPrintf ("will retry in ~5 seconds\n");
+		PFPrintfLog ("will retry in ~5 seconds\n");
 	// Wait 5 seconds, and try again.  Try until the user exits.
 	srand((unsigned int) time(0));
 	for (int Cnt = 0; Cnt < 50; Cnt++)
@@ -396,7 +396,7 @@ bool PFNetworkFile2::TryAgain_in5seconds()
 
 void PFNetworkFile2::LoadFirstLine()
 {
-	PFPrintf("Recognized Network2 file: ");
+	PFPrintfLog("Recognized Network2 file: ");
 
 	// First things first, load the client name, then create teh TCP object.
 	PFString sWhoAmI, sKey("Netork2WhoAmIName"), sDefault("PFGW_Client");
@@ -418,7 +418,7 @@ void PFNetworkFile2::LoadFirstLine()
 		fclose(m_fpInputFile);
 		throw "Not a valid file";
 	}
-	PFPrintf ("Line is %s\n", Line);
+	PFPrintfLog ("Line is %s\n", Line);
 
 	if (ReadLine(Host,sizeof(Host)))
 	{
@@ -436,7 +436,7 @@ void PFNetworkFile2::LoadFirstLine()
 
 	if (ReadLine(Line3,sizeof(Line3)))
 	{
-		PFPrintf ("Line3 failed\n");
+		PFPrintfLog ("Line3 failed\n");
 		ExprsToGet=5;
 	}
 	else
@@ -459,11 +459,11 @@ void PFNetworkFile2::LoadFirstLine()
 	{
 		if(m_nCurrentLineNum != 0x7FFFFFFF)
 		{
-			PFPrintf ("login connect failed to server at %s : %d\n", Host, Port);
-			PFPrintf ("However, there is still work left. Proceeding with that\n");
+			PFPrintfLog ("login connect failed to server at %s : %d\n", Host, Port);
+			PFPrintfLog ("However, there is still work left. Proceeding with that\n");
 			return;
 		}
-		PFPrintf ("login connect failed to server at %s : %d\nTry Again in 5 minutes\n", Host, Port);
+		PFPrintfLog ("login connect failed to server at %s : %d\nTry Again in 5 minutes\n", Host, Port);
 		for (int j = 0; j < 60*5 && !g_bExitNow; ++j)
 			Sleep(1000);
 		if (g_bExitNow)
@@ -572,7 +572,7 @@ void PFNetworkFile2::SendIfTimedOut()
 //	int Err;
 //	while ( (Err=cli->Connect(Host, Port)) != 0)
 //	{
-//		PFPrintf ("Trying to connect to host to send PRP.  Return %d Error %d\n", Err, cli->Error);
+//		PFPrintfLog ("Trying to connect to host to send PRP.  Return %d Error %d\n", Err, cli->Error);
 //		// Wait 5 seconds, and try again.  Try until the user exits.
 //		for (int Cnt = 0; Cnt < 50; Cnt++)
 //		{
@@ -583,7 +583,7 @@ void PFNetworkFile2::SendIfTimedOut()
 //	}
 //	if (cli->Send(m_SendStr)!=0)
 //	{
-//		PFPrintf ("Error sending PRP to server.  Return %d Error %d\n", Err, cli->Error);
+//		PFPrintfLog ("Error sending PRP to server.  Return %d Error %d\n", Err, cli->Error);
 //		cli->Close();
 //		// Wait 5 seconds, and try again.  Try until the user exits.
 //		for (int Cnt = 0; Cnt < 50; Cnt++)

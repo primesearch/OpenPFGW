@@ -11,7 +11,7 @@ PFCheckFile::PFCheckFile(const char *FileName) : PFSimpleFile(FileName)
 PFCheckFile::~PFCheckFile() {
 }
 
-int PFCheckFile::GetNextLine(PFString &sLine, Integer * /*i*/, bool *b, PFSymbolTable *psymRuntime)
+int PFCheckFile::GetNextLine(PFString &sLine, Integer * /*i*/, bool *b, PFSymbolTable *)
 {
 	if (b)
 		*b = false;			// this simple file class does not "remember" or "fill in" the Integer value, ever

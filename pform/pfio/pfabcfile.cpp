@@ -49,7 +49,7 @@ PFABCFile::PFABCFile(const char* FileName)
 
 void PFABCFile::LoadFirstLine()
 {
-	PFPrintf("Recognized ABC Sieve file: \n");
+	PFPrintfLog("Recognized ABC Sieve file: \n");
 
 	if (ReadLine(Line, ABCLINELEN))
 	{

@@ -67,22 +67,22 @@ void PFPrZFile::LoadFirstLine()
 	PrZ_Section_Header_Base *pFileHead;
 	if (PrZHead.PrZ_IsFermFactABCD)
 	{
-	    PFPrintf("Recognized ABCZ (Fermfact) Sieve file: \n");
+	    PFPrintfLog("Recognized ABCZ (Fermfact) Sieve file: \n");
 		pFileHead = new PrZ_FermFact_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
 	}
 	else if (PrZHead.PrZ_IsAPSieveABCD)
 	{
-	    PFPrintf("Recognized ABCZ (APSieve) Sieve file: \n");
+	    PFPrintfLog("Recognized ABCZ (APSieve) Sieve file: \n");
 		pFileHead = new PrZ_APSieve_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
 	}
 	else if (PrZHead.PrZ_IsNewPGen)
 	{
-	    PFPrintf("Recognized ABCZ (NewPGen) Sieve file: \n");
+	    PFPrintfLog("Recognized ABCZ (NewPGen) Sieve file: \n");
 		throw "Error, wrong constructor was called!\n";
 	}
 	else
 	{
-	    PFPrintf("Recognized ABCZ (Generic ABCD) Sieve file: \n");
+	    PFPrintfLog("Recognized ABCZ (Generic ABCD) Sieve file: \n");
 		pFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
 	}
 

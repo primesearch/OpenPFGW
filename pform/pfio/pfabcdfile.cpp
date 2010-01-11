@@ -72,7 +72,7 @@ void PFABCDFile::CutOutFirstLine()
 
 void PFABCDFile::LoadFirstLine()
 {
-    PFPrintf("Recognized ABCD Sieve file: \n");
+    PFPrintfLog("Recognized ABCD Sieve file: \n");
 
 	if (PFSimpleFile::ReadLine(s_Line, sizeof(s_Line)))
 	{

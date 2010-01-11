@@ -1,6 +1,6 @@
 // PFWin32GUIOutput.cpp
 //
-//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintf(const char *Fmt, ...)
+//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintfLog(const char *Fmt, ...)
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
@@ -73,7 +73,7 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
    return ret;
 }
 
-int PFWin32GUIOutput::PFPrintf(const char *Fmt, const va_list &va)
+int PFWin32GUIOutput::PFPrintfLog(const char *Fmt, const va_list &va)
 {
    DWORD Cur = GetTickCount();
    DWORD Diff = Cur-dwLast;

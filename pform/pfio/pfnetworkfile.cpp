@@ -87,7 +87,7 @@ void PFNetworkFile::LoadFirstLine()
 {
     unsigned short port;
 	
-	PFPrintf("Recognized Network file: ");
+	PFPrintfLog("Recognized Network file: ");
 
 	char Line[128],Line2[10],Line3[10];
 	if (ReadLine(Line, sizeof(Line)))
