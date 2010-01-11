@@ -9,6 +9,10 @@
 extern char g_ModularSieveString[256];
 extern int g_nIterationCnt;
 
+#ifdef __APPLE__
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+#endif
+
 // these are used by SCRIPTFile's since they do not have access to the "global" 
 uint64 g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
 
