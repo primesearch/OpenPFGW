@@ -40,7 +40,7 @@ bool EvenlyDivides(uint64 k, uint32 b, uint32 n, int32 c, int32 d)
       return false;
 }
 
-int CreateModulus(Integer *NN, bool kbncdEligible)
+int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
 {
    mpz_ptr gmp = NN->gmp();
 
@@ -59,14 +59,14 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
       // that
       sprintf(testString, "%.0lf*%u^%u%+d", k, b, n, c);
       if (!strcmp(testString, g_cpTestString) && k < 1e53)
-         return CreateModulus(k, b, n, c);
+         return CreateModulus(k, b, n, c, increaseFFTSize);
    }
 
    if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
    {
       sprintf(testString, "%u^%u%+d", b, n, c);
       if (!strcmp(testString, g_cpTestString))
-         return CreateModulus(1.0, b, n, c);
+         return CreateModulus(1.0, b, n, c, increaseFFTSize);
    }
 
    // If this flag is set, then we will mod by (k*b^n+c)/d after the last
@@ -77,14 +77,14 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
       {
          sprintf(testString, "%(%lf*%u^%u%+d)/%d", k, b, n, c, d);
          if (!strcmp(testString, g_cpTestString) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
-            return CreateModulus(k, b, n, c);
+            return CreateModulus(k, b, n, c, increaseFFTSize);
       }
 
       if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &d, &error_code) == 5)
       {
          sprintf(testString, "(%u^%u%+d)/%d", b, n, c, d);
          if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, c, d))
-            return CreateModulus(1.0, b, n, c);
+            return CreateModulus(1.0, b, n, c, increaseFFTSize);
       }
 
       // Phi(p,b) = (b^p-1)/(b-1)
@@ -92,18 +92,22 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
       {
          sprintf(testString, "Phi(%u,%u)/%d", n, b, d);
          if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, -1, d))
-            return CreateModulus(1.0, b, n, -1);
+            return CreateModulus(1.0, b, n, -1, increaseFFTSize);
       }
 
       if (sscanf(testString, "Phi(%u,%u)end%d", &n, &b, &error_code) == 3)
       {
          sprintf(testString, "Phi(%u,%u)", n, b);
          if (!strcmp(testString, g_cpTestString))
-            return CreateModulus(1.0, b, n, -1);
+            return CreateModulus(1.0, b, n, -1, increaseFFTSize);
       }
    }
 
-   gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   if (increaseFFTSize == 0)
+      gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   else
+      gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
+
    gwset_irrational_general_mod(&gwdata, false);
 
    if (sizeof (mp_limb_t) == sizeof (uint32_t))
@@ -113,12 +117,12 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
 
    // debugging output
    if (error_code)
-      PFPrintf("Error %d initializing FFT code: ", error_code);
+      PFPrintfLog("Error %d initializing FFT code: ", error_code);
    else if (g_bVerbose || g_bWinPFGW_Verbose)
    {
       char   buf[200];
       gwfft_description (&gwdata, buf);
-      PFPrintf("Generic modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
+      PFPrintfLog("Generic modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
    }
 
    if (gwnear_fft_limit (&gwdata, 2.0))
@@ -134,22 +138,26 @@ int CreateModulus(Integer *NN, bool kbncdEligible)
    return error_code;
 }
 
-int CreateModulus(double k, unsigned long b, unsigned long n, signed long c)
+int CreateModulus(double k, unsigned long b, unsigned long n, signed long c, int increaseFFTSize)
 {
    int   error_code;
 
-   gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   if (increaseFFTSize == 0)
+      gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   else
+      gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
+
    gwset_irrational_general_mod(&gwdata, false);
    error_code = gwsetup (&gwdata, k, b, n, c);
 
    // debugging output
    if (error_code)
-      PFPrintf("Error %d initializing FFT code: ", error_code);
+      PFPrintfLog("Error %d initializing FFT code: ", error_code);
    else if (g_bVerbose || g_bWinPFGW_Verbose)
    {
       char   buf[200];
       gwfft_description (&gwdata, buf);
-      PFPrintf("Special modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
+      PFPrintfLog("Special modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
    }
 
    if (gwnear_fft_limit (&gwdata, 2.0))
