@@ -13,6 +13,9 @@
 #endif
 
 extern int g_CompositeAthenticationLevel;
+#ifdef __APPLE__
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+#endif
 
 void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors)
 {

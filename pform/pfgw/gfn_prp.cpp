@@ -12,6 +12,8 @@
 
 #include "pfgw_globals.h"
 
+extern int g_CompositeAthenticationLevel;
+
 bool IsValidGFN(const char *sNum, uint32 *GFN_Base, uint32 *GFN_Exp)
 {
 	int pl;
@@ -64,15 +66,27 @@ bool IsValidGFN(const char *sNum, uint32 *GFN_Base, uint32 *GFN_Exp)
 }
 
 // code stolen from gwPRP
-bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 _exp, uint64 *p_n64ValidationResidue, uint32 /*dwOverride*/)
+bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 _exp, uint64 *p_n64ValidationResidue)
 {
-   // create a context
-	gwinit (&gwdata);
-	gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
-	if (CreateModulus(1.0,base,_exp,1)) return FALSE;
+   int fftSize = g_CompositeAthenticationLevel - 1;
+   int testResult;
 
-   if (prp_using_gwnum (N, iBase, sNumStr, p_n64ValidationResidue))
-      return TRUE;
-   else
-	   return FALSE;
+   do
+   {
+      fftSize++;
+
+      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+      gwsetmaxmulbyconst(&gwdata, iBase);  // maximum multiplier
+
+      if (CreateModulus(1.0, base, _exp, 1, fftSize)) return false;
+
+      testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
+
+      DestroyModulus();
+   } while (testResult == -1 && fftSize < 5);
+
+   if (testResult == 1)
+      return true;
+
+   return false;
 }

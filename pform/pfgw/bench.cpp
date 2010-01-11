@@ -11,6 +11,10 @@
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
 #endif
 
+#ifdef __APPLE__
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+#endif
+
 void vectorout(PFString &sFilename,PFSymbolTable *psymRuntime)
 {
 	const char *cpError;
