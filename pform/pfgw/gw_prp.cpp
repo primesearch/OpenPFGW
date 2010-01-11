@@ -3,33 +3,24 @@
 #include "../../pform/pfio/pfini.h"
 #include "pfgw_globals.h"
 
-//#define JBC_BUILD
-
-#if defined (JBC_BUILD)
-#include "jbc.cxx"
-#else
-#define JBC()
-#endif
-
 extern int g_CompositeAthenticationLevel;
 extern const double g_dMaxErrorAllowed;
-bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations);
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue, uint32 dwOverride)
+int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
 {
-
    // First check to see if N divides iBase
    if (N->gmp()->_mp_size == 1 && Integer(iBase) % *N == 0)
    {
       int TmpIBase = iBase;
       if (--iBase == 1)
          iBase=255;
-      PFPrintf ("Error, base %d can't be used to PRP %s, Trying to PRP with base %d\n", TmpIBase, sNumStr, iBase);
-      int Ret = gwPRP(N, sNumStr, p_n64ValidationResidue, dwOverride);
+      PFPrintfLog ("Error, base %d can't be used to PRP %s, Trying to PRP with base %d\n", TmpIBase, sNumStr, iBase);
+      int Ret = gwPRP(N, sNumStr, p_n64ValidationResidue);
       iBase = TmpIBase;
       return Ret;
    }
@@ -58,69 +49,80 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue, uint3
       if (!g_bGMPMode)
       {
          g_bGMPMode = true;
-         PFPrintf ("Switching to Exponentiating using GMP\n");
+         PFPrintf("Switching to Exponentiating using GMP\n");
       }
       Integer b(iBase);
       // This is the "raw" gmp exponentiator.  It if pretty fast up to about 500 digits or so.
       X = powm(b,X,*N);
       if (X == 1)
          return 1;
-      else if (p_n64ValidationResidue)
-         *p_n64ValidationResidue = (X & ((((uint64)1)<<62)-1));
+      else
+         if (p_n64ValidationResidue)
+         {
+            *p_n64ValidationResidue = X & 0x7fffffff;
+            *p_n64ValidationResidue |= ( (uint64)((X>>31)&0x7fffffff) << 31);
+            *p_n64ValidationResidue |= ( (uint64)((X>>62)&0x00000003) << 62);
+         }
       return 0;
    }
    if (g_bGMPMode)
    {
       g_bGMPMode = false;
-      PFPrintf ("Switching to Exponentiating using Woltman FFT's\n");
+      PFPrintf("Switching to Exponentiating using Woltman FFT's\n");
    }
+
+   int fftSize = g_CompositeAthenticationLevel - 1;
+   int testResult;
+
+   do
+   {
+      fftSize++;
+
+      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+	   gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
+
+      if (CreateModulus(N, true, fftSize)) return -2;
+
+      testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
+
+      DestroyModulus();
+   } while (testResult == -1 && fftSize < 5);
+
+   return testResult;
+}
+
+void  bench_gwPRP(Integer *N, uint32 iterations)
+{
+   Integer testN;
+   Integer X = (*N);
+   --X;            // X is the exponent, we are to calculate 3^X mod N
 
    // create a context
    gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-   {
-      PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-      g_bExitNow = true;
-      return 0;
-   }
 
-   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-   {
-      PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-      g_bExitNow = true;
-      return 0;
-   }
-
+   testN = *N;
    gwsetmaxmulbyconst(&gwdata, iBase);   // maximum multiplier
-   if (CreateModulus(N, true)) return -2;
+   if (CreateModulus(N, true)) return;
 
-   if (dwOverride == 0)         // Normal PRP test
-      return (prp_using_gwnum (N, iBase, sNumStr, p_n64ValidationResidue));
+   GWInteger gwX;
 
-   // Special override to benchmark a specific number of iterations
+   gwX=iBase;               // initialise X to A^1.
+   gwsetmulbyconst(&gwdata, iBase);      // and multiplier
+
+   for(; iterations; iterations--)
    {
-      GWInteger gwX;
-
-      gwX=iBase;               // initialise X to A^1.
-      gwsetmulbyconst(&gwdata, iBase);      // and multiplier
-      for(;dwOverride;dwOverride--)
-      {
-         gwsetnormroutine(&gwdata,0,0,dwOverride&1);
-         gwsquare(gwX);
-      }
+      gwsetnormroutine(&gwdata, 0, 0, iterations&1);
+      gwsquare(gwX);
    }
-   DestroyModulus ();
-   return 0;
-}
 
+   DestroyModulus ();
+}
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue)
+int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue, int fftSize)
 {
    int   retval;
    Integer X = (*N);
@@ -134,6 +136,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
       CreateRestoreName(N, RestoreName);
 
    int ThisLineLen_Final=0;
+
    // everything with a GWInteger has a scope brace, so that
    // GWIntegers are destroyed before the context they live in
    {
@@ -177,7 +180,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
             // The number not only passes the hash, but EVERY check was successful.  We are working with the right number.
             iDone = DoneBits;
             i -= iDone;
-            PFPrintf ("Resuming at bit %d\n", iDone);
+            PFPrintfLog ("Resuming at bit %d\n", iDone);
          }
       }
 
@@ -230,15 +233,17 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
                MaxSeenDiff = d;
          }
 
-         if (CheckForFatalError("prp_using_gwnum", &gwX, iDone, iTotal))
+         if (CheckForFatalError("prp_using_gwnum", &gwX, iDone, iTotal, fftSize))
+         {
+            remove(RestoreName);
             return -1;
+         }
 
          if (g_bExitNow)
          {
             if (*RestoreName)
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iBase, e_gwnum, N, true);
-            // zap the gw  (Good place to "save" the context to be loaded on a restart.
-            DestroyModulus();
+
             return -2; // we really do not know at this time.  It is NOT a true error, but is undetermined, due to not comple processing
          }
       }
@@ -249,7 +254,8 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
       // k*b^n+c in the loop above.
       X %= *N;
 
-      if (p_n64ValidationResidue) {
+      if (p_n64ValidationResidue)
+      {
          *p_n64ValidationResidue = X & 0x7fffffff;
          *p_n64ValidationResidue |= ( (uint64)((X>>31)&0x7fffffff) << 31);
          *p_n64ValidationResidue |= ( (uint64)((X>>62)&0x00000003) << 62);
@@ -260,8 +266,6 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
       else
          retval=0;
    }
-   // zap the gw
-   DestroyModulus();
 
    // Nuke any temp file, since we have totally processed the number.
    remove(RestoreName);
@@ -272,7 +276,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
    return retval;
 }
 
-bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations)
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize)
 {
    char  buffer1[200], buffer2[200], buffer3[200], buffer4[200];
    bool  haveFatalError = false;
@@ -308,21 +312,14 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
 
    if (haveFatalError)
    {
-      if (g_CompositeAthenticationLevel == 1)
-         strcpy(buffer4, "(Test aborted, try again using the -a2 (or possibly -a0) switch)");
-      else if (g_CompositeAthenticationLevel == 0)
-         strcpy(buffer4, "(Test aborted, try again using the -a1 switch)");
-      else
-         strcpy(buffer4, "(Test aborted");
+      sprintf(buffer4, "PFGW will automatically rerun the test with -a%d", fftSize+1);
 
       PFWriteErrorToLog(g_cpTestString, buffer1, buffer2, buffer3, buffer4);
 
-      PFPrintf("%s\n", buffer1);
-      PFPrintf("%s\n", buffer2);
-      PFPrintf("%s\n", buffer3);
-      PFPrintf("%s\n", buffer4);
-
-      DestroyModulus();
+      if (*buffer1) PFPrintf("%s\n", buffer1);
+      if (*buffer2) PFPrintf("%s\n", buffer2);
+      if (*buffer3) PFPrintf("%s\n", buffer3);
+      if (*buffer4) PFPrintf("%s\n", buffer4);
    }
 
    return haveFatalError;

@@ -12,7 +12,7 @@
 #define JBC()
 #endif
 
-Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+extern int g_CompositeAthenticationLevel;
 
 void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors)
 {
@@ -89,7 +89,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 					PFIntegerSymbol *f=new PFIntegerSymbol("_FACTOR",new Integer(R));
 					PFString s=f->GetStringValue();
 					delete f;
-					PFPrintf("%s has factor: %s\n",g_cpTestString,LPCTSTR(s));
+					PFPrintfLog("%s has factor: %s\n",g_cpTestString,LPCTSTR(s));
 					bUnfactored=PFBoolean::b_false;
 				}
 			}
@@ -208,24 +208,9 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 				
 				// calculate 2^iPhi mod Q
             gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-            if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-            {
-		         PFOutput::EnableOneLineForceScreenOutput();
-		         PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-               g_bExitNow = true;
-               return;
-            }
-
-            if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-            {
-		         PFOutput::EnableOneLineForceScreenOutput();
-		         PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-               g_bExitNow = true;
-               return;
-            }
-
 				gwsetmaxmulbyconst(&gwdata, 2);	// maximum multiplier
-				if (CreateModulus(&Q, true)) return;
+
+            if (CreateModulus(&Q, true)) return;
 				{
 					GWInteger gwX;
 					gwX=2;
@@ -262,7 +247,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 						PFIntegerSymbol *f=new PFIntegerSymbol("_FACTOR",new Integer(R));
 						PFString s=f->GetStringValue();
 						delete f;
-						PFPrintf("%s has factor: %s\n",g_cpTestString,LPCTSTR(s));
+						PFPrintfLog("%s has factor: %s\n",g_cpTestString,LPCTSTR(s));
 						bUnfactored=PFBoolean::b_false;
 					}
 				}
@@ -276,39 +261,34 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 		PFPrintfStderr("Could not find cyclotomic polynomial.\n");
 	}
 	
-	if(!bOnlyFactors && (bUnfactored || bDeep) && N)
+	if (!bOnlyFactors && (bUnfactored || bDeep) && N)
 	{
-		if(!bUnfactored)
-		{
+      int fftSize = g_CompositeAthenticationLevel - 1;
+      int testResult;
+
+      if (!bUnfactored)
 			strcat(g_cpTestString," cofactor");
-		}			
- 		// Let's begin the experiment by creating a Context
-		if(iPhi>1)
+
+      // Let's begin the experiment by creating a Context
+		if (iPhi > 1)
 		{
-         gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-         if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+         do
          {
-		      PFOutput::EnableOneLineForceScreenOutput();
-		      PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-            g_bExitNow = true;
-         }
+            fftSize++;
 
-         if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-         {
-		      PFOutput::EnableOneLineForceScreenOutput();
-		      PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-            g_bExitNow = true;
-         }
+            gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+			   gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
 
-			gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
-			if (CreateModulus(1.0,2,iPhi,-1)) return;
-			prp_using_gwnum (N, iBase, sExpression, NULL);
+            if (CreateModulus(1.0, 2, iPhi, -1, fftSize)) return;
+
+            testResult = prp_using_gwnum(N, iBase, sExpression, NULL, fftSize);
+
+            DestroyModulus();
+         } while (testResult == -1 && fftSize < 5);
 		}
 	}
 
 	// so idle
-	if(N)
-	{
+	if (N)
 		delete N;
-	}
 }

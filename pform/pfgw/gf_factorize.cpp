@@ -17,7 +17,9 @@ static uint32 *pMap_GF, *_pMap_GF;
 static uint32 *pMap_xGF[401], *_pMap_xGF[401];
 static bool bGFNMapInit=false;
 extern int g_CompositeAthenticationLevel;
-bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations);
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
+static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char *sNumStr, Integer X,
+                               int base, int x, int y, int iTotal, Integer *outX);
 
 // Not super efficient, but it will not be called enough to make much difference
 static uint32 gcd(uint32 x, uint32 y)
@@ -196,100 +198,96 @@ static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
 			continue;
 		}
 
-		// create a context
-      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-      if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-      {
-		   PFOutput::EnableOneLineForceScreenOutput();
-		   PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-         g_bExitNow = true;
-         return -1;
-      }
+      bRetval = GFNDivisibilityTest("GF_sprime_%d: %.50s %d/%d\r", N, sNumStr, X, GF_Subs[j].prime, 0, 0, n-1, &GF_Subs[j].subN);
 
-      if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-      {
-		   PFOutput::EnableOneLineForceScreenOutput();
-		   PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-         g_bExitNow = true;
-         return -1;
-      }
-
-		gwsetmaxmulbyconst(&gwdata, GF_Subs[j].prime);	// maximum multiplier
-		if (CreateModulus(N)) return 0;
-		
-		// everything with a GWInteger has a scope brace, so that
-		// GWIntegers are destroyed before the context they live in
+      if (GF_b_SaveIntermed)
 		{
-			// prepare the gw buffers we need
-			GWInteger gwX;
-
-			// I think we're ready to go, let's do it.
-
-			gwX=GF_Subs[j].prime;								// initialise X to A^1.
-			gwsetmulbyconst(&gwdata,GF_Subs[j].prime);		// and multiplier
-			
-			// keep a simple iteration counter just for rudimentary progress output
-			uint32 iTotal=n-1;
-			uint32 iDone=0;
-
-			//bool bFirst=true;
-			for(uint32 i=iTotal;i--;)
-			{
-            int errchk = ErrorCheck(iDone, n);
-
-            gw_clear_maxerr(&gwdata);
-				gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-            if (i < 30)
-               gwsquare_carefully(gwX);
-            else
-   				gwsquare(gwX);
-		
-				iDone++;
-				if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
-				{
-					static int lastLineLen;
-					//bFirst=false;
-					Timer.Start();
-					// 120 bytes will not overflow, since we "force" the max size within the sprintf()
-					char Buf[120];
-					sprintf(Buf, "GF_sprime_%d: %.50s %d/%d   \r", GF_Subs[j].prime,sNumStr,iDone,iTotal);
-					int thisLineLen = strlen(Buf);
-					if (lastLineLen > thisLineLen)
-						// When mixing stdio, stderr and redirection with a \r stderr output,
-						// then the line must "erase" itself, IF it ever shrinks.
-						PFPrintfClearCurLine(lastLineLen);
-					lastLineLen = thisLineLen;
-					PFPrintfStderr("%s", Buf);
-					PFfflush(stderr);
-				}
-            if (CheckForFatalError("gwGF_LoadSubs", &gwX, iDone, iTotal))
-               return -1;
-
-            if (g_bExitNow)
-				{
-					// zap the gw  (Good place to "save" the context to be loaded on a restart.
-					DestroyModulus();
-					delete[] k_text;
-					return 0;
-				}
-			}
-			GF_Subs[j].subN = gwX;
-
-         if (GF_b_SaveIntermed)
-			{
-				FILE *out = fopen(GF_IntermedFName, "wt");
-				char *pTmp = GF_Subs[j].subN.Itoa();
-				fwrite(pTmp, 1, strlen(pTmp), out);
-				fclose(out);
-				delete[] pTmp;
-			}
-
+			FILE *out = fopen(GF_IntermedFName, "wt");
+			char *pTmp = GF_Subs[j].subN.Itoa();
+			fwrite(pTmp, 1, strlen(pTmp), out);
+			fclose(out);
+			delete[] pTmp;
 		}
-		// zap the gw
-		DestroyModulus();
 	}
 	delete[] k_text;
 	return bRetval;
+}
+
+static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char *sNumStr, Integer X,
+                               int base, int x, int y, int iTotal, Integer *outX)
+{
+   int   fftSize, haveError;
+   uint32 lastLineLength = 0;
+   int   ii, iDone, errchk;
+   char  temp[120];
+   CTimer Timer;
+   GWInteger *gwX;
+
+   fftSize = g_CompositeAthenticationLevel - 1;
+   do
+   {
+      fftSize++;
+      haveError = false;
+	   Timer.Start();
+
+      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+		gwsetmaxmulbyconst(&gwdata, base);	// maximum multiplier
+
+      if (CreateModulus(N, true, fftSize)) return 0;
+
+      gwX = new GWInteger;
+
+      iDone = 0;
+	   *gwX = base;								// initialise X
+	   gwsetmulbyconst(&gwdata, base);		// and multiplier
+
+	   for (ii=iTotal; ii--; )
+	   {
+         iDone++;
+         errchk = ErrorCheck(iDone, iTotal);
+
+         gw_clear_maxerr(&gwdata);
+		   gwsetnormroutine(&gwdata, 0, errchk, bit(X, ii));
+
+         if (ii < 30)
+            gwsquare_carefully(*gwX);
+         else
+			   gwsquare(*gwX);
+	
+         if (g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
+		   {
+			   static int lastLineLen;
+
+			   Timer.Start();
+
+            if (x || y)
+				   sprintf(temp, outputFormat, x, y, sNumStr, iDone, iTotal);
+            else
+				   sprintf(temp, outputFormat, base, sNumStr, iDone, iTotal);
+
+			   if (lastLineLength > strlen(temp))
+				   // When mixing stdio, stderr and redirection with a \r stderr output,
+				   // then the line must "erase" itself, IF it ever shrinks.
+				   PFPrintfClearCurLine(lastLineLength);
+
+            lastLineLen = strlen(temp);
+			   PFPrintfStderr("%s", temp);
+			   PFfflush(stderr);
+		   }
+
+         if (CheckForFatalError("GFNDivisibilityTest", gwX, iDone, iTotal, fftSize))
+            haveError = true;
+
+         if (haveError || g_bExitNow)
+			   return 0;
+      }
+ 
+      *outX = *gwX;
+      DestroyModulus();
+      delete gwX;
+   } while (haveError && !g_bExitNow && fftSize < 5);
+
+   return haveError;
 }
 
 static int gwGF_LoadSubs_gmp(Integer *N, uint32 n)
@@ -348,113 +346,35 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 		}
 		Nm1 = (*N)-1;
 
-		// create a context
-      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-      if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-      {
-		   PFOutput::EnableOneLineForceScreenOutput();
-		   PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-         g_bExitNow = true;
-         return -1;
-      }
-
-      if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-      {
-		   PFOutput::EnableOneLineForceScreenOutput();
-		   PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-         g_bExitNow = true;
-         return -1;
-      }
-
-		gwsetmaxmulbyconst(&gwdata, gfn_base);	// maximum multiplier
-		if (CreateModulus(N)) return 0;
-		
-		// everything with a GWInteger has a scope brace, so that
-		// GWIntegers are destroyed before the context they live in
+      bRetval = GFNDivisibilityTest("GF_%d: %.50s %d/%d\r", N, sNumStr, X, gfn_base, 0, 0, n, &XX);
+			
+		if (XX == 1)
 		{
-			// prepare the gw buffers we need
-			GWInteger gwX;
-
-			// I think we're ready to go, let's do it.
-
-			gwX=gfn_base;								// initialise X to A^1.
-			gwsetmulbyconst(&gwdata,gfn_base);		// and multiplier
-			
-			// keep a simple iteration counter just for rudimentary progress output
-			uint32 iDone=0;
-
-			//bool bFirst=true;
-			for(uint32 i=n;i--;)
+			bRetval=1;
+			// This is NOT right, but it is as close as we can get.  The base was MORE than 20 less than
+			// the exponent.  Even if the "answer" is not correct, at least inform the user of the found factor.
+			PFPrintfLog("\nA GF Factor was found, but the base of %d may not be correct.\n", n-1);
+			*gfn_exp = n-1;
+		}
+		else
+		{
+			while (XX != Nm1 && n < gfn_exp_max)
 			{
-            int errchk = ErrorCheck(iDone, n);
-
-            gw_clear_maxerr(&gwdata);
-				gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-            if (i < 30)
-               gwsquare_carefully(gwX);
-            else
-               gwsquare(gwX);
-		
-				iDone++;
-				if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
-				{
-					static int lastLineLen;
-					//bFirst=false;
-					Timer.Start();
-					// 120 bytes will not overflow, since we "force" the max size within the sprintf()
-					char Buf[120];
-					sprintf(Buf, "GF_%d: %.50s %d/%d   \r", gfn_base, sNumStr,iDone,n);
-					int thisLineLen = strlen(Buf);
-					if (lastLineLen > thisLineLen)
-						// When mixing stdio, stderr and redirection with a \r stderr output,
-						// then the line must "erase" itself, IF it ever shrinks.
-						PFPrintfClearCurLine(lastLineLen);
-					lastLineLen = thisLineLen;
-					PFPrintfStderr("%s", Buf);
-					PFfflush(stderr);
-				}
-            if (CheckForFatalError("gwGF_Factor", &gwX, iDone, n))
-               return -1;
-
-            if (g_bExitNow)
-				{
-					// zap the gw  (Good place to "save" the context to be loaded on a restart.
-					DestroyModulus();
-					return 0;
-				}
+				XX *= XX;
+				XX %= *N;
+				n++;
 			}
-			
-			// for now, I will use GMP, instead of GW math.  Later GW math will be used here also.
-
-			XX = gwX;
-			if (XX == 1)
+			if (XX==Nm1)
 			{
 				bRetval=1;
-				// This is NOT right, but it is as close as we can get.  The base was MORE than 20 less than
-				// the exponent.  Even if the "answer" is not correct, at least inform the user of the found factor.
-				PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", n-1);
-				*gfn_exp = n-1;
-			}
-			else
-			{
-				while(XX != Nm1 && n < gfn_exp_max)
-				{
-					XX *= XX;
-					XX %= *N;
-					n++;
-				}
-				if(XX==Nm1)
-				{
-					bRetval=1;
-					*gfn_exp = n;
-				}
+				*gfn_exp = n;
 			}
 		}
-				// zap the gw
-		DestroyModulus();
+
 		return bRetval;
 	}
-	// Extended GFN search
+
+   // Extended GFN search
 	if(n > 30)
 		n -= 30;		// X/=2^20
 	else if (n > 10)
@@ -472,172 +392,8 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 	}
 	Nm1 = (*N)-1;
 
-	// create a context  (gfn_base^2^(n-20))%n
-   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-      g_bExitNow = true;
-      return -1;
-   }
-
-   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-      g_bExitNow = true;
-      return -1;
-   }
-
-	gwsetmaxmulbyconst(&gwdata, gfn_base);	// maximum multiplier
-	if (CreateModulus(N)) return 0;
-
-	// everything with a GWInteger has a scope brace, so that
-	// GWIntegers are destroyed before the context they live in
-	{
-		// prepare the gw buffers we need
-		GWInteger gwX;
-
-		// I think we're ready to go, let's do it.
-
-		gwX=gfn_base;								// initialise X to A^1.
-		gwsetmulbyconst(&gwdata, gfn_base);		// and multiplier
-		
-		// keep a simple iteration counter just for rudimentary progress output
-		uint32 iDone=0;
-
-		//bool bFirst=true;
-		for(uint32 i=n;i--;)
-		{
-         int errchk = ErrorCheck(iDone, n);
-
-         gw_clear_maxerr(&gwdata);
-			gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-         if (i < 30)
-            gwsquare_carefully(gwX);
-         else
-            gwsquare(gwX);
-	
-			iDone++;
-			if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
-			{
-				static int lastLineLen;
-				//bFirst=false;
-				Timer.Start();
-				// 120 bytes will not overflow, since we "force" the max size within the sprintf()
-				char Buf[120];
-				sprintf(Buf, "xGF_'%d'_%d: %.50s %d/%d   \r", gfn_base, nCur_a, sNumStr,iDone,n);
-				int thisLineLen = strlen(Buf);
-				if (lastLineLen > thisLineLen)
-					// When mixing stdio, stderr and redirection with a \r stderr output,
-					// then the line must "erase" itself, IF it ever shrinks.
-					PFPrintfClearCurLine(lastLineLen);
-				lastLineLen = thisLineLen;
-				PFPrintfStderr("%s", Buf);
-				PFfflush(stderr);
-			}
-
-         if (CheckForFatalError("gwGF_Factor", &gwX, iDone, n))
-            return -1;
-
-         if (g_bExitNow)
-			{
-				// zap the gw  (Good place to "save" the context to be loaded on a restart.
-				DestroyModulus();
-				return 0;
-			}
-		}
-		
-		XX = gwX;
-
-		// for now, I will use GMP, instead of GW math.  Later GW math will be used here also.
-	}
-
-	DestroyModulus();
-
-	gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-      g_bExitNow = true;
-      return -1;
-   }
-
-   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-      g_bExitNow = true;
-      return -1;
-   }
-
-	gwsetmaxmulbyconst(&gwdata, nCur_a);	// maximum multiplier
-	if (CreateModulus(N)) return 0;
-
-	// everything with a GWInteger has a scope brace, so that
-	// GWIntegers are destroyed before the context they live in
-	{
-		// prepare the gw buffers we need
-		GWInteger gwX;
-
-		// I think we're ready to go, let's do it.
-
-		gwX=nCur_a;								// initialise X to nCur_a^1.
-		gwsetmulbyconst(&gwdata,nCur_a);		// and multiplier
-
-		// keep a simple iteration counter just for rudimentary progress output
-		uint32 iDone=0;
-
-		//bool bFirst=true;
-		for(uint32 i=n;i--;)
-		{
-         int errchk = ErrorCheck(iDone, n);
-
-         gw_clear_maxerr(&gwdata);
-			gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
-         if (i < 30)
-            gwsquare_carefully(gwX);
-         else
-            gwsquare(gwX);
-	
-			iDone++;
-			if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
-			{
-				static int lastLineLen;
-				//bFirst=false;
-				Timer.Start();
-				// 120 bytes will not overflow, since we "force" the max size within the sprintf()
-				char Buf[120];
-				sprintf(Buf, "xGF_%d_'%d': %.50s %d/%d   \r", gfn_base, nCur_a, sNumStr,iDone,n);
-				int thisLineLen = strlen(Buf);
-				if (lastLineLen > thisLineLen)
-					// When mixing stdio, stderr and redirection with a \r stderr output,
-					// then the line must "erase" itself, IF it ever shrinks.
-					PFPrintfClearCurLine(lastLineLen);
-				lastLineLen = thisLineLen;
-				PFPrintfStderr("%s", Buf);
-				PFfflush(stderr);
-			}
-
-         if (CheckForFatalError("gwGF_Factor", &gwX, iDone, n))
-            return -1;
-         
-         if (g_bExitNow)
-			{
-				// zap the gw  (Good place to "save" the context to be loaded on a restart.
-				DestroyModulus();
-				return 0;
-			}
-		}
-		
-		XXa = gwX;
-
-		// for now, I will use GMP, instead of GW math.  Later GW math will be used here also.
-	}
-	// zap the gw
-	DestroyModulus();
+   bRetval = GFNDivisibilityTest("xGF_'%d'_%d: %.50s %d/%d\r", N, sNumStr, X, gfn_base, gfn_base, nCur_a, n, &XX);
+   bRetval = GFNDivisibilityTest("xGF_%d_'%d': %.50s %d/%d\r", N, sNumStr, X, nCur_a, gfn_base, nCur_a, n, &XXa);
 
 	while((XX+XXa) % *(N) != 0 && n < gfn_exp_max)
 	{
@@ -656,7 +412,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 	{
 		bRetval=1;
 		*gfn_exp = nStart-1;
-		PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", *gfn_exp);
+		PFPrintfLog("\nA GF Factor was found, but the base of %d may not be correct.\n", *gfn_exp);
 	}
 
 
@@ -705,7 +461,7 @@ static int gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_ex
 			bRetval=1;
 			// This is NOT right, but it is as close as we can get.  The base was MORE than 20 less than
 			// the exponent.  Even if the "answer" is not correct, at least inform the user of the found factor.
-			PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", n-1);
+			PFPrintfLog("\nA GF Factor was found, but the base of %d may not be correct.\n", n-1);
 			*gfn_exp = n-1;
 		}
 		else
@@ -765,7 +521,7 @@ static int gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_ex
 	{
 		bRetval=1;
 		*gfn_exp = nStart-1;
-		PFPrintf("\nA GF Factor was found, but the base of %d may not be correct.\n", *gfn_exp);
+		PFPrintfLog("\nA GF Factor was found, but the base of %d may not be correct.\n", *gfn_exp);
 	}
 	return bRetval;
 }
@@ -808,19 +564,19 @@ static void DumpPatterns()
 		if (OnlySmallFactors(a))
 		{
 			if (a == 2)
-				TotTests += !!PFPrintf ("Test for F??\n");
+				TotTests += !!PFPrintfLog ("Test for F??\n");
 			else if (!IsTrivial_GF(a))
-				TotTests += !!PFPrintf ("Test for GF(??,%d)\n", a);
+				TotTests += !!PFPrintfLog ("Test for GF(??,%d)\n", a);
 
 			if (GF_bExtendedGFNLogic)
 			{
 				for (uint32 b = GF_n_MinTry; b < a; b++)
 					if (OnlySmallFactors(b) && !IsTrivial_xGF(a, b))
-						TotTests += !!PFPrintf ("Test for xGF(??,%d,%d)\n", a, b);
+						TotTests += !!PFPrintfLog ("Test for xGF(??,%d,%d)\n", a, b);
 			}
 		}
 	}
-	PFPrintf ("There are %d total F/GF/xGF tests being performed\n", TotTests);
+	PFPrintfLog ("There are %d total F/GF/xGF tests being performed\n", TotTests);
 }
 
 //default is -g[o]{2,5}{2,12}
@@ -1025,12 +781,12 @@ static void ProcessGF_Factor(Integer *N, const char *sNumStr, uint32 n, uint32 g
 		if (nCur_a == 1)
 		{
 			if (gfn_base == 2)
-				PFPrintf("%s is a Factor of F%d!!!! (%f seconds)\n",LPCTSTR(sNumStr), gfn_exp, t);
+				PFPrintfLog("%s is a Factor of F%d!!!! (%f seconds)\n",LPCTSTR(sNumStr), gfn_exp, t);
 			else
-				PFPrintf("%s is a Factor of GF(%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), gfn_exp, gfn_base, t);
+				PFPrintfLog("%s is a Factor of GF(%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), gfn_exp, gfn_base, t);
 		}
 		else
-			PFPrintf("%s is a Factor of xGF(%d,%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), gfn_exp, gfn_base, nCur_a, t);
+			PFPrintfLog("%s is a Factor of xGF(%d,%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), gfn_exp, gfn_base, nCur_a, t);
 		PFfflush(stdout);
 		
 		// All fermat factors are PRIMES, so in actuality, this number has been PROVEN!
@@ -1183,21 +939,21 @@ Try_Next_a:;
 						if (b == 2)
 						{
 							bIsFermat = true;
-							PFPrintf("%s is a Factor of F%d!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, t);
+							PFPrintfLog("%s is a Factor of F%d!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, t);
 						}
 						else
 						{
 							if (bIsFermat && b == 8)   // don't output GF-8 for Fermat factors
 								; // do nothing
 							else
-								PFPrintf("%s is a Factor of GF(%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, t);
+								PFPrintfLog("%s is a Factor of GF(%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, t);
 						}
 					}
 				}
 				else if (!IsTrivial_xGF(b, nCur_a))
 				{
 					bValid = true;
-					PFPrintf("%s is a Factor of xGF(%d,%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, nCur_a, t);
+					PFPrintfLog("%s is a Factor of xGF(%d,%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, nCur_a, t);
 				}
 				if (bValid)
 					PFfflush(stdout);
@@ -1248,16 +1004,16 @@ Try_Next_a:;
 						double t=double(clock()-start)/clocks_per_sec;
 						// We were told to NOT re-exponentate, but simply report results.
 						if (b == 2)
-							PFPrintf("%s is a Factor of F%d-? !!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, t);
+							PFPrintfLog("%s is a Factor of F%d-? !!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, t);
 						else if (nCur_a == 1)
 						{
 							if (bIsFermat && b == 8)   // don't output GF-8 for Fermat factors
 								; // do nothing
 							else
-								PFPrintf("%s is a Factor of GF(%d-? ,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, t);
+								PFPrintfLog("%s is a Factor of GF(%d-? ,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, t);
 						}
 						else
-							PFPrintf("%s is a Factor of xGF(%d-? ,%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, nCur_a, t);
+							PFPrintfLog("%s is a Factor of xGF(%d-? ,%d,%d)!!!! (%f seconds)\n",LPCTSTR(sNumStr), exp_m1, b, nCur_a, t);
 						PFfflush(stdout);
 
 						FILE *f=fopen("pfgw-prime.log","at");
