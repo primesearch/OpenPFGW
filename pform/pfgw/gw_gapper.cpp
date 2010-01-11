@@ -56,7 +56,7 @@ bool IsPrp(Integer *N)
 		if (!g_bGMPMode)
 		{
 			g_bGMPMode = true;
-			PFPrintf ("Switching to Exponentiating using GMP\n");
+			PFPrintfLog ("Switching to Exponentiating using GMP\n");
 		}
 		Integer b(iBase);
 		// This is the "raw" gmp exponentiator.  It if pretty fast up to about 500 digits or so.
@@ -68,26 +68,11 @@ bool IsPrp(Integer *N)
 	if (g_bGMPMode)
 	{
 		g_bGMPMode = false;
-		PFPrintf ("Switching to Exponentiating using Woltman FFT's\n");
+		PFPrintfLog ("Switching to Exponentiating using Woltman FFT's\n");
 	}
 
 	// create a context
    gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-      g_bExitNow = true;
-      return false;
-   }
-
-   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-      g_bExitNow = true;
-      return false;
-   }
 
    gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
 	if (CreateModulus(N)) return false;
@@ -197,10 +182,10 @@ void gw_gapper(const char *FName, int gap, uint64 i)
 				{
 					// We are done processing the full file.
 					Low_end = MaxNum;
-					PFPrintf("%70.70s\r** Found gap of at least "ULL_FORMAT" at %d^%d+"ULL_FORMAT" to %d^%d+"ULL_FORMAT". but ran out of file\n", " ", MaxNum-Low_end-2, base, nvalue, Low_end, base, nvalue, MaxNum-2);
+					PFPrintfLog("%70.70s\r** Found gap of at least "ULL_FORMAT" at %d^%d+"ULL_FORMAT" to %d^%d+"ULL_FORMAT". but ran out of file\n", " ", MaxNum-Low_end-2, base, nvalue, Low_end, base, nvalue, MaxNum-2);
 					break;
 				}
-				PFPrintf("%70.70s\r** Found gap of "ULL_FORMAT" at %d^%d+"ULL_FORMAT" to %d^%d+"ULL_FORMAT"\n", " ", mid_gap-Low_end, base, nvalue, Low_end, base, nvalue, mid_gap);
+				PFPrintfLog("%70.70s\r** Found gap of "ULL_FORMAT" at %d^%d+"ULL_FORMAT" to %d^%d+"ULL_FORMAT"\n", " ", mid_gap-Low_end, base, nvalue, Low_end, base, nvalue, mid_gap);
 			}
 			Low_end = mid_gap;
 

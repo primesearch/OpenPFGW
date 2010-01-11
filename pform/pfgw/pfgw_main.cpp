@@ -43,7 +43,7 @@ void Imodtest(DWORD x,DWORD y,DWORD *p1, DWORD *p2);
 PFSimpleFile *pFile=NULL;
 PFIni *g_pIni;
 int g_nIterationCnt=2500;
-int g_CompositeAthenticationLevel = 0;   // valid values are -2,-1,0,1,2
+int g_CompositeAthenticationLevel = 0;   // valid values are 0, 1, 2, 3, 4, 5
 int g_ExtraSQFree = 100;
 int g_Cert_Type = -1;
 int g_Cert_Delete = -1;
@@ -61,7 +61,7 @@ unsigned long clocks_per_sec;         // Machine dependent
 // these are used by SCRIPTFile's since they do not have access to the "global" 
 extern uint64 g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
 
-extern bool g_bHideNoFactor;         // in f_factor.cpp
+extern bool g_bHideNoFactor;          // in f_factor.cpp
 extern bool g_bReLoadFactorFile;      // in f_factor.cpp
 
 bool g_bTrialFactor=true;
@@ -131,10 +131,8 @@ BOOL WINAPI HandlerRoutine(DWORD /*dwCtrlType*/)
    PFPrintfStderr ("\n^C Handler Routine called, shutting down program\n");
    g_bExitNow = true;
    if (!s_bCommandLineParse)
-   {
       ExitProcess(2);
-      return FALSE;
-   }
+
    int Cnt = 0;
    while (!g_bExited && Cnt < 50)   // wait at most 5 seconds to shut down
    {
@@ -148,9 +146,7 @@ BOOL WINAPI HandlerRoutine(DWORD /*dwCtrlType*/)
       PFOutput::EnableOneLineForceScreenOutput();
       PFPrintfStderr ("Force Exiting the program.  The thread did not gracefully exit!\n");
    }
-   //exit(2);
    ExitProcess(2);
-   return FALSE;
 }
 #endif
 
@@ -165,6 +161,7 @@ enum CLOption
 {
    cl_illegal,
    cl_boolean,
+   cl_long,
    cl_integer,
    cl_string
 };
@@ -179,10 +176,10 @@ struct CLOptionElement
 CLOptionElement clList[]=
 {
    {cl_integer,   true,    "_ATHENTICATION"},   // a
-   {cl_integer,   true,    "_BASE"},            // b
+   {cl_long,      true,    "_BASE"},            // b
    {cl_string,    false,   "_CERTIFICATE"},     // c
    {cl_boolean,   false,   "_DEEPFACTOR"},      // d
-   {cl_integer,   true,    "_PMAX"},            // e
+   {cl_long,      true,    "_PMAX"},            // e
    {cl_string,    false,   "_FACTORIZE_STR"},   // f
    {cl_string,    false,   "_FERMFACTOR"},      // g (Also -gap= gapper code, and now -gx for extended GF divisiblity)
    {cl_string,    false,   "_HELPER"},          // h
@@ -196,12 +193,12 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // p
    {cl_string,    true,    "_QUIKEXPR"},        // q
    {cl_boolean,   false,   "_ROUNDOFFCHK"},     // r
-   {cl_integer,   false,   "_PMIN"},            // s
+   {cl_long,      false,   "_PMIN"},            // s
    {cl_string,    false,   "_TESTMODE"},        // t
-   {cl_integer,   true,    "_UPDATEINTERVAL"},  // u partial screen update. Set the interval (or turn it off with 0)
+   {cl_long,      true,    "_UPDATEINTERVAL"},  // u partial screen update. Set the interval (or turn it off with 0)
    {cl_boolean,   false,   "_VECTORMODE"},      // v
    {cl_illegal,   false,   ""},                 // w
-   {cl_integer,   false,   "_EXTRA_SQFREE"},    // x
+   {cl_long,      false,   "_EXTRA_SQFREE"},    // x
    {cl_illegal,   false,   ""},                 // y
    {cl_illegal,   false,   ""},                 // z
    {cl_illegal,   false,   ""},                 // A
@@ -462,7 +459,8 @@ ProcessAgain:;
          TCHAR c=((LPCTSTR)s)[1];
          TCHAR cParameter=((LPCTSTR)s)[2];
          int iIndex=-1;
-         uint64 iValue;
+         uint64 u64Value;
+         int    i32Value;
 
          if (cParameter == ' ') cParameter = 0;
          if((c>='A')&&(c<='Z')) iIndex=c-'A'+26;
@@ -512,6 +510,17 @@ ProcessAgain:;
 
                pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(1)));
                break;
+            case cl_long:
+               if (cParameter == 0 && clList[iIndex].required)
+               {
+                  PFOutput::EnableOneLineForceScreenOutput();
+                  PFPrintfStderr("Switch %s requires a string parameter\n", LPCTSTR(s));
+                  return false;
+               };
+
+               u64Value = _atou64(s.Mid(2));
+               pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(u64Value)));
+               break;
             case cl_integer:
                if (cParameter == 0 && clList[iIndex].required)
                {
@@ -520,8 +529,8 @@ ProcessAgain:;
                   return false;
                };
 
-               iValue = _atou64(s.Mid(2));
-               pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(iValue)));
+               i32Value = atoi(s.Mid(2));
+               pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(i32Value)));
                break;
             case cl_string:
                if (cParameter == 0 && clList[iIndex].required)
@@ -595,7 +604,7 @@ ProcessAgain:;
          argv = cppTmp;
          argc = 1;
          strncpy(cpTmp, LPCTSTR(sDefaultSettings), sizeof(cpTmp));
-         PFPrintf("Processing with \"Default\" stored parameters of: %s\n", cpTmp);
+         PFPrintfLog("Processing with \"Default\" stored parameters of: %s\n", cpTmp);
          cpTmp[sizeof(cpTmp)-1] = 0;
          char *cp = strtok(cpTmp, " ");
          while (cp && argc < 50)
@@ -647,6 +656,24 @@ int pfgw_main(int argc,char *argv[])
       return 4;
    }
 
+   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+
+   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
+   {
+      PFOutput::EnableOneLineForceScreenOutput();
+      PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
+      g_bExitNow = true;
+      return 4;
+   }
+
+   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
+   {
+      PFOutput::EnableOneLineForceScreenOutput();
+      PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
+      g_bExitNow = true;
+      return 4;
+   }
+
    PFOutput::EnableOneLineForceScreenOutput();
    pTerseOutput = psymRuntime->LookupSymbol("_TERSE_OUTPUT");
    if (!pTerseOutput)
@@ -671,8 +698,6 @@ int pfgw_main(int argc,char *argv[])
    {
 
    s_bCommandLineParse=true;
-
-
 
    // for the moment, assume no _MAIN means a hardcoded path
    PFString sFilename="pfgw.txt";
@@ -709,7 +734,7 @@ int pfgw_main(int argc,char *argv[])
 #endif
       char Buffer[512];
       getCpuDescription(Buffer, 1);
-      PFPrintf("\nCPU Information (From Woltman v25 library code)\n%s\n", Buffer);
+      PFPrintfLog("\nCPU Information (From Woltman v25 library code)\n%s\n", Buffer);
    }
 
    pSymbol=psymRuntime->LookupSymbol("_EXTRA_SQFREE");
@@ -743,10 +768,10 @@ int pfgw_main(int argc,char *argv[])
       g_CompositeAthenticationLevel = atoi(cp);
       delete[] cp;
       // Make sure we are "in range".
-      if (g_CompositeAthenticationLevel < -2)
-         g_CompositeAthenticationLevel = -2;
-      if (g_CompositeAthenticationLevel > 2)
-         g_CompositeAthenticationLevel = 2;
+      if (g_CompositeAthenticationLevel < 0)
+         g_CompositeAthenticationLevel = 0;
+      if (g_CompositeAthenticationLevel > 5)
+         g_CompositeAthenticationLevel = 5;
    }
 
    // Communicate these values to any SCRIPT so that it knows what the
@@ -822,7 +847,7 @@ int pfgw_main(int argc,char *argv[])
             *cp1 = '{';
             strncpy(g_ModularSieveString, cp1, sizeof(g_ModularSieveString)-1);
             g_ModularSieveString[sizeof(g_ModularSieveString)-1] = 0;
-            PFPrintf ("Using modular factorization: %s\n", g_ModularSieveString);
+            PFPrintfLog ("Using modular factorization: %s\n", g_ModularSieveString);
             psymRuntime->AddSymbol(new PFStringSymbol("_MODFACTOR",g_ModularSieveString));
          }
       }
@@ -862,7 +887,7 @@ int pfgw_main(int argc,char *argv[])
          default:
             strcpy(Buf1, "Invalid Cert_Delete.  Defaulting to \"Delete composite certificates without factors\"");
       }
-      PFPrintf("Using certification level: \"%s\" and deletion of certificates \"%s\"\n", Buf, Buf1);
+      PFPrintfLog("Using certification level: \"%s\" and deletion of certificates \"%s\"\n", Buf, Buf1);
    }
 
    pSymbol=psymRuntime->LookupSymbol("_DEEPFACTOR");
@@ -1021,7 +1046,7 @@ int pfgw_main(int argc,char *argv[])
 
       try
       {
-      while(pFile->GetNextLine(sNumber, &Result, &bResultValid, psymRuntime) == PFSimpleFile::e_ok)
+      while (pFile->GetNextLine(sNumber, &Result, &bResultValid, psymRuntime) == PFSimpleFile::e_ok)
       {
          g_PRP_ReturnCode = 5;  // set to an "unknown" error code
 
@@ -1035,7 +1060,7 @@ int pfgw_main(int argc,char *argv[])
             pResult=ex_evaluate(psymRuntime,LPCTSTR(sNumber));
             if(pResult==NULL)
             {
-               PFPrintf("%s - Evaluator failed\n",LPCTSTR(sNumber));
+               PFPrintfLog("%s - Evaluator failed\n",LPCTSTR(sNumber));
                PFfflush(stdout);
                continue;
             }
@@ -1088,7 +1113,7 @@ int pfgw_main(int argc,char *argv[])
                sTestResult="Fermat and Lucas PRP!";
             }
             
-            PFPrintf("Primality testing %s [%s, Brillhart-Lehmer-Selfridge]\n",LPCTSTR(sNumber),LPCTSTR(sTestShortName));
+            PFPrintfLog("Primality testing %s [%s, Brillhart-Lehmer-Selfridge]\n",LPCTSTR(sNumber),LPCTSTR(sTestShortName));
             PFSymbolTable *pSubContext=new PFSymbolTable(psymRuntime);
 
             CTimer Timer;
@@ -1201,10 +1226,10 @@ int pfgw_main(int argc,char *argv[])
             t2 = ExtraOverhead_Timer.GetSecs ();
             ExtraOverhead_Timer.Start();
 
-            PFPrintf("%s is %s (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),LPCTSTR(sResult),t,t2-t);
+            PFPrintfLog("%s is %s (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),LPCTSTR(sResult),t,t2-t);
 
             if (bMsgValid)
-               PFPrintf ("%s\n", LPCTSTR(sMessage));
+               PFPrintfLog ("%s\n", LPCTSTR(sMessage));
             if (bIsPrimeOrPRP && bGFNFactors)
                ProcessGF_Factors(pResult, LPCSTR(sNumber));
             delete pSubContext;
@@ -1233,7 +1258,7 @@ int pfgw_main(int argc,char *argv[])
             pSymbol=psymRuntime->LookupSymbol("_TRIVIALNEG");
             if(pSymbol && (pSymbol->GetStringValue()=="1"))
             {
-               PFPrintf("%s was negative, testing absolute value.\n",LPCTSTR(sNumber));
+               PFPrintfLog("%s was negative, testing absolute value.\n",LPCTSTR(sNumber));
                PFfflush(stdout);
             }
             
@@ -1250,13 +1275,13 @@ int pfgw_main(int argc,char *argv[])
                   {
                      if (sTrivial == "1")
                      {
-                        PFPrintf("%s is Unity (1)\n",LPCTSTR(sNumber));
+                        PFPrintfLog("%s is Unity (1)\n",LPCTSTR(sNumber));
                         pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                         g_PRP_ReturnCode = 1;
                      }
                      else if (sTrivial == "0")
                      {
-                        PFPrintf("%s is Zero (0)\n",LPCTSTR(sNumber));
+                        PFPrintfLog("%s is Zero (0)\n",LPCTSTR(sNumber));
                         pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                         g_PRP_ReturnCode = 1;
                      }
@@ -1265,11 +1290,11 @@ int pfgw_main(int argc,char *argv[])
                         // Only one factor, but is it a "power" or simply a single prime.
                         // stupid way to check for power, but it works.
                         FILE *f=fopen("pfgw-prime.log","at");
-                        PFPrintf("%s is trivially prime!\n", LPCTSTR(sNumber));
+                        PFPrintfLog("%s is trivially prime!\n", LPCTSTR(sNumber));
                         pFile->CurrentNumberIsPRPOrPrime(false, true, &bMsgValid, &sMessage);
                         g_PRP_ReturnCode = 0;
                         if (bMsgValid)
-                           PFPrintf ("%s\n", LPCTSTR(sMessage));
+                           PFPrintfLog ("%s\n", LPCTSTR(sMessage));
                         if(f)
                         {   
                            fseek(f,0L,SEEK_END);
@@ -1279,7 +1304,7 @@ int pfgw_main(int argc,char *argv[])
                            fclose(f);
                         }
                         if (!bOnlyGFFactors)
-                           PFPrintf("%s trivially factors prime!: %s\n",LPCTSTR(sNumber),LPCTSTR(sTrivial));
+                           PFPrintfLog("%s trivially factors prime!: %s\n",LPCTSTR(sNumber),LPCTSTR(sTrivial));
                         if (bGFNFactors)
                             ProcessGF_Factors(pResult, LPCTSTR(sNumber));
                      }
@@ -1298,7 +1323,7 @@ int pfgw_main(int argc,char *argv[])
                         }
                      }
                      g_PRP_ReturnCode = 1;
-                     PFPrintf("%s trivially factors as: %s\n",LPCTSTR(sNumber),LPCTSTR(sTrivial));
+                     PFPrintfLog("%s trivially factors as: %s\n",LPCTSTR(sNumber),LPCTSTR(sTrivial));
                   }
                   PFfflush(stdout);
                   bTrivial=PFBoolean::b_true;
@@ -1308,7 +1333,6 @@ int pfgw_main(int argc,char *argv[])
          else
          {
             // we have to check (and fix) by hand, negative, and 0, 1
-
             IPFSymbol *pSym=psymRuntime->LookupSymbol("_N");
             if(pSym && pSym->GetSymbolType()==INTEGER_SYMBOL_TYPE)
             {
@@ -1316,19 +1340,19 @@ int pfgw_main(int argc,char *argv[])
                if((*_pN)<0)
                {
                   (*_pN)*=-1;
-                  PFPrintf("%s was negative, testing absolute value.\n",LPCTSTR(sNumber));
+                  PFPrintfLog("%s was negative, testing absolute value.\n",LPCTSTR(sNumber));
                   PFfflush(stdout);
                }
                if (*_pN == 0)
                {
-                  PFPrintf("%s is Zero (0)\n",LPCTSTR(sNumber));
+                  PFPrintfLog("%s is Zero (0)\n",LPCTSTR(sNumber));
                   pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 1;
                   bTrivial=PFBoolean::b_true;
                }
                else if (*_pN == 1)
                {
-                  PFPrintf("%s is Unity (1)\n",LPCTSTR(sNumber));
+                  PFPrintfLog("%s is Unity (1)\n",LPCTSTR(sNumber));
                   pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 1;
                   bTrivial=PFBoolean::b_true;
@@ -1339,7 +1363,7 @@ int pfgw_main(int argc,char *argv[])
          // try to factor the thing
          bool bPrimalityTest=true;
 
-         if(bFactor && !bTrivial)
+         if (bFactor && !bTrivial)
          {
             PFFactorizationSymbol *pffN;
             psymRuntime->AddSymbol(pffN=new PFFactorizationSymbol("_NFACTOR"));
@@ -1360,7 +1384,7 @@ int pfgw_main(int argc,char *argv[])
             PFString sFactorization;
             sFactorization=pffN->GetStringValue();
             IPFSymbol *pQ=0;
-            if(sFactorization!="1" && (pQ=psymRuntime->LookupSymbol("_Q")) != NULL)
+            if (sFactorization!="1" && (pQ=psymRuntime->LookupSymbol("_Q")) != NULL)
             {
                Integer _Q=*((PFIntegerSymbol*)pQ)->GetValue();
                
@@ -1374,7 +1398,7 @@ int pfgw_main(int argc,char *argv[])
                   g_PRP_ReturnCode = 0;
                   bTrivial=PFBoolean::b_true;
                   if (bMsgValid)
-                     PFPrintf ("%s\n", LPCTSTR(sMessage));
+                     PFPrintfLog ("%s\n", LPCTSTR(sMessage));
                   if(f)
                   {   
                      fseek(f,0L,SEEK_END);
@@ -1384,20 +1408,20 @@ int pfgw_main(int argc,char *argv[])
                      fclose(f);
                   }
                   if (!bOnlyGFFactors)
-                     PFPrintf("%s factors prime!: %s\n",LPCTSTR(sNumber),LPCTSTR(sFactorization));
+                     PFPrintfLog("%s factors prime!: %s\n",LPCTSTR(sNumber),LPCTSTR(sFactorization));
                   if (bGFNFactors)
                      ProcessGF_Factors(pResult, LPCSTR(sNumber));
                }
                else
                {
-                  PFPrintf("%s has factors: %s\n",LPCTSTR(sNumber),LPCTSTR(sFactorization));
+                  PFPrintfLog("%s has factors: %s\n",LPCTSTR(sNumber),LPCTSTR(sFactorization));
                   if (!bDeep || _Q==1)
                      pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
 
                   g_PRP_ReturnCode = 1;
                   if (bMsgValid)
                   {
-                     PFPrintf ("%s\n", LPCTSTR(sMessage));
+                     PFPrintfLog ("%s\n", LPCTSTR(sMessage));
                      FILE *f=fopen("pfgw.log","at");
                      if(f)
                      {   
@@ -1440,16 +1464,16 @@ int pfgw_main(int argc,char *argv[])
                if (sOnlyFactorType=="d"||sOnlyFactorType=="D")
                {
                   PFString sDecimal=pN->GetStringValue();
-                  PFPrintf("%s: %s\n",LPCTSTR(sNumber),LPCTSTR(sDecimal));
+                  PFPrintfLog("%s: %s\n",LPCTSTR(sNumber),LPCTSTR(sDecimal));
                }
                else
-                  PFPrintf("%s has no small factor.\n",LPCTSTR(sNumber));
+                  PFPrintfLog("%s has no small factor.\n",LPCTSTR(sNumber));
                PFfflush(stdout);
             }
             else if (bOnlyGFFactors)
             {
                if (!ProcessGF_Factors(pResult, LPCSTR(sNumber)))
-                  PFPrintf ("Error %s is not of the correct form to be a GFermat Factor\n", LPCTSTR(sNumber));
+                  PFPrintfLog ("Error %s is not of the correct form to be a GFermat Factor\n", LPCTSTR(sNumber));
             }
             else
             {
@@ -1457,23 +1481,23 @@ int pfgw_main(int argc,char *argv[])
                Timer.Start ();
 
                int Retval;
-               Retval=gwPRP(pResult, g_cpTestString,&g_u64ResidueVal);
+               Retval = gwPRP(pResult, g_cpTestString,&g_u64ResidueVal);
                if (g_bExitNow)
                   break;
 
                double t;
                t = Timer.GetSecs ();
 
-               if(Retval == 1)
+               if (Retval == 1)
                {
                   pFile->CurrentNumberIsPRPOrPrime(true, false, &bMsgValid, &sMessage);
                   g_PRP_ReturnCode = 0;
                   double t2;
                   t2 = ExtraOverhead_Timer.GetSecs ();
                   ExtraOverhead_Timer.Start();
-                  PFPrintf("%s is %d-PRP! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),iBaseUsed,t,t2-t);
+                  PFPrintfLog("%s is %d-PRP! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),iBaseUsed,t,t2-t);
                   if (bMsgValid)
-                     PFPrintf ("%s\n", LPCTSTR(sMessage));
+                     PFPrintfLog ("%s\n", LPCTSTR(sMessage));
                   PFfflush(stdout);
                   
                   FILE *f=fopen("pfgw.log","at");
@@ -1503,14 +1527,14 @@ int pfgw_main(int argc,char *argv[])
                      Sleep(1000);
 
                   if (!Retval)
-                     PFPrintf("%s is composite: RES64: [%08lX%08lX] (%0.4fs+%0.4fs)\n",
+                     PFPrintfLog("%s is composite: RES64: [%08lX%08lX] (%0.4fs+%0.4fs)\n",
                               LPCTSTR(sNumber), (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
                   else
-                     PFPrintf("%s ERROR DURING PROCESSING! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),t, t2-t);
+                     PFPrintfLog("%s ERROR DURING PROCESSING! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),t, t2-t);
 
                   if (bMsgValid)
                   {
-                     PFPrintf ("%s\n", LPCTSTR(sMessage));
+                     PFPrintfLog ("%s\n", LPCTSTR(sMessage));
                      FILE *f=fopen("pfgw.log","at");
                      if(f)
                      {   
@@ -1530,7 +1554,6 @@ int pfgw_main(int argc,char *argv[])
       {
          delete pFile;
          pFile = 0;
-         throw;
       }
       delete pFile;
       pFile=0;
@@ -1540,8 +1563,7 @@ int pfgw_main(int argc,char *argv[])
 #if !defined (_DEBUG)
    catch(...)
    {
-      PFPrintf ("\rUnknown error in PFGW runtime\nPossibly a number too big for alloca version of GMP\n");
-      //throw;
+      PFPrintfLog ("\rUnknown error in PFGW runtime\nPossibly a number too big for alloca version of GMP\n");
    }
 #endif
 
