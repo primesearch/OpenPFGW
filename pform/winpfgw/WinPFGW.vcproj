@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="WinPFGW"
 	ProjectGUID="{B6960240-04C4-4DA9-9A54-A370AE6AC826}"
+	RootNamespace="WinPFGW"
 	Keyword="MFCProj"
 	TargetFrameworkVersion="131072"
 	>
@@ -179,7 +180,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\packages\nasmobj\mod.obj ..\..\packages\wingmp\libgmp.a ..\..\packages\gwnum\gwnumd.lib"
-				OutputFile=".\..\../WinPFGW.exe"
+				OutputFile="$(SolutionDir)debug\WinPFGW.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -494,6 +495,10 @@
 			</File>
 			<File
 				RelativePath="Subclass.h"
+				>
+			</File>
+			<File
+				RelativePath=".\targetver.h"
 				>
 			</File>
 			<File
