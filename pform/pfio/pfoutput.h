@@ -1,6 +1,6 @@
 // pfoutput.h
 //
-//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintf(const char *Fmt, ...)
+//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintfLog(const char *Fmt, ...)
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
@@ -29,15 +29,11 @@ extern "C" {
 // line feed ever (unless less than 80 columns!)
 void PFPrintfClearCurLine(int line_len=79); 
 int PFfflush(FILE *); 
-void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4);
+void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4=0);
 
-#ifdef ANSI             /* ANSI compatible version          */
 int PFPrintfStderr(const char *Fmt, ...);
-int PFPrintf      (const char *Fmt, ...);
-#else
-int PFPrintfStderr( va_list );
-int PFPrintf      ( va_list );
-#endif
+int PFPrintf(const char *Fmt, ...);
+int PFPrintfLog(const char *Fmt, ...);
 
 };
 
@@ -75,10 +71,10 @@ class PFOutput
 
 #ifdef ANSI             /* ANSI compatible version          */
 		virtual int PFPrintfStderr(const char *Fmt, const va_list &va)=0;
-		virtual int PFPrintf      (const char *Fmt, const va_list &va)=0;
+		virtual int PFPrintfLog      (const char *Fmt, const va_list &va)=0;
 #else
 		virtual int PFPrintfStderr( va_list )=0;
-		virtual int PFPrintf      ( va_list )=0;
+		virtual int PFPrintfLog      ( va_list )=0;
 #endif
 
 	protected:
@@ -104,10 +100,10 @@ class PFConsoleOutput : public PFOutput
 		int PFfflush(FILE *);
 #ifdef ANSI             /* ANSI compatible version          */
 		int PFPrintfStderr(const char *Fmt, const va_list &va);
-		int PFPrintf      (const char *Fmt, const va_list &va);
+		int PFPrintfLog      (const char *Fmt, const va_list &va);
 #else
 		int PFPrintfStderr( va_list );
-		int PFPrintf      ( va_list );
+		int PFPrintfLog      ( va_list );
 #endif
 };
 
@@ -120,7 +116,7 @@ class PFWin32GUIOutput : public PFOutput
 		void PFPrintfClearCurLine(int line_len);
 		int PFfflush(FILE *);
 		int PFPrintfStderr(const char *Fmt, const va_list &va);
-		int PFPrintf      (const char *Fmt, const va_list &va);
+		int PFPrintfLog      (const char *Fmt, const va_list &va);
 
 	private:
 		int m_hWnd;	// actually an HWND, but I want this to "compile" easily :)

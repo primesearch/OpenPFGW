@@ -1,6 +1,6 @@
 // pfoutput.cpp
 //
-//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintf(const char *Fmt, ...)
+//   Contains global functions PFPrintfStderr(const char *Fmt, ...) and PFPrintfLog(const char *Fmt, ...)
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
@@ -88,6 +88,7 @@ int  PFOutput::PFLogPrintf (const char *Fmt, const va_list &va)
 	return ret;
 }
 
+// This writes to stderr, but not to pfgw.log
 int PFPrintfStderr(const char *Fmt, ...)
 {
 	va_list va;
@@ -97,11 +98,22 @@ int PFPrintfStderr(const char *Fmt, ...)
 	return ret;
 }
 
+// This writes to stdout, but not to pfgw.log
 int PFPrintf(const char *Fmt, ...)
 {
 	va_list va;
 	va_start(va, Fmt);
-	int ret = pOutputObj->PFPrintf(Fmt, va);
+	int ret = pOutputObj->PFPrintfLog(Fmt, va);
+	va_end(va);
+	return ret;
+}
+
+// This writes to stdout and to pfgw.log
+int PFPrintfLog(const char *Fmt, ...)
+{
+	va_list va;
+	va_start(va, Fmt);
+	int ret = pOutputObj->PFPrintfLog(Fmt, va);
 	pOutputObj->PFLogPrintf(Fmt, va);
 	va_end(va);
 	return ret;
@@ -132,9 +144,9 @@ void  PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, co
 		fprintf(out, "Expr = %s\n", expr);
 	   fprintf(out, "%s\n", msg1);
 	   fprintf(out, "%s\n", msg2);
-      if (msg3)
-         fprintf(out, "%s\n", msg3);
-	   fprintf(out, "%s\n", msg4);
-		fclose(out);
+      if (msg3 && *msg3) fprintf(out, "%s\n", msg3);
+      if (msg4 && *msg4) fprintf(out, "%s\n", msg4);
+
+      fclose(out);
 	}
 }
