@@ -35,9 +35,10 @@ void CreateRestoreName(Integer *N, char RestoreName[13]);
 bool RestoreState(ePRPType e_gwPRP, char *RestoreName, uint32 *iDone, GWInteger *gwX, uint32 iBase, eContextType eCType);
 bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32 iDone, GWInteger *gwX, uint32 iBase, eContextType eCType, Integer *N, bool bForce=false);
 
-// in gw_prp.cpp  (now returns int, 
-int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue, uint32 dwOverride=0);
-int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue);
+// in gw_prp.cpp
+int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue);
+void bench_gwPRP(Integer *N, uint32 iterations);
+int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue, int fftSize);
 
 // in phi_prp.cpp
 void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors);
