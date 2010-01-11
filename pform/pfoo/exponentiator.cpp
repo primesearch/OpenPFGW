@@ -460,9 +460,9 @@ PFBoolean Exponentiator::CheckForFatalError(const char *caller, int currentItera
 
       PFWriteErrorToLog(g_cpTestString, buffer1, buffer2, 0, buffer3);
 
-      PFPrintf("%s\n", buffer1);
-      PFPrintf("%s\n", buffer2);
-      PFPrintf("%s\n", buffer3);
+      PFPrintfLog("%s\n", buffer1);
+      PFPrintfLog("%s\n", buffer2);
+      PFPrintfLog("%s\n", buffer3);
 
       g_dMaxError = gw_get_maxerr(&gwdata);
       g_bHaveFatalError = true;

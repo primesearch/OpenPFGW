@@ -154,10 +154,10 @@ PFBoolean F_Vector::Iterate()
 	if(i1<0) i1+=p;
 	if(i2<0) i2+=p2;
 
-	PFPrintf("%u: %d\n",p,i1);
+	PFPrintfLog("%u: %d\n",p,i1);
 	if(p2<=pmax)
 	{
-		PFPrintf("%u: %d\n",p2,i2);	
+		PFPrintfLog("%u: %d\n",p2,i2);	
 	}
 		
 	primeserver.next(p);				// ready for the next iteration

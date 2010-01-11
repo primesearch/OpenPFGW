@@ -107,7 +107,7 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 			int iRetval=CallSubroutine("@trivial",pSubContext);
 			if(iRetval<0)
 			{
-				PFPrintf("negative number, negating\n");
+				PFPrintfLog("negative number, negating\n");
 				iRetval=-iRetval;
 			}
 
@@ -115,22 +115,22 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 			switch(iRetval)
 			{
 			case TT_ZERO:
-				PFPrintf("zero\n");
+				PFPrintfLog("zero\n");
 				iReturnCode=PT_FACTOR;
 				bProcessed=PFBoolean::b_true;
 				break;
 			case TT_ONE:
-				PFPrintf("one\n");
+				PFPrintfLog("one\n");
 				iReturnCode=PT_FACTOR;
 				bProcessed=PFBoolean::b_true;
 				break;
 			case TT_TWO:
-				PFPrintf("two\n");
+				PFPrintfLog("two\n");
 				iReturnCode=PT_PRIME;
 				bProcessed=PFBoolean::b_true;
 				break;
 			case TT_FACTOR:
-				PFPrintf("trivially factored\n");
+				PFPrintfLog("trivially factored\n");
 				iReturnCode=PT_FACTOR;
 				bProcessed=PFBoolean::b_true;
 				break;
@@ -156,7 +156,7 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 				if(iRetval>0)
 				{
 					// the routine found a factor. However not finding a factor might be positive too
-					PFPrintf("factored, small factor %d\n",iRetval);
+					PFPrintfLog("factored, small factor %d\n",iRetval);
 					iReturnCode=0;
 					bProcessed=PFBoolean::b_true;
 				}
@@ -171,7 +171,7 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 						if(*pN<T)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 						}
 					}
@@ -191,7 +191,7 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 				if(iRetval==1)
 				{
 					iReturnCode=0;
-					PFPrintf("square\n");
+					PFPrintfLog("square\n");
 					bProcessed=PFBoolean::b_true;
 				}		
 			}
@@ -237,15 +237,15 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 				{
 				case PT_INCONCLUSIVE:
 					iReturnCode=1;
-					PFPrintf("probable prime\n");
+					PFPrintfLog("probable prime\n");
 					break;
 				case PT_PRIME:
 					iReturnCode=2;
-					PFPrintf("prime\n");
+					PFPrintfLog("prime\n");
 					break;
 				case PT_COMPOSITE:
 					iReturnCode=0;
-					PFPrintf("composite\n");
+					PFPrintfLog("composite\n");
 					break;
 				case PT_FACTOR:
 					{
@@ -255,11 +255,11 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 						if(pFactorSymbol && pFactorSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
 						{
 							PFString sValue=pFactorSymbol->GetStringValue();
-							PFPrintf("factor: %s\n",sValue);
+							PFPrintfLog("factor: %s\n",sValue);
 						}
 						else
 						{
-							PFPrintf("composite\n");
+							PFPrintfLog("composite\n");
 						}
 					}
 					break;
@@ -360,17 +360,17 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 				switch(iRetval)
 				{
 				case TT_ZERO:
-					PFPrintf("zero\n");
+					PFPrintfLog("zero\n");
 					iReturnCode=PT_FACTOR;
 					bProcessed=PFBoolean::b_true;
 					break;
 				case TT_ONE:
-					PFPrintf("one\n");
+					PFPrintfLog("one\n");
 					iReturnCode=PT_FACTOR;
 					bProcessed=PFBoolean::b_true;
 					break;
 				case TT_TWO:
-					PFPrintf("two\n");
+					PFPrintfLog("two\n");
 					iReturnCode=PT_PRIME;
 					bProcessed=PFBoolean::b_true;
 					break;
@@ -383,15 +383,15 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 					PFString sTrivial=pFactorization->GetStringValue();
 					if (pFactorization->AccessList()->GetSize () == 1 && !strchr(LPCTSTR(sTrivial), '^'))
 					{
-						PFPrintf("small number, factored prime!\n");
+						PFPrintfLog("small number, factored prime!\n");
 						iReturnCode = PT_PRIME;
 					}
 					else
-						PFPrintf("small number, factored\n");
+						PFPrintfLog("small number, factored\n");
 					break;
 					}
 				case TT_NEGATIVE:
-					PFPrintf("negative\n");
+					PFPrintfLog("negative\n");
 					(*pN)*=-1;
 					break;
 				default:
@@ -443,7 +443,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 						if (*pN == tmp)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 							iReturnCode = PT_PRIME;
 						}
@@ -451,7 +451,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 					if (bProcessed==PFBoolean::b_false)
 					{
 						PFPrintfClearCurLine();
-						PFPrintf("factors: %s\n",LPCTSTR(sFactor));
+						PFPrintfLog("factors: %s\n",LPCTSTR(sFactor));
 						iReturnCode=PT_FACTOR;
 						bProcessed=PFBoolean::b_true;
 					}
@@ -467,7 +467,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 						if(*pN<T)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 							iReturnCode = PT_PRIME;
 						}
@@ -488,7 +488,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 				if(iRetval==1)
 				{
 					iReturnCode=PT_COMPOSITE;
-					PFPrintf("square\n");
+					PFPrintfLog("square\n");
 					bProcessed=PFBoolean::b_true;
 				}		
 			}
@@ -596,7 +596,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 				pSubContext->AddSymbol(pF);
 				pSubContext->AddSymbol(pG);
 				
-				PFPrintf("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*lg(*F))/double(lg(*pN)));
+				PFPrintfLog("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*lg(*F))/double(lg(*pN)));
 				
 				// the end call performs the Brillhart-Lehmer-Selfridge processing of the
 				// Lenstra's Theorem result.
@@ -624,12 +624,12 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 						if(pFactorSymbol && pFactorSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
 						{
 							PFString sValue=pFactorSymbol->GetStringValue();
-							PFPrintf("factor: %s\n",LPCTSTR(sValue));
+							PFPrintfLog("factor: %s\n",LPCTSTR(sValue));
 						}
 						else
 						{
 							iReturnCode=PT_COMPOSITE;
-							PFPrintf("composite\n");
+							PFPrintfLog("composite\n");
 						}
 					}
 					break;
@@ -731,17 +731,17 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 				switch(iRetval)
 				{
 				case TT_ZERO:
-					PFPrintf("zero\n");
+					PFPrintfLog("zero\n");
 					iReturnCode=PT_FACTOR;
 					bProcessed=PFBoolean::b_true;
 					break;
 				case TT_ONE:
-					PFPrintf("one\n");
+					PFPrintfLog("one\n");
 					iReturnCode=PT_FACTOR;
 					bProcessed=PFBoolean::b_true;
 					break;
 				case TT_TWO:
-					PFPrintf("two\n");
+					PFPrintfLog("two\n");
 					iReturnCode=PT_PRIME;
 					bProcessed=PFBoolean::b_true;
 					break;
@@ -754,15 +754,15 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 					PFString sTrivial=pFactorization->GetStringValue();
 					if (pFactorization->AccessList()->GetSize () == 1 && !strchr(LPCTSTR(sTrivial), '^'))
 					{
-						PFPrintf("small number, factored prime!\n");
+						PFPrintfLog("small number, factored prime!\n");
 						iReturnCode = PT_PRIME;
 					}
 					else
-						PFPrintf("small number, factored\n");
+						PFPrintfLog("small number, factored\n");
 					break;
 					}
 				case TT_NEGATIVE:
-					PFPrintf("negative\n");
+					PFPrintfLog("negative\n");
 					(*pN)*=-1;
 					break;
 				default:
@@ -814,7 +814,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 						if (*pN == tmp)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 							iReturnCode = PT_PRIME;
 						}
@@ -822,7 +822,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 					if (bProcessed==PFBoolean::b_false)
 					{
 						PFPrintfClearCurLine();
-						PFPrintf("factors: %s\n",LPCTSTR(sFactor));
+						PFPrintfLog("factors: %s\n",LPCTSTR(sFactor));
 						iReturnCode=PT_FACTOR;
 						bProcessed=PFBoolean::b_true;
 					}
@@ -838,7 +838,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 						if(*pN<T)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 							iReturnCode = PT_PRIME;
 						}
@@ -859,7 +859,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 				if(iRetval==1)
 				{
 					iReturnCode=PT_COMPOSITE;
-					PFPrintf("square\n");
+					PFPrintfLog("square\n");
 					bProcessed=PFBoolean::b_true;
 				}		
 			}
@@ -995,7 +995,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 				pSubContext->AddSymbol(pF);
 				pSubContext->AddSymbol(pG);
 				
-				PFPrintf("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*lg(*G))/double(lg(*pN)));
+				PFPrintfLog("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*lg(*G))/double(lg(*pN)));
 				
 				// the end call performs the Brillhart-Lehmer-Selfridge processing of the
 				// Lenstra's Theorem result.
@@ -1023,12 +1023,12 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 						if(pFactorSymbol && pFactorSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
 						{
 							PFString sValue=pFactorSymbol->GetStringValue();
-							PFPrintf("factor: %s\n",LPCTSTR(sValue));
+							PFPrintfLog("factor: %s\n",LPCTSTR(sValue));
 						}
 						else
 						{
 							iReturnCode=PT_COMPOSITE;
-							PFPrintf("composite\n");
+							PFPrintfLog("composite\n");
 						}
 					}
 					break;
@@ -1133,17 +1133,17 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 				switch(iRetval)
 				{
 				case TT_ZERO:
-					PFPrintf("zero\n");
+					PFPrintfLog("zero\n");
 					iReturnCode=PT_FACTOR;
 					bProcessed=PFBoolean::b_true;
 					break;
 				case TT_ONE:
-					PFPrintf("one\n");
+					PFPrintfLog("one\n");
 					iReturnCode=PT_FACTOR;
 					bProcessed=PFBoolean::b_true;
 					break;
 				case TT_TWO:
-					PFPrintf("two\n");
+					PFPrintfLog("two\n");
 					iReturnCode=PT_PRIME;
 					bProcessed=PFBoolean::b_true;
 					break;
@@ -1156,15 +1156,15 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 					PFString sTrivial=pFactorization->GetStringValue();
 					if (pFactorization->AccessList()->GetSize () == 1 && !strchr(LPCTSTR(sTrivial), '^'))
 					{
-						PFPrintf("small number, factored prime!\n");
+						PFPrintfLog("small number, factored prime!\n");
 						iReturnCode = PT_PRIME;
 					}
 					else
-						PFPrintf("small number, factored\n");
+						PFPrintfLog("small number, factored\n");
 					break;
 					}
 				case TT_NEGATIVE:
-					PFPrintf("negative\n");
+					PFPrintfLog("negative\n");
 					(*pN)*=-1;
 					break;
 				default:
@@ -1220,7 +1220,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 						if (*pN == tmp)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 							iReturnCode = PT_PRIME;
 						}
@@ -1228,7 +1228,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 					if (bProcessed==PFBoolean::b_false)
 					{
 						PFPrintfClearCurLine();
-						PFPrintf("factors: %s\n",LPCTSTR(sFactor));
+						PFPrintfLog("factors: %s\n",LPCTSTR(sFactor));
 						iReturnCode=PT_FACTOR;
 						bProcessed=PFBoolean::b_true;
 					}
@@ -1244,7 +1244,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 						if(*pN<T)
 						{
 							iReturnCode=2;		// prime by completion of trial factoring
-							PFPrintf("prime by trial factoring\n");
+							PFPrintfLog("prime by trial factoring\n");
 							bProcessed=PFBoolean::b_true;
 							iReturnCode = PT_PRIME;
 						}
@@ -1266,7 +1266,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 				if(iRetval==1)
 				{
 					iReturnCode=PT_COMPOSITE;
-					PFPrintf("square\n");
+					PFPrintfLog("square\n");
 					bProcessed=PFBoolean::b_true;
 				}		
 			}
@@ -1488,7 +1488,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 					tv*=fProven;
 					tv*=fProven;
 					sPolisher="@endminus1";
-					PFPrintf("Calling N-1 BLS with factored part %.2f%% and helper %.2f%% (%.2f%% proof)\n",
+					PFPrintfLog("Calling N-1 BLS with factored part %.2f%% and helper %.2f%% (%.2f%% proof)\n",
 						double(100.0*lg(*F))/double(lg(*pN)),double(100.0*lg(*G))/double(lg(*pN)),
 						double(100.0*lg(tv))/double(lg(*pN)));
 				}
@@ -1497,7 +1497,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 					tv*=gProven;
 					tv*=gProven;
 					sPolisher="@endplus1";
-					PFPrintf("Calling N+1 BLS with factored part %.2f%% and helper %.2f%% (%.2f%% proof)\n",
+					PFPrintfLog("Calling N+1 BLS with factored part %.2f%% and helper %.2f%% (%.2f%% proof)\n",
 						double(100.0*lg(*G))/double(lg(*pN)),double(100.0*lg(*F))/double(lg(*pN)),
 						double(100.0*lg(tv))/double(lg(*pN)));
 				}
@@ -1529,12 +1529,12 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 						if(pFactorSymbol && pFactorSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
 						{
 							PFString sValue=pFactorSymbol->GetStringValue();
-							PFPrintf("factor: %s\n",LPCTSTR(sValue));
+							PFPrintfLog("factor: %s\n",LPCTSTR(sValue));
 						}
 						else
 						{
 							iReturnCode=PT_COMPOSITE;
-							PFPrintf("composite\n");
+							PFPrintfLog("composite\n");
 						}
 					}
 					break;

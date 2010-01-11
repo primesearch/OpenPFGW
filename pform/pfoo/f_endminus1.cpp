@@ -133,7 +133,7 @@ PFBoolean F_EndMinus1::CallFunction(PFSymbolTable *pContext)
 									else if(KTEST>g_ExtraSQFree)
 									{
 										if (KTEST < 0x7FFFFFFF && lg(*n) > 2000)
-											PFPrintf("Proof incomplete rerun with -x%d\n", KTEST&0x7FFFFFFF);
+											PFPrintfLog("Proof incomplete rerun with -x%d\n", KTEST&0x7FFFFFFF);
 										iRetval=PT_INCONCLUSIVE;
 									}
 									else
@@ -197,7 +197,7 @@ PFBoolean F_EndMinus1::CallFunction(PFSymbolTable *pContext)
 											//MB: Report status to user every 8192 loops.
 											kCount++;
 											if ((kCount&0x1FFF)==1) 
-												PFPrintf("\r%d/%d\r",kCount,kMax);
+												PFPrintfLog("\r%d/%d\r",kCount,kMax);
 										}
 										delete pSubContext;
 									}

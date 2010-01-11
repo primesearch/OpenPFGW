@@ -33,20 +33,6 @@ void Residue::squaremultiply(Multiplier *m, int maxSteps, int stepsLeft)
 FieldZ::FieldZ(Integer *N)
 {
    gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-      g_bExitNow = true;
-   }
-
-   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-      g_bExitNow = true;
-   }
-
    gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);	// maximum multiplier
 	CreateModulus(N);
 }
@@ -222,20 +208,6 @@ FieldLucas::FieldLucas(Integer *N)
 	: ps1(NULL), ps2(NULL), ps3(NULL), ps4(NULL)
 {
    gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-   if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM version mismatch.  PFGW is not linked with version %s of GWNUM.\n", GWNUM_VERSION);
-      g_bExitNow = true;
-   }
-
-   if (gwdata.GWERROR == GWERROR_STRUCT_SIZE_MISMATCH)
-   {
-		PFOutput::EnableOneLineForceScreenOutput();
-		PFPrintfStderr ("GWNUM struct size mismatch.  PFGW must be compiled with same switches as GWNUM.\n");
-      g_bExitNow = true;
-   }
-
 	gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);	// maximum multiplier
 	CreateModulus(N);
 	

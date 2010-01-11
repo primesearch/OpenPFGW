@@ -29,6 +29,9 @@
 #include "f_if.h"
 #include "f_length.h"
 
+extern int g_CompositeAthenticationLevel;
+extern bool g_bHaveFatalError;
+
 PFFunctionSymbol::PFFunctionSymbol(const PFString &sName)
 	: IPFSymbol(sName)
 {
@@ -57,15 +60,25 @@ void PFFunctionSymbol::ClearPersistentData()
 int PFFunctionSymbol::CallSubroutine(const PFString &sRoutineName,PFSymbolTable *pContext)
 {
 	int iRetval=-1;
+   int saveFFTSize;
+   PFBoolean bRetval;
 	
 	IPFSymbol *pSymbol=pContext->LookupSymbol(sRoutineName);
 	if(pSymbol && pSymbol->GetSymbolType()==FUNCTION_SYMBOL_TYPE)
 	{
 		PFFunctionSymbol *pF=(PFFunctionSymbol*)pSymbol;
 	
-		PFBoolean bRetval=pF->CallFunction(pContext);
+      saveFFTSize = g_CompositeAthenticationLevel;
+      g_bHaveFatalError = false;
+      do 
+      {
+   		bRetval=pF->CallFunction(pContext);
+         g_CompositeAthenticationLevel++;
+      } while (g_bHaveFatalError);
 		
-		if(bRetval)
+      g_CompositeAthenticationLevel = saveFFTSize;
+
+      if (bRetval)
 		{
 			iRetval=0;		// well, the code ran....
 			// check for a return value
@@ -77,13 +90,11 @@ int PFFunctionSymbol::CallSubroutine(const PFString &sRoutineName,PFSymbolTable 
 				iRetval=(*g)&0x7fffffff;		// All functions return positive integers!
 			}
 		}
-		else
-		{
-		}
+
 	}
 	else
 	{
-		PFPrintf("*** WARNING *** Illegal internal functioncall to %s\n",LPCTSTR(sRoutineName));
+		PFPrintfLog("*** WARNING *** Illegal internal functioncall to %s\n",LPCTSTR(sRoutineName));
 	}
 	
 	return iRetval;

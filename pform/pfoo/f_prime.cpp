@@ -62,7 +62,7 @@ PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
 						// this is a really lousy implementation
 						primeserver.restart();
 						uint32 p=1;
-			        	for(uint32 i=0;i<idx;i++)
+			        	for(int32 i=0;i<idx;i++)
             				primeserver.next(p);
        					*r=p;
        					bRetval=PFBoolean::b_true;

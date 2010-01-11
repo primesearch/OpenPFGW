@@ -42,7 +42,7 @@ FiniteField *NMinus1Exponentiator::GetFieldElements(PFSymbolTable *pContext,Resi
 	// I think these need to be in the pfgw.out file!!
 //	PFPrintfStderr("Running N-1 test using base %u\n",p);
 //	PFfflush(stderr);
-	PFPrintf("Running N-1 test using base %u\n",p);
+	PFPrintfLog("Running N-1 test using base %u\n",p);
 	
 	// create field modulus residue multiplier
 
@@ -107,7 +107,7 @@ PFBoolean NMinus1Exponentiator::testLeaf()
 			PFString sG=sDummy.GetStringValue();
 			sDummy.SetValue(NULL);
 				
-			PFPrintf("Factored: %s\n",LPCTSTR(sG));
+			PFPrintfLog("Factored: %s\n",LPCTSTR(sG));
 				
             testResult=PT_FACTOR;   // known factor
             bRetval=PFBoolean::b_true;

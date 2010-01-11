@@ -13,8 +13,6 @@ extern int g_nIterationCnt;		// located in pfgw_main.cpp
 bool g_bHideNoFactor=false;
 bool g_bReLoadFactorFile=false;
 
-Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
-
 //#define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp();printf("\n");}
 #undef INTDEBUG
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
@@ -546,7 +544,7 @@ BailOut:;
 				if(sNumber.IsEmpty()) continue;
 				if (!bResultValid)
 				{
-					Integer *pResult=ex_evaluate(pTable,LPCTSTR(sNumber), 0);
+					Integer *pResult=ex_evaluate(pTable,LPCTSTR(sNumber));
 					if(pResult==NULL) continue;
 					pHelperArray->AddFactor(pResult);
 					delete pResult;
@@ -623,7 +621,7 @@ BailOut:;
 			if (g_bTestingMode && !bUsed && !g_bHideNoFactor)
 			{
 				char *cp = pResult->Itoa();
-				PFPrintf("Prime_Testing_Warning, unused factor from helper file: %s\n",cp);
+				PFPrintfLog("Prime_Testing_Warning, unused factor from helper file: %s\n",cp);
 				delete[] cp;
 			}
 
@@ -943,7 +941,7 @@ PFBoolean F_Factor::OnCompleted(PFSymbolTable *pContext)
 	}
 	catch(...)
 	{
-		PFPrintf ("\rError factoring, probably number if too big for alloca version of GMP\n");
+		PFPrintfLog ("\rError factoring, probably number if too big for alloca version of GMP\n");
 		testResult=0;
 		//throw;
 	}

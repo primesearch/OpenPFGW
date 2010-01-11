@@ -56,7 +56,7 @@ PFBoolean NPlus1Exponentiator::testLeaf()
 			sDummy.SetValue(NULL);
 
 			PFPrintfClearCurLine();
-			PFPrintf("Factored: %s\n",LPCTSTR(sG));
+			PFPrintfLog("Factored: %s\n",LPCTSTR(sG));
 
             testResult=PT_FACTOR;   // known factor
             bRetval=PFBoolean::b_true;
@@ -171,7 +171,7 @@ FiniteField *NPlus1Exponentiator::GetFieldElements(PFSymbolTable *pContext,Resid
 	// I think these need to be in the pfgw.out file!!
 //	PFPrintfStderr("Running N+1 test using discriminant %s, base %s+sqrt(%s)\n", 
 //		LPCTSTR(sD),LPCTSTR(sB),LPCTSTR(sD));
-	PFPrintf("Running N+1 test using discriminant %s, base %s+sqrt(%s)\n", 
+	PFPrintfLog("Running N+1 test using discriminant %s, base %s+sqrt(%s)\n", 
 		LPCTSTR(sD),LPCTSTR(sB),LPCTSTR(sD));
 	
 	// is D small 2D, 2(D-1) in small range
