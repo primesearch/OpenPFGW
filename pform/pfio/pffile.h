@@ -37,7 +37,7 @@ class PFSimpleFile
       virtual void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 	protected:
-		// in the base class, this is a no-op, but a derived class should PFPrintf who it is.
+		// in the base class, this is a no-op, but a derived class should PFPrintfLog who it is.
 		virtual void Printf_WhoAmIsString() {}
 		// this signature will be used as another "validation" that the file we are restarting from is the "correct" file.
 		// This data will get stored into the .ini file, and then compared against the ini file during a restart. ALL

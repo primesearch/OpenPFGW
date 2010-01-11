@@ -12,11 +12,6 @@
 #include "pfscriptfile.h"
 #include "pfcheckfile.h"
 #include "pfprzfile.h"
-#ifdef USE_NETWORK
-#pragma comment(lib, "wsock32.lib")
-#include "pfnetworkfile.h"
-#include "pfnetworkfile2.h"
-#endif
 
 // default protected constructor.  It is used as the "default" constructor needed for the PFStringFile class.
 PFSimpleFile::PFSimpleFile()
@@ -77,7 +72,7 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 			PFString *s = m_pIni->GetFileName();
 			if (!s->CompareNoCase(m_cpFileName))
 			{
-				PFPrintf("Resuming input file %s at line %d\n\n", m_cpFileName, m_pIni->GetFileLineNum());
+				PFPrintfLog("Resuming input file %s at line %d\n\n", m_cpFileName, m_pIni->GetFileLineNum());
 				// we have to back up 3 lines instead of just 2, to handle the ABCD having another ABCD line
 				// in the file. If the breakout happened on that second ABCD "header" line, then we need to back
 				// up one more line.  Also in the for() loop below, we go ahead 4 files, instead of the 3 which
@@ -105,10 +100,10 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 					// Not the correct line. For now, simply warn the user, and start at the beginning of the file.
 					// Todo:
 					//    Try one line back and 1 line forward.
-					PFPrintf("\n***WARNING! file %s line %d does not match what is expected.\n", m_cpFileName, m_pIni->GetFileLineNum());
-					PFPrintf("Expecting:      %s\n", LPCTSTR(sExpectingThisLine));
-					PFPrintf("File contained: %s\n", LPCTSTR(sThisLine));
-					PFPrintf("Starting over at the beginning of the file\n\n");
+					PFPrintfLog("\n***WARNING! file %s line %d does not match what is expected.\n", m_cpFileName, m_pIni->GetFileLineNum());
+					PFPrintfLog("Expecting:      %s\n", LPCTSTR(sExpectingThisLine));
+					PFPrintfLog("File contained: %s\n", LPCTSTR(sThisLine));
+					PFPrintfLog("Starting over at the beginning of the file\n\n");
 					SeekToLine(1);
 				}
 			}
@@ -119,7 +114,7 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 		{
 			PFString *s = m_pIni->GetFileName();
 			if (!s->CompareNoCase(m_cpFileName))
-				PFPrintf("\n***WARNING! file %s may have already been fully processed.\n\n", m_cpFileName);
+				PFPrintfLog("\n***WARNING! file %s may have already been fully processed.\n\n", m_cpFileName);
 			delete s;
 		}
 		// Tell the .ini handler, where the PFString is which will be kept updated.
@@ -427,12 +422,6 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
 				else
 					pf = new PFPrZFile(FileName);
 			}
-#ifdef USE_NETWORK
-			else if (!strncmp(Line, "NETWORK2", 8))	// NOTE NETWORK2 must be ahead of NETWORK, since NETWORK is the first part of NETWORK2
-				pf = new PFNetworkFile2(FileName);
-			else if (!strncmp(Line, "NETWORK", 7))
-				pf = new PFNetworkFile(FileName);
-#endif
 			else if (!strncmp(Line, "SCRIPT", 6))
 				pf = new PFScriptFile(FileName);
 			else if ((strstr(Line, " is composite: ")) || (strstr(Line, " is ") && strstr(Line, "-PRP! ")))
