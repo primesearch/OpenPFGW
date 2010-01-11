@@ -22,6 +22,9 @@ bool g_bReLoadFactorFile=false;
 // quotient and remainder function.
 
 extern bool volatile g_bExitNow;
+#ifdef __APPLE__
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
+#endif
 
 uint32 ExactPower(Integer &X,const Integer &P_)
 {
