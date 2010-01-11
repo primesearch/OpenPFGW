@@ -320,34 +320,21 @@ B.4. The options.
       course still do a redirection like: pfgw input.txt > output.txt
       Example: pfgw -loutput.txt
 
- -a   Composite Authentication check
-      This code chooses a "different" sized FFT to test the number with.
-      When PFGW finds a number composite, it outputs the lowest 62 bits
-      of the residue.
-      If -a1 is used, the next larger sized FFT is used, and if the residue
-      matches the "original" residue, you have a second validation that
-      the number is really composite. (If they differ, try -a2 to see that
-      it matches the -a1-residue.
-      -a can provide 2 larger FFT sizes, and 2 smaller ones, and the
-      'normal' FFT size used without the option.
-      -a0 gives the normal size (default)
-      -a1 gives one size larger,
-      -a2 gives two sizes larger.
-      -a1 was designed for composite authentication, but the global effects
-      are such that prp-checks will also benefit of it's improved security.
-      The reason why this isn't used as a default is that it gives a
-      slowdown of 15 to 60%, and that there are very few numbers that will
-      need this addition accuracy.
-      To the other side, these switches force a smaller FFT size:
-      -a-1 gives one size smaller,
-      -a-2 gives two sizes smaller.
-      These options are VERY dangerous to use, as the chance of round off
-      errors will increase. However, some numbers are suitable for -a-1,
-      especially those just after a FFT-break. Be sure to check quite a few
-      numbers with the -r option, to check how great the round off is (see
-      -r option).
-      The use of -a-2 is very limited, as most numbers will give round off
-      errors on this one.
+ -a   Increase FFT size
+      An argument is required for this switch, taking any value from 1 throught 5.
+      This switch should be used when PFGW encounters an error, such as a round-off
+      error or sumout error.
+      To verify test results from PFGW, run once without -a and once with -a1.
+      If the test results are the same, including the 64-bit residue, then
+      you can be assured the the test results are accurate.
+      Occasionally, PFGW will get a round-off or sumout error.  When that happens
+      it will automatically switch to the next larger FFT size and rerun the
+      test.  When this happens, information about that error will be output to
+      a file called pfgw_err.log.  To verify the test result, you will have to
+      choose the next larger FFT size for the verification.  For example, if PFGW
+      needed to use -a1 to get a good result, then -a2 should be used for a
+      second test to verify the results of the first test.
+      PFGW supports up 5 FFT sizes larger than the default with this switch.
 
  -x   Additional Square Free Testing
       This will make PFGW try to prove a prime with a tiny bit less then
