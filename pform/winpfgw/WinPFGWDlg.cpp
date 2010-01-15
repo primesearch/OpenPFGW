@@ -662,7 +662,7 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
 			if (cp)
 			{
 				static DWORD NextUpdate = 0;
-				bool bShowStr=true;
+				bool bShowStr=true, bTestCompleted=false;
 				if (m_ScreenMode != eVerbose && !(m_nMode <=1 && m_nMode >= -1) )
 				{
 					// I know this code should be in smarteditfield class, but it is here for now.
@@ -675,30 +675,34 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
 							*cpp = '\r';
 							bShowStr = false;
 						}
-						else if (strstr(cp, "composite") || strstr(cp, "factor"))
+						else if (m_ScreenMode!=eVerbose && (strstr(cp, "composite") || strstr(cp, "factor")))
 						{
 							*cpp = '\r';
 							bShowStr = false;
+                     bTestCompleted = true;
 						}
-						else if ( (m_ScreenMode==eGFFactors && GF_b_DoGFFactors) && strstr(cp, "-PRP!"))
+						else if ((m_ScreenMode==eGFFactors && GF_b_DoGFFactors) && strstr(cp, "-PRP!"))
 						{
 							*cpp = '\r';
 							bShowStr = false;
+                     bTestCompleted = true;
 						}
 					}
 				}
-            if (bShowStr)
-					m_SmartEdit.AddString(cp);
-				else if (NextUpdate < GetTickCount())
-				{
-					NextUpdate = GetTickCount() + 2000;
+            if (bTestCompleted || !NextUpdate)
+            {
 					char Buf[40];
 					sprintf(Buf, "%d", g_pIni->GetFileLineNum());
 					GetDlgItem(IDC_LINE_IN_FILE)->SetWindowText(Buf);
 					m_SmartEdit.AddString(cp);
+            }
+            else if (bShowStr || NextUpdate < GetTickCount())
+				{
+					NextUpdate = GetTickCount() + 2000;
+					m_SmartEdit.AddString(cp);
 				}
 				else
-					/* If in "SuperQuiet" mode, we MUSt clean up this string, or we will leak to death! */
+					/* If in "SuperQuiet" mode, we mjust clean up this string, or we will leak to death! */
 					delete[] cp;
 			}
 			break;
