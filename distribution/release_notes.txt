@@ -1,10 +1,20 @@
-Released as version 3.3.0   January 8, 2010
+Released as version 3.3.1   January 12, 2010
+
+Enhancements to: v3.3.1 Development release
+   - WinPFGW does not consistently update "Line in File" because it
+     is tied to a timer.  Completed tests no longer use the timer
+     to determine if the test result is to be displayed.  This leads
+     to some additional screen I/O when using input files, but it
+     will have a negligable affect on overall performance.  This
+     change removes the "kluge" that was added in 3.2.0 WRT -q and
+     composite tests.
+
 
 Enhancements to: v3.3.0 Development release
    - The -a swith no longer supports -1 and -2 as they cause problems
      with the gwnum library.  It now support 3, 4, and 5.
-   - PFGW will automatically switch to the next larger FFT size for all
-     tests if it detects a roundoff or sumout error.  This information
+   - PFGW will automatically switch to the next larger FFT size for a
+     test if it detects a roundoff or sumout error.  This information
      will be displayed to the user and written to the pfgw_err.log file.
      As a difference from previous releases, the roundoff/sumout error
      will not be written to pfgw.log.
