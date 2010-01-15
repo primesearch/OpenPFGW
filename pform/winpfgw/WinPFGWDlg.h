@@ -150,6 +150,8 @@ protected:
 
 	private:
 		static void ThreadProc(void *);
+public:
+   afx_msg void OnStnClickedLineInFile();
 };
 
 //{{AFX_INSERT_LOCATION}}
