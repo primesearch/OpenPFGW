@@ -1519,12 +1519,6 @@ int pfgw_main(int argc,char *argv[])
                   double t2;
                   t2 = ExtraOverhead_Timer.GetSecs ();
                   ExtraOverhead_Timer.Start();
-                  // This is somewhat of a kluge, but it is here to ensure that the result of a
-                  // quick text will show up in the WinPFGW dialog.  Without it, there is a
-                  // possibility that the user will not see the message because it will occur
-                  // too quickly after the previous message.
-                  if (psymRuntime->LookupSymbol("_QUIKEXPR"))
-                     Sleep(1000);
 
                   if (!Retval)
                      PFPrintfLog("%s is composite: RES64: [%08lX%08lX] (%0.4fs+%0.4fs)\n",
