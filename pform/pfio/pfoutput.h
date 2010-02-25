@@ -71,10 +71,10 @@ class PFOutput
 
 #ifdef ANSI             /* ANSI compatible version          */
 		virtual int PFPrintfStderr(const char *Fmt, const va_list &va)=0;
-		virtual int PFPrintfLog      (const char *Fmt, const va_list &va)=0;
+		virtual int PFPrintf      (const char *Fmt, const va_list &va)=0;
 #else
 		virtual int PFPrintfStderr( va_list )=0;
-		virtual int PFPrintfLog      ( va_list )=0;
+		virtual int PFPrintf      ( va_list )=0;
 #endif
 
 	protected:
@@ -100,10 +100,10 @@ class PFConsoleOutput : public PFOutput
 		int PFfflush(FILE *);
 #ifdef ANSI             /* ANSI compatible version          */
 		int PFPrintfStderr(const char *Fmt, const va_list &va);
-		int PFPrintfLog      (const char *Fmt, const va_list &va);
+		int PFPrintf      (const char *Fmt, const va_list &va);
 #else
 		int PFPrintfStderr( va_list );
-		int PFPrintfLog      ( va_list );
+		int PFPrintf      ( va_list );
 #endif
 };
 
@@ -116,7 +116,7 @@ class PFWin32GUIOutput : public PFOutput
 		void PFPrintfClearCurLine(int line_len);
 		int PFfflush(FILE *);
 		int PFPrintfStderr(const char *Fmt, const va_list &va);
-		int PFPrintfLog      (const char *Fmt, const va_list &va);
+		int PFPrintf      (const char *Fmt, const va_list &va);
 
 	private:
 		int m_hWnd;	// actually an HWND, but I want this to "compile" easily :)

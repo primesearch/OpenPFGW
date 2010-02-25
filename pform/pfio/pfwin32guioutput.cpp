@@ -4,7 +4,13 @@
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
-
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 
 #include "pfiopch.h"
 
@@ -73,11 +79,8 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
    return ret;
 }
 
-int PFWin32GUIOutput::PFPrintfLog(const char *Fmt, const va_list &va)
+int PFWin32GUIOutput::PFPrintf(const char *Fmt, const va_list &va)
 {
-   DWORD Cur = GetTickCount();
-   DWORD Diff = Cur-dwLast;
-
    // Note that WinPFGW must delete[] this item.
    int BufLen = 2048;
    int ret;
@@ -92,18 +95,9 @@ int PFWin32GUIOutput::PFPrintfLog(const char *Fmt, const va_list &va)
       ret = _vsnprintf(Buffer, BufLen, Fmt, va);
    }
 
-   if (Diff < 1000 && !g_bWinPFGW_Verbose)
-   {
-      if (strstr(Buffer, "composite") || strstr(Buffer, "factor"))
-      {
-         delete[] Buffer; // we have to delete it here.
-         return ret;
-      }
-   }
-   dwLast = Cur;
-
    if (!PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_PRINTF, (LPARAM)Buffer))
       delete[] Buffer;
+
    return ret;
 }
 

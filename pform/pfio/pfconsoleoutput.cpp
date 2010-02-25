@@ -4,7 +4,13 @@
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
-
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 
 #include "pfiopch.h"
 #include <stdio.h>
@@ -20,30 +26,30 @@ PFConsoleOutput::~PFConsoleOutput()
 
 int PFConsoleOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
 {
-	int x = vfprintf(stderr, Fmt, va);
-	fflush(stderr);
+   int x = vfprintf(stderr, Fmt, va);
+   fflush(stderr);
 
-	return x;
+   return x;
 }
 
-int PFConsoleOutput::PFPrintfLog(const char *Fmt, const va_list &va)
+int PFConsoleOutput::PFPrintf(const char *Fmt, const va_list &va)
 {
-	int x = vprintf(Fmt, va);
-	fflush(stdout);
-	return x;
+   int x = vprintf(Fmt, va);
+   fflush(stdout);
+   return x;
 }
 
 void PFConsoleOutput::PFPrintfClearCurLine(int line_len)
 {
-	if (line_len < 1)
-		line_len = 1;
-	else if (line_len > 79)
-		line_len = 79;
-	fprintf(stderr, "\r%*.*s\r", line_len, line_len, " ");
+   if (line_len < 1)
+      line_len = 1;
+   else if (line_len > 79)
+      line_len = 79;
+   fprintf(stderr, "\r%*.*s\r", line_len, line_len, " ");
 }
 
 int PFConsoleOutput::PFfflush(FILE *f)
 {
-	return fflush(f);
+   return fflush(f);
 }
 
