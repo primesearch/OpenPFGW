@@ -3,6 +3,14 @@
  * Currently it initializes clocks_per_sec to correct values
  */
 
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "primeformpch.h"
 
 #include <time.h>
@@ -16,34 +24,36 @@
 //#define COMPUTE_ALLOCATION_COUNTS
 #include "gmp_mem.cxx"
 
-#ifdef _MSC_VER
-#include <crtdbg.h>
-#endif
-
 extern unsigned long clocks_per_sec;
 
 
 int main(int argc, char *argv[])
 {
-	clocks_per_sec=CLOCKS_PER_SEC;
+   clocks_per_sec=CLOCKS_PER_SEC;
 
-	// Make sure that VC uses 64 bit FPU instructions for high level FPU code
+   // Make sure that VC uses 64 bit FPU instructions for high level FPU code
 #if defined (_MSC_VER)
-	_control87(_PC_64, _MCW_PC);	// 64 bits precision (instead of 53 bit default precision)
-	_control87(_RC_NEAR, _MCW_RC);	// make SURE that we round numbers to the nearest, and not floor or ceil
+   _control87(_PC_64, _MCW_PC);  // 64 bits precision (instead of 53 bit default precision)
+   _control87(_RC_NEAR, _MCW_RC);   // make SURE that we round numbers to the nearest, and not floor or ceil
 #endif
 
-	// Simple memory debugging (Only availible under VC, but the testing will allow ALL OS's to benefit.
+   // Simple memory debugging (Only availible under VC, but the testing will allow ALL OS's to benefit.
 #if defined (_MSC_VER) && defined (_DEBUG)
-	_CrtMemState mem_dbg1, mem_dbg2, mem_dbg3;
-// Send all reports to STDOUT
-   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
+   HANDLE hLogFile;
+   _CrtMemState mem_dbg1, mem_dbg2, mem_dbg3;
+
+   hLogFile = CreateFile("winpfgw_memleaks.txt", GENERIC_WRITE,
+      FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+      FILE_ATTRIBUTE_NORMAL, NULL);
+
+   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE);
+   _CrtSetReportFile( _CRT_WARN, hLogFile);
    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
+   _CrtSetReportFile( _CRT_ERROR, hLogFile );
    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
-// Store a memory checkpoint in the s1 memory-state structure
+   _CrtSetReportFile( _CRT_ASSERT, hLogFile );
+
+   // Store a memory checkpoint in the s1 memory-state structure
    _CrtMemCheckpoint( &mem_dbg1 );
 
    // Get the current state of the flag
@@ -72,37 +82,42 @@ int main(int argc, char *argv[])
 
 #endif
 
-	memAlloc();
+   memAlloc();
 
-	// Setup the global ini object to the PFGW.INI file.  NOTE that any program written which will be
-	// calling pfgw_main() will need to open the "correct" ini file.  PFGW.EXE opens PFGW.ini.  WinPFGW.exe
-	// may open something different and foobars_speed_siever.exe may open up something altogether different.
+   primeserver = new PrimeGenerator();
 
-	// Create a console output object.
-	pOutputObj = new PFConsoleOutput;
+   // Setup the global ini object to the PFGW.INI file.  NOTE that any program written which will be
+   // calling pfgw_main() will need to open the "correct" ini file.  PFGW.EXE opens PFGW.ini.  WinPFGW.exe
+   // may open something different and foobars_speed_siever.exe may open up something altogether different.
 
-	g_pIni = new PFIni("pfgw.ini");
-	g_pIni->SetCurrentSection("PFGW");
+   // Create a console output object.
+   pOutputObj = new PFConsoleOutput;
 
-	int ret = pfgw_main(argc, argv);
+   g_pIni = new PFIni("pfgw.ini");
+   g_pIni->SetCurrentSection("PFGW");
 
-	delete pOutputObj;
-	delete g_pIni;
+   int ret = pfgw_main(argc, argv);
 
-	memFree();
+   delete pOutputObj;
+   delete g_pIni;
+
+   delete primeserver;
+
+   memFree();
 
 #if defined (_MSC_VER) && defined (_DEBUG)
-	_CrtMemCheckpoint( &mem_dbg2 );
+   _CrtMemCheckpoint( &mem_dbg2 );
    if ( _CrtMemDifference( &mem_dbg3, &mem_dbg1, &mem_dbg2 ) )
    {
-	   fprintf (stderr, "\nDump the changes that occurred between two memory checkpoints\n");
-	   _CrtMemDumpStatistics( &mem_dbg3 );
-//	   _CrtDumpMemoryLeaks( );
+      _RPT0(_CRT_WARN, "\nDump the changes that occurred between two memory checkpoints\n");
+      _CrtMemDumpStatistics( &mem_dbg3 );
+      _CrtDumpMemoryLeaks( );
    }
    else
-	   fprintf (stderr, "\nNo memory leaks found\n");
+      _RPT0(_CRT_WARN, "\nNo memory leaks found\n");
+   CloseHandle(hLogFile);
 #endif
 
-	return ret;
+   return ret;
 }
 
