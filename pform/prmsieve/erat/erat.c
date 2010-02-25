@@ -32,7 +32,14 @@
  * 0.01 11/11/00 
  *    (Hmm, 11am too) Released for evaluation to OpenPFGW
  *    It sems to work, and seems fast, what else do you want?
- */
+*/ 
+
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #include "erat.h"
 #include "../types/uint32.h"
 #include "../tables/twiddles.h"

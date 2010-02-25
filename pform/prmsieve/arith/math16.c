@@ -1,3 +1,9 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #include "math16.h"
 
 uint32 sqmod16(uint32 x, uint32 p)

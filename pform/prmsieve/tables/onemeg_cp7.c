@@ -1,3 +1,9 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #if !defined(_ONEMEG_CP7_H)
 #include "onemeg_cp7.h"
 #endif
