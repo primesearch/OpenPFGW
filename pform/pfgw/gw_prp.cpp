@@ -1,3 +1,11 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "primeformpch.h"
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
@@ -79,7 +87,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
       fftSize++;
 
       gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
-	   gwsetmaxmulbyconst(&gwdata, iBase);	// maximum multiplier
+      gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
 
       if (CreateModulus(N, true, fftSize)) return -2;
 
