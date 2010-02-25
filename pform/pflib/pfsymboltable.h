@@ -18,8 +18,8 @@ public:
 	PFSymbolTable(const PFSymbolTable &st);
 	PFSymbolTable &operator=(const PFSymbolTable &st);
 	
-	IPFSymbol* LookupSymbol(const PFString &sKey);
-	IPFSymbol* RemoveSymbol(const PFString &sKey);
+	IPFSymbol *LookupSymbol(const PFString &sKey);
+	IPFSymbol *RemoveSymbol(const PFString &sKey);
 	void EraseSymbol(const PFString &sKey);
 	
 	PFBoolean AddSymbol(IPFSymbol *pSymbol);

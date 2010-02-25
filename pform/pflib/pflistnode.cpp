@@ -5,6 +5,14 @@
  * A list node
  *======================================================================
  */
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pflibpch.h"
 #include "pflistnode.h"
 
@@ -20,9 +28,9 @@
  */
 PFListNode::PFListNode(LPVOID pData)
 {
-	m_pSucc=NULL;
-	m_pPred=NULL;
-	m_pData=pData;
+   m_pSucc=NULL;
+   m_pPred=NULL;
+   m_pData=pData;
 }
 
 /*======================================================================
@@ -41,29 +49,29 @@ PFListNode::~PFListNode()
 
 PFListNode *PFListNode::Next() const
 {
-	return (PFListNode*)m_pSucc;
+   return (PFListNode*)m_pSucc;
 }
 
 PFListNode *PFListNode::Previous() const
 {
-	return (PFListNode*)m_pPred;
+   return (PFListNode*)m_pPred;
 }
 
 void PFListNode::ListLinker(ListNode *p1,ListNode *p2)
 {
-	p1->m_pSucc=p2;
-	p2->m_pPred=p1;
+   p1->m_pSucc=p2;
+   p2->m_pPred=p1;
 }
 
 void PFListNode::Remove()
 {
-	ListNode *pSucc=m_pSucc;
-	ListNode *pPred=m_pPred;
-	
-	ListLinker(pPred,pSucc);
+   ListNode *pSucc=m_pSucc;
+   ListNode *pPred=m_pPred;
+
+   ListLinker(pPred,pSucc);
 }
 
 LPVOID PFListNode::GetData() const
 {
-	return m_pData;
+   return m_pData;
 }

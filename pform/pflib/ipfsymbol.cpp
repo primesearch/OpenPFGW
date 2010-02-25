@@ -1,22 +1,30 @@
 // The interface class for an IPFSymbol
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pflibpch.h"
 #include "ipfsymbol.h"
 
 IPFSymbol::IPFSymbol(const PFString &sKey)
-	: m_sKey(sKey)
+   : m_sKey(sKey)
 {
-	m_sKey.ToUpper();
+   m_sKey.ToUpper();
 }
 
 IPFSymbol::IPFSymbol(const IPFSymbol &s)
-	: m_sKey(s.m_sKey)
+   : m_sKey(s.m_sKey)
 {
 }
 
 IPFSymbol& IPFSymbol::operator=(const IPFSymbol &s)
 {
-	m_sKey=s.m_sKey;
-	return *this;
+   m_sKey=s.m_sKey;
+   return *this;
 }
 
 IPFSymbol::~IPFSymbol()
@@ -25,11 +33,11 @@ IPFSymbol::~IPFSymbol()
 
 const PFString &IPFSymbol::GetKey() const
 {
-	return m_sKey;
+   return m_sKey;
 }
 
 void IPFSymbol::SetKey(const PFString &s)
 {
-	m_sKey=s;
-	m_sKey.ToUpper();
+   m_sKey=s;
+   m_sKey.ToUpper();
 }

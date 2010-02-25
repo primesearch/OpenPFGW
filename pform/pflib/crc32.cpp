@@ -1,4 +1,12 @@
 // Cyclic redundancy checks based on the CRC-32
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pflibpch.h"
 #include "crc32.h"
 
@@ -23,7 +31,7 @@ void crc_init()
     unsigned long crcBit[8];    // the crc of bit 32+i
     crcBit[0]=CRC_VALUE;
 
-	for(idx=1;idx<8;idx++)
+   for(idx=1;idx<8;idx++)
     {
         crc=crcBit[idx-1];
         // multiply by x and reduce.
