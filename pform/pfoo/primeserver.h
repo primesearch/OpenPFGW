@@ -5,6 +5,6 @@
 #define PFOO_PUBLIC extern
 #endif
 
-PFOO_PUBLIC	PrimeGenerator primeserver;
+PFOO_PUBLIC	PrimeGenerator *primeserver;
 
 #endif

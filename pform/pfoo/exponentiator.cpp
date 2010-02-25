@@ -1,3 +1,11 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pfoopch.h"
 #include "exponentiator.h"
 
@@ -167,7 +175,7 @@ PFBoolean Exponentiator::OnInitialize()
                   }
                   else
                   {
-                        m_dwStepGranularity=4096;     // for starters
+                     m_dwStepGranularity=4096;     // for starters
                      testResult=0;              // totally unknown
                   }
                }

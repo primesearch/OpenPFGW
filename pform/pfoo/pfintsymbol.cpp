@@ -1,16 +1,24 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pfoopch.h"
 #include "symboltypes.h"
 #include "pfintsymbol.h"
 
-PFIntSymbol::PFIntSymbol(const PFString &sKey,int i) 
-	: IPFSymbol(sKey), m_i(i)
+PFIntSymbol::PFIntSymbol(const PFString &sKey,int i)
+   : IPFSymbol(sKey), m_i(i)
 {
 }
 
 PFIntSymbol::PFIntSymbol(const PFIntSymbol &s)
-	: IPFSymbol(s), m_i(0)
+   : IPFSymbol(s), m_i(0)
 {
-	m_i=s.GetValue();
+   m_i=s.GetValue();
 }
 
 PFIntSymbol::~PFIntSymbol()
@@ -18,25 +26,25 @@ PFIntSymbol::~PFIntSymbol()
 }
 
 PFIntSymbol& PFIntSymbol::operator=(const PFIntSymbol &s) {
-	// allow x=x
-	if (this == &s)
-		return *this;
+   // allow x=x
+   if (this == &s)
+      return *this;
 
-	SetKey(s.GetKey());
-	m_i=s.GetValue();
-	return *this;
+   SetKey(s.GetKey());
+   m_i=s.GetValue();
+   return *this;
 }
 
 PFString PFIntSymbol::GetStringValue() {
-	PFString str;
-	char buff[12];
-	sprintf(buff,"%d",m_i);
-	str=buff;
-	return str;
+   PFString str;
+   char buff[12];
+   sprintf(buff,"%d",m_i);
+   str=buff;
+   return str;
 }
 
 DWORD PFIntSymbol::GetSymbolType() const {
-	return INT_SYMBOL_TYPE;
+   return INT_SYMBOL_TYPE;
 }
 
 int PFIntSymbol::GetValue() const { return m_i; }

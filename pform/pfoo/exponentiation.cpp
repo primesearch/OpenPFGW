@@ -1,3 +1,11 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pfoopch.h"
 #include "exponentiation.h"
 
@@ -21,13 +29,13 @@ void Exponentiation::setExponent(const Integer &x)
 void Exponentiation::setResidue(Residue *r)
 {
     if(m_pResidue) delete m_pResidue;
-	m_pResidue=r->duplicate();
+   m_pResidue=r->duplicate();
 }
 
 void Exponentiation::setMultiplier(Residue *r)
 {
     if(m_pMultiplier) delete m_pMultiplier;
-	m_pMultiplier=r->duplicateAsMultiplier();
+   m_pMultiplier=r->duplicateAsMultiplier();
 }
 
 void Exponentiation::setDestination(FactorNode *dest)

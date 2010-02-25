@@ -1,3 +1,11 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pfoopch.h"
 #include "symboltypes.h"
 #include "pffunctionsymbol.h"
@@ -33,18 +41,18 @@ extern int g_CompositeAthenticationLevel;
 extern bool g_bHaveFatalError;
 
 PFFunctionSymbol::PFFunctionSymbol(const PFString &sName)
-	: IPFSymbol(sName)
+   : IPFSymbol(sName)
 {
 }
 
 PFString PFFunctionSymbol::GetStringValue()
 {
-	return GetKey();
+   return GetKey();
 }
 
 DWORD PFFunctionSymbol::GetSymbolType() const
 {
-	return FUNCTION_SYMBOL_TYPE;
+   return FUNCTION_SYMBOL_TYPE;
 }
 
 void PFFunctionSymbol::ClearPersistentData()
@@ -59,88 +67,88 @@ void PFFunctionSymbol::ClearPersistentData()
 // stack in a restart file) is to be implemented later
 int PFFunctionSymbol::CallSubroutine(const PFString &sRoutineName,PFSymbolTable *pContext)
 {
-	int iRetval=-1;
+   int iRetval=-1;
    int saveFFTSize;
    PFBoolean bRetval;
-	
-	IPFSymbol *pSymbol=pContext->LookupSymbol(sRoutineName);
-	if(pSymbol && pSymbol->GetSymbolType()==FUNCTION_SYMBOL_TYPE)
-	{
-		PFFunctionSymbol *pF=(PFFunctionSymbol*)pSymbol;
-	
+
+   IPFSymbol *pSymbol=pContext->LookupSymbol(sRoutineName);
+   if(pSymbol && pSymbol->GetSymbolType()==FUNCTION_SYMBOL_TYPE)
+   {
+      PFFunctionSymbol *pF=(PFFunctionSymbol*)pSymbol;
+
       saveFFTSize = g_CompositeAthenticationLevel;
       g_bHaveFatalError = false;
-      do 
+      do
       {
-   		bRetval=pF->CallFunction(pContext);
+         bRetval=pF->CallFunction(pContext);
          g_CompositeAthenticationLevel++;
       } while (g_bHaveFatalError);
-		
+
       g_CompositeAthenticationLevel = saveFFTSize;
 
       if (bRetval)
-		{
-			iRetval=0;		// well, the code ran....
-			// check for a return value
-			pSymbol=pContext->LookupSymbol("_result");
-			if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
-			{
-				PFIntegerSymbol *pI=(PFIntegerSymbol*)pSymbol;
-				Integer *g=pI->GetValue();
-				iRetval=(*g)&0x7fffffff;		// All functions return positive integers!
-			}
-		}
+      {
+         iRetval=0;     // well, the code ran....
+         // check for a return value
+         pSymbol=pContext->LookupSymbol("_result");
+         if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
+         {
+            PFIntegerSymbol *pI=(PFIntegerSymbol*)pSymbol;
+            Integer *g=pI->GetValue();
+            iRetval=(*g)&0x7fffffff;      // All functions return positive integers!
+         }
+      }
 
-	}
-	else
-	{
-		PFPrintfLog("*** WARNING *** Illegal internal functioncall to %s\n",LPCTSTR(sRoutineName));
-	}
-	
-	return iRetval;
+   }
+   else
+   {
+      PFPrintfLog("*** WARNING *** Illegal internal functioncall to %s\n",LPCTSTR(sRoutineName));
+   }
+
+   return iRetval;
 }
 
-void PFFunctionSymbol::LoadExprFunctions(PFSymbolTable *psymRuntime) 
+void PFFunctionSymbol::LoadExprFunctions(PFSymbolTable *psymRuntime)
 {
-	psymRuntime->AddSymbol(new F_Prime);
-	psymRuntime->AddSymbol(new F_Fibonacci_U);
-	psymRuntime->AddSymbol(new F_Fibonacci_V);
-	psymRuntime->AddSymbol(new F_Fibonacci_F);
-	psymRuntime->AddSymbol(new F_Fibonacci_L);
-	psymRuntime->AddSymbol(new F_Repunit);
-	psymRuntime->AddSymbol(new F_Cyclotomic);
-	psymRuntime->AddSymbol(new F_GCD);
-	psymRuntime->AddSymbol(new F_Binomial);
-	psymRuntime->AddSymbol(new F_Smarandache);
-	psymRuntime->AddSymbol(new F_Smarandache_r);
-	psymRuntime->AddSymbol(new F_Sequence);
-	psymRuntime->AddSymbol(new F_LucasV);
-	psymRuntime->AddSymbol(new F_LucasU);
-	psymRuntime->AddSymbol(new F_PrimV);
-	psymRuntime->AddSymbol(new F_PrimU);
-	psymRuntime->AddSymbol(new F_NSW_S);
-	psymRuntime->AddSymbol(new F_NSW_W);
-	psymRuntime->AddSymbol(new F_IF);
-	psymRuntime->AddSymbol(new F_Length);
+   psymRuntime->AddSymbol(new F_Prime);
+   psymRuntime->AddSymbol(new F_Fibonacci_U);
+   psymRuntime->AddSymbol(new F_Fibonacci_V);
+   psymRuntime->AddSymbol(new F_Fibonacci_F);
+   psymRuntime->AddSymbol(new F_Fibonacci_L);
+   psymRuntime->AddSymbol(new F_Repunit);
+   psymRuntime->AddSymbol(new F_Cyclotomic);
+   psymRuntime->AddSymbol(new F_GCD);
+   psymRuntime->AddSymbol(new F_Binomial);
+   psymRuntime->AddSymbol(new F_Smarandache);
+   psymRuntime->AddSymbol(new F_Smarandache_r);
+   psymRuntime->AddSymbol(new F_Sequence);
+   psymRuntime->AddSymbol(new F_LucasV);
+   psymRuntime->AddSymbol(new F_LucasU);
+   psymRuntime->AddSymbol(new F_PrimV);
+   psymRuntime->AddSymbol(new F_PrimU);
+   psymRuntime->AddSymbol(new F_NSW_S);
+   psymRuntime->AddSymbol(new F_NSW_W);
+   psymRuntime->AddSymbol(new F_IF);
+   psymRuntime->AddSymbol(new F_Length);
 }
 
 void PFFunctionSymbol::LoadAllFunctions(PFSymbolTable *psymRuntime)
 {
-	LoadExprFunctions(psymRuntime);
+   LoadExprFunctions(psymRuntime);
 
-	psymRuntime->AddSymbol(new T_Pocklington);
-	psymRuntime->AddSymbol(new T_Morrison);
-	psymRuntime->AddSymbol(new T_Combined);
+   psymRuntime->AddSymbol(new T_Pocklington);
+   psymRuntime->AddSymbol(new T_Morrison);
+   psymRuntime->AddSymbol(new T_Combined);
 
-	psymRuntime->AddSymbol(new F_Factor);
-	psymRuntime->AddSymbol(new F_Vector);
-	
-	psymRuntime->AddSymbol(new F_Trivial);
-	psymRuntime->AddSymbol(new F_IsSquare);
-	
-	psymRuntime->AddSymbol(new NMinus1Exponentiator);
-	psymRuntime->AddSymbol(new NPlus1Exponentiator);
+   psymRuntime->AddSymbol(new F_Factor);
+   psymRuntime->AddSymbol(new F_Vector);
 
-	psymRuntime->AddSymbol(new F_EndMinus1);
-	psymRuntime->AddSymbol(new F_EndPlus1);
+   psymRuntime->AddSymbol(new F_Trivial);
+   psymRuntime->AddSymbol(new F_IsSquare);
+
+   psymRuntime->AddSymbol(new NMinus1Exponentiator);
+   psymRuntime->AddSymbol(new NPlus1Exponentiator);
+
+   psymRuntime->AddSymbol(new F_EndMinus1);
+   psymRuntime->AddSymbol(new F_EndPlus1);
 }
