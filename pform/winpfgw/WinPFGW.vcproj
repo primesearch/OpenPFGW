@@ -585,5 +585,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="WinPFGW.rc"
+		/>
 	</Globals>
 </VisualStudioProject>
