@@ -5,10 +5,12 @@
 #include "WinPFGW.h"
 #include "MessageDialog.h"
 
-#ifdef _DEBUG
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+//#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,28 +18,28 @@ static char THIS_FILE[] = __FILE__;
 
 
 CMessageDialog::CMessageDialog(CWnd* pParent /*=NULL*/)
-	: CDialog(CMessageDialog::IDD, pParent)
+   : CDialog(CMessageDialog::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CMessageDialog)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
-	m_bNeverShowAgain = false;
+   //{{AFX_DATA_INIT(CMessageDialog)
+      // NOTE: the ClassWizard will add member initialization here
+   //}}AFX_DATA_INIT
+   m_bNeverShowAgain = false;
 }
 
 
 void CMessageDialog::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CMessageDialog)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+   CDialog::DoDataExchange(pDX);
+   //{{AFX_DATA_MAP(CMessageDialog)
+      // NOTE: the ClassWizard will add DDX and DDV calls here
+   //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CMessageDialog, CDialog)
-	//{{AFX_MSG_MAP(CMessageDialog)
-	ON_BN_CLICKED(IDC_CHECK1, OnCheck1)
-	//}}AFX_MSG_MAP
+   //{{AFX_MSG_MAP(CMessageDialog)
+   ON_BN_CLICKED(IDC_CHECK1, OnCheck1)
+   //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -45,32 +47,32 @@ END_MESSAGE_MAP()
 
 void CMessageDialog::SetMessageText(CString Msg)
 {
-	m_Msg = Msg;
+   m_Msg = Msg;
 }
 
 bool CMessageDialog::NeverShowThisMessageAgain()
 {
-	return m_bNeverShowAgain;
+   return m_bNeverShowAgain;
 }
 
-BOOL CMessageDialog::OnInitDialog() 
+BOOL CMessageDialog::OnInitDialog()
 {
-	CDialog::OnInitDialog();
+   CDialog::OnInitDialog();
 
-	if (m_Msg == "")
-	{
-		MessageBox("Programming Error, you must call SetMessageText before the DoModal for a CMessageDialog");
-		EndDialog(IDCANCEL);
-		return FALSE;
-	}
-	CWnd *w = GetDlgItem(IDC_MESSAGE_TEXT);
-	if (w)
-		w->SetWindowText(m_Msg);
+   if (m_Msg == "")
+   {
+      MessageBox("Programming Error, you must call SetMessageText before the DoModal for a CMessageDialog");
+      EndDialog(IDCANCEL);
+      return FALSE;
+   }
+   CWnd *w = GetDlgItem(IDC_MESSAGE_TEXT);
+   if (w)
+      w->SetWindowText(m_Msg);
 
-	return TRUE;
+   return TRUE;
 }
 
-void CMessageDialog::OnCheck1() 
+void CMessageDialog::OnCheck1()
 {
-	m_bNeverShowAgain = !m_bNeverShowAgain;
+   m_bNeverShowAgain = !m_bNeverShowAgain;
 }

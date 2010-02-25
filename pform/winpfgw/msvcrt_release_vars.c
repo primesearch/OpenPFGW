@@ -1,3 +1,9 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #if !defined (_DEBUG)
 
 #ifdef __cplusplus
