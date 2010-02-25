@@ -3,8 +3,6 @@
 
 #include "pfabcfile.h"
 
-#define ABCprimeserver primeserver
-
 class PFABC2File : public PFABCFile
 {
 	public:
@@ -18,8 +16,6 @@ class PFABC2File : public PFABCFile
 		void LoadFirstLine();
 		PFString SignatureString() {return "ABC2_FILE";}
 
-
-//		PrimeGenerator ABCprimeserver;
 		enum { e_Norm,e_Prime,e_NormDown,e_In };
 		int m_eRangeType[26];
 		char **m_pSet[26];
