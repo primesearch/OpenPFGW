@@ -1,3 +1,11 @@
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "pfgwlibpch.h"
 
 #include "gwinteger.h"
@@ -12,44 +20,44 @@
 // GWInteger wrappers
 GWInteger::GWInteger()
 {
-	g=gwalloc(&gwdata);
+   g=gwalloc(&gwdata);
 }
 
 GWInteger::GWInteger(const GWInteger &x)
 {
-	g=gwalloc(&gwdata);
-	gwcopy(&gwdata,x.g,g);
+   g=gwalloc(&gwdata);
+   gwcopy(&gwdata,x.g,g);
 }
 
 GWInteger::~GWInteger()
 {
-	// Ugly hack to make sure gwdone has not already been called
-	if (gwdata.gwnum_alloc != NULL)
-		gwfree(&gwdata, g);
+   // Ugly hack to make sure gwdone has not already been called
+   if (gwdata.gwnum_alloc != NULL)
+      gwfree(&gwdata, g);
 }
 
 GWInteger &GWInteger::operator=(const Integer &I)
 {
-	mpz_ptr gmp = I.gmp();
+   mpz_ptr gmp = I.gmp();
 
-	if (sizeof (mp_limb_t) == sizeof (uint32_t))
-		binarytogw (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size, g);
-	else
-		binary64togw (&gwdata, (uint64_t *) gmp->_mp_d, gmp->_mp_size, g);
+   if (sizeof (mp_limb_t) == sizeof (uint32_t))
+      binarytogw (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size, g);
+   else
+      binary64togw (&gwdata, (uint64_t *) gmp->_mp_d, gmp->_mp_size, g);
 
-	return *this;
+   return *this;
 }
 
 double GWInteger::suminp()
 {
-	return (gwsuminp (&gwdata, g));
+   return (gwsuminp (&gwdata, g));
 }
 double GWInteger::sumout()
 {
-	return (gwsumout (&gwdata, g));
+   return (gwsumout (&gwdata, g));
 }
 double GWInteger::sumdiff()
 {
-	return (fabs (suminp() - sumout()));
+   return (fabs (suminp() - sumout()));
 }
 
