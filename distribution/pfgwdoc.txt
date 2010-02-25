@@ -264,13 +264,13 @@ B.4. The options.
       Base should be between 2 and 255
       Example: pfgw -b7
 
- -h   Factor Helper file   (Also -H)
-      Use this option when you are using the n-1 or n+1 test and run short
-      of small factors to get to the 33.33% limit. If you have found larger
-      factors with other programs (ecm, rho, whatever) you can put
-      then in helper.txt one on a line.
-      You should ONLY use prime factors in this file, or the result is
-      invalid.
+ -h   Factor Helper file 
+      An argument is required for this switch.
+      Use this option when you are using the n-1 or n+1 test and run short of
+      small factors to get to the 33.33% limit. If you have found larger
+      factors with other programs (ecm, rho, whatever) you can put them in
+      the helper file one on a line.
+      You should ONLY use prime factors in this file, or the result is invalid.
       The file can also be made up of expressions, and not simply
       numbers Example: pfgw -tp -hhelper.txt
       When testing (-t -tp -tm -tc) any factor in this file that is
@@ -280,14 +280,6 @@ B.4. The options.
       by using the HideNoFactor=true in the pfgw.ini file)
       Multiple -h command line switches can be used (for multiple 
       factor files).  Example pfgw -tc -hplus -hminus input_file
-      The -H switch will work just the same as the -h switch, however, 
-      the (all) factor files will be re-read each time a factorization 
-      is called.  This is MUCH slower, due to lots of additional overhead,
-      but in certain instances, such as the processing itself building the
-      factor file, this behavior is wanted.  For most processing the -H
-      should NEVER be used.   The -h reads the factor file one time (the
-      first time factorization is called), and then simply continues to
-      use those factors over and over again.
 
  -o   Only factor mode.
       This mode will only factor the numbers, and output the cofactor
