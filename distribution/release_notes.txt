@@ -1,4 +1,20 @@
-Released as version 3.3.1   January 12, 2010
+Released as version 3.3.2   February 28, 2010
+
+Enhancements to: v3.3.2 Development release
+   - Rolled back changes from 3.3.1 because they resulted in memory
+     leaks in WinPFGW.  Used a different method to force display
+     of test result when using -q.
+   - Re-enabled Windows code to check memory leaks with debug builds.
+   - Added memory leak logic to WinPFGW.
+   - Fixed all known memory leaks in PFGW.  These memory leaks have
+     existed since 1.x.
+   - Fixed most of the other memory leaks in WinPFGW.  These leaks
+     occur when PFGW is terminated and not during execution of
+     PRP/primality tests.
+   - Changed documentation for -h to match functionality of PFGW.
+     -h now requires an argument.  Previously the argument was
+     optional and would default to pfgw.txt.
+
 
 Enhancements to: v3.3.1 Development release
    - WinPFGW does not consistently update "Line in File" because it
@@ -55,7 +71,7 @@ Enhancements to: v3.2.4 Release
 
 Enhancements to: v3.2.3 RC 1f
    - Fix an issue with -t when using an input file, PFGW would not
-     reuse bases, thus re-ordering the file would yiled different
+     reuse bases, thus re-ordering the file would yield different
      results.  PFGW would use different bases for each test as it
      not reuse the same base for different numbers.
    - Check for sumout errors during primality tests.
