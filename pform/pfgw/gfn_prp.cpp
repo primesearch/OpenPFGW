@@ -76,7 +76,6 @@ bool IsValidGFN(const char *sNum, uint32 *GFN_Base, uint32 *GFN_Exp)
 // code stolen from gwPRP
 bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 _exp, uint64 *p_n64ValidationResidue)
 {
-<<<<<<< .mine
    // create a context
    gwinit (&gwdata);
    gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
