@@ -21,12 +21,12 @@
 
 // 0-dev 1-stable 2-release
 
-#define	RELEASE_LEVEL	0
-//#define	RELEASE_LEVEL	1
+//#define	RELEASE_LEVEL	0
+#define	RELEASE_LEVEL	1
 //#define	RELEASE_LEVEL	2
 
-#define	RELEASE_VERSION         "3.3.2"
-#define	BUILD_DATE              "20100216"
+#define	RELEASE_VERSION         "3.3.3"
+#define	BUILD_DATE              "20100325"
 
 // for sta and release level
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
