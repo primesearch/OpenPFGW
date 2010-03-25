@@ -1303,7 +1303,7 @@ bool PFScriptFile::GetNext(char *args) {
    filevarname=strtok(NULL,",");
    if (filevarname==NULL) {
       PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr("Script-Error: No file variable name on line %d\n",m_nInstrPtr+1);
+      PFPrintfStderr("Script-Error: No file variable name on line %d\n", m_nInstrPtr+1);
       return false;
    }
 
@@ -1312,25 +1312,30 @@ bool PFScriptFile::GetNext(char *args) {
    IPFSymbol *pSymbol=m_pTable->LookupSymbol(varname);
    if (pSymbol==NULL || pSymbol->GetSymbolType()!=INTEGER_SYMBOL_TYPE) {
       PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr("Script-Error: Bad variable name on line %d\n",m_nInstrPtr+1);
+      PFPrintfStderr("Script-Error: Bad variable name <%s> on line %d\n", varname, m_nInstrPtr+1);
       return false;
    }
    PFIntegerSymbol *pIntSym=(PFIntegerSymbol *)pSymbol;
 
+   if (*filevarname == ' ')
+      strcpy(filevarname, filevarname+1);
+
    pSymbol=m_pTable->LookupSymbol(filevarname);
    if (pSymbol==NULL || pSymbol->GetSymbolType()!=INPUT_FILE_SYMBOL_TYPE) {
       PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr("Script-Error: Bad file variable name on line %d\n",m_nInstrPtr+1);
+      PFPrintfStderr("Script-Error: Bad file variable name <%s> on line %d\n", filevarname, m_nInstrPtr+1);
       return false;
    }
    PFInputFileSymbol *pFileSym=(PFInputFileSymbol *)pSymbol;
 
    PFStringSymbol *pStrSym=NULL;
    if (strvarname) {
+      if (*strvarname == ' ')
+         strcpy(strvarname, strvarname+1);
       pSymbol=m_pTable->LookupSymbol(strvarname);
       if (pSymbol==NULL || pSymbol->GetSymbolType()!=STRING_SYMBOL_TYPE) {
          PFOutput::EnableOneLineForceScreenOutput();
-         PFPrintfStderr("Script-Error: Bad string variable name on line %d\n",m_nInstrPtr+1);
+         PFPrintfStderr("Script-Error: Bad string variable <%s> name on line %d\n", strvarname, m_nInstrPtr+1);
          return false;
       }
       pStrSym=(PFStringSymbol *)pSymbol;
