@@ -116,7 +116,8 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
    else
       gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
 
-   gwset_irrational_general_mod(&gwdata, false);
+   // This shouldn't be necessary with gwnum 25.14
+   //gwset_irrational_general_mod(&gwdata, false);
 
    if (sizeof (mp_limb_t) == sizeof (uint32_t))
       error_code = gwsetup_general_mod (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size);
