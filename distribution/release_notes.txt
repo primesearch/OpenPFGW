@@ -1,4 +1,17 @@
-Released as version 3.3.2   February 28, 2010
+Released as version 3.3.3   March 25, 2010
+
+Enhancements to: v3.3.3 Release
+   - Built with gwnum 25.14, which addresses four issues:
+        Gwnum would lose the /d in some (k*b^n+c)/d cases.  This happened 
+        primarily in cases where the number was between 300 and 350 bits.
+        The final conversion from gwnum to binary could fail in cases
+		  where generic reduction was used.  The larger the number the less
+        likely the bug would occur.
+        Zero padded FFTs of length 80 and 112 could fail.
+        More conservative in selecting an FFT length for non-base-2 cases.
+   - Reverted back to rational FFT due to the gwnum improvements.  It is
+     slightly faster than irrational FFT.
+
 
 Enhancements to: v3.3.2 Development release
    - Rolled back changes from 3.3.1 because they resulted in memory
