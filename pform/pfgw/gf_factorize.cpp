@@ -1064,5 +1064,8 @@ Try_Next_a:;
          }
       }
    }
+
+   PFPrintfLog("GFN testing completed");
+
    return true;
 }
