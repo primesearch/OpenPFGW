@@ -1,4 +1,9 @@
-Released as version 3.3.3   March 25, 2010
+Released as version 3.3.4   April 5, 2010
+
+Enhancements to: v3.3.4 Release
+   - Write string "GFN testing completed" to log when GFN testing 
+     has completed.
+
 
 Enhancements to: v3.3.3 Release
    - Built with gwnum 25.14, which addresses four issues:
