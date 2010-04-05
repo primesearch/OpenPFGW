@@ -25,8 +25,8 @@
 #define	RELEASE_LEVEL	1
 //#define	RELEASE_LEVEL	2
 
-#define	RELEASE_VERSION         "3.3.3"
-#define	BUILD_DATE              "20100325"
+#define	RELEASE_VERSION         "3.3.4"
+#define	BUILD_DATE              "20100405"
 
 // for sta and release level
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
