@@ -58,9 +58,10 @@ int g_Cert_Type = -1;
 int g_Cert_Delete = -1;
 bool g_QuickMode = false;
 bool g_bVerbose = false;
-bool g_bWinPFGW_Verbose=false;
+bool g_bWinPFGW_Verbose = false;
 bool g_bTestingMode = false;
-bool g_bForceRoundOffChecking=false;
+bool g_bForceRoundOffChecking = false;
+bool g_FFTSizeOnly = false;
 char g_ModularSieveString[256];
 char g_szInputFileName[1024];
 int iBase=3;
@@ -216,7 +217,7 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // C
    {cl_illegal,   false,   ""},                 // D
    {cl_illegal,   false,   ""},                 // E
-   {cl_illegal,   false,   ""},                 // F
+   {cl_boolean,   false,   "_FFT_SIZE_ONLY"},   // F
    {cl_illegal,   false,   ""},                 // G
    {cl_illegal,   false,   ""},                 // H
    {cl_illegal,   false,   ""},                 // I
@@ -896,6 +897,10 @@ int pfgw_main(int argc,char *argv[])
       PFPrintfLog("Using certification level: \"%s\" and deletion of certificates \"%s\"\n", Buf, Buf1);
    }
 
+   pSymbol=psymRuntime->LookupSymbol("_FFT_SIZE_ONLY");
+   g_FFTSizeOnly=(pSymbol==NULL)?false:true;
+   if (g_FFTSizeOnly) g_bVerbose = true;
+
    pSymbol=psymRuntime->LookupSymbol("_DEEPFACTOR");
    PFBoolean bDeep=(pSymbol==NULL)?PFBoolean::b_false:PFBoolean::b_true;
 
@@ -1492,7 +1497,10 @@ int pfgw_main(int argc,char *argv[])
                if (g_bExitNow)
                   break;
 
-               double t;
+	       if (g_FFTSizeOnly)
+		 continue;
+
+	       double t;
                t = Timer.GetSecs ();
 
                if (Retval == 1)

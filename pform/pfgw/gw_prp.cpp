@@ -13,6 +13,7 @@
 
 extern int g_CompositeAthenticationLevel;
 extern const double g_dMaxErrorAllowed;
+extern bool g_FFTSizeOnly;
 bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).
@@ -91,7 +92,8 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
 
       if (CreateModulus(N, true, fftSize)) return -2;
 
-      testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
+      if (!g_FFTSizeOnly)
+	 testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
 
       DestroyModulus();
    } while (testResult == -1 && fftSize < 5);
