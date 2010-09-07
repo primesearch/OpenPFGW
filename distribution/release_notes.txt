@@ -1,4 +1,14 @@
-Released as version 3.3.4   April 5, 2010
+Released as version 3.3.5   September 7, 2010
+
+Enhancements to: v3.3.5 Release
+   - An carry-propogation issue was found in gwnum that caused it to 
+     miss round-off errors on some k*b^n+/-c numbers.  This notoriously
+     affects numbers where b == n, such as 9238*619^619+1 and other numbers
+     with large bases, but predicting which ones will have a problem is
+     not possible.
+   - Added -F option to show the chosen FFT size, but to not perform a test.
+     This option only applies to PRP tests.
+
 
 Enhancements to: v3.3.4 Release
    - Write string "GFN testing completed" to log when GFN testing 
@@ -10,7 +20,7 @@ Enhancements to: v3.3.3 Release
         Gwnum would lose the /d in some (k*b^n+c)/d cases.  This happened 
         primarily in cases where the number was between 300 and 350 bits.
         The final conversion from gwnum to binary could fail in cases
-		  where generic reduction was used.  The larger the number the less
+	where generic reduction was used.  The larger the number the less
         likely the bug would occur.
         Zero padded FFTs of length 80 and 112 could fail.
         More conservative in selecting an FFT length for non-base-2 cases.

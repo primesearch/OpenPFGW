@@ -222,6 +222,8 @@ B.4. The options.
       -f0).  Usage of this function is not recommended for general PFGW
       usage.
 
+ -F   For PRP tests only, output size of FFT, but do not perform test.
+
  -f[percent][[{Mod_Expr}][{condition}[{condition}...]]] 
       Modular factoring:
       -f{801} uses only primes which are of the form k*801+1
