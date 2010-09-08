@@ -1,11 +1,20 @@
-Released as version 3.3.5   September 7, 2010
+Released as version 3.3.6   September 7, 2010
+
+Enhancements to: v3.3.6 Release
+   - Applied a temporary patch to gwnum to address an issue with special modular
+     reduction on PRP tests.  For larger bases gwnum sometimes has an issue with
+     carry propogation which masks round off errors.  For these PRP tests, PFGW
+     indicates that the number is composite when it is really PRP.  The patched
+     version of gwnum will detect the problem and choose a larger FFT size before
+     the PRP test is started.  It is recommended that if you are concerned about
+     the results from older versions of PFGW, that you use the -F option of this
+     release and compare the output to that of the 3.3.5 release.  If you have an
+     input file, use the -l option to output the chosen FFT size to pfgw.log and
+     then compare the two files.  Numbers with different FFT sizes should be
+     re-tested.
+
 
 Enhancements to: v3.3.5 Release
-   - An carry-propogation issue was found in gwnum that caused it to 
-     miss round-off errors on some k*b^n+/-c numbers.  This notoriously
-     affects numbers where b == n, such as 9238*619^619+1 and other numbers
-     with large bases, but predicting which ones will have a problem is
-     not possible.
    - Added -F option to show the chosen FFT size, but to not perform a test.
      This option only applies to PRP tests.
 
@@ -23,7 +32,7 @@ Enhancements to: v3.3.3 Release
 	where generic reduction was used.  The larger the number the less
         likely the bug would occur.
         Zero padded FFTs of length 80 and 112 could fail.
-        More conservative in selecting an FFT length for non-base-2 cases.
+        More conservative in selecting an FFT length for non-base 2 cases.
    - Reverted back to rational FFT due to the gwnum improvements.  It is
      slightly faster than irrational FFT.
 
