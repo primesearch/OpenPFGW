@@ -25,7 +25,7 @@
 #define	RELEASE_LEVEL	1
 //#define	RELEASE_LEVEL	2
 
-#define	RELEASE_VERSION         "3.3.5"
+#define	RELEASE_VERSION         "3.3.6"
 #define	BUILD_DATE              "20101007"
 
 // for sta and release level

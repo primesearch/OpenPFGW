@@ -60,6 +60,9 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
          g_bGMPMode = true;
          PFPrintf("Switching to Exponentiating using GMP\n");
       }
+      if (g_FFTSizeOnly)
+         return 0;
+
       Integer b(iBase);
       // This is the "raw" gmp exponentiator.  It if pretty fast up to about 500 digits or so.
       X = powm(b,X,*N);
