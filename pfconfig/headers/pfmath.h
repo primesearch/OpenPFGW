@@ -1,6 +1,6 @@
 
 #if defined (_MSC_VER)
-#include "pform/pfmath/gmp_dynamic.h"
+#include "gmp.h"
 #else
 #include <gmp.h>
 #endif
