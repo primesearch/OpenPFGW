@@ -8,9 +8,7 @@
 #ifndef PFLIBPCH_H
 #define PFLIBPCH_H
 
-#if !defined (_WIN_COPY_ONLY_)
 #include "config.h"
-#endif
 
 #include <stddef.h>
 #include <stdio.h>

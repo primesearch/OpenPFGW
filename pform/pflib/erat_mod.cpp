@@ -22,14 +22,6 @@
 // implemented by Jim Fougeron.
 //
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pflibpch.h"
 
 // #define TESTING
@@ -148,7 +140,7 @@ SmallPrimeSieveTable *spTab =
 // egcd
 uint32 Erat_Mod::modInv(const uint32 x, const uint32 m)
 {
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) || defined(_64BIT)
    // C version takes about 3089 clock cycles for modInv(21314, 158617)
    int d0 = (int)x;
    int d1 = (int)m;
@@ -462,7 +454,7 @@ void Erat_Mod::SetSieveBitMapSize(uint32 s)
 bool Erat_Mod::AdjustDepth()
 {
    ENTER("AdjustDepth");
-   m_SModMaxNum = m_uiNext + (1<<m_SIEVE_BIT_SIZE);
+   m_SModMaxNum = m_uiNext + (1ULL<<m_SIEVE_BIT_SIZE);
 
    if (m_n_spTabnCur < spTab.nMax-1 && spTab.u64Pure[m_n_spTabnCur] < m_SModMaxNum*m_nModBase)
    {

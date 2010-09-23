@@ -8,6 +8,8 @@
 #ifndef PFLIB_PFARRAY_H
 #define PFLIB_PFARRAY_H
 
+#include "config.h"
+
 template<class C,class T>
 class PFArray : public C
 {

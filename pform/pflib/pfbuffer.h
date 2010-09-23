@@ -8,6 +8,8 @@
 #ifndef PFLIB_PFBUFFER_H
 #define PFLIB_PFBUFFER_H
 
+#include "config.h"
+
 #define 	NOT_FOUND	((DWORD)0xFFFFFFFFUL)
 
 template<class T>
