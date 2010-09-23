@@ -6,8 +6,7 @@
 #if !defined (___fp_stchk__h_)
 #define ___fp_stchk__h_
 
-#if defined (_MSC_VER)
-	#if defined (_DEBUG)
+#if defined (_MSC_VER) && defined (_DEBUG) && !defined(_WIN64)
 		#pragma pack(1)
 		struct fp_Data
 		{
@@ -42,13 +41,10 @@
 				goto DoStackAdjustAgain;
 			}
 		}
-	#else
-		// in debug mode VC, we don't have this check.
-		#define DEBUG_ADJUST_FP_STACK(a,b)
-	#endif // defined _DEBUG
 #else
 	// Don't know how to deal with this anywhere other than VC (and only deal with it in VC in debug mode
 	#define DEBUG_ADJUST_FP_STACK(a,b)
 #endif
+
 
 #endif // #if !defined (___fp_stchk__h_)

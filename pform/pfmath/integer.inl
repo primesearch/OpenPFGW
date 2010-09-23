@@ -3,7 +3,7 @@
 GW_INLINE Integer::Integer()
 {
 	mpz_init(m_g);
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 	mpz_init(scrap);
 #endif
 }
@@ -11,7 +11,7 @@ GW_INLINE Integer::Integer()
 GW_INLINE Integer::Integer(int32 n)
 {
 	mpz_init_set_si(m_g,n);
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 	mpz_init(scrap);
 #endif
 }
@@ -19,7 +19,7 @@ GW_INLINE Integer::Integer(int32 n)
 GW_INLINE Integer::Integer(uint32 n)
 {
 	mpz_init_set_ui(m_g,n);
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 	mpz_init(scrap);
 #endif
 }
@@ -36,7 +36,7 @@ GW_INLINE Integer::Integer(uint64 n64)
 		mpz_mul_2exp(m_g, m_g, 32);
 		mpz_add_ui(m_g,m_g,(uint32)(n64&0xFFFFFFFF));
 	}
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 	mpz_init(scrap);
 #endif
 }
@@ -44,7 +44,7 @@ GW_INLINE Integer::Integer(uint64 n64)
 GW_INLINE Integer::Integer(const Integer & x)
 {
 	mpz_init_set(m_g,x.m_g);
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 	mpz_init(scrap);
 #endif
 }
@@ -52,7 +52,7 @@ GW_INLINE Integer::Integer(const Integer & x)
 GW_INLINE Integer::~Integer()
 {
 	mpz_clear(m_g);
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 	mpz_clear(scrap);
 #endif
 }
@@ -115,7 +115,7 @@ GW_INLINE void Integer::m_div(const Integer &y,Integer &q,Integer &r) const
 	mpz_tdiv_qr(q.m_g,r.m_g,m_g,y.m_g);
 }
 
-#if defined(GW_NOASSEMBLER) || defined(GW_EMULATEASSEMBLER)
+#if defined(_64BIT)
 
 GW_INLINE void Integer::m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const
 {
@@ -793,11 +793,11 @@ GW_INLINE char* Integer::Itoa(const int32 base) const
 
 GW_INLINE int32 lg(const Integer &x)
 {
-	return mpz_sizeinbase(x.m_g,2)-1;
+	return (int32) mpz_sizeinbase(x.m_g,2)-1;
 }
 
 GW_INLINE int32 lg(const uint64 &x)
 {
 	Integer t(x);
-	return lg(t);
+	return (int32) lg(t);
 }

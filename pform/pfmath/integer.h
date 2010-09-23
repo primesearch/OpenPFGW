@@ -7,9 +7,7 @@ void memFree();
 #define	m_a		m_g->_mp_d
 #define	m_len	m_g->_mp_size
 
-#ifdef GW_EMULATEASSEMBLER
-	// do Nothing
-#else
+#ifndef _64BIT
 
 #ifndef GW_UNDERSCORE
 #define Imod 	_Imod
@@ -28,9 +26,7 @@ class Integer
 
 protected:
 	mpz_t		m_g;
-#ifdef GW_EMULATEASSEMBLER
 	mpz_t		scrap;
-#endif
 
 	// Access to some of these functions would be nice for optimzation issues.
 	friend class GWContext;
@@ -184,32 +180,6 @@ public:
 
 	const mpz_ptr gmp() const;
 	mpz_ptr	gmp();
-
-
-#ifdef HISTORICAL_CODE_THAT_DOES_PROTH_MODULAR_REDUCTIONS_ON_GMP_NUMBERS
-
-	// Specialized reduction code added to the Integer class
-	void	Proth_prp(uint64 k, uint32 n, uint32 base);	// base^(k*2^n)%(k*2^n+1)    *this must be set to (k*2^n) prior to calling.
-	void	Proth_m_prp(uint64 k, uint32 n, uint32 base);	// base^(k*2^n-2)%(k*2^n-1)
-	GW_INLINE void Proth_mod(uint64 k, uint32 n);  // *this == *this%(k*2^n+1)  (Note, return will be from k*2^n to -k*2^n)
-	GW_INLINE void Proth_m_mod(uint64 k, uint32 n, const Integer &m);  // *this == *this%(k*2^n-1)
-
-	static void InitProthMods();
-	static void FreeProthMods();
-	// These are temps used by the internal reduction code.  We simply allocate them at program start,
-	// and do NOT clear them until program exit.  NOTE they are treated as GLOBAL, so any function(s)
-	// using them, MUST KNOW that it is "safe" to use them (i.e. no other function is doing so), and if
-	// more than one function "share" them, they must do so in a coordinated manner.  The InitProthMods()
-	// and FreeProthMods() functions init and clear these.
-	static mpz_t mpz_Q,mpz_R,mpz_K,mpz_B,mpz_N,mpz_Y;
-
-private:
-	// If the 64 bit version finds a k < 2^32, then it calls these versions
-	void	Proth_prp(uint32 k, uint32 n, uint32 base);	// base^(k*2^n)%(k*2^n+1)
-	GW_INLINE void Proth_mod(uint32 k, uint32 n);  // *this == *this%(k*2^n+1)
-	void	Proth_m_prp(uint32 k, uint32 n, uint32 base);	// base^(k*2^n-2)%(k*2^n-1)
-	GW_INLINE void Proth_m_mod(uint32 k, uint32 n, const Integer &m);  // *this == *this%(k*2^n-1)
-#endif
 };
 
 #ifdef GW_INLINE_ENABLED
