@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pfgwlibpch.h"
 
 #include "gwinteger.h"
@@ -21,12 +13,14 @@
 GWInteger::GWInteger()
 {
    g=gwalloc(&gwdata);
+   mpz_init(scrap);
 }
 
 GWInteger::GWInteger(const GWInteger &x)
 {
    g=gwalloc(&gwdata);
    gwcopy(&gwdata,x.g,g);
+   mpz_init(scrap);
 }
 
 GWInteger::~GWInteger()
@@ -34,6 +28,7 @@ GWInteger::~GWInteger()
    // Ugly hack to make sure gwdone has not already been called
    if (gwdata.gwnum_alloc != NULL)
       gwfree(&gwdata, g);
+   mpz_clear(scrap);
 }
 
 GWInteger &GWInteger::operator=(const Integer &I)

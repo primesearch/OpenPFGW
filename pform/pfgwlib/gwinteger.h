@@ -11,6 +11,9 @@ class GWInteger
 {
 protected:
 	gwnum g;
+
+	mpz_t		scrap;
+
 public:
 	GWInteger();
 	virtual ~GWInteger();
