@@ -11,19 +11,7 @@ class F_Decimal : public PFIterativeSymbol
 {
 	Integer 		*m_pN;
 
-#ifdef USE_GALLOT
-	DWORD 		*m_pDigitBuffer;
-	DWORD 		*m_pDigitWrite;
-	DWORD		m_dwStackPointer;
-	DWORD		m_dwRecursionDepth;
-	PowerBuffer *m_pPowerBuffer;
-	RecursionBuffer *m_pRecursionBuffer;
-	DWORD		m_dwDigitBufferLength;
-	PFBoolean	m_bSigned;
-#else
 	char *pDigitBuffer;
-#endif
-	
 	void Deallocate();
 
 public:

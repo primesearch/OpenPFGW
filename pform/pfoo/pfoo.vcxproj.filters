@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{cf57900d-6356-47d3-8832-eaea2eefc4eb}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{a1380c79-4d7e-44db-8c7f-f106bb7b14ef}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="algebra.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exponentiation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exponentiator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="expr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_binomial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_cyclotomic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_decimal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_endminus1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_endplus1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_factor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_fibonacci.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_gcd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_if.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_issquare.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_length.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_prime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_repunit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_sequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_smarandache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_trivial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="f_vector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="factorarray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="factornode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="h_mobius.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="h_primitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nminus1exponentiator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nplus1exponentiator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pffactorizationsymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pffunctionsymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pfintegersymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pfintsymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pfiterativesymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pfsamplersymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pfstringsymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="powerbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="primeserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recursionbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="algebra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exponentiation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exponentiator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="expr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_binomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_cyclotomic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_decimal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_endminus1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_endplus1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_factor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_fibonacci.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_gcd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_if.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_issquare.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_length.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_prime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_repunit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_smarandache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_trivial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="factorarray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="factornode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h_mobius.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h_primitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nminus1exponentiator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nplus1exponentiator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pffactorizationsymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pffunctionsymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfintegersymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfintsymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfiterativesymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfoo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfoopch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfsamplersymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfstringsymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="powerbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="primeserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recursionbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symboltypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testreturns.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

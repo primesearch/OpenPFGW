@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pfoopch.h"
 #include "f_repunit.h"
 #include "symboltypes.h"
@@ -71,7 +63,7 @@ PFBoolean F_Repunit::CallFunction(PFSymbolTable *pContext)
                   if(P)
                   {
                      char *szPattern = P->Itoa();
-                     int nPatLen = strlen(szPattern);
+                     int nPatLen = (int) strlen(szPattern);
                      char *szTmp = new char [nPatLen*idx+1];
                      char *cp = szTmp;
                      while(idx--)

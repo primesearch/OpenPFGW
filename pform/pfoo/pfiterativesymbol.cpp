@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pfoopch.h"
 #include "pfiterativesymbol.h"
 #include "pfintegersymbol.h"
@@ -98,7 +90,7 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
                      else
                         sprintf(Buf,"%s%lu/%lu\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal);
                   }
-                  int thisLineLen = strlen(Buf);
+                  int thisLineLen = (int) strlen(Buf);
                   if (lastLineLen > thisLineLen)
                      // When mixing stdio, stderr and redirection with a \r stderr output,
                      // then the line must "erase" itself, IF it ever shrinks.
