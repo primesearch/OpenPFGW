@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Documents">
+      <UniqueIdentifier>{d16c2b9a-7b1f-4372-8d7c-e2bc906c0768}</UniqueIdentifier>
+      <Extensions>*.txt;*.pfgw;*.</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="abcfileformats.txt">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="Authors">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="Install">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="LICENSE.pfgw">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="Manifest">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="network2format.txt">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="networkformat.txt">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="newpgenformats.txt">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="pfgwdoc.txt">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="README.pfgw">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="Relnotes">
+      <Filter>Documents</Filter>
+    </None>
+    <None Include="scriptfileformat.txt">
+      <Filter>Documents</Filter>
+    </None>
+  </ItemGroup>
+</Project>
