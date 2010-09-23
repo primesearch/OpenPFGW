@@ -3,18 +3,8 @@
 #if !defined (__PFFile_H__)
 #define __PFFile_H__
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
-#if !defined (_WIN_COPY_ONLY_)
 #include "pflib.h"
 #include "pfmath.h"
-#endif
 
 class PFIni;
 

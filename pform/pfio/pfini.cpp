@@ -2,14 +2,6 @@
 //
 // implements the INI type processing for PFGW
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
@@ -832,7 +824,7 @@ void PFIni::_SetExprChecksum(PFString *pCurrentExpression)
       }
       char cpTmp[120];
       strcpy(cpTmp, LPCTSTR(sCheckSum));
-      Crc = Crc32buf(cpTmp, strlen(cpTmp));
+      Crc = Crc32buf(cpTmp, (int) strlen(cpTmp));
    }
    // now store this into the ini file
    PFString s, s1("CurLineExpr");

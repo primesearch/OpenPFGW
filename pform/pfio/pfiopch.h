@@ -5,7 +5,6 @@
  * Precompiled headers
  *======================================================================
  */
-#if !defined (_WIN_COPY_ONLY_)
 
 typedef unsigned long DWORD;
 typedef unsigned char BYTE;
@@ -39,4 +38,3 @@ typedef const TCHAR *LPCTSTR;
 
 #include "pfini.h"
 
-#endif

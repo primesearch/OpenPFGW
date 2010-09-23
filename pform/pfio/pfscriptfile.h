@@ -5,10 +5,7 @@
 
 #include "pffile.h"
 #include "pffilesymbol.h"
-
-#if !defined (_WIN_COPY_ONLY_)  // We need pfoo for various things.
 #include "pfoo.h"
-#endif
 
 class PFScriptFile : public PFSimpleFile {
 	public:

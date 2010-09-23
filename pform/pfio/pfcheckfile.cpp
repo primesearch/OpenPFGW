@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pfiopch.h"
 #include <string.h>
 #include "pfcheckfile.h"
@@ -48,7 +40,7 @@ ReadRestOfThisLine:;
    ReadLine(Line, sizeof(Line)-1);
    m_nCurrentPhysicalLineNum++;
 
-   int LineLen = strlen(Line);
+   int LineLen = (int) strlen(Line);
    int bGotEOL=false;
    while (LineLen && (Line[LineLen-1] == '\n' || Line[LineLen-1] == '\r') )
    {
@@ -62,7 +54,7 @@ ReadRestOfThisLine:;
       char *cp = strstr(Line, "//");
       if (cp)
          *cp = 0;
-      LineLen = strlen(Line);
+      LineLen = (int) strlen(Line);
       // Eat trailing white space.
       while (LineLen && (Line[LineLen-1] == ' ' || Line[LineLen-1] == '\t'))
          Line[LineLen--] = 0;
@@ -80,7 +72,7 @@ ReadRestOfThisLine:;
    char *cp = strstr(Line, "//");
    if (cp)
       *cp = 0;
-   LineLen = strlen(Line);
+   LineLen = (int) strlen(Line);
 
    // Check for continuation char
    if (Line[LineLen-1] == '\\')

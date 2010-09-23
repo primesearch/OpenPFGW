@@ -1,10 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
 
 #include "pfiopch.h"
 #include <string.h>
@@ -31,7 +24,7 @@ char *PFScriptFile::FindVarName(char *varname)
       PFPrintfStderr("Script-Error: Invalid variable name on line %d\n",m_nInstrPtr+1);
       return NULL;
    }
-   uint32 max = strlen(varname);
+   uint32 max = (uint32) strlen(varname);
    for (uint32 i=1;i<max;i++) {
       if (!isalnum(varname[i]) && varname[i] != '_')
          varname[i]=0;
@@ -1031,7 +1024,7 @@ bool PFScriptFile::If(char *args) {
    char *val,*cmd1,*cmd2;
 
    val=args;
-   int len = strlen(args)+1;
+   int len = (int) strlen(args)+1;
 
    cmd1=strstr(args,"THEN");
    if (!cmd1)

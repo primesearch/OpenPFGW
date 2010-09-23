@@ -1,15 +1,6 @@
-#ifdef _MSC_VER
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
+#include "pfiopch.h"
 #include <string.h>
 #include <ctype.h>
-
-#include "pfiopch.h"
 #include "pfscriptfile.h"
 
 extern bool volatile g_bExitNow;

@@ -3,10 +3,7 @@
 #define PFFILESYMBOL_H
 
 #include "pffile.h"
-
-#if !defined (_WIN_COPY_ONLY_)
 #include "pflib.h"
-#endif
 
 class PFInputFileSymbol : public IPFSymbol
 {

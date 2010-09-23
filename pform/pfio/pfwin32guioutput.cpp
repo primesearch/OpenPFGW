@@ -4,14 +4,6 @@
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "pfiopch.h"
 
 // Skip this whole file, unless building with VC.
@@ -64,7 +56,7 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
    if (strlen(Buffer) < 150 && memcmp(Buffer, "PFGW", 4))
    {
       sprintf(g_cpTrayMsg, "WinPFGW: %s", Buffer);
-      ret = strlen(g_cpTrayMsg) - 1;
+      ret = (int) strlen(g_cpTrayMsg) - 1;
       while (ret && (g_cpTrayMsg[ret] == '\n' || g_cpTrayMsg[ret] == '\r'))
       {
          g_cpTrayMsg[ret] = 0;
