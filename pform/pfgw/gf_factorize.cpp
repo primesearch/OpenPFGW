@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "primeformpch.h"
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
@@ -130,7 +122,7 @@ bool IsValidGF_FactorForm(const char *sNumber, Integer *k, uint32 *n)
       cp = strchr(sNumber, '.');
    if (!cp)
       return false;
-   int nKLen = cp-sNumber;
+   int nKLen = (int) (cp-sNumber);
    char *cpKNum = new char [nKLen+1];
    memcpy(cpKNum, sNumber, nKLen);
    cpKNum[nKLen] = 0;
@@ -278,7 +270,7 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
                // then the line must "erase" itself, IF it ever shrinks.
                PFPrintfClearCurLine(lastLineLength);
 
-            lastLineLen = strlen(temp);
+            lastLineLen = (int) strlen(temp);
             PFPrintfStderr("%s", temp);
             PFfflush(stderr);
          }

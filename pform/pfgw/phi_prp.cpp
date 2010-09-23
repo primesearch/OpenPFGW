@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "primeformpch.h"
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
@@ -175,7 +167,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
                   sprintf(Buf, "%.60s %d/%d mro=%0.10g\r",g_cpTestString,k,kmax, gw_get_maxerr(&gwdata));
                else
                   sprintf(Buf, "%.60s %d/%d\r",g_cpTestString,k,kmax);
-               int thisLineLen = strlen(Buf);
+               int thisLineLen = (int) strlen(Buf);
                if (lastLineLen > thisLineLen)
                // When mixing stdio, stderr and redirection with a \r stderr output,
                // then the line must "erase" itself, IF it ever shrinks.

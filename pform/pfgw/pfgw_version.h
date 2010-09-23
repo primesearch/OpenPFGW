@@ -22,11 +22,17 @@
 // 0-dev 1-stable 2-release
 
 //#define	RELEASE_LEVEL	0
-#define	RELEASE_LEVEL	1
-//#define	RELEASE_LEVEL	2
+//#define	RELEASE_LEVEL	1
+#define	RELEASE_LEVEL	2
 
-#define	RELEASE_VERSION         "3.3.6"
-#define	BUILD_DATE              "20101007"
+#define	RELEASE_VERSION         "3.4.0"
+#define	BUILD_DATE              "20100921"
+
+#ifdef _64BIT
+#define  BITNESS                 "64BIT"
+#else
+#define  BITNESS                 "32BIT"
+#endif
 
 // for sta and release level
 // for "special" builds, debugging builds, ...  This will NORMALLy simply be a "" empty string.
@@ -38,12 +44,12 @@
 //
 
 #if(RELEASE_LEVEL==2)
- #define VERSION_STRING                RELEASE_VERSION"."BUILD_DATE"."SHORT_OS_NAME"_Release" for "LONG_OS_NAME
+ #define VERSION_STRING                RELEASE_VERSION"."BITNESS"."BUILD_DATE"."SHORT_OS_NAME"_Release"
  #define WINPFGW_ABOUT_VERSION_STRING  RELEASE_VERSION" for "LONG_OS_NAME
 #elif(RELEASE_LEVEL==1)	
- #define VERSION_STRING                RELEASE_VERSION"."BUILD_DATE"."SHORT_OS_NAME"_Stable"
+ #define VERSION_STRING                RELEASE_VERSION"."BITNESS"."BUILD_DATE"."SHORT_OS_NAME"_Stable"
  #define WINPFGW_ABOUT_VERSION_STRING  BUILD_DATE"."SHORT_OS_NAME"_Stable"
 #elif(RELEASE_LEVEL==0)	
- #define VERSION_STRING                RELEASE_VERSION"."BUILD_DATE"."SHORT_OS_NAME"_Dev"
+ #define VERSION_STRING                RELEASE_VERSION"."BITNESS"."BUILD_DATE"."SHORT_OS_NAME"_Dev"
  #define WINPFGW_ABOUT_VERSION_STRING  BUILD_DATE"."SHORT_OS_NAME"_Dev (Beta)"
 #endif	

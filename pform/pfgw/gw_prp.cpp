@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "primeformpch.h"
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
@@ -84,7 +76,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
    }
 
    int fftSize = g_CompositeAthenticationLevel - 1;
-   int testResult;
+   int testResult = -1;
 
    do
    {
@@ -226,7 +218,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
                        sNumStr,iDone,iTotal, gw_get_maxerr(&gwdata), gwdata.MAXDIFF, MaxSeenDiff);
             else
                sprintf(Buf, "PRP: %.36s %d/%d\r", sNumStr,iDone,iTotal);
-            int thisLineLen = strlen(Buf);
+            int thisLineLen = (int) strlen(Buf);
             if (iDone == 1 && iTotal > 50000)
                g_pIni->ForceFlush();
             if (lastLineLen > thisLineLen)

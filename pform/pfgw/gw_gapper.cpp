@@ -1,13 +1,5 @@
 #if defined(_MSC_VER)
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "primeformpch.h"
 
 #include <signal.h>
@@ -304,7 +296,7 @@ inline uint32 Comp_GetByte_(FILE *fp)
 {
    if (RLE_BufCnt == RLE_BufInCnt)
    {
-      RLE_BufCnt = fread(RLE_Buf, 1, sizeof(RLE_Buf), fp);
+      RLE_BufCnt = (uint32) fread(RLE_Buf, 1, sizeof(RLE_Buf), fp);
       RLE_BufInCnt = 0;
       if (!RLE_BufCnt && feof(fp))
          return 0;

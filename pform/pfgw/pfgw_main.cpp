@@ -14,14 +14,6 @@
 #include "cpuid.h"
 #else
 #include "../../packages/gwnum/cpuid.h"
-#endif
-
-#ifdef _MSC_VER
-#ifdef _DEBUG
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-#else
 #include <sys/resource.h>
 #endif
 
@@ -226,7 +218,7 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // L
    {cl_illegal,   false,   ""},                 // M
    {cl_boolean,   false,   "_NORMAL_PRIORITY"}, // N
-   {cl_illegal,   false,   "_OPTIMIZER"},       // O
+   {cl_illegal,   false,   ""},                 // O
    {cl_illegal,   false,   ""},                 // P
    {cl_illegal,   false,   ""},                 // Q
    {cl_illegal,   false,   ""},                 // R
@@ -735,10 +727,6 @@ int pfgw_main(int argc,char *argv[])
    pSymbol=psymRuntime->LookupSymbol("_INFO");
    if(pSymbol)
    {
-#if defined (_MSC_VER)
-      extern void ShowGMPLinkage();
-      ShowGMPLinkage();
-#endif
       char Buffer[512];
       getCpuDescription(Buffer, 1);
       PFPrintfLog("\nCPU Information (From Woltman v25 library code)\n%s\n", Buffer);
@@ -991,13 +979,6 @@ int pfgw_main(int argc,char *argv[])
    {
       bench(psymRuntime);
    }
-#ifndef FIXED_SIGNAL_SIZE
-   pSymbol=psymRuntime->LookupSymbol("_OPTIMIZER");
-   if(pSymbol)
-   {
-      optimize(psymRuntime);
-   }
-#endif
 
    pSymbol=psymRuntime->LookupSymbol("_VECTORMODE");
    IPFSymbol *pSymbolJ=psymRuntime->LookupSymbol("_JBC");

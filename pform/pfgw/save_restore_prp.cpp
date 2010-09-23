@@ -1,11 +1,3 @@
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "primeformpch.h"
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
@@ -18,7 +10,7 @@ static clock_t NextSave;
 
 #define SAVE_TIMEOUT_MINUTES 20
 
-#define SAVE_SIGNATURE "PFGW Restore V3.3.6\r\n\x1A"
+#define SAVE_SIGNATURE "PFGW Restore V3.4.0\r\n\x1A"
 #define SAVE_SIGNATURE_LEN (strlen(SAVE_SIGNATURE)+1)
 
 void CreateRestoreName(Integer *N, char RestoreName[13])
@@ -155,7 +147,7 @@ bool RestoreState(ePRPType ePRP, char *RestoreName, uint32 *iDone, GWInteger *gw
    // Skip any reserved space.
    cp += 10*sizeof(uint32);
 
-   updatecrcbuf(crc_val, Buffer, cp-Buffer);
+   updatecrcbuf(crc_val, Buffer, (int) (cp-Buffer));
 
    // Now read in the GWInteger.
 
@@ -219,7 +211,7 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, u
    fwrite (&crc_val, 1, sizeof(crc_val), out);
 
    // Write the length of the prime string, and the string.  The string will NOT be null terminated.
-   str_len = strlen(g_cpTestString);
+   str_len = (uint32) strlen(g_cpTestString);
    fwrite (&str_len, 1, sizeof(str_len), out);
    if (str_len > 256)
       str_len = 256;
@@ -242,7 +234,7 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, u
    memset(cp, 0, 4*10);
    cp += sizeof(uint32)*10;
 
-   updatecrcbuf(crc_val, Buffer, cp-Buffer);
+   updatecrcbuf(crc_val, Buffer, (int) (cp-Buffer));
    fwrite(Buffer, 1, cp-Buffer, out);
 
    // Now write out the GWInteger
