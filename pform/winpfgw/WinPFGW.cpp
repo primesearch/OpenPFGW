@@ -7,14 +7,6 @@
 
 #include <direct.h>
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 // CWinPFGWApp
 
@@ -48,7 +40,7 @@ HANDLE   g_hMutexInst = NULL;
 LONG  g_MutexNum = 0;
 BOOL CALLBACK MyEnumProc (HWND hwnd, LPARAM lParam)
 {
-   if (GetWindowLong (hwnd, GWL_USERDATA) != g_MutexNum)
+   if (GetWindowLongPtr(hwnd, GWLP_USERDATA) != g_MutexNum)
       return (TRUE);
    * (HWND *) lParam = hwnd;
    return (FALSE);
@@ -75,7 +67,7 @@ BOOL CWinPFGWApp::InitInstance()
    CWinPFGWDlg dlg;
    m_pMainWnd = &dlg;
 
-   int nResponse = dlg.DoModal();
+   INT_PTR nResponse = dlg.DoModal();
    if (nResponse == IDOK)
    {
       // TODO: Place code here to handle when the dialog is
@@ -136,7 +128,7 @@ bool AreWeFirstAppRunning(HWND hWnd)
 
 // Set the window user data so we can be identified by
 // another instance of this program.
-   SetWindowLong (hWnd, GWL_USERDATA, g_MutexNum);
+   SetWindowLongPtr(hWnd, GWLP_USERDATA, g_MutexNum);
 
    return true;
 }

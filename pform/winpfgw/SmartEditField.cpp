@@ -2,14 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "stdafx.h"
 #include "WinPFGW.h"
 #include "SmartEditField.h"
@@ -17,7 +9,6 @@
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -35,7 +26,7 @@ CSmartEditField::~CSmartEditField()
 
 int CSmartEditField::AddString(char *cpp, bool bDelete)
 {
-   int Len = strlen(cpp);
+   int Len = (int) strlen(cpp);
    char *cp = new char [Len+20];
    memset(cp, 0, Len+20);
    strcpy(cp, cpp);
@@ -67,7 +58,7 @@ int CSmartEditField::AddString(char *cpp, bool bDelete)
    }
    if (OrigLen+strlen(cp) > 50000)
    {
-      int LastChar = 10000+strlen(cp);
+      int LastChar = 10000 + (int) strlen(cp);
       if (LastChar > OrigLen)
          LastChar = OrigLen;
       m_pEdit->SetSel(0, LastChar, TRUE);
@@ -89,7 +80,7 @@ int CSmartEditField::AddString(char *cpp, bool bDelete)
       strcat(cp, CRLF);
 
    m_pEdit->SetSel(SelStartLen, OrigLen, TRUE);
-   m_pEdit->ReplaceSel(cp,strlen(cp));
+   m_pEdit->ReplaceSel(cp, (BOOL) strlen(cp));
    m_pEdit->EmptyUndoBuffer();
 
    delete[] cpp;

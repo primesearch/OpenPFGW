@@ -135,7 +135,7 @@ protected:
 	afx_msg void OnQuietScreen();
 	afx_msg void OnGfFactOnlyScreen();
 	afx_msg void OnUpdateGfFactOnlyScreen(CCmdUI* pCmdUI);
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	//}}AFX_MSG
 
 	// The damn dialog box does NOT handle menu popup's and ON_UPDATE_COMMAND_UI by default.

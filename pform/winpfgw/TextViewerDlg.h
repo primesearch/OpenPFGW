@@ -52,7 +52,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CTextViewerDlg)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 	afx_msg void OnViewAbcfileformatTxt();

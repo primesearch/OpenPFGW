@@ -30,12 +30,6 @@ extern bool volatile g_bExited;
 extern bool g_bWinPFGW_Verbose;
 
 #if defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
 HANDLE hLogFile;
 _CrtMemState mem_dbg1, mem_dbg2, mem_dbg3;
 #endif
@@ -535,7 +529,7 @@ void CWinPFGWDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void CWinPFGWDlg::OnTimer(UINT nIDEvent)
+void CWinPFGWDlg::OnTimer(UINT_PTR nIDEvent)
 {
    if (nIDEvent == 666 && !m_bStealth)
    {

@@ -1,20 +1,11 @@
 // TextViewerDlg.cpp : implementation file
 //
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-
 #include "stdafx.h"
 #include "WinPFGW.h"
 #include "TextViewerDlg.h"
 
 #ifdef _DEBUG
-#define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
@@ -102,7 +93,7 @@ BOOL CTextViewerDlg::OnInitDialog()
 *   Purpose:   This function simply makes SURE that the dialog has been
 *           fully displayed before adding text to the SmartEdit object
 **************************************************************************/
-void CTextViewerDlg::OnTimer(UINT nIDEvent)
+void CTextViewerDlg::OnTimer(UINT_PTR nIDEvent)
 {
    KillTimer(nIDEvent);
 
@@ -156,7 +147,7 @@ void CTextViewerDlg::ShowFile(const char *FName)
    {
       // read and display the last 50k of the file (or the whole file if less than 50k)
       fseek(in, -50000, SEEK_END);
-      int Cnt = fread(Buf, 1, 50000, in);
+      int Cnt = (int) fread(Buf, 1, 50000, in);
       Buf[Cnt] = 0;
       m_smartEdt.AddString(Buf,false);
       fclose(in);
