@@ -41,6 +41,6 @@ int cp7expandstream(unsigned int*into, unsigned char const* buf, unsigned int ro
 	into = cp5expand(into, base, building); 
 	base +=30;
     }
-    return into-originto;
+    return (int) (into-originto);
 }
 
