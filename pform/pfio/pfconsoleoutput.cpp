@@ -16,7 +16,7 @@ PFConsoleOutput::~PFConsoleOutput()
 {
 }
 
-int PFConsoleOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
+int PFConsoleOutput::PFPrintfStderr(const char *Fmt, va_list &va)
 {
    int x = vfprintf(stderr, Fmt, va);
    fflush(stderr);
@@ -24,7 +24,7 @@ int PFConsoleOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
    return x;
 }
 
-int PFConsoleOutput::PFPrintf(const char *Fmt, const va_list &va)
+int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
 {
    int x = vprintf(Fmt, va);
    fflush(stdout);

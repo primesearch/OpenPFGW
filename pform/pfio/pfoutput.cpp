@@ -60,7 +60,7 @@ void PFOutput::CloseLogFile()
    m_OutputLogFileName = 0;
 }
 
-int  PFOutput::PFLogPrintf (const char *Fmt, const va_list &va)
+int  PFOutput::PFLogPrintf (const char *Fmt, va_list &va)
 {
    if (!m_fpOutputLog)
    {

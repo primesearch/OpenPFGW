@@ -48,7 +48,7 @@ class PFOutput
 
 		void InitLogFile(const char *FName, const int terseOutput);
 		void CloseLogFile();
-		int  PFLogPrintf (const char *Fmt, const va_list &va);
+		int  PFLogPrintf (const char *Fmt, va_list &va);
 
 		// Allows an app to "shut off" IO.  Mostly for GUI apps that don't care about the IO.
 		// In the GUI version, a buffer is allocated and a PostMessage sends the GUI that 
@@ -70,8 +70,8 @@ class PFOutput
       static void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4);
 
 #ifdef ANSI             /* ANSI compatible version          */
-		virtual int PFPrintfStderr(const char *Fmt, const va_list &va)=0;
-		virtual int PFPrintf      (const char *Fmt, const va_list &va)=0;
+		virtual int PFPrintfStderr(const char *Fmt, va_list &va)=0;
+		virtual int PFPrintf      (const char *Fmt, va_list &va)=0;
 #else
 		virtual int PFPrintfStderr( va_list )=0;
 		virtual int PFPrintf      ( va_list )=0;
@@ -99,8 +99,8 @@ class PFConsoleOutput : public PFOutput
 		void PFPrintfClearCurLine(int line_len);
 		int PFfflush(FILE *);
 #ifdef ANSI             /* ANSI compatible version          */
-		int PFPrintfStderr(const char *Fmt, const va_list &va);
-		int PFPrintf      (const char *Fmt, const va_list &va);
+		int PFPrintfStderr(const char *Fmt, va_list &va);
+		int PFPrintf      (const char *Fmt, va_list &va);
 #else
 		int PFPrintfStderr( va_list );
 		int PFPrintf      ( va_list );
@@ -115,8 +115,8 @@ class PFWin32GUIOutput : public PFOutput
 
 		void PFPrintfClearCurLine(int line_len);
 		int PFfflush(FILE *);
-		int PFPrintfStderr(const char *Fmt, const va_list &va);
-		int PFPrintf      (const char *Fmt, const va_list &va);
+		int PFPrintfStderr(const char *Fmt, va_list &va);
+		int PFPrintf      (const char *Fmt, va_list &va);
 
 	private:
 		int m_hWnd;	// actually an HWND, but I want this to "compile" easily :)
