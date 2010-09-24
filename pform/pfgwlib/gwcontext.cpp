@@ -5,7 +5,11 @@
 #include "pfgw_globals.h"
 #include "pfini.h"
 
+#ifdef _MSC_VER
+#include "wingmp.h"
+#else
 #include "gmp.h"
+#endif
 #include "pfio.h"
 
 #ifdef _MSC_VER

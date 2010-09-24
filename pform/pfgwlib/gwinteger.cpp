@@ -2,7 +2,11 @@
 
 #include "gwinteger.h"
 #include "gwcontext.h"
+#ifdef _MSC_VER
+#include "wingmp.h"
+#else
 #include "gmp.h"
+#endif
 
 // build the inlines into the C++ if needed
 #ifndef GW_INLINE_ENABLED
