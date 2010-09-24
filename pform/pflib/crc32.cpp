@@ -2,10 +2,10 @@
 #include "pflibpch.h"
 #include "crc32.h"
 
-static unsigned long crcXOR32[256];
-static unsigned long crcXOR40[256];
-static unsigned long crcXOR48[256];
-static unsigned long crcXOR56[256];
+static unsigned int crcXOR32[256];
+static unsigned int crcXOR40[256];
+static unsigned int crcXOR48[256];
+static unsigned int crcXOR56[256];
 
 void crc_init()
 {
@@ -16,8 +16,8 @@ void crc_init()
 // high 8 bits determine how to subtract the CRC_VALUE. Since
 // subtraction in this field is "exclusive or" then the XOR
 // table can be prebuilt.
-    unsigned long idx,remainder;
-    unsigned long crc;
+    unsigned int idx,remainder;
+    unsigned int crc;
 
     // note the idea is to calculate CRC(idx.x^32).
     unsigned long crcBit[8];    // the crc of bit 32+i
