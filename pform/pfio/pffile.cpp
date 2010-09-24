@@ -103,7 +103,7 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
                PFPrintfLog("Expecting:      %s\n", LPCTSTR(sExpectingThisLine));
                PFPrintfLog("File contained: %s\n", LPCTSTR(sThisLine));
                PFPrintfLog("Starting over at the beginning of the file\n\n");
-               SeekToLine(1);
+               m_nCurrentLineNum = 1;
             }
          }
          // We HAVE to clean up the string from the GetFileName() function.
