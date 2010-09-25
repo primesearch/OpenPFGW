@@ -30,7 +30,7 @@ PFWin32GUIOutput::~PFWin32GUIOutput()
 extern bool g_bWinPFGW_Verbose;
 static DWORD dwLast;
 
-int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
+int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, va_list &va)
 {
    DWORD Cur = GetTickCount();
    DWORD Diff = Cur-dwLast;
@@ -71,7 +71,7 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, const va_list &va)
    return ret;
 }
 
-int PFWin32GUIOutput::PFPrintf(const char *Fmt, const va_list &va)
+int PFWin32GUIOutput::PFPrintf(const char *Fmt, va_list &va)
 {
    // Note that WinPFGW must delete[] this item.
    int BufLen = 2048;
