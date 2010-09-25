@@ -112,6 +112,8 @@ int PFPrintfLog(const char *Fmt, ...)
    va_list va;
    va_start(va, Fmt);
    int ret = pOutputObj->PFPrintf(Fmt, va);
+   va_end(va);
+   va_start(va, Fmt);
    pOutputObj->PFLogPrintf(Fmt, va);
    va_end(va);
    return ret;
