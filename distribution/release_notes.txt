@@ -1,4 +1,25 @@
-Released as version 3.3.6   September 7, 2010
+Released as version 3.4.0   September 25, 2010
+
+Enhancmenets to: v3.4.0 Release
+   - Upgraded to gwnum v26.2.
+   - Upgraded the Windows build to use GMP 5.0 via the MPIR library.
+   - First 64-bit release of PFGW.  Both 32-bit and 64-bit distributed together.
+     Note that using -f with 64-bit could be slower than 32-bit as PFGW doesn't
+     have unrolled 64-bit ASM code for factoring.  At worst case, it will be
+     about half the speed, but since the executable is 64-bit and using GMP 5.0,
+     the factoring speed should be close to the 32-bit version.
+   - Released with Visual Studio 2010 to bypass VS2008 linker problems.   The new
+     solution and project files for VS2010 have been signficantly cleaned up so that
+     objects for the different builds aren't placed in the same directories.
+   - Renamed executables to pfgw32/pfgw64 and Win32PFGW/Win64PFGW.
+   - Fixed an crash which can occur when processing ABC2 files.  It can occur when
+     processing of an ABC2 file is stopped mid-stream, then the ABC2 file is modified,
+     then PFGW is restarted.  PFGW should restart from the beginning of the file, but
+     was actually crashing when this would happen.
+   - Note that *nix builds require a number of changes to makefiles to build for
+     a 64-bit environment.  This will be fixed in a future release (and hopefully
+     the next release).
+
 
 Enhancements to: v3.3.6 Release
    - Applied a temporary patch to gwnum to address an issue with special modular
