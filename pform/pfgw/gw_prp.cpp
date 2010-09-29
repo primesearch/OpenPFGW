@@ -88,10 +88,10 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
       if (CreateModulus(N, true, fftSize)) return -2;
 
       if (!g_FFTSizeOnly)
-	 testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
+	      testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
 
       DestroyModulus();
-   } while (testResult == -1 && fftSize < 5);
+   } while (testResult == -1 && fftSize < 5 && !g_FFTSizeOnly);
 
    return testResult;
 }
