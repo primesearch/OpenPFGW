@@ -13,7 +13,7 @@
 #endif
 
 extern int g_CompositeAthenticationLevel;
-#ifdef __APPLE__
+#ifndef _MSC_VER
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 #endif
 

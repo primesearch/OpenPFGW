@@ -10,7 +10,7 @@
 extern char g_ModularSieveString[256];
 extern int g_nIterationCnt;
 
-#ifdef __APPLE__
+#ifndef _MSC_VER
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 #endif
 

@@ -51,8 +51,8 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
    char  testString[100];
    int   error_code;
    double   k;
-   unsigned long b, n;
-   long c, d;
+   uint32 b, n;
+   int32 c, d;
 
    sprintf(testString, "%send1", g_cpTestString);
 
