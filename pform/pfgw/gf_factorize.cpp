@@ -230,7 +230,7 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
       haveError = false;
       Timer.Start();
 
-      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+      gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
       gwsetmaxmulbyconst(&gwdata, base);  // maximum multiplier
 
       if (CreateModulus(N, true, fftSize)) return 0;

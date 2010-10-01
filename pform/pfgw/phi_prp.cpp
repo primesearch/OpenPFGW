@@ -210,7 +210,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
             while(iLog+iNext<=320);    // amass up to 320 bits in Q.
 
             // calculate 2^iPhi mod Q
-            gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+            gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
             gwsetmaxmulbyconst(&gwdata, 2);  // maximum multiplier
 
             if (CreateModulus(&Q, true)) return;
@@ -279,7 +279,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
          {
             fftSize++;
 
-            gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+            gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
             gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
 
             if (CreateModulus(1.0, 2, iPhi, -1, fftSize)) return;

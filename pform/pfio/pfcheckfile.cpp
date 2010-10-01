@@ -160,8 +160,8 @@ void PFCheckFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_
 
    if (!(bIsPrime || bIsPRP) && m_nResidue!=g_u64ResidueVal && g_u64ResidueVal!=0) {   // note u64Res=0 happens when composites are tossed at one of the  "test" modes.
       char residue1[40], residue2[40];
-      sprintf(residue1,"[%08lX%08lX]",(uint32)(m_nResidue>>32),(uint32)(m_nResidue&0xFFFFFFFF));
-      sprintf(residue2,"[%08lX%08lX]\n",(uint32)(g_u64ResidueVal>>32),(uint32)(g_u64ResidueVal&0xFFFFFFFF));
+      sprintf(residue1,"[%08X%08X]",(uint32)(m_nResidue>>32),(uint32)(m_nResidue&0xFFFFFFFF));
+      sprintf(residue2,"[%08X%08X]\n",(uint32)(g_u64ResidueVal>>32),(uint32)(g_u64ResidueVal&0xFFFFFFFF));
       *p_MessageString = PFString("\n!!!Double Verify ERROR!!! testing ")+m_sCurrentExpression+": Residue mismatch.\nExpected residue: ";
       *p_MessageString += residue1;
       *p_MessageString += " residue computed: ";

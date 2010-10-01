@@ -10,14 +10,6 @@
 #include <signal.h>
 #include "../../pform/pfio/pfini.h"
 
-//#define JBC_BUILD
-
-#if defined (JBC_BUILD)
-#include "jbc.cxx"
-#else
-#define JBC()
-#endif
-
 #include "pfgw_globals.h"
 
 extern int g_CompositeAthenticationLevel;
@@ -77,7 +69,7 @@ bool IsValidGFN(const char *sNum, uint32 *GFN_Base, uint32 *GFN_Exp)
 bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 _exp, uint64 *p_n64ValidationResidue)
 {
    // create a context
-   gwinit (&gwdata);
+   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
    gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
    if (CreateModulus(1.0,base,_exp,1)) return FALSE;
 
@@ -88,7 +80,7 @@ bool gwPRP_GFN(Integer *N,const char *sNumStr, uint32 base, uint32 _exp, uint64 
    {
       fftSize++;
 
-      gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+      gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
       gwsetmaxmulbyconst(&gwdata, iBase);  // maximum multiplier
 
       if (CreateModulus(1.0, base, _exp, 1, fftSize)) return false;

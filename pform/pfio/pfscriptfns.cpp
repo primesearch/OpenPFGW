@@ -387,7 +387,7 @@ bool PFScriptFile::SetS(char *args) {
                         }
                      }
                      Hex[19] = 0;
-                     sprintf (optr++, "%c", strtol(Hex, NULL, 16));
+                     sprintf (optr++, "%c", (char) strtol(Hex, NULL, 16));
                      iptr -= 2;
                   }
                   else if (isdigit(iptr[1]) && iptr[1] != '8' && iptr[1] != '9' && isdigit(iptr[2]) && iptr[2] != '8' && iptr[2] != '9' && isdigit(iptr[3]) && iptr[3] != '8' && iptr[3] != '9')
@@ -395,7 +395,7 @@ bool PFScriptFile::SetS(char *args) {
                      char Oct[4];
                      strncpy(Oct, &iptr[1], 3);
                      Oct[3] = 0;
-                     sprintf (optr++, "%c", strtol(Oct, NULL, 8));
+                     sprintf (optr++, "%c", (char) strtol(Oct, NULL, 8));
                      iptr += 2;
                   }
                   else

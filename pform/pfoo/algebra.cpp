@@ -32,7 +32,7 @@ void Residue::squaremultiply(Multiplier *m, int maxSteps, int stepsLeft)
 
 FieldZ::FieldZ(Integer *N)
 {
-   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
    gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);  // maximum multiplier
    CreateModulus(N);
 }
@@ -207,7 +207,7 @@ void SmallIntegerMultiplier::squaremulInteger(GWInteger &X, int maxSteps, int st
 FieldLucas::FieldLucas(Integer *N)
    : ps1(NULL), ps2(NULL), ps3(NULL), ps4(NULL)
 {
-   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
    gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);  // maximum multiplier
    CreateModulus(N);
 
