@@ -79,7 +79,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
    {
       if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &d, &error_code) == 6)
       {
-         sprintf(testString, "%(%lf*%u^%u%+d)/%d", k, b, n, c, d);
+         sprintf(testString, "(%lf*%u^%u%+d)/%d", k, b, n, c, d);
          if (!strcmp(testString, g_cpTestString) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
             return CreateModulus(k, b, n, c, increaseFFTSize);
       }
