@@ -655,7 +655,7 @@ int pfgw_main(int argc,char *argv[])
       return 4;
    }
 
-   gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
+   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
 
    if (gwdata.GWERROR == GWERROR_VERSION_MISMATCH)
    {
@@ -1115,8 +1115,8 @@ int pfgw_main(int argc,char *argv[])
 
             // SSE2 code FAILS with a GP for values under about 2^500, so for number of this size, we simply do not use SSE2.
             // Bug seen since 4/25/2003 version, never reported, and fixed in 10/27/2003 version
-            if (lg(*pResult) < 600)
-               CPU_FLAGS &= ~CPU_SSE2;
+            //if (lg(*pResult) < 600)
+            //   CPU_FLAGS &= ~CPU_SSE2;
 
             g_sTestMode = sTestShortName;
             g_sTestMode += ": ";
