@@ -212,8 +212,6 @@ int IniGetInt (int, const char *szKey, int nDefault, bool bSetIfNotThere)
    return n;
 }
 
-static bool bOverRidden = false;
-
 void getCpuInfo (void)
 {
    int   temp;
@@ -222,87 +220,6 @@ void getCpuInfo (void)
 
    guessCpuType ();
    guessCpuSpeed ();
-
-/* Now let the user override the cpu type and speed from the local.ini file */
-
-   if (g_pIni)
-   {
-      if (IniGetInt (INI_FILE, "CpuOverride", 0)) {
-         temp = IniGetInt (INI_FILE, "CpuSpeed", 99);
-         if (temp != 99) CPU_SPEED = temp;
-         bOverRidden = true;
-      }
-      // REMOVE this for a production run
-      else
-      {
-         // write defaults
-         IniGetInt (INI_FILE, "CpuSpeed", (int)(CPU_SPEED + 0.5), true);
-      }
-   }
-
-/* Make sure the cpu speed is reasonable */
-
-   if (CPU_SPEED > 50000) CPU_SPEED = 50000;
-   if (CPU_SPEED < 25) CPU_SPEED = 25;
-
-/* Let the user override the cpu flags from the local.ini file */
-
-   if (g_pIni)
-   {
-      temp = IniGetInt (INI_FILE, "CpuSupportsRDTSC", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_RDTSC; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_RDTSC; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupportsCMOV", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_CMOV; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_CMOV; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupportsPrefetch", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_PREFETCH; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_PREFETCH; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupportsSSE", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_SSE; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_SSE; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupportsSSE2", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_SSE2; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_SSE2; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupportsMMX", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_MMX; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_MMX; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupportsSSE4", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_SSE41; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_SSE41; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuSupports3DNow", 99);
-      if (temp == 0) {CPU_FLAGS &= ~CPU_3DNOW; bOverRidden = true;}
-      if (temp == 1) {CPU_FLAGS |= CPU_3DNOW; bOverRidden = true;}
-
-/* Let the user override the L2 cache size in local.ini file */
-
-      temp = IniGetInt (INI_FILE, "CpuL2CacheSize", CPU_L2_CACHE_SIZE);
-      if (temp != CPU_L2_CACHE_SIZE) {CPU_L2_CACHE_SIZE = temp; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuL2CacheLineSize", CPU_L2_CACHE_LINE_SIZE);
-      if (temp != CPU_L2_CACHE_LINE_SIZE) {CPU_L2_CACHE_LINE_SIZE = temp; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuL2SetAssociative", CPU_L2_SET_ASSOCIATIVE);
-      if (temp != CPU_L2_SET_ASSOCIATIVE) {CPU_L2_SET_ASSOCIATIVE = temp; bOverRidden = true;}
-
-/* Let the user override the L3 cache size in local.ini file */
-
-      temp = IniGetInt (INI_FILE, "CpuL3CacheSize", CPU_L3_CACHE_SIZE);
-      if (temp != CPU_L3_CACHE_SIZE) {CPU_L3_CACHE_SIZE = temp; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuL3CacheLineSize", CPU_L3_CACHE_LINE_SIZE);
-      if (temp != CPU_L3_CACHE_LINE_SIZE) {CPU_L3_CACHE_LINE_SIZE = temp; bOverRidden = true;}
-      temp = IniGetInt (INI_FILE, "CpuL3SetAssociative", CPU_L3_SET_ASSOCIATIVE);
-      if (temp != CPU_L3_SET_ASSOCIATIVE) {CPU_L3_SET_ASSOCIATIVE = temp; bOverRidden = true;}
-
-/* Let the user override the CPUID brand string.  It should never be necessary. */
-/* However, one Athlon owner's brand string became corrupted with illegal characters. */
-
-      IniGetString (INI_FILE, "CpuBrand", CPU_BRAND, sizeof(CPU_BRAND), CPU_BRAND);
-
-/* Let user override the number of hyperthreads */
-
-      temp = IniGetInt (INI_FILE, "CpuNumHyperthreads", CPU_HYPERTHREADS);
-      if (temp == 0) temp = 1;
-      if (temp != (int) CPU_HYPERTHREADS) {CPU_HYPERTHREADS = temp; bOverRidden = true;}
-   }
 }
 
 /* Format a long or very long textual cpu description */
@@ -332,7 +249,9 @@ void getCpuDescription (
       if (CPU_FLAGS & CPU_MMX) strcat (buf, "MMX, ");
       if (CPU_FLAGS & CPU_SSE) strcat (buf, "SSE, ");
       if (CPU_FLAGS & CPU_SSE2) strcat (buf, "SSE2, ");
-      if (CPU_FLAGS & CPU_SSE41) strcat (buf, "SSE4, ");
+      if (CPU_FLAGS & CPU_SSE41) strcat (buf, "SSE4.1, ");
+      if (CPU_FLAGS & CPU_SSE42) strcat (buf, "SSE4.2, ");
+      if (CPU_FLAGS & CPU_TLB_PRIMING) strcat (buf, "TLB, ");
       strcpy (buf + strlen (buf) - 2, "\n");
    }
    strcat (buf, "L1 cache size: ");
@@ -365,6 +284,4 @@ void getCpuDescription (
       sprintf (buf + strlen (buf), "%sTLBS: %d\n",
           CPU_L1_DATA_TLBS > 0 ? "L2 " : "",
           CPU_L2_DATA_TLBS);
-   if (bOverRidden)
-      sprintf (buf + strlen (buf), "Overrides from the .ini file in affect!\n");
 }
