@@ -1057,7 +1057,7 @@ Try_Next_a:;
       }
    }
 
-   PFPrintfLog("GFN testing completed");
+   PFPrintfLog("GFN testing completed\n");
 
    return true;
 }
