@@ -214,8 +214,6 @@ int IniGetInt (int, const char *szKey, int nDefault, bool bSetIfNotThere)
 
 void getCpuInfo (void)
 {
-   int   temp;
-
 /* Get the CPU info using CPUID instruction */
 
    guessCpuType ();
