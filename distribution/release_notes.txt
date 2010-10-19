@@ -1,4 +1,20 @@
-Released as version 3.4.0   September 25, 2010
+Released as version 3.4.2   October 13, 2010
+
+Enhancmenets to: v3.4.2 Release
+   - Updated to gwnum v26.3 to fix various issues, including one on 64-bit Linux.
+   - Addressed many compiler warnings when building with gcc.
+   - Added carriage return after "GFN testing completed" message in pfgw.log.
+   - Remove ability to change CPU setting via pfgw.ini.  gwnum should be smarter
+     than any user when specifying the CPU settings.  This also addresses a
+     crash that occurs on MacIntel during primality proofs as the SSE2 flag was
+     turned off which told gwnum to execute non-SSE2 code, which isn't built
+     into gwnum on MacIntel (Apple only supports Core 2 and later CPUs on MacIntel).
+
+
+Enhancmenets to: v3.4.1 Release
+   - Fix to gwnum v26.2 to address crash in conversion routine.  This only affected
+     Windows as it is related to differences between the Visual Studio compiler and gcc.
+
 
 Enhancmenets to: v3.4.0 Release
    - Upgraded to gwnum v26.2.

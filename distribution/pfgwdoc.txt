@@ -13,15 +13,13 @@ F) Other helpful programs
 
 A.1. What is PrimeForm/GW?
 
- PrimeForm/GW (PFGW) is a primality tester.
- It tests whether or not a number is prime, or at least it tries to.
- It is able to test any arbitrary number, though some faster then others.
- About the name: PrimeForm speaks for itself, the GW comes from George
- Woltman, the person who made the extremely fast modular code available
- for this project (well he made it for Prime95, but allows us to use it ;)
- It is a command line (DOS Box) utility. It is an 'Open Source' project,
- and is ported to Win32, Unix, Linux, BeOS, MacIntel, and possibly other
- platforms.
+ PrimeForm/GW (PFGW) is a primality tester.   It tests whether or not a number
+ is prime, or at least it tries to.   It is able to test any arbitrary number,
+ though some faster then others.   About the name: PrimeForm speaks for itself,
+ the GW comes from Yves Gallot and George Woltman.  George Woltman wrote the 
+ extremely fast modular code available for this project (well he made it for
+ Prime95, but allows us to use it ;)  It is an 'Open Source' project and is
+ ported to Windows, Linux, and MacIntel.
 
  The source code can be obtained at:
   http://sourceforge.net/projects/openpfgw/
