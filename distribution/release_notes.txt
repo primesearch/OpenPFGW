@@ -1,7 +1,8 @@
-Released as version 3.4.2   October 13, 2010
+Released as version 3.4.2   October 19, 2010
 
 Enhancmenets to: v3.4.2 Release
-   - Updated to gwnum v26.3 to fix various issues, including one on 64-bit Linux.
+   - Updated to gwnum v26.4 to fix various issues, including one on 64-bit Linux
+     and one with power of 2 values for n (when using special modular reduction).
    - Addressed many compiler warnings when building with gcc.
    - Added carriage return after "GFN testing completed" message in pfgw.log.
    - Remove ability to change CPU setting via pfgw.ini.  gwnum should be smarter
