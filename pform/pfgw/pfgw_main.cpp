@@ -1517,7 +1517,7 @@ int pfgw_main(int argc,char *argv[])
                   ExtraOverhead_Timer.Start();
 
                   if (!Retval)
-                     PFPrintfLog("%s is composite: RES64: [%08lX%08lX] (%0.4fs+%0.4fs)\n",
+                     PFPrintfLog("%s is composite: RES64: [%08X%08X] (%0.4fs+%0.4fs)\n",
                               LPCTSTR(sNumber), (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
                   else
                      PFPrintfLog("%s ERROR DURING PROCESSING! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),t, t2-t);
