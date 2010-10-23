@@ -26,6 +26,9 @@ GW_INLINE Integer::Integer(uint32 n)
 
 GW_INLINE Integer::Integer(uint64 n64)
 {
+#if defined(_64BIT)
+	mpz_init_set_ui(m_g,n64);
+#else
 	uint32 n32 = uint32(n64>>32);
 	if (!n32)
 		// Simple case, n64 is only 32 bits.
@@ -36,6 +39,7 @@ GW_INLINE Integer::Integer(uint64 n64)
 		mpz_mul_2exp(m_g, m_g, 32);
 		mpz_add_ui(m_g,m_g,(uint32)(n64&0xFFFFFFFF));
 	}
+#endif
 #if defined(_64BIT)
 	mpz_init(scrap);
 #endif
@@ -168,7 +172,11 @@ static inline i52 muladdmod52_pr(i52 x, i52 y, i52 a, i52 p, double prf)
 
 GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
 {
+#ifdef _64BIT
+    uint64 const*pbdata=(uint64*)m_a;
+#else
     uint32 const*pbdata=(uint32*)m_a;
+#endif
     int blen=m_len;
     const i52 prime1=n1;
     const double prf1=1.0/prime1;
@@ -192,6 +200,14 @@ GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
     if(run1>=prime1) run1-=prime1;
     *p1=run1;
 }	
+
+#ifdef _64BIT
+GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
+{
+	*p1=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n1);
+	*p2=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
+}
+#else
 GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
 {
     uint32 const*pbdata=(uint32*)m_a;
@@ -226,6 +242,7 @@ GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64
     *p1=run1;
     *p2=run2;
 }	
+#endif
 
 GW_INLINE int32 Integer::m_andu(const int32 & n) const
 {
