@@ -1,6 +1,10 @@
-Released as version 3.4.2   October 19, 2010
+Released as version 3.4.3   October 25, 2010
 
-Enhancmenets to: v3.4.2 Release
+Enhancements to: v3.4.3 Release
+   - Fixed an issue in the 64-bit build when factoring above 2^32.
+
+
+Enhancements to: v3.4.2 Release
    - Updated to gwnum v26.4 to fix various issues, including one on 64-bit Linux
      and one with power of 2 values for n (when using special modular reduction).
    - Addressed many compiler warnings when building with gcc.
@@ -12,12 +16,12 @@ Enhancmenets to: v3.4.2 Release
      into gwnum on MacIntel (Apple only supports Core 2 and later CPUs on MacIntel).
 
 
-Enhancmenets to: v3.4.1 Release
+Enhancements to: v3.4.1 Release
    - Fix to gwnum v26.2 to address crash in conversion routine.  This only affected
      Windows as it is related to differences between the Visual Studio compiler and gcc.
 
 
-Enhancmenets to: v3.4.0 Release
+Enhancements to: v3.4.0 Release
    - Upgraded to gwnum v26.2.
    - Upgraded the Windows build to use GMP 5.0 via the MPIR library.
    - First 64-bit release of PFGW.  Both 32-bit and 64-bit distributed together.
