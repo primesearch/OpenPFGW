@@ -48,14 +48,11 @@ long Integer::m_div(const int32 n)
 }
 
 #ifdef _64BIT
-int Integer::m_mod(const int32 n) const
+int  Integer::m_mod(const int32 n) const
 {
-   int i=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n);
-   return i;
+   return (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n);
 }
-
 #else
-
 int Integer::m_mod(const int32 n) const
 {
    int   r;
@@ -72,15 +69,10 @@ int Integer::m_mod(const int32 n) const
    if (len < 0)
       len = -len;
 
-#ifdef _64BIT
-   r = mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n);
-#else
    r = Imod((uint32*)m_a, n, len);
-#endif
 
    return r;
 }
-
 #endif
 
 void Integer::m_sftr(const int32 n)
