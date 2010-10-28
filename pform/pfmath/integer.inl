@@ -26,9 +26,6 @@ GW_INLINE Integer::Integer(uint32 n)
 
 GW_INLINE Integer::Integer(uint64 n64)
 {
-#if defined(_64BIT)
-	mpz_init_set_ui(m_g,n64);
-#else
 	uint32 n32 = uint32(n64>>32);
 	if (!n32)
 		// Simple case, n64 is only 32 bits.
@@ -39,7 +36,7 @@ GW_INLINE Integer::Integer(uint64 n64)
 		mpz_mul_2exp(m_g, m_g, 32);
 		mpz_add_ui(m_g,m_g,(uint32)(n64&0xFFFFFFFF));
 	}
-#endif
+
 #if defined(_64BIT)
 	mpz_init(scrap);
 #endif
@@ -119,22 +116,109 @@ GW_INLINE void Integer::m_div(const Integer &y,Integer &q,Integer &r) const
 	mpz_tdiv_qr(q.m_g,r.m_g,m_g,y.m_g);
 }
 
-#if defined(_64BIT)
+#ifdef _64BIT
+GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
+{
+   // On Win64, mpz_init_set_ui takes a unsigned long int, which is 32 bits, not 64 bits as it is
+   // on MacIntel and Linux.  This will work on all platforms with a minimal sacrifice of speed.
+   uint32 n32 = uint32(n1>>32);
 
+	mpz_init_set_ui(*(mpz_t*)(&scrap), n32);
+	mpz_mul_2exp(*(mpz_t*)(&scrap), scrap, 32);
+	mpz_add_ui(*(mpz_t*)(&scrap), scrap, (uint32)(n1&0xFFFFFFFF));
+   mpz_mod(*(mpz_t*)(&scrap), m_g, scrap);
+   *p1 = mpz_get_ui(scrap);
+}
+#else
+GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
+{
+    uint32 const*pbdata=(uint32*)m_a;
+
+    int blen=m_len;
+    const i52 prime1=n1;
+    const double prf1=1.0/prime1;
+    const i52 scale=((uint64)1)<<48;
+    if(blen<=0) { *p1=0; return; }
+    i52 run1=0, datum;
+    switch(blen%3)
+    {
+       case 0: break;
+       case 1: run1=pbdata[--blen]; if(run1>prime1) run1%=prime1; break;
+       case 2: run1=pbdata[blen-1]>>16; blen-=2; goto trailinghalf;
+    }
+    while((blen-=3) >= 0)
+    {
+       datum=((i52)pbdata[blen+2]<<16)+(pbdata[blen+1]>>16);
+       run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
+       trailinghalf:
+       datum=((i52)(pbdata[blen+1]&0xffff)<<32)+(pbdata[blen]);
+       run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
+    } 
+    if(run1>=prime1) run1-=prime1;
+    *p1=run1;
+}
+#endif
+
+#if defined(_64BIT)
 GW_INLINE void Integer::m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const
 {
-	*p1=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n1);
-	*p2=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
+   *p1 = (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n1);
+	*p2 = (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
 }
-	
-#else
 
+GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
+{
+#if defined(_MSC_VER)
+   // On Win64, mpz_mod_ui takes a unsigned long int, which is 32 bits, not 64 bits as it is
+   // on MacIntel and Linux.  Call m_mod to properly handle 64-bit mods.
+   m_mod(n1, p1);
+   m_mod(n2, p2);
+#else
+   *p1 = mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n1);
+	*p2 = mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
+#endif
+}
+#else
 GW_INLINE void Integer::m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const
 {
 	DEBUG_ADJUST_FP_STACK(__FILE__, __LINE__);
 	Imod2((uint32*)m_a,n1,n2,m_len,p1,p2);
 }
 
+GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
+{
+    uint32 const*pbdata=(uint32*)m_a;
+    int blen=m_len;
+    const i52 prime1=n1, prime2=n2;
+    const double prf1=1.0/prime1, prf2=1.0/prime2;
+    const i52 scale=((uint64)1)<<48;
+    if(blen<=0) { *p1=*p2=0; return; }
+    i52 run1=0, run2=0, datum;
+    switch(blen%3)
+    {
+    case 0: break;
+    case 1: 
+	run1=run2=pbdata[--blen]; 
+	if(run1>prime1) run1%=prime1; 
+	if(run2>prime2) run2%=prime2; 
+	break;
+    case 2: run1=run2=pbdata[blen-1]>>16; blen-=2; goto trailinghalf;
+    }
+    while((blen-=3) >= 0)
+    {
+	datum=((i52)pbdata[blen+2]<<16)+(pbdata[blen+1]>>16);
+	run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
+	run2=muladdmod52_pr(run2, scale, datum, prime2, prf2);
+    trailinghalf:
+	datum=((i52)(pbdata[blen+1]&0xffff)<<32)+(pbdata[blen]);
+	run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
+	run2=muladdmod52_pr(run2, scale, datum, prime2, prf2);
+    } 
+    if(run1>=prime1) run1-=prime1;
+    if(run2>=prime2) run2-=prime2;
+    *p1=run1;
+    *p2=run2;
+}
 #endif
 
 /* I need signed ints, I have to be able to underflow */
@@ -170,80 +254,6 @@ static inline i52 muladdmod52_pr(i52 x, i52 y, i52 a, i52 p, double prf)
     return mod104_52_pr((int64)x*y+a, (double)x*y+a, p, prf);
 }
 
-GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
-{
-#ifdef _64BIT
-    uint64 const*pbdata=(uint64*)m_a;
-#else
-    uint32 const*pbdata=(uint32*)m_a;
-#endif
-    int blen=m_len;
-    const i52 prime1=n1;
-    const double prf1=1.0/prime1;
-    const i52 scale=((uint64)1)<<48;
-    if(blen<=0) { *p1=0; return; }
-    i52 run1=0, datum;
-    switch(blen%3)
-    {
-    case 0: break;
-    case 1: run1=pbdata[--blen]; if(run1>prime1) run1%=prime1; break;
-    case 2: run1=pbdata[blen-1]>>16; blen-=2; goto trailinghalf;
-    }
-    while((blen-=3) >= 0)
-    {
-	datum=((i52)pbdata[blen+2]<<16)+(pbdata[blen+1]>>16);
-	run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
-    trailinghalf:
-	datum=((i52)(pbdata[blen+1]&0xffff)<<32)+(pbdata[blen]);
-	run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
-    } 
-    if(run1>=prime1) run1-=prime1;
-    *p1=run1;
-}	
-
-#ifdef _64BIT
-GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
-{
-	*p1=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n1);
-	*p2=mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
-}
-#else
-GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
-{
-    uint32 const*pbdata=(uint32*)m_a;
-    int blen=m_len;
-    const i52 prime1=n1, prime2=n2;
-    const double prf1=1.0/prime1, prf2=1.0/prime2;
-    const i52 scale=((uint64)1)<<48;
-    if(blen<=0) { *p1=*p2=0; return; }
-    i52 run1=0, run2=0, datum;
-    switch(blen%3)
-    {
-    case 0: break;
-    case 1: 
-	run1=run2=pbdata[--blen]; 
-	if(run1>prime1) run1%=prime1; 
-	if(run2>prime2) run2%=prime2; 
-	break;
-    case 2: run1=run2=pbdata[blen-1]>>16; blen-=2; goto trailinghalf;
-    }
-    while((blen-=3) >= 0)
-    {
-	datum=((i52)pbdata[blen+2]<<16)+(pbdata[blen+1]>>16);
-	run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
-	run2=muladdmod52_pr(run2, scale, datum, prime2, prf2);
-    trailinghalf:
-	datum=((i52)(pbdata[blen+1]&0xffff)<<32)+(pbdata[blen]);
-	run1=muladdmod52_pr(run1, scale, datum, prime1, prf1);
-	run2=muladdmod52_pr(run2, scale, datum, prime2, prf2);
-    } 
-    if(run1>=prime1) run1-=prime1;
-    if(run2>=prime2) run2-=prime2;
-    *p1=run1;
-    *p2=run2;
-}	
-#endif
-
 GW_INLINE int32 Integer::m_andu(const int32 & n) const
 {
 	int32 l = mpz_get_si(m_g);
@@ -258,7 +268,7 @@ GW_INLINE int32 Integer::m_andu(const int32 & n) const
 
 GW_INLINE uint32 Integer::m_andu(const uint32 & n) const
 {
-	uint32 l = mpz_get_ui(m_g);
+	uint32 l = (uint32) mpz_get_ui(m_g);
 	return l & n;
 }
 
