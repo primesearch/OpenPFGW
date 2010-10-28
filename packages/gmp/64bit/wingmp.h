@@ -1866,7 +1866,7 @@ mpz_fits_ushort_p (mpz_srcptr __gmp_z) __GMP_NOTHROW
 #if ! defined (__GMP_FORCE_mpz_get_ui)
 __GMP_EXTERN_INLINE
 #endif
-unsigned long
+unsigned long long
 mpz_get_ui (mpz_srcptr __gmp_z) __GMP_NOTHROW
 {
   mp_ptr __gmp_p = __gmp_z->_mp_d;
