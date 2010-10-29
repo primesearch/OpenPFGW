@@ -1,5 +1,38 @@
 #include "fp_stchk.h"
 
+/* I need signed ints, I have to be able to underflow */
+#define i52 int64
+
+// Can make return values sloppier (out by +/-p, say) by changing this
+//
+#define RET_SUB52(a,b,p) { i52 stab=a-b; if(stab<0) return stab+p; if(stab>=p) return stab-p; return stab; }
+
+//------------------------------------------------------
+// mod104_52_pr  | 
+//---------------+
+// xyl=low 64 bits of 'xy', a double-word integer
+// xyf=approx value of xy as a float
+// p  =prime
+// prf=approx 1.0/prime
+//
+static inline i52 mod104_52_pr(int64 xyl, double xyf, i52 p, double prf)
+{
+    int64 rounded=(int64)p*(int64)(xyf*prf);  /* p*(xy/p) */
+    RET_SUB52(xyl,rounded,p);
+}
+
+//------------------------------------------------------
+// mulmod52_pr   | 
+//---------------+
+// x,y=integer
+// p  =prime
+// prf=approx 1.0/prime
+//
+static inline i52 muladdmod52_pr(i52 x, i52 y, i52 a, i52 p, double prf)
+{
+    return mod104_52_pr((int64)x*y+a, (double)x*y+a, p, prf);
+}
+
 GW_INLINE Integer::Integer()
 {
 	mpz_init(m_g);
@@ -220,39 +253,6 @@ GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64
     *p2=run2;
 }
 #endif
-
-/* I need signed ints, I have to be able to underflow */
-#define i52 int64
-
-// Can make return values sloppier (out by +/-p, say) by changing this
-//
-#define RET_SUB52(a,b,p) { i52 stab=a-b; if(stab<0) return stab+p; if(stab>=p) return stab-p; return stab; }
-
-//------------------------------------------------------
-// mod104_52_pr  | 
-//---------------+
-// xyl=low 64 bits of 'xy', a double-word integer
-// xyf=approx value of xy as a float
-// p  =prime
-// prf=approx 1.0/prime
-//
-static inline i52 mod104_52_pr(int64 xyl, double xyf, i52 p, double prf)
-{
-    int64 rounded=(int64)p*(int64)(xyf*prf);  /* p*(xy/p) */
-    RET_SUB52(xyl,rounded,p);
-}
-
-//------------------------------------------------------
-// mulmod52_pr   | 
-//---------------+
-// x,y=integer
-// p  =prime
-// prf=approx 1.0/prime
-//
-static inline i52 muladdmod52_pr(i52 x, i52 y, i52 a, i52 p, double prf)
-{
-    return mod104_52_pr((int64)x*y+a, (double)x*y+a, p, prf);
-}
 
 GW_INLINE int32 Integer::m_andu(const int32 & n) const
 {
