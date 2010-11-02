@@ -687,10 +687,11 @@ PFBoolean F_Factor::Iterate()
          p2=m_pEratMod2->next();
       else
          p2=m_pEratMod->next();
-// here for some debugging.
-//    if (p2 == 641)
-//       INTDEBUG(*pN);
    }
+
+// here for some debugging.
+//    if (p == 527873781173 || p2 == 527873781173)
+//       p2 = p2;
 
    // This is the ONLY 2^31 code left.
    uint64  li1, li2;
@@ -699,30 +700,20 @@ PFBoolean F_Factor::Iterate()
    if(p2<=0x7fffffff)
    {
        int  i1,i2;
-      // NOte if the FP stack is not PERFECTLY clear before calling this function, then
+      // Note that if the FP stack is not PERFECTLY clear before calling this function, then
       // there it will have problems and not work right (this was found inside of APSieve).
       // I think this bug may ALSO be in pfgw in some instances during factoring.
 
-      // NOTE that STAT=120 and TAGS=FFFF should be seen in the VC registers debug window.
-       pN->m_mod2((int)p,(int)p2,&i1,&i2);
-      if(i1<0)
-      {
-//       i1 %= (int)p;
-//       if(i1<0)
-            i1+=(int)p;
-      }
-      if(i2<0)
-      {
-//       i2 %= (int)p2;
-//       if(i2<0)
-            i2+=(int)p2;
-      }
-       li1=i1;
-       li2=i2;
+      // Note that STAT=120 and TAGS=FFFF should be seen in the VC registers debug window.
+      pN->m_mod2((int)p,(int)p2,&i1,&i2);
+      if (i1<0) i1+=(int)p;
+      if (i2<0) i2+=(int)p2;
+      li1=i1;
+      li2=i2;
    }
    else
    {
-       pN->m_mod2(p, p2, &li1, &li2);
+      pN->m_mod2(p, p2, &li1, &li2);
    }
 
    if(m_pffN && (li1==0))
