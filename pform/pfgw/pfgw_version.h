@@ -26,7 +26,7 @@
 //#define	RELEASE_LEVEL	2
 
 #define	RELEASE_VERSION         "3.4.3"
-#define	BUILD_DATE              "20101025"
+#define	BUILD_DATE              "20101102"
 
 #ifdef _64BIT
 #define  BITNESS                 "64BIT"
