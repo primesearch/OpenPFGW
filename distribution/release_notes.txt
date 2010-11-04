@@ -1,7 +1,15 @@
-Released as version 3.4.3   October 25, 2010
+Released as version 3.4.4   November 4, 2010
+
+Enhancements to: v3.4.4 Release
+   - Fixed an issue in the Windows 64-bit build when factoring above 2^32.
+   - Fixed an issue with resuming on edited file as it would not restart 
+     from line 1.  This was introduced by the ABC2 file in 3.4.0.  I reverted
+     the change, but cannot recall how to trigger the crash, so it can still
+     happen.
+
 
 Enhancements to: v3.4.3 Release
-   - Fixed an issue in the 64-bit build when factoring above 2^32.
+   - Fixed 64-bit factoring on *nix.
 
 
 Enhancements to: v3.4.2 Release
@@ -71,7 +79,7 @@ Enhancements to: v3.3.3 Release
         Gwnum would lose the /d in some (k*b^n+c)/d cases.  This happened 
         primarily in cases where the number was between 300 and 350 bits.
         The final conversion from gwnum to binary could fail in cases
-	where generic reduction was used.  The larger the number the less
+   where generic reduction was used.  The larger the number the less
         likely the bug would occur.
         Zero padded FFTs of length 80 and 112 could fail.
         More conservative in selecting an FFT length for non-base 2 cases.
@@ -168,55 +176,55 @@ Enhancements to: v3.2.2 RC 1e
 
 
 Enhancements to: v3.2.1 RC 1d
-	- Built with updated 25.12 gwnum library.
-	- Fixed ROUNDOFF error during primality test by using carefully
-	  routines during first and last 30 iterations.
-	- Verify that values do not exceed limits so that special modular
-	  arithmatic can be used.  For example k must be less than 1e53.
-	- Verify that d (of (k*b^n+c)/d) divides evenly otherwise
-	  special modular arithmatic cannot be used.
-	- Add check for SUMOUT error during primality test.
-	- Fixed a bug intorduced in 3.1 that prevented PFGW from finding
-	  Fermat factors.
-	- Renamed this file to release_notes.txt.  Removed RELNOTES.
+   - Built with updated 25.12 gwnum library.
+   - Fixed ROUNDOFF error during primality test by using carefully
+     routines during first and last 30 iterations.
+   - Verify that values do not exceed limits so that special modular
+     arithmatic can be used.  For example k must be less than 1e53.
+   - Verify that d (of (k*b^n+c)/d) divides evenly otherwise
+     special modular arithmatic cannot be used.
+   - Add check for SUMOUT error during primality test.
+   - Fixed a bug intorduced in 3.1 that prevented PFGW from finding
+     Fermat factors.
+   - Renamed this file to release_notes.txt.  Removed RELNOTES.
 
 
 Enhancements to: v3.2.0 RC 1c
-	- Built with version 25.12 of gwnum.  This version of gwnum addresses
-	  SUMOUT errors that occur on some tests.
-	- Modify tray icon to show current number and its progress.
-	- Generate 64 bit residues instead of 62 bit residues.
-	- Added -N option for command line version.  When used PFGW will
-	  execute with NORMAL priority (1.2 behavior).  Without it, PFGW
-	  will execute in IDLE priority.  WinPFGW will execute in IDLE priority.
-	- Added -V option so that command line version of PFGW can output
-	  diagnostic information.
-	- Only show max round off line if MAXDIFF < 1e10 because a large MAXDIFF
-	  could wrap.
-	- When using -q in WinPFGW, ensure that the results of the test are output
-	  when the number is composite.
-	- Use special modular reduction code when PRP testing (k*b^n+/-c)/d forms.
-	- Call gwset_larger_fftlen_count instead of gwset_safety_margin as it will
-	  guarantee that gwnum will use the next larger FFT size.
+   - Built with version 25.12 of gwnum.  This version of gwnum addresses
+     SUMOUT errors that occur on some tests.
+   - Modify tray icon to show current number and its progress.
+   - Generate 64 bit residues instead of 62 bit residues.
+   - Added -N option for command line version.  When used PFGW will
+     execute with NORMAL priority (1.2 behavior).  Without it, PFGW
+     will execute in IDLE priority.  WinPFGW will execute in IDLE priority.
+   - Added -V option so that command line version of PFGW can output
+     diagnostic information.
+   - Only show max round off line if MAXDIFF < 1e10 because a large MAXDIFF
+     could wrap.
+   - When using -q in WinPFGW, ensure that the results of the test are output
+     when the number is composite.
+   - Use special modular reduction code when PRP testing (k*b^n+/-c)/d forms.
+   - Call gwset_larger_fftlen_count instead of gwset_safety_margin as it will
+     guarantee that gwnum will use the next larger FFT size.
 
 
 Enhancements to: v3.1.0 RC 1b
-	- Updated external version to meet intenal version.
-	- Updated to v25.11 of George Woltman's gwnum library.
-	- Use new modular reduction routines in gwnum for k*b^n+/-c forms.
-	  This is about twice as fast as prior releases when k > 1 and almost
-	  6 times as fast when k = 1 and b > 2.  GFNs already use this same
-	  modular reductino code.
-	- Removed special GFN PRP code as it is no longer necessary due to new
+   - Updated external version to meet intenal version.
+   - Updated to v25.11 of George Woltman's gwnum library.
+   - Use new modular reduction routines in gwnum for k*b^n+/-c forms.
+     This is about twice as fast as prior releases when k > 1 and almost
+     6 times as fast when k = 1 and b > 2.  GFNs already use this same
+     modular reductino code.
+   - Removed special GFN PRP code as it is no longer necessary due to new
      modular reduction code for k*b^n+/-c forms.
-	- Set default priority class to BELOW_NORMAL (instead of NORMAL) on
-	  Windows.
-	- Set priority to 20 (low) on *nix and MacIntel.
-	- Increased limits for factorials to 1,000,000.
-	- Increased limits for primorials to 20,000,000.
-	- Modified -r switch to act as a boolean.  Using it will force PFGW to
+   - Set default priority class to BELOW_NORMAL (instead of NORMAL) on
+     Windows.
+   - Set priority to 20 (low) on *nix and MacIntel.
+   - Increased limits for factorials to 1,000,000.
+   - Increased limits for primorials to 20,000,000.
+   - Modified -r switch to act as a boolean.  Using it will force PFGW to
      do roundoff checking for all iterations of all tests.
-	- Enhanced error checking so that PFGW can conditionally do MAXERR testing
+   - Enhanced error checking so that PFGW can conditionally do MAXERR testing
      on individual tests or specific iterations of tests.  In this release 
      PFGW will do MAXERR checking on the first and last 50 itererations of
      each test and every 128th iteration of each test.  It can test all
@@ -233,7 +241,7 @@ Enhancements to: v3.1.0 RC 1b
      that the -a switch will be needed.
    - Based upon George's recommendation (due to the improved error checking),
      MAXERR is now set to 0.45 instead of 0.40.
-	- Call new gwinit2() function so that PFGW can verify that it is linked
+   - Call new gwinit2() function so that PFGW can verify that it is linked
      against the correct version of the gwnum library and so that it can
      verify that PFGW uses the same compiler switches that were used to build
      gwnum.
@@ -258,34 +266,34 @@ Enhancements to: v1.2 RC1d
      k's now work.
    - Fixed long standing bug in ABC2 format for the 
      a: in {}    If there was not a trailing space (after last
-	 item), then an invalid was being returned.
+    item), then an invalid was being returned.
    - Problems in the testing modes (-tc and -tp).  If a small
      number (just over 2^31) is tested, and the -f factoring 
-	 switch is not used, then pfgw may the number as prime,
-	 even if it is not.  Within the factoring code, we had to
-	 make sure we were factoring, before claiming the number
-	 was prime by factoring.  Easy to see composites, such as
-	 pfgw -tp -q2229873912 were claimed prime.
+    switch is not used, then pfgw may the number as prime,
+    even if it is not.  Within the factoring code, we had to
+    make sure we were factoring, before claiming the number
+    was prime by factoring.  Easy to see composites, such as
+    pfgw -tp -q2229873912 were claimed prime.
 
 Known issues:
   - Factoring should only be done to 30*2^32 (128.849 billion)
   - Anything that uses the non-modular primegen should limit 
     itself to the 30*2^32 level.  Things such as ABC2 files 
-	with the prime clause (a: primes from X to Y) must stay
-	under the 30*2^32 level.  Non-modular factoring must not
-	be pushed over this limit.  If factoring deeper is 
-	required, then two things:  1. pfgw is probably not the
-	right tool to factor deeper, 2, the modular factoring
-	code can be used, using the {2,1} clause.  That will cause
-	the mod factoror to use all primes, but still use the 
-	mod factoror.  The mod factoror is safe up to and beyond
-	60 bits (but is slower than the non-mod factoror).
+   with the prime clause (a: primes from X to Y) must stay
+   under the 30*2^32 level.  Non-modular factoring must not
+   be pushed over this limit.  If factoring deeper is 
+   required, then two things:  1. pfgw is probably not the
+   right tool to factor deeper, 2, the modular factoring
+   code can be used, using the {2,1} clause.  That will cause
+   the mod factoror to use all primes, but still use the 
+   mod factoror.  The mod factoror is safe up to and beyond
+   60 bits (but is slower than the non-mod factoror).
   - The non-mod primegenerator will start outputing composite
     numbers after 2^15^2 (2^30).  For most any use in PFGW,
-	such as factoring, this is not a problem.  However, if
-	primes are "generated" for use (such as the prime claus
-	in an ABC2 file), then numbers over 2^30 are not assured
-	to be prime.
+   such as factoring, this is not a problem.  However, if
+   primes are "generated" for use (such as the prime claus
+   in an ABC2 file), then numbers over 2^30 are not assured
+   to be prime.
 
 20041129.*_Stable (v1.2 RC1d)  (Patches to 4th public RC)
   - For "tiny" numbers, if the exponentation base has to change
@@ -296,29 +304,29 @@ Known issues:
 
   - "Proth-like" had a commented out code (testing code), and
     the size of the c value (k*2^n+-c) was not being taken into
-	account.  The max sized c that works is 41.33 bits.  Now
-	that test is back in, and things do not give bad results.
-	when c is above this, a generic reduction is used (slower,
-	but correct results).
+   account.  The max sized c that works is 41.33 bits.  Now
+   that test is back in, and things do not give bad results.
+   when c is above this, a generic reduction is used (slower,
+   but correct results).
 
   - Enhanced PFGW to give a better indication when a user
     tries to process a number that is too large for the
-	FFT. Prior to this change, the program might have 
-	given a message "Warning!! Did not find valid FFT!!! 
-	Please email this number to ....."   and might have
-	possibly crashed.   Now the program will tell the user
-	that "Warning!! This number is TOO large for the current
-	PFGW FFT's to handle" and will abort the test gracefully.
+   FFT. Prior to this change, the program might have 
+   given a message "Warning!! Did not find valid FFT!!! 
+   Please email this number to ....."   and might have
+   possibly crashed.   Now the program will tell the user
+   that "Warning!! This number is TOO large for the current
+   PFGW FFT's to handle" and will abort the test gracefully.
 
 20041020.*_Stable (v1.2 RC1c)  (Patches to third public RC)
   - Bug found in gmp.h for NON-dll Win32 builds.  This bug
     would cause mpz_get_ui() to fail.  The only impact this
-	bug has is that it causes the N+1 testing to frequently
-	use the "slower" large-lucas methods, even though the
-	smaller quicker ones would be used.  The results were
-	correct, but just slower.  Even though this appears to
-	be the only place this bug manifests itself, a release
-	is still being done.
+   bug has is that it causes the N+1 testing to frequently
+   use the "slower" large-lucas methods, even though the
+   smaller quicker ones would be used.  The results were
+   correct, but just slower.  Even though this appears to
+   be the only place this bug manifests itself, a release
+   is still being done.
 
 20041001.*_Stable (v1.2 RC1b)  (Patches to Second public RC)
 - Fixed 2 bugs in erat.c   The code was wrong on 32 bit PC's.
@@ -425,9 +433,9 @@ Known issues:
   PRP: 86453#-1 12500/124254 mro=0.09375 sum=52036.93/102.00  
   The above is decoded as:
      86453#-1             The expression
-	 12500/124254         12500 out of 124254 squarings shown in output
-	 mro=0.09375          Max round off seen.
-	 sum=52036.93/102.00  Max sum allowed 52036, max "seen" 102.
+    12500/124254         12500 out of 124254 squarings shown in output
+    mro=0.09375          Max round off seen.
+    sum=52036.93/102.00  Max sum allowed 52036, max "seen" 102.
   The "Sum" checking, is a very quick check.  It is used to detect true
   hardware errors.  However, there are some numbers that push this value
   "high" enough, that it may appear as a problem  If that does happen,
@@ -950,8 +958,8 @@ Fixed a bug in the ABC2 format where primes from 3 to x would generate primes
 dev20020822 (Alpha)
 There were problems in the initial 2 implementations of 
       the Woltman libs with SSE2 (P4) support.  This version
-	  contains a new version of the lib, which seems to work
-	  much better (Version 22.7 from July 23)
+     contains a new version of the lib, which seems to work
+     much better (Version 22.7 from July 23)
 Faster "restart" processing in the ABCD files.
 
 dev20020515 (Beta)
