@@ -56,6 +56,9 @@ class PFABCFile : public PFSimpleFile
 		PFABCTaskCompleted *m_pCompleted;
 
 	private:
+      void RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax);
+      bool  m_bInitializedTable;
+      PFSymbolTable m_tbl;
 };
 
 

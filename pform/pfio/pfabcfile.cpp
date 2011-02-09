@@ -45,6 +45,7 @@ PFABCFile::PFABCFile(const char* FileName)
       sFormat[i] = 0;
    Line = new char[ABCLINELEN];
    m_SigString = "ABC File";
+   m_bInitializedTable = false;
 }
 
 void PFABCFile::LoadFirstLine()
@@ -244,6 +245,8 @@ PFABCFile::~PFABCFile()
       delete[] sFormat[i];
    for (i = ABCMAXVAR-1; i >= 0; --i)
       delete[] s_array[i];
+   if (m_bInitializedTable)
+      m_tbl.RemoveAll();
 }
 
 int PFABCFile::GetNextLine(PFString &sLine, Integer * /*pInt*/, bool *pbIntValid, PFSymbolTable *)
@@ -406,7 +409,7 @@ void PFABCFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bM
 }
 
 // NOTE that pMSS MUST be contained within the g_ModularSieveString array.
-static void RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
+void PFABCFile::RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
 {
    if (*pMSS != '{')
       return;
@@ -451,31 +454,28 @@ static void RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
          char *expr = new char [cp-pMSS+1];
          strncpy(expr, pMSS, cp-pMSS);
          expr[cp-pMSS] = 0;
-         // tbl is a "known" leak, but it is a one-time only leak.
-         static PFSymbolTable tbl;
-         static bool bFirst = true;
-         if (bFirst)
+         if (!m_bInitializedTable)
          {
-            tbl.AddSymbol(new F_Prime);
-            tbl.AddSymbol(new F_Fibonacci_U);
-            tbl.AddSymbol(new F_Fibonacci_V);
-            tbl.AddSymbol(new F_Fibonacci_F);
-            tbl.AddSymbol(new F_Fibonacci_L);
-            tbl.AddSymbol(new F_Repunit);
-            tbl.AddSymbol(new F_Cyclotomic);
-            tbl.AddSymbol(new F_GCD);
-            tbl.AddSymbol(new F_Binomial);
-            tbl.AddSymbol(new F_Sequence);
-            tbl.AddSymbol(new F_LucasV);
-            tbl.AddSymbol(new F_LucasU);
-            tbl.AddSymbol(new F_PrimV);
-            tbl.AddSymbol(new F_PrimU);
-            tbl.AddSymbol(new F_NSW_S);
-            tbl.AddSymbol(new F_NSW_W);
-            bFirst = false;
+            m_tbl.AddSymbol(new F_Prime);
+            m_tbl.AddSymbol(new F_Fibonacci_U);
+            m_tbl.AddSymbol(new F_Fibonacci_V);
+            m_tbl.AddSymbol(new F_Fibonacci_F);
+            m_tbl.AddSymbol(new F_Fibonacci_L);
+            m_tbl.AddSymbol(new F_Repunit);
+            m_tbl.AddSymbol(new F_Cyclotomic);
+            m_tbl.AddSymbol(new F_GCD);
+            m_tbl.AddSymbol(new F_Binomial);
+            m_tbl.AddSymbol(new F_Sequence);
+            m_tbl.AddSymbol(new F_LucasV);
+            m_tbl.AddSymbol(new F_LucasU);
+            m_tbl.AddSymbol(new F_PrimV);
+            m_tbl.AddSymbol(new F_PrimU);
+            m_tbl.AddSymbol(new F_NSW_S);
+            m_tbl.AddSymbol(new F_NSW_W);
+            m_bInitializedTable = true;
          }
 
-         Integer *N=ex_evaluate(&tbl,expr);
+         Integer *N=ex_evaluate(&m_tbl,expr);
          if (N)
          {
             int n = (*N)&0x7FFFFFFF;
