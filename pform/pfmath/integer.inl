@@ -156,7 +156,7 @@ GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
    // on MacIntel and Linux.  This will work on all platforms with a minimal sacrifice of speed.
    uint32 n32 = uint32(n1>>32);
 
-	mpz_init_set_ui(*(mpz_t*)(&scrap), n32);
+	mpz_set_ui(*(mpz_t*)(&scrap), n32);
 	mpz_mul_2exp(*(mpz_t*)(&scrap), scrap, 32);
 	mpz_add_ui(*(mpz_t*)(&scrap), scrap, (uint32)(n1&0xFFFFFFFF));
    mpz_mod(*(mpz_t*)(&scrap), m_g, scrap);
