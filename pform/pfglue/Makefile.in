@@ -6,7 +6,7 @@ vpath %.asm @srcdir@
 @precompiledobjects@
 
 OSPECIAL = @ospecial@
-OLIB = pfutil.o recip.o primegenerator.o @oextra@
+OLIB = pfutil.o primegenerator.o @oextra@
 OUTDIR = .libs
 ALIB = $(OUTDIR)/pfglue.a
 
