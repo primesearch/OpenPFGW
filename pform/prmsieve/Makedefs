@@ -1,7 +1,5 @@
-CFLAGS 		= -g -O2 -ffloat-store -funroll-loops -fomit-frame-pointer -Wall -Wno-multichar -Wno-long-long -Wshadow -Wbad-function-cast -Wcast-qual -Wconversion  -Winline -Wextern-inline  -Wwrite-strings 
-CXXFLAGS	= -g -O2 -ffloat-store -funroll-loops -fomit-frame-pointer -Wall -Wno-multichar -Wno-ctor-dtor-privacy -Wno-long-long -Wshadow -Wbad-function-cast -Wcast-qual -Wconversion  -Winline -Wextern-inline  -Wwrite-strings -Woverloaded-virtual 
 CC			= gcc
-CXX			= c++
+CXX			= g++
 AR			= ar
 ARFLAGS		= rc
 RANLIB		= ranlib
