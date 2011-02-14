@@ -176,10 +176,6 @@ BailOut:;
 
 bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, uint32 _iBase, eContextType eCType, Integer * /*N*/, bool bForce)
 {
-   // Neuter the function for now
-// return false;
-   // End of Neuter the function for now
-
    if (clock() < NextSave && !bForce)
       return false;
 

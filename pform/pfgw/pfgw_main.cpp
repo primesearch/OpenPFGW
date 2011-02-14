@@ -85,9 +85,9 @@ static bool bAtExitRegistered = false;    // for the atexit registration, make s
 extern "C" void ctrl_c_func(int)
 {
    PFPrintfStderr ("\nCtrl-C detected, shutting down the program.\n");
-   delete pFile;
-   pFile = 0;
-   exit(2);
+   g_bExitNow = true;
+   if (!s_bCommandLineParse)
+      exit(2);
 }
 
 
