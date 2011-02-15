@@ -100,7 +100,6 @@ extern "C" void CatcherThrower_SIGABRT(int)
   signal(SIGABRT, CatcherThrower_SIGABRT);
   PFPrintfStderr("\nSignal SIGABRT caught\n");
   exit(2);
-  //throw "SIGABRT";
 }
 
 extern "C" void CatcherThrower_SIGSEGV(int)
@@ -108,7 +107,6 @@ extern "C" void CatcherThrower_SIGSEGV(int)
   signal(SIGSEGV, CatcherThrower_SIGSEGV);
   PFPrintfStderr("\nrSignal SIGSEGV caught\n");
   exit(2);
-//  throw "SIGSEGV";
 }
 
 extern "C" void CatcherThrower_SIGILL(int)
@@ -116,7 +114,6 @@ extern "C" void CatcherThrower_SIGILL(int)
   signal(SIGSEGV, CatcherThrower_SIGILL);
   PFPrintfStderr("\nSignal SIGILL caught\n");
   exit(2);
-//  throw "SIGILL";
 }
 
 #ifdef _MSC_VER
@@ -1007,7 +1004,11 @@ int pfgw_main(int argc,char *argv[])
    else
    {
       // Note that pFile can already be set.  It may be a PFStringFile, created within the parseCommandLine() function
-
+      if (!strcmp(sFilename, "pfgw.ini") || !strcmp(sFilename, "pfgw.log"))
+      {
+         PFPrintfStderr("Invalid input file name.  Cannot use 'pfgw.ini' or 'pfgw.log'");
+         exit(-1);
+      }
       const char *cpError="Unknown Error Opening the file!";
       strncpy(g_szInputFileName, sFilename, sizeof(g_szInputFileName));
       if (!pFile)
