@@ -29,9 +29,6 @@
     <ClCompile Include="pfboolean.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pfcircularbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pfforwarditerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -86,9 +83,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pfbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pfcircularbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pffastbuffer.h">
