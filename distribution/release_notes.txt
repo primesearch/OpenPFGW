@@ -1,4 +1,13 @@
-Released as version 3.4.4   November 4, 2010
+Released as version 3.4.5   February 15, 2011
+
+Enhancements to: v3.4.5 Release
+   - Updated to gwnum v26.5
+   - Fixed memory leaks in 64-bit builds
+   - Fixed other known memory leaks
+   - Fixed assertion failure in Win64 builds
+   - Fix ^C on *nix so that it writes a checkpoint before shutting down
+   - Disallow use of "pfgw.log" or "pfgw.ini" as input files
+
 
 Enhancements to: v3.4.4 Release
    - Fixed an issue in the Windows 64-bit build when factoring above 2^32.
