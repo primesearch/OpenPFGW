@@ -6,7 +6,7 @@ vpath %.asm @srcdir@
 
 OSPECIAL =
 OLIB = ipfsymbol.o pfboolean.o \
-	pfcircularbuffer.o pfforwarditerator.o pflibpch.o \
+	pfforwarditerator.o pflibpch.o \
 	pflist.o pflistnode.o pfstring.o pfsymboltable.o \
 	crc32.o erat_mod.o timer.o
 OUTDIR = .libs
