@@ -26,7 +26,11 @@ int main(int argc, char *argv[])
    // Make sure that VC uses 64 bit FPU instructions for high level FPU code
 #if defined (_MSC_VER)
    _control87(_PC_64, _MCW_PC);  // 64 bits precision (instead of 53 bit default precision)
+
+// Not supported on Win64
+#ifndef _64BIT
    _control87(_RC_NEAR, _MCW_RC);   // make SURE that we round numbers to the nearest, and not floor or ceil
+#endif
 #endif
 
    // Simple memory debugging (Only availible under VC, but the testing will allow ALL OS's to benefit.
