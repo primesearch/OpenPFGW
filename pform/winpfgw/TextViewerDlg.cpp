@@ -104,11 +104,6 @@ void CTextViewerDlg::OnTimer(UINT_PTR nIDEvent)
    b->SetCheck(1);
 }
 
-void CTextViewerDlg::AddTextString(char *String, bool bShouldDeleteString)
-{
-   m_smartEdt.AddString(String,bShouldDeleteString);
-}
-
 void CTextViewerDlg::OnSize(UINT nType, int cx, int cy)
 {
    CDialog::OnSize(nType, cx, cy);

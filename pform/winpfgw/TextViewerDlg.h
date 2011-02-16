@@ -19,8 +19,6 @@ class CTextViewerDlg : public CDialog
 public:
 	CTextViewerDlg(const char *FName=NULL, CWnd* pParent = NULL);   // standard constructor
 
-	void AddTextString(char *String, bool bShouldDeleteString=false);
-
 // Dialog Data
 	//{{AFX_DATA(CTextViewerDlg)
 	enum { IDD = IDD_TEXTVIEWER_DIALOG };
