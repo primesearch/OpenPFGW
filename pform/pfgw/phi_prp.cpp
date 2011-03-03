@@ -213,7 +213,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
             gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
             gwsetmaxmulbyconst(&gwdata, 2);  // maximum multiplier
 
-            if (CreateModulus(&Q, true)) return;
+            if (CreateModulus(&Q, g_cpTestString, true)) return;
             {
                GWInteger gwX;
                gwX=2;

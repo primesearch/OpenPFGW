@@ -75,7 +75,7 @@ bool IsPrp(Integer *N)
    gwinit2(&gwdata, sizeof(gwhandle), GWNUM_VERSION);
 
    gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
-   if (CreateModulus(N)) return false;
+   if (CreateModulus(N, g_cpTestString)) return false;
 
    // everything with a GWInteger has a scope brace, so that
    // GWIntegers are destroyed before the context they live in
