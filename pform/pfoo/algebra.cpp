@@ -7,6 +7,7 @@
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,X.gmp());printf("\n");}
 
 extern bool volatile g_bExitNow;
+extern char g_cpTestString[70];
 
 FiniteField::~FiniteField()
 {
@@ -34,7 +35,7 @@ FieldZ::FieldZ(Integer *N)
 {
    gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
    gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);  // maximum multiplier
-   CreateModulus(N);
+   CreateModulus(N, g_cpTestString);
 }
 
 FieldZ::~FieldZ()
@@ -209,7 +210,7 @@ FieldLucas::FieldLucas(Integer *N)
 {
    gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
    gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);  // maximum multiplier
-   CreateModulus(N);
+   CreateModulus(N, g_cpTestString);
 
    ps1=new GWInteger;
    ps2=new GWInteger;
