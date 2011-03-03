@@ -637,7 +637,7 @@ BailOut:;
    }
 
    if(bFactorAtAll && ((m_pffN)||(m_pffNminus1)||(m_pffNplus1)) )
-      PFPrintfStderr("trial factoring to " ULL_FORMAT "\n",pmax);
+      PFPrintf("trial factoring to " ULL_FORMAT "\n",pmax);
 
    return PFBoolean::b_true;
 }
