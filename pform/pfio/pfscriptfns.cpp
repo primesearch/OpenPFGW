@@ -10,6 +10,8 @@
 extern char g_ModularSieveString[256];
 extern int g_nIterationCnt;
 
+bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
+
 #ifndef _MSC_VER
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 #endif
@@ -656,11 +658,86 @@ bool PFScriptFile::Powmod(char *args) {
 
    PFIntegerSymbol *pVar=(PFIntegerSymbol *)pSymbol;
    Integer *iVal = new Integer;
-   mpz_powm( iVal->gmp(), b.gmp(), e.gmp(), n.gmp());
+
+   // For small numbers, use GMP for the expmod.  For large ones, use gwnum.
+   if (lg(n) < 650)
+      mpz_powm( iVal->gmp(), b.gmp(), e.gmp(), n.gmp());
+   else
+      GWPowMod(iVal, b, e, n, val3);
+
    iVal=pVar->SetValue(iVal);
    delete iVal;
 
    return true;
+}
+
+void PFScriptFile::GWPowMod(Integer *result, Integer b, Integer e, Integer n, char *modulus)
+{
+   int      i, s, iterations;
+
+   CreateModulus(&n, modulus);
+
+   gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);  // maximum multiplier
+   gwsetmulbyconst(&gwdata, 1);
+
+   GWInteger gwX, gwY;
+
+   gwX = b;
+   gwY = 1;
+   iterations = s = lg(e);
+
+   i = 0;
+   for (;;)
+   {
+      if (e & 1)
+      {
+         gw_clear_maxerr(&gwdata);
+
+         if (s < 30 || i < 30)
+         {
+            gwsetnormroutine(&gwdata, 0, 1, 0);
+            gwmul_carefully(gwX, gwY);
+         }
+         else
+         {
+            gwsetnormroutine(&gwdata, 0, 0, 0);
+            gwmul(gwX, gwY);
+         }
+
+         CheckForFatalError("GWPowMod", &gwX, i, s, 1); 
+         CheckForFatalError("GWPowMod", &gwY, i, s, 1); 
+      }
+
+      e >>= 1;
+      if (e == 0)
+      {
+         *result = gwY;
+         DestroyModulus();
+         return;
+      }
+      
+      gw_clear_maxerr(&gwdata);
+
+      if (s < 30 || i < 30)
+      {
+         gwsetnormroutine(&gwdata, 0, 1, 0);
+         gwsquare_carefully(gwX);
+      }
+      else
+      {
+         gwsetnormroutine(&gwdata, 0, 0, 0);
+         gwsquare(gwX);
+      }
+
+      i++;
+      s--;
+
+      if (i > 0 && i % 2500 == 0)
+      {
+         PFPrintfStderr("GWPowMod: %d/%d\r", i, iterations);
+         PFfflush(stderr);
+      }
+   }
 }
 
 bool PFScriptFile::Goto(char *args) {

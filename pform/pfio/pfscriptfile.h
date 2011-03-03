@@ -37,6 +37,7 @@ class PFScriptFile : public PFSimpleFile {
 //		bool Label(char *args);  // this function does not exist.  A label actually does nothing
 		bool If(char *args);
 		bool Powmod(char *args);
+      void GWPowMod(Integer *result, Integer b, Integer e, Integer n, char *modulus);
 		bool Print(char *args);
 		bool Write(char *args);
 		bool OpenFile(char *args);
