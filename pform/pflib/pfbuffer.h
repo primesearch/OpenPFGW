@@ -61,6 +61,7 @@ PFBuffer<T>::~PFBuffer()
 	if(m_pBuffer)
 	{
 		delete[] m_pBuffer;
+      m_pBuffer = 0;
 	}
 }
 
