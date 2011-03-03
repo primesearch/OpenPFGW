@@ -44,7 +44,7 @@ bool EvenlyDivides(uint64 k, uint32 b, uint32 n, int32 c, int32 d)
       return false;
 }
 
-int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
+int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increaseFFTSize)
 {
    mpz_ptr gmp = NN->gmp();
 
@@ -54,7 +54,7 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
    uint32 b, n;
    int32 c, d;
 
-   sprintf(testString, "%send1", g_cpTestString);
+   sprintf(testString, "%send1", expression);
 
    if (sscanf(testString, "%lf*%u^%u%dend%d", &k, &b, &n, &c, &error_code) == 5)
    {
@@ -62,14 +62,14 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
       // ensure that k, b, n, and c were correctly scanned as it is possible
       // that
       sprintf(testString, "%.0lf*%u^%u%+d", k, b, n, c);
-      if (!strcmp(testString, g_cpTestString) && k < 1e53)
+      if (!strcmp(testString, expression) && k < 1e53)
          return CreateModulus(k, b, n, c, increaseFFTSize);
    }
 
    if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
    {
       sprintf(testString, "%u^%u%+d", b, n, c);
-      if (!strcmp(testString, g_cpTestString))
+      if (!strcmp(testString, expression))
          return CreateModulus(1.0, b, n, c, increaseFFTSize);
    }
 
@@ -80,14 +80,14 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
       if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &d, &error_code) == 6)
       {
          sprintf(testString, "(%lf*%u^%u%+d)/%d", k, b, n, c, d);
-         if (!strcmp(testString, g_cpTestString) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
+         if (!strcmp(testString, expression) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
             return CreateModulus(k, b, n, c, increaseFFTSize);
       }
 
       if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &d, &error_code) == 5)
       {
          sprintf(testString, "(%u^%u%+d)/%d", b, n, c, d);
-         if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, c, d))
+         if (!strcmp(testString, expression) && EvenlyDivides(1, b, n, c, d))
             return CreateModulus(1.0, b, n, c, increaseFFTSize);
       }
 
@@ -95,14 +95,14 @@ int CreateModulus(Integer *NN, bool kbncdEligible, int increaseFFTSize)
       if (sscanf(testString, "Phi(%u,%u)/%dend%d", &n, &b, &d, &error_code) == 4)
       {
          sprintf(testString, "Phi(%u,%u)/%d", n, b, d);
-         if (!strcmp(testString, g_cpTestString) && EvenlyDivides(1, b, n, -1, d))
+         if (!strcmp(testString, expression) && EvenlyDivides(1, b, n, -1, d))
             return CreateModulus(1.0, b, n, -1, increaseFFTSize);
       }
 
       if (sscanf(testString, "Phi(%u,%u)end%d", &n, &b, &error_code) == 3)
       {
          sprintf(testString, "Phi(%u,%u)", n, b);
-         if (!strcmp(testString, g_cpTestString))
+         if (!strcmp(testString, expression))
             return CreateModulus(1.0, b, n, -1, increaseFFTSize);
       }
    }
