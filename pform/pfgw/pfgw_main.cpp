@@ -1579,6 +1579,7 @@ int pfgw_main(int argc,char *argv[])
    }
 #endif
 
+   PFPrintfStderr("\n");
    pfgw_main_cleanup();
    return g_PRP_ReturnCode;
 }
