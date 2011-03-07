@@ -69,7 +69,6 @@ class PFNewPGenFile : public PFSimpleFile
 		void LoadFirstLine();
 		void ProcessFirstLine(char *FirstLine, uint64 k, uint64 n);
 		void Printf_WhoAmIsString() {PFOutput::EnableOneLineForceScreenOutput();PFPrintfStderr("%s\n", (const char*)(m_SigString));}
-		PFString SignatureString() { return "NEWPGEN_FILE"; }
 
 		// Possible "normal" formats.  NOTE that b^n+2k-1 changes the order of the k, b and n vars
 		//k*b^n+1
@@ -173,9 +172,6 @@ class PFNewPGenDeepFile : public PFNewPGenFile
 
 	protected:
 		void LoadFirstLine();
-		// next 2 functions not needed. The behavior of PFNewPGenFile is correct.
-		//void Printf_WhoAmIsString();
-		//PFString SignatureString() { return "NEWPGEN_FILE"; }
 
 	private:
 		bool m_bSpecialDeepFactoringNeeded;

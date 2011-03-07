@@ -24,8 +24,6 @@ class PFPrZFile : public PFABCFile
 		void CutOutFirstLine();
 		int  ReadLine(char *Line, int sizeofLine);
 
-		PFString SignatureString() {return "PrZ_FILE";}
-
 		int64	m_i64Accum;
 		uint64  m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
 		bool	m_bReadNextLineFromFile;
@@ -54,9 +52,7 @@ class PFPrZ_newpgen_File : public PFNewPGenFile
 	protected:
 		void LoadFirstLine();
 		int  ReadLine(char *Line, int sizeofLine);
-
-		PFString SignatureString() {return "PrZ_NPG_FILE";}
-
+ 
 		uint64	m_i64Accum;
 		uint64  m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
 		uint32	m_nAccum;

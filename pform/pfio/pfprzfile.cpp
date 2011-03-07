@@ -4,6 +4,7 @@
 #include "pfprzfile.h"
 
 extern bool g_bVerbose;
+extern bool g_bTerseOutput;
 
 extern char s_Line[ABCLINELEN];  // located in pfabcdfile.cpp
 
@@ -67,22 +68,26 @@ void PFPrZFile::LoadFirstLine()
    PrZ_Section_Header_Base *pFileHead;
    if (PrZHead.PrZ_IsFermFactABCD)
    {
-       PFPrintfLog("Recognized ABCZ (Fermfact) Sieve file: \n");
+      if (!g_bTerseOutput)
+         PFPrintfLog("Recognized ABCZ (Fermfact) Sieve file: \n");
       pFileHead = new PrZ_FermFact_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
    }
    else if (PrZHead.PrZ_IsAPSieveABCD)
    {
-       PFPrintfLog("Recognized ABCZ (APSieve) Sieve file: \n");
+      if (!g_bTerseOutput)
+         PFPrintfLog("Recognized ABCZ (APSieve) Sieve file: \n");
       pFileHead = new PrZ_APSieve_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
    }
    else if (PrZHead.PrZ_IsNewPGen)
    {
-       PFPrintfLog("Recognized ABCZ (NewPGen) Sieve file: \n");
+      if (!g_bTerseOutput)
+         PFPrintfLog("Recognized ABCZ (NewPGen) Sieve file: \n");
       throw "Error, wrong constructor was called!\n";
    }
    else
    {
-       PFPrintfLog("Recognized ABCZ (Generic ABCD) Sieve file: \n");
+      if (!g_bTerseOutput)
+         PFPrintfLog("Recognized ABCZ (Generic ABCD) Sieve file: \n");
       pFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
    }
 

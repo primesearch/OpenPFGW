@@ -22,7 +22,6 @@ class PFScriptFile : public PFSimpleFile {
 	protected:
 		void LoadFirstLine();
 		void Printf_WhoAmIsString() {PFOutput::EnableOneLineForceScreenOutput();PFPrintfStderr("Script File\n");}	// you may want to un-inline this
-		PFString SignatureString() {return "SCRIPT_FILE";}
 
 		bool doCommand(char *cmd, char *args);
 		
