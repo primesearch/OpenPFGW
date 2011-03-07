@@ -30,10 +30,12 @@ extern PFString g_sTestMode;				// This will hold things like "PRP: ", "N+1: ", 
 
 // in save_restore_prp.cpp
 enum ePRPType {e_gwPRP, e_GFN_DTWPRP, e_Phi_DTWPRP, e_GFN_Factorize};
-enum eContextType {e_normalWoltman_v21, e_normalWoltman_v22, e_FFTW, e_gwnum};
+enum eContextType {e_FFTW=2, e_gwnum};
+
 void CreateRestoreName(Integer *N, char RestoreName[13]);
 bool RestoreState(ePRPType e_gwPRP, char *RestoreName, uint32 *iDone, GWInteger *gwX, uint32 iBase, eContextType eCType);
 bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32 iDone, GWInteger *gwX, uint32 iBase, eContextType eCType, Integer *N, bool bForce=false);
+
 
 // in gw_prp.cpp
 int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue);
