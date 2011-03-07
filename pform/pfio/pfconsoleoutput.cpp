@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <string.h>
 
+extern eOutputMode g_eConsoleMode;
+extern bool GF_b_DoGFFactors;
+extern bool g_ShowTestResult;
+
 PFConsoleOutput::PFConsoleOutput() : PFOutput()
 {
 }
@@ -26,8 +30,75 @@ int PFConsoleOutput::PFPrintfStderr(const char *Fmt, va_list &va)
 
 int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
 {
-   int x = vprintf(Fmt, va);
-   fflush(stdout);
+   static time_t printTime = 0;
+   char   buffer[2000], *cpp, cp;
+   int x = vsprintf(buffer, Fmt, va);
+   bool bShowStr=true;
+
+   if (g_eConsoleMode != eVerbose)
+   {
+      // I know this code should be in smarteditfield class, but it is here for now.
+      cpp = &buffer[strlen(buffer)-1];
+      if (*cpp == '\n')
+      {
+         if (g_eConsoleMode == eQuiet)
+         {
+            *cpp = '\r';
+            bShowStr = false;
+         }
+         else if (strstr(buffer, "composite") || strstr(buffer, "factor"))
+         {
+            *cpp = '\r';
+            bShowStr = false;
+         }
+         else if ((g_eConsoleMode==eGFFactors && GF_b_DoGFFactors) && strstr(buffer, "-PRP!"))
+         {
+            *cpp = '\r';
+            bShowStr = false;
+         }
+         if (g_ShowTestResult)
+         {
+            if (!strstr(buffer, "composite") || !strstr(buffer, "factor") || !strstr(buffer, "-PRP!") || !strstr(buffer, "prime"))
+               bShowStr = true;
+         }
+      }
+   }
+
+   // Always update output every 2 seconds
+   if (printTime < time(NULL))
+   {
+      cpp = &buffer[strlen(buffer)-1];
+
+      if (*cpp == '\r' || *cpp == '\n')
+      {
+         cp = *cpp;
+         *cpp = 0;
+         printf(buffer);
+         printf("                                    %c", cp);
+      }
+      else
+         printf(buffer);
+
+      fflush(stdout);
+      printTime = time(NULL) + 2;
+   }
+   else if (bShowStr)
+   {
+      cpp = &buffer[strlen(buffer)-1];
+
+      if (*cpp == '\r' || *cpp == '\n')
+      {
+         cp = *cpp;
+         *cpp = 0;
+         printf(buffer);
+         printf("                                    %c", cp);
+      }
+      else
+         printf(buffer);
+
+      fflush(stdout);
+   }
+
    return x;
 }
 
