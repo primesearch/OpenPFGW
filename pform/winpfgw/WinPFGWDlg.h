@@ -6,6 +6,7 @@
 
 #include "SmartEditField.h"
 #include "trayicon.h"
+#include "pfstring.h"
 
 class PFIni;
 
@@ -47,7 +48,7 @@ protected:
 	bool		m_bStealth;
 	bool		m_bHideOnStart;
 	bool		m_bDONTSAVEOPTIONS;
-	enum		{eQuiet=0, eGFFactors=1, eNormal=2, eVerbose=3} m_ScreenMode;  //bool		m_bVerbose;
+   eOutputMode m_ScreenMode;
 	bool		m_bVerboseFile;
 	bool		m_bDontShowFileVerboseMessage;
 	bool		m_bRunning;

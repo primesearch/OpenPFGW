@@ -717,14 +717,14 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
          {
             static DWORD NextUpdate = 0;
             bool bShowStr=true;
-            if (m_ScreenMode != eVerbose && !(m_nMode <=1 && m_nMode >= -1) )
+            if (m_ScreenMode != eVerbose)
             {
                // I know this code should be in smarteditfield class, but it is here for now.
                char *cpp = &cp[strlen(cp)-1];
                if (*cpp == '\n')
                {
                   extern bool GF_b_DoGFFactors;
-                  extern bool g_QuickMode;
+                  extern bool g_ShowTestResult;
                   if (m_ScreenMode == eQuiet)
                   {
                      *cpp = '\r';
@@ -740,7 +740,7 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
                      *cpp = '\r';
                      bShowStr = false;
                   }
-                  if (g_QuickMode)
+                  if (g_ShowTestResult)
                   {
                      if (!strstr(cp, "composite") || !strstr(cp, "factor") || !strstr(cp, "-PRP!") || !strstr(cp, "prime"))
                         bShowStr = true;
@@ -758,7 +758,7 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
             else if (bShowStr)
                m_SmartEdit.AddString(cp);
             else
-               /* If in "SuperQuiet" mode, we MUSt clean up this string, or we will leak to death! */
+               /* If in "SuperQuiet" mode, we must clean up this string, or we will leak to death! */
             delete [] cp;
          }
          break;
