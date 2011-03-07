@@ -7,12 +7,13 @@
 #include <string.h>
 #include "pfcpapfile.h"
 
-
 PFBoolean bRequestFactorize;
 
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 
 int PFCPAPFile::m_nStartingPoint[13] = { 0, 0, 0, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6 };
+
+extern bool g_bTerseOutput;
 
 // Here is the format for a JF CPAP text input file:
 //
@@ -38,8 +39,11 @@ void PFCPAPFile::Printf_WhoAmIsString()
 
 void PFCPAPFile::LoadFirstLine()
 {
-    sWhoAmIString = "Recognized CPAPSieve file: ";
    char Line[4096];
+
+   if (!g_bTerseOutput)
+      sWhoAmIString = "Recognized CPAPSieve file: ";
+
    if (ReadLine(Line, sizeof(Line)))
    {
       fclose(m_fpInputFile);

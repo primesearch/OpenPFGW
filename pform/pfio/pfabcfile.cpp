@@ -21,6 +21,7 @@
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 
 extern char g_ModularSieveString[256];
+extern bool g_bTerseOutput;
 
 int PFABCFile::LetterNumber(char Letter)
 {
@@ -50,7 +51,8 @@ PFABCFile::PFABCFile(const char* FileName)
 
 void PFABCFile::LoadFirstLine()
 {
-   PFPrintfLog("Recognized ABC Sieve file: \n");
+   if (!g_bTerseOutput)
+      PFPrintfLog("Recognized ABC Sieve file: \n");
 
    if (ReadLine(Line, ABCLINELEN))
    {

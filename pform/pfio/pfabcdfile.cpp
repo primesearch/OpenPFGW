@@ -4,6 +4,7 @@
 #include "stdtypes.h"
 
 extern bool g_bVerbose;
+extern bool g_bTerseOutput;
 
 PFABCDFile::PFABCDFile(const char* FileName)
    : PFABCFile(FileName)
@@ -72,7 +73,8 @@ void PFABCDFile::CutOutFirstLine()
 
 void PFABCDFile::LoadFirstLine()
 {
-    PFPrintfLog("Recognized ABCD Sieve file: \n");
+   if (!g_bTerseOutput)
+      PFPrintfLog("Recognized ABCD Sieve file: \n");
 
    if (PFSimpleFile::ReadLine(s_Line, sizeof(s_Line)))
    {

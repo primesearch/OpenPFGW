@@ -12,6 +12,9 @@
 #include "pfcheckfile.h"
 #include "pfprzfile.h"
 
+extern bool g_bTerseOutput;
+extern bool g_ShowTestResult;
+
 // default protected constructor.  It is used as the "default" constructor needed for the PFStringFile class.
 PFSimpleFile::PFSimpleFile()
   : m_nCurrentLineNum(1), m_nCurrentPhysicalLineNum(1),
@@ -55,15 +58,14 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
    // Load the first line. NOTE that NewPGen and CPAPSieve files will read a line (and possibly more),
    // yet the m_nCurrentLineNum will still be set to 1.
    LoadFirstLine();
-   Printf_WhoAmIsString();
+   if (!g_bTerseOutput)
+      Printf_WhoAmIsString();
 
    // Ok the "first" line has been read (possibly).  Now if the .ini file says what we were working
    // on this file, and that we had not "finished" this file, then we will skip the correct number
    // of lines, and then reading will proceed from that point.
-
-   // NOTE!! We NEVER resume on a network file.  The resume logic will "thow away" lines for networking.
-
-   if (SignatureString() != "NETWORK_FILE" && m_pIni)
+   
+   if (m_pIni)
    {
       // Was the file "still" processing?
       if (m_pIni->GetFileProcessing())
@@ -112,7 +114,7 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
       else
       {
          PFString *s = m_pIni->GetFileName();
-         if (!s->CompareNoCase(m_cpFileName))
+         if (!s->CompareNoCase(m_cpFileName) && !g_bTerseOutput)
             PFPrintfLog("\n***WARNING! file %s may have already been fully processed.\n\n", m_cpFileName);
          delete s;
       }
@@ -424,9 +426,15 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
          else if (!strncmp(Line, "SCRIPT", 6))
             pf = new PFScriptFile(FileName);
          else if ((strstr(Line, " is composite: ")) || (strstr(Line, " is ") && strstr(Line, "-PRP! ")))
+         {
             pf = new PFCheckFile(FileName);
+            g_ShowTestResult = true;
+         }
          else
+         {
             pf = new PFSimpleFile(FileName);
+            g_ShowTestResult = true;
+         }
       }
       pf->SecondStageConstruction(pIniFile);
    }
