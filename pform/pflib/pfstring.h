@@ -12,6 +12,8 @@
 #include "pfboolean.h"
 #include "pfarray.h"
 
+enum eOutputMode {eQuiet=0, eGFFactors=1, eNormal=2, eVerbose=3};
+
 template<class T>
 class PFGenericString : public PFFastBuffer<T>
 {
