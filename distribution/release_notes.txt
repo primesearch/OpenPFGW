@@ -1,4 +1,20 @@
-Released as version 3.4.5   February 15, 2011
+Released as version 3.4.6   March 7, 2011
+
+Enhancements to: v3.4.6 Release
+   - Use gwnum for POWMOD script function when numbers are larger than 650 bits.
+   - Added -C switch to give better control over output for the console version.
+     -C takes a single argument:
+        quiet - the least amount of output, only gives status updates
+        normal - output status updates and newlines after PRPs and primes (default)
+        GFFactors - output factors when using -g switch
+        verbose - output result of all tests and output factors found
+     The default behavior of the console version is -Cnormal, which is same as the
+     default behavior of WinPFGW.  Use -Cverbose to get the previous behavior of the 
+     console version.
+   - Due to addition of -C switch, pfgw will now output test results for all lines from simple
+     input files with two exceptions.  It will not override -Cverbose and it will not output
+     factors.  
+
 
 Enhancements to: v3.4.5 Release
    - Updated to gwnum v26.5

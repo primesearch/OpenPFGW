@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v3.2 Release (July 25, 2009)
+PrimeForm/GW documentation  PFGW v3.4.6 Release (March 2011)
 
    ---------
    - Index -
@@ -423,7 +423,7 @@ B.4. The options.
      This will test the same number as pfgw -q2^44497-1
      (Phi(44497,2) = M27 = 2^44497-1), but the -j code should
      work much faster.
-     Note, if using PFGW to find Mersennes, then be SUER to see the rules
+     Note, if using PFGW to find Mersennes, then be SURE to see the rules
      for usage on the GIMPS site. 
 
  -u  set the "Update Interval" to this number.
@@ -432,8 +432,26 @@ B.4. The options.
      processing, then use -u0
 
  -k  Terse Output
-     This is useful for programs running multiple single iterations of PFGW.
-     The PRPNet client uses this switch.
+     This switch eliminates a number of standard messages.  When used, PFGW will not
+     output the version, whether GMP or gwnum is used, and will not output various
+     file processing messages.
+
+ -C  Console Output Level
+     This controls the level of output when running the console version of PFGW.
+     It takes a single argument which can be "quiet", "normal", "verbose", and "GFFactors".
+        quiet - the least amount of output, only gives status updates
+        normal - output status updates and newlines after PRPs and primes (default)
+        GFFactors - output factors when using -g switch
+        verbose - output result of all tests and output factors found
+
+     When using a simple file for input, pfgw will always output the test result regardless
+     of this switch.  This is because simple files are typically used to test a single number
+     or are used to double check a list of supposed PRPs and it is better to see the output
+     for each test.
+
+ -S  Suffix
+     This appends a suffix to the temporary files created by PFGW.  It allows multiple
+     copies of PFGW to be run from the same directory.
 
 C) Expressions:
 
