@@ -21,8 +21,6 @@ class PFABCDFile : public PFABCFile
 		void CutOutFirstLine();
 		int  ReadLine(char *Line, int sizeofLine);
 
-		PFString SignatureString() {return "ABCD_FILE";}
-
 		int64	m_i64Accum[26];
 		uint32	m_nAccum;
 		bool	m_bReadNextLineFromFile;

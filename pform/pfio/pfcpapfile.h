@@ -27,7 +27,6 @@ class PFCPAPFile : public PFSimpleFile
 		// This virtual function does something in this class.
 		void LoadFirstLine();
 		void Printf_WhoAmIsString();
-		PFString SignatureString() { return "CPAP_FILE"; }
 
 		int m_nCPAPFold;
 		int m_nBase;

@@ -37,10 +37,7 @@ class PFSimpleFile
    protected:
       // in the base class, this is a no-op, but a derived class should PFPrintfLog who it is.
       virtual void Printf_WhoAmIsString() {}
-      // this signature will be used as another "validation" that the file we are restarting from is the "correct" file.
-      // This data will get stored into the .ini file, and then compared against the ini file during a restart. ALL
-      // derived classes should override this function.
-      virtual PFString SignatureString() { return "SIMPLE_FILE"; }
+
       // Again, a no-op.  Most derived classes will overload this, since most of them have special handling for
       // the first line.  This function will be called by SecondStageConstruction()
       virtual void LoadFirstLine() {}
@@ -103,9 +100,6 @@ class PFStringFile : public PFSimpleFile
       int ClearString(const char *String);
 
       void Printf_WhoAmIsString() {}
-      // kind of silly, since a string file is only one expression can't restart, but it is here for semantics
-      PFString SignatureString() { return "STRING_FILE"; }
-
 
    private:
       PFString sData;

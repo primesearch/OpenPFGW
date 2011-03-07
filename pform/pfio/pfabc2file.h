@@ -14,7 +14,6 @@ class PFABC2File : public PFABCFile
 
 	protected:
 		void LoadFirstLine();
-		PFString SignatureString() {return "ABC2_FILE";}
 
 		enum { e_Norm,e_Prime,e_NormDown,e_In };
 		int m_eRangeType[26];

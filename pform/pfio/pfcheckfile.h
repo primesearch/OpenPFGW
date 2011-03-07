@@ -14,7 +14,6 @@ class PFCheckFile : public PFSimpleFile
 		void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 		void Printf_WhoAmIsString() {PFOutput::EnableOneLineForceScreenOutput();PFPrintfStderr("Check File\n");}	// you may want to un-inline this
-		PFString SignatureString() {return "CHECK_FILE";}
 
 	private:
 		uint64 m_nResidue;
