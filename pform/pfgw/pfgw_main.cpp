@@ -48,9 +48,11 @@ int g_CompositeAthenticationLevel = 0;   // valid values are 0, 1, 2, 3, 4, 5
 int g_ExtraSQFree = 100;
 int g_Cert_Type = -1;
 int g_Cert_Delete = -1;
-bool g_QuickMode = false;
+bool g_ShowTestResult = false;
 bool g_bVerbose = false;
 bool g_bWinPFGW_Verbose = false;
+eOutputMode g_eConsoleMode = eNormal;
+bool g_bTerseOutput = false;
 bool g_bTestingMode = false;
 bool g_bForceRoundOffChecking = false;
 bool g_FFTSizeOnly = false;
@@ -203,7 +205,7 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // z
    {cl_illegal,   false,   ""},                 // A
    {cl_illegal,   false,   ""},                 // B
-   {cl_illegal,   false,   ""},                 // C
+   {cl_string,    false,   "_CONSOLE_OUTPUT_MODE"},    // C
    {cl_illegal,   false,   ""},                 // D
    {cl_illegal,   false,   ""},                 // E
    {cl_boolean,   false,   "_FFT_SIZE_ONLY"},   // F
@@ -239,7 +241,7 @@ LPCTSTR Help_Text1 = "\
 --===COPYRIGHT AND LICENSE===--\n\
 \n\
 PrimeForm/GW - a program to perform a variety of primality tests.\n\
-Copyright (C) 1999-2009, The OpenPFGW project at sourceforge.\n\
+Copyright (C) 1999-2011, The OpenPFGW project at sourceforge.\n\
 \n\
 See the accompanying LICENSE.pfgw for the Terms and Conditions\n\
 regarding the use of this product and third-party libraries therein.\n\
@@ -248,8 +250,8 @@ This product uses the gwnum libraries (version 25) by George Woltman.\n\
 Copyright 1995-2009 Mersenne Research, Inc., all rights reserved.\n\
 See the accomanying LICENSE file, (also see http://www.mersenne.org/prize.htm)\n\
 \n\
-This product uses the GNU Multiple Precision Library (version 4.1.3).\n\
-Copyright (C) 1991-2009 Free Software Foundation, Inc.\n\
+This product uses the GNU Multiple Precision Library (version 5.0.1).\n\
+Copyright (C) 1991-2011 Free Software Foundation, Inc.\n\
 See the accompanying COPYING.LIB for Terms and Conditions.\n\
 \n\
 ";
@@ -672,7 +674,8 @@ int pfgw_main(int argc,char *argv[])
 
    PFOutput::EnableOneLineForceScreenOutput();
    pTerseOutput = psymRuntime->LookupSymbol("_TERSE_OUTPUT");
-   if (!pTerseOutput)
+   g_bTerseOutput = (pTerseOutput > 0);
+   if (!g_bTerseOutput)
        PFPrintfStderr ("PFGW Version %s [GWNUM %s]\n\n", VERSION_STRING, GWNUM_VERSION);
 
    // Get the cpu type from the INI file.  I don't know how big of an impact this
@@ -705,6 +708,24 @@ int pfgw_main(int argc,char *argv[])
    if (pSymbol)
       g_bVerbose = true;
 
+   pSymbol=psymRuntime->LookupSymbol("_CONSOLE_OUTPUT_MODE");
+
+   if (pSymbol && pSymbol->GetSymbolType()==STRING_SYMBOL_TYPE)
+   {
+      PFString sConsoleMode;
+      sConsoleMode=pSymbol->GetStringValue();
+      if (sConsoleMode == "quiet")
+         g_eConsoleMode = eQuiet;
+      else if (sConsoleMode == "GFFactors")
+         g_eConsoleMode = eGFFactors;
+      else if (sConsoleMode == "normal")
+         g_eConsoleMode = eNormal;
+      else if (sConsoleMode == "verbose")
+         g_eConsoleMode = eVerbose;
+      else
+         PFPrintfStderr("error, invalid -C option.  Will default to -Cnormal\n");
+   }
+
    pSymbol=psymRuntime->LookupSymbol("_NORMAL_PRIORITY");
 
    if (!pSymbol)
@@ -726,7 +747,7 @@ int pfgw_main(int argc,char *argv[])
    {
       char Buffer[512];
       getCpuDescription(Buffer, 1);
-      PFPrintfLog("\nCPU Information (From Woltman v25 library code)\n%s\n", Buffer);
+      PFPrintfLog("\nCPU Information (From Woltman v26 library code)\n%s\n", Buffer);
    }
 
    pSymbol=psymRuntime->LookupSymbol("_EXTRA_SQFREE");
@@ -959,7 +980,7 @@ int pfgw_main(int argc,char *argv[])
       Parse_GF_FactorCommandLine(LPCTSTR(sGFNFactorCmd), &bOnlyGFFactors);
    }
 
-   g_QuickMode = false;
+   g_ShowTestResult = false;
    pSymbol=psymRuntime->LookupSymbol("_QUIKEXPR");
    if (pSymbol)
    {
@@ -968,7 +989,7 @@ int pfgw_main(int argc,char *argv[])
       PFStringFile *fTmp = new PFStringFile;
       pFile = fTmp;
       fTmp->WriteToString(LPCTSTR(pSymbol->GetStringValue()));
-      g_QuickMode = true;
+      g_ShowTestResult = true;
    }
 
    pSymbol=psymRuntime->LookupSymbol("_BENCH");
@@ -1479,10 +1500,10 @@ int pfgw_main(int argc,char *argv[])
                if (g_bExitNow)
                   break;
 
-	       if (g_FFTSizeOnly)
-		 continue;
+	            if (g_FFTSizeOnly)
+                 continue;
 
-	       double t;
+	            double t;
                t = Timer.GetSecs ();
 
                if (Retval == 1)
@@ -1519,7 +1540,7 @@ int pfgw_main(int argc,char *argv[])
 
                   if (!Retval)
                      PFPrintfLog("%s is composite: RES64: [%08X%08X] (%0.4fs+%0.4fs)\n",
-                              LPCTSTR(sNumber), (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
+                                 LPCTSTR(sNumber), (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
                   else
                      PFPrintfLog("%s ERROR DURING PROCESSING! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),t, t2-t);
 
