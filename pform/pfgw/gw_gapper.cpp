@@ -24,6 +24,7 @@ static uint64 mid_gap, Low_end, Hi_end;
 static uint32 WaitTil;
 #endif
 
+extern bool g_bTerseOutput;
 
 // Code from Gapper.exe but uses PFGW's GW integers.  NOTE that a very minimal
 // read-only subset of the CPAP file handling routines is included.
@@ -56,7 +57,8 @@ bool IsPrp(Integer *N)
       if (!g_bGMPMode)
       {
          g_bGMPMode = true;
-         PFPrintfLog ("Switching to Exponentiating using GMP\n");
+         if (!g_bTerseOutput)
+            PFPrintfLog ("Switching to Exponentiating using GMP\n");
       }
       Integer b(iBase);
       // This is the "raw" gmp exponentiator.  It if pretty fast up to about 500 digits or so.
@@ -68,7 +70,8 @@ bool IsPrp(Integer *N)
    if (g_bGMPMode)
    {
       g_bGMPMode = false;
-      PFPrintfLog ("Switching to Exponentiating using Woltman FFT's\n");
+      if (!g_bTerseOutput)
+         PFPrintfLog ("Switching to Exponentiating using Woltman FFT's\n");
    }
 
    // create a context

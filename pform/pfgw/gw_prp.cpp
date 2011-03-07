@@ -6,6 +6,8 @@
 extern int g_CompositeAthenticationLevel;
 extern const double g_dMaxErrorAllowed;
 extern bool g_FFTSizeOnly;
+extern bool g_bTerseOutput;
+
 bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).
@@ -50,7 +52,8 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
       if (!g_bGMPMode)
       {
          g_bGMPMode = true;
-         PFPrintf("Switching to Exponentiating using GMP\n");
+         if (!g_bTerseOutput)
+            PFPrintf("Switching to Exponentiating using GMP\n");
       }
       if (g_FFTSizeOnly)
          return 0;
@@ -72,7 +75,8 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
    if (g_bGMPMode)
    {
       g_bGMPMode = false;
-      PFPrintf("Switching to Exponentiating using Woltman FFT's\n");
+      if (!g_bTerseOutput)
+         PFPrintf("Switching to Exponentiating using Woltman FFT's\n");
    }
 
    int fftSize = g_CompositeAthenticationLevel - 1;
