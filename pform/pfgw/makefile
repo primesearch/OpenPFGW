@@ -5,7 +5,7 @@ vpath %.h .
 vpath %.asm .
 
 OSPECIAL =
-OLIB = pfgw_main.o newmain.o gfn_prp.o gw_prp.o phi_prp.o gf_factorize.o bench.o save_restore_prp.o gw_gapper.o
+OLIB = pfgw_main.o newmain.o gw_prp.o phi_prp.o gf_factorize.o bench.o save_restore_prp.o gw_gapper.o
 OUTDIR = .libs
 ALIB = $(OUTDIR)/pfgw_main.a
 
