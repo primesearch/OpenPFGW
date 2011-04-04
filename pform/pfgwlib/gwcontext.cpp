@@ -53,6 +53,11 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
    double   k;
    uint32 b, n;
    int32 c, d;
+   
+   if (increaseFFTSize == 0)
+      gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+   else
+      gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
 
    sprintf(testString, "%send1", expression);
 
@@ -63,14 +68,14 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
       // that
       sprintf(testString, "%.0lf*%u^%u%+d", k, b, n, c);
       if (!strcmp(testString, expression) && k < 1e53)
-         return CreateModulus(k, b, n, c, increaseFFTSize);
+         return CreateSpecialModulus(gmp, k, b, n, c);
    }
 
    if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
    {
       sprintf(testString, "%u^%u%+d", b, n, c);
       if (!strcmp(testString, expression))
-         return CreateModulus(1.0, b, n, c, increaseFFTSize);
+         return CreateSpecialModulus(gmp, 1.0, b, n, c);
    }
 
    // If this flag is set, then we will mod by (k*b^n+c)/d after the last
@@ -81,14 +86,14 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
       {
          sprintf(testString, "(%lf*%u^%u%+d)/%d", k, b, n, c, d);
          if (!strcmp(testString, expression) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
-            return CreateModulus(k, b, n, c, increaseFFTSize);
+            return CreateSpecialModulus(gmp, k, b, n, c);
       }
 
       if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &d, &error_code) == 5)
       {
          sprintf(testString, "(%u^%u%+d)/%d", b, n, c, d);
          if (!strcmp(testString, expression) && EvenlyDivides(1, b, n, c, d))
-            return CreateModulus(1.0, b, n, c, increaseFFTSize);
+            return CreateSpecialModulus(gmp, 1.0, b, n, c);
       }
 
       // Phi(p,b) = (b^p-1)/(b-1)
@@ -96,69 +101,34 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
       {
          sprintf(testString, "Phi(%u,%u)/%d", n, b, d);
          if (!strcmp(testString, expression) && EvenlyDivides(1, b, n, -1, d))
-            return CreateModulus(1.0, b, n, -1, increaseFFTSize);
+            return CreateSpecialModulus(gmp, 1.0, b, n, -1);
       }
 
       if (sscanf(testString, "Phi(%u,%u)end%d", &n, &b, &error_code) == 3)
       {
          sprintf(testString, "Phi(%u,%u)", n, b);
          if (!strcmp(testString, expression))
-            return CreateModulus(1.0, b, n, -1, increaseFFTSize);
+            return CreateSpecialModulus(gmp, 1.0, b, n, -1);
       }
    }
 
-   if (increaseFFTSize == 0)
-      gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
-   else
-      gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
-
-   // This shouldn't be necessary with gwnum 25.14
-   //gwset_irrational_general_mod(&gwdata, false);
-
-   if (sizeof (mp_limb_t) == sizeof (uint32_t))
-      error_code = gwsetup_general_mod (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size);
-   else
-      error_code = gwsetup_general_mod_64 (&gwdata, (uint64_t *) gmp->_mp_d, gmp->_mp_size);
-
-   // debugging output
-   if (error_code)
-      PFPrintfLog("Error %d initializing FFT code: ", error_code);
-   else if (g_bVerbose || g_bWinPFGW_Verbose)
-   {
-      char   buf[200];
-      gwfft_description (&gwdata, buf);
-      PFPrintfLog("Generic modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
-   }
-
-   if (gwnear_fft_limit (&gwdata, 2.0))
-      g_bErrorCheckThisTest = true;      // Getting close to max bits (within 2%)
-
-   // Tell GWNUM to use square carefully for the first few iterations
-   // Passing -1 will tell GWNUM to determine how many based upon the
-   // size of the modulus
-   gwset_square_carefully_count(&gwdata, -1);
-
-   gwdata.MAXDIFF *= 1000.0;
+   error_code = CreateGenericModulus(gmp);
 
    return error_code;
 }
 
-int CreateModulus(double k, unsigned long b, unsigned long n, signed long c, int increaseFFTSize)
+int CreateSpecialModulus(mpz_ptr gmp, double k, unsigned long b, unsigned long n, signed long c)
 {
    int   error_code;
-
-   if (increaseFFTSize == 0)
-      gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
-   else
-      gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
 
    gwset_irrational_general_mod(&gwdata, false);
    error_code = gwsetup (&gwdata, k, b, n, c);
 
    // debugging output
    if (error_code)
-      PFPrintfLog("Error %d initializing FFT code: ", error_code);
-   else if (g_bVerbose || g_bWinPFGW_Verbose)
+      return CreateGenericModulus(gmp);
+
+   if (g_bVerbose || g_bWinPFGW_Verbose)
    {
       char   buf[200];
       gwfft_description (&gwdata, buf);
@@ -176,7 +146,45 @@ int CreateModulus(double k, unsigned long b, unsigned long n, signed long c, int
    if (g_CompositeAthenticationLevel > 0)
       gwdata.MAXDIFF *= 1000.0;
 
-   return error_code;
+   return 0;
+}
+
+int CreateGenericModulus(mpz_ptr gmp)
+{
+   int error_code;
+
+   gwset_irrational_general_mod(&gwdata, false);
+
+   if (sizeof (mp_limb_t) == sizeof (uint32_t))
+      error_code = gwsetup_general_mod (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size);
+   else
+      error_code = gwsetup_general_mod_64 (&gwdata, (uint64_t *) gmp->_mp_d, gmp->_mp_size);
+
+   // debugging output
+   if (error_code)
+   {
+      PFPrintfLog("Error %d initializing FFT code: ", error_code);
+      return error_code;
+   }
+
+   if (g_bVerbose || g_bWinPFGW_Verbose)
+   {
+      char   buf[200];
+      gwfft_description (&gwdata, buf);
+      PFPrintfLog("Generic modular reduction using %s on %s\n", buf, gwmodulo_as_string(&gwdata));
+   }
+
+   if (gwnear_fft_limit (&gwdata, 2.0))
+      g_bErrorCheckThisTest = true;      // Getting close to max bits (within 2%)
+
+   // Tell GWNUM to use square carefully for the first few iterations
+   // Passing -1 will tell GWNUM to determine how many based upon the
+   // size of the modulus
+   gwset_square_carefully_count(&gwdata, -1);
+
+   gwdata.MAXDIFF *= 1000.0;
+
+   return 0;
 }
 
 void DestroyModulus()

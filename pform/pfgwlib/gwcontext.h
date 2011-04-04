@@ -25,7 +25,8 @@ extern double sumXX;
 extern double sumN;
 
 int CreateModulus(Integer *NN, char *expression, bool kbncdEligible = false, int increaseFFTSize = 0);
-int CreateModulus(double k, unsigned long b, unsigned long n, signed long c, int increaseFFTSize = 0);
+int CreateSpecialModulus(mpz_ptr gmp, double k, unsigned long b, unsigned long n, signed long c);
+int CreateGenericModulus(mpz_ptr gmp);
 void DestroyModulus();
 
 #endif
