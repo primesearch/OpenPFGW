@@ -1,4 +1,8 @@
-Released as version 3.4.6   March 7, 2011
+Released as version 3.4.7   April 4, 2011
+
+Enhancements to: v3.4.7 Release
+   - Try generic modular reduction if setup for special modular fails.
+
 
 Enhancements to: v3.4.6 Release
    - Use gwnum for POWMOD script function when numbers are larger than 650 bits.
