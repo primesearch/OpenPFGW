@@ -1,6 +1,6 @@
 
 #if defined (_MSC_VER)
-#include "gmp.h"
+#include "wingmp.h"
 #else
 #include <gmp.h>
 #endif
