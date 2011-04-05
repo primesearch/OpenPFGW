@@ -9,7 +9,7 @@ all:	quick
 pfgw32:	baselib integer fft glue pfoo io entrypoint prmsieve
 	${CXX} ${CXXFLAGS}	\
 		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfglue/.libs/pfglue.a pform/pfgwlib/.libs/pfgwlib.a \
-		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a pform/prmsieve/.libs/prmsieve.a -lgmp \
+		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a pform/prmsieve/.libs/prmsieve.a packages/gmp/32bit/libgmp.a \
 		packages/gwnum/32bit/gwnum.a  -o pfgw32
 
 pfgw64:	baselib integer fft glue pfoo io entrypoint prmsieve

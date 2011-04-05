@@ -4,15 +4,10 @@
 void memAlloc();
 void memFree();
 
-#define	m_a		m_g->_mp_d
+#define	m_a	m_g->_mp_d
 #define	m_len	m_g->_mp_size
 
 #ifndef _64BIT
-
-#ifndef GW_UNDERSCORE
-#define Imod 	_Imod
-#define	Imod2	_Imod2
-#endif
 
 extern "C" int32 Imod(uint32 * const a,const int32 n,const int32 len);
 extern "C" int32 Imod2(uint32 * const a,const int32 n1,const int32 n2,const int32 len, int32 *p1,int32 *p2);
