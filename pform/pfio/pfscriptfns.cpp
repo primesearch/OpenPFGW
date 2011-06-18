@@ -241,7 +241,8 @@ bool PFScriptFile::DimS(char *args) {
    return true;
 }
 
-bool PFScriptFile::Set(char *args) {
+bool PFScriptFile::Set(char *args)
+{
    char *val,*varname;
 
    if (args==NULL) {
@@ -251,7 +252,7 @@ bool PFScriptFile::Set(char *args) {
    }
 
    varname=strtok(args,",");
-   val=strtok(NULL,",");
+   val=strtok(NULL,"");
 
    if (varname==NULL) {
       PFOutput::EnableOneLineForceScreenOutput();
@@ -289,7 +290,8 @@ bool PFScriptFile::Set(char *args) {
    return true;
 }
 
-bool PFScriptFile::SetS(char *args) {
+bool PFScriptFile::SetS(char *args)
+{
 
    char *val,*varname;
 
