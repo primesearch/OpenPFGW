@@ -1,4 +1,9 @@
-Released as version 3.4.7   April 4, 2011
+Released as version 3.4.8   June 18, 2011
+
+Enhancements to: v3.4.8 Release
+   - Fix bug when using SET in script files as it was tokening incorrectly
+   - Upgraded to gwnum v26.6.
+
 
 Enhancements to: v3.4.7 Release
    - Try generic modular reduction if setup for special modular fails.
