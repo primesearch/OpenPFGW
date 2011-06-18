@@ -30,6 +30,21 @@ extern int g_CompositeAthenticationLevel;
 extern bool g_bVerbose;
 extern bool g_bWinPFGW_Verbose;
 
+int  StripTrailingWhiteSpace(char *string)
+{
+  long  x;
+
+  x = strlen(string);
+
+  while (x > 0 && (string[x-1] == ' '))
+  {
+    string[x-1] = 0x00;
+    x--;
+  }
+
+  return x;
+}
+
 bool EvenlyDivides(uint64 k, uint32 b, uint32 n, int32 c, int32 d)
 {
    Integer tempInteger(b);
@@ -53,7 +68,9 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
    double   k;
    uint32 b, n;
    int32 c, d;
-   
+ 
+   StripTrailingWhiteSpace(expression);
+
    if (increaseFFTSize == 0)
       gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
    else
