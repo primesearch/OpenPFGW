@@ -28,7 +28,7 @@ $(ALIB):	$(OLIB) $(OSPECIAL)
 	$(RANLIB) $(ALIB)
 
 %.o:	%.c
-	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $<
+	$(CC) $(CFLAGS) -I. -I../.. -c -o $@ $< 
 
 %.o:	%.cpp
 	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<

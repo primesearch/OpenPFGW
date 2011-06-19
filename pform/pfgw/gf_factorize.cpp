@@ -5,6 +5,10 @@
 #include "pfgw_globals.h"
 #include "../pflib/bmap.cxx"
 
+#ifndef _MSC_VER
+#include <unistd.h>
+#endif
+
 static bool GF_bExtendedGFNLogic;
 static uint32 nCur_a=1;
 
