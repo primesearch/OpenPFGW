@@ -52,6 +52,5 @@ cleanlibs:
 	rm -f $(ALIB)
 
 dependencies:
-	$(CC) -MM -I. -I../.. $(srcdir)/*.cpp >deps.d
-	
-include deps.d
+	$(CC) -MM -I. -I../.. $(srcdir)/*.cpp 
+
