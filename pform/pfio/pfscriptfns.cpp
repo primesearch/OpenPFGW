@@ -677,6 +677,8 @@ void PFScriptFile::GWPowMod(Integer *result, Integer b, Integer e, Integer n, ch
 {
    int      i, s, iterations;
 
+   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
+
    CreateModulus(&n, modulus);
 
    gwsetmaxmulbyconst(&gwdata, GWMULBYCONST_MAX);  // maximum multiplier
