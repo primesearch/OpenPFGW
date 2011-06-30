@@ -121,6 +121,12 @@ The valid ESCAPES are:   (these are the same as in C)
 \      // a \ followed by any char not listed above, will simply output the char.
        // Thus \y would simply output a 'y' char.
 
+	POWMOD <varnameres>,<varnamebase>,<varnameexp>,<varnamemod>
+The first parameter will contain the returned value from the powmod function
+where varnameres = (varnamebase^varnameexp)%varnamemod.  The variables for
+the right side of this equation can be either variable names containing a value
+or an expression.
+
 	STRTOINT <varname>,<stringvar>
 Converts a string into a number.  So STRTOINT x,strval would set x to whatever 
 integer value the string strval contained.  strval MUST be a variable.  Literal
