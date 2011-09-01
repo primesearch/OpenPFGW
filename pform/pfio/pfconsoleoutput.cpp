@@ -31,14 +31,23 @@ int PFConsoleOutput::PFPrintfStderr(const char *Fmt, va_list &va)
 int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
 {
    static time_t printTime = 0;
-   char   buffer[2000], *cpp, cp;
-   int x = vsprintf(buffer, Fmt, va);
-   bool bShowStr=true;
+   char   *cpp, cp;
+   int    ret;
+   bool   bShowStr=true;
+
+   ret = vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
+   while (ret == -1)
+   {
+      delete[] m_pBuffer;
+      m_iBufferSize *= 2;
+      m_pBuffer = new char[m_iBufferSize];
+      ret = _vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
+   }
 
    if (g_eConsoleMode != eVerbose)
    {
       // I know this code should be in smarteditfield class, but it is here for now.
-      cpp = &buffer[strlen(buffer)-1];
+      cpp = &m_pBuffer[strlen(m_pBuffer)-1];
       if (*cpp == '\n')
       {
          if (g_eConsoleMode == eQuiet)
@@ -46,19 +55,19 @@ int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
             *cpp = '\r';
             bShowStr = false;
          }
-         else if (strstr(buffer, "composite") || strstr(buffer, "factor"))
+         else if (strstr(m_pBuffer, "composite") || strstr(m_pBuffer, "factor"))
          {
             *cpp = '\r';
             bShowStr = false;
          }
-         else if ((g_eConsoleMode==eGFFactors && GF_b_DoGFFactors) && strstr(buffer, "-PRP!"))
+         else if ((g_eConsoleMode==eGFFactors && GF_b_DoGFFactors) && strstr(m_pBuffer, "-PRP!"))
          {
             *cpp = '\r';
             bShowStr = false;
          }
          if (g_ShowTestResult)
          {
-            if (!strstr(buffer, "composite") || !strstr(buffer, "factor") || !strstr(buffer, "-PRP!") || !strstr(buffer, "prime"))
+            if (!strstr(m_pBuffer, "composite") || !strstr(m_pBuffer, "factor") || !strstr(m_pBuffer, "-PRP!") || !strstr(m_pBuffer, "prime"))
                bShowStr = true;
          }
       }
@@ -67,39 +76,39 @@ int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
    // Always update output every 2 seconds
    if (printTime < time(NULL))
    {
-      cpp = &buffer[strlen(buffer)-1];
+      cpp = &m_pBuffer[strlen(m_pBuffer)-1];
 
       if (*cpp == '\r' || *cpp == '\n')
       {
          cp = *cpp;
          *cpp = 0;
-         printf(buffer);
+         printf(m_pBuffer);
          printf("                                    %c", cp);
       }
       else
-         printf(buffer);
+         printf(m_pBuffer);
 
       fflush(stdout);
       printTime = time(NULL) + 2;
    }
    else if (bShowStr)
    {
-      cpp = &buffer[strlen(buffer)-1];
+      cpp = &m_pBuffer[strlen(m_pBuffer)-1];
 
       if (*cpp == '\r' || *cpp == '\n')
       {
          cp = *cpp;
          *cpp = 0;
-         printf(buffer);
+         printf(m_pBuffer);
          printf("                                    %c", cp);
       }
       else
-         printf(buffer);
+         printf(m_pBuffer);
 
       fflush(stdout);
    }
 
-   return x;
+   return ret;
 }
 
 void PFConsoleOutput::PFPrintfClearCurLine(int line_len)

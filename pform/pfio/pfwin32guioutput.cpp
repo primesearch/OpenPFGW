@@ -73,22 +73,18 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, va_list &va)
 
 int PFWin32GUIOutput::PFPrintf(const char *Fmt, va_list &va)
 {
-   // Note that WinPFGW must delete[] this item.
-   int BufLen = 2048;
    int ret;
 
-   char *Buffer = new char [BufLen];
-   ret = _vsnprintf(Buffer, BufLen, Fmt, va);
+   ret = vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
    while (ret == -1)
    {
-      delete[] Buffer;
-      BufLen *= 2;
-      Buffer = new char[BufLen];
-      ret = _vsnprintf(Buffer, BufLen, Fmt, va);
+      delete[] m_pBuffer;
+      m_iBufferSize *= 2;
+      m_pBuffer = new char[m_iBufferSize];
+      ret = _vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
    }
 
-   if (!PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_PRINTF, (LPARAM)Buffer))
-      delete[] Buffer;
+   PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_PRINTF, (LPARAM)m_pBuffer);
 
    return ret;
 }

@@ -79,6 +79,8 @@ class PFOutput
 
 	protected:
 		static bool m_bForcePrint;
+      char *m_pBuffer;
+      long  m_iBufferSize;
 
 	private:
 		char *m_OutputLogFileName;

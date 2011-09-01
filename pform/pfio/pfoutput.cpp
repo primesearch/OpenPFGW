@@ -24,11 +24,14 @@ PFOutput::PFOutput()
    // Moving these from constructor initialzing to here fixed BC's puking/
    m_OutputLogFileName = NULL;
    m_fpOutputLog = NULL;
+   m_iBufferSize = 2048;
+   m_pBuffer = new char[m_iBufferSize];
 }
 
 PFOutput::~PFOutput()
 {
    CloseLogFile();
+   delete m_pBuffer;
 }
 
 void PFOutput::InitLogFile(const char *FName, const int terseOutput)
