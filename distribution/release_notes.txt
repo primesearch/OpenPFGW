@@ -1,11 +1,15 @@
-Released as version 3.4.9   June 30, 2011
+Released as version 3.4.10   September 1, 2011
+
+Enhancements to: v3.4.10 Release
+   - Fix buffer overflow in console version when outputting long messages.
+
 
 Enhancements to: v3.4.9 Release
    - Fix POWMOD bug as gwnum needs to be initialized each time it is called.
 
 
 Enhancements to: v3.4.8 Release
-   - Fix bug when using SET in script files as it was tokening incorrectly
+   - Fix bug when using SET in script files as it was tokening incorrectly.
    - Upgraded to gwnum v26.6.
 
 
