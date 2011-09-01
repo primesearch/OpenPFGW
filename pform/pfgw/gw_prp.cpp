@@ -223,8 +223,8 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
             // 150 bytes will not overflow, since we "force" the max size within the sprintf()
             char Buf[150];
             if (errchk && gwdata.MAXDIFF < 1e10)
-               sprintf(Buf, "PRP: %.36s %d/%d mro=%.5g sum=%.2f/%.2f\r",
-                       sNumStr,iDone,iTotal, gw_get_maxerr(&gwdata), gwdata.MAXDIFF, MaxSeenDiff);
+               sprintf(Buf, "PRP: %.36s %d/%d mro=%.5g \r",
+                       sNumStr,iDone,iTotal, gw_get_maxerr(&gwdata));
             else
                sprintf(Buf, "PRP: %.36s %d/%d\r", sNumStr,iDone,iTotal);
             int thisLineLen = (int) strlen(Buf);
