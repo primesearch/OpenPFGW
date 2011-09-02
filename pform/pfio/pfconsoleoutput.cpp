@@ -41,7 +41,7 @@ int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
       delete[] m_pBuffer;
       m_iBufferSize *= 2;
       m_pBuffer = new char[m_iBufferSize];
-      ret = _vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
+      ret = vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
    }
 
    if (g_eConsoleMode != eVerbose)
@@ -82,11 +82,11 @@ int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
       {
          cp = *cpp;
          *cpp = 0;
-         printf(m_pBuffer);
+         printf("%s", m_pBuffer);
          printf("                                    %c", cp);
       }
       else
-         printf(m_pBuffer);
+         printf("%s", m_pBuffer);
 
       fflush(stdout);
       printTime = time(NULL) + 2;
@@ -99,11 +99,11 @@ int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
       {
          cp = *cpp;
          *cpp = 0;
-         printf(m_pBuffer);
+         printf("%s", m_pBuffer);
          printf("                                    %c", cp);
       }
       else
-         printf(m_pBuffer);
+         printf("%s", m_pBuffer);
 
       fflush(stdout);
    }
