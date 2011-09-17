@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinPFGW", "pform\winpfgw\WinPFGW.vcxproj", "{B6960240-04C4-4DA9-9A54-A370AE6AC826}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfglue", "pform\pfglue\pfglue.vcxproj", "{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfgw", "pform\pfgw\pfgw.vcxproj", "{F77AC7C5-0331-4D36-8216-2FC4A41D3FFA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfgwlib", "pform\pfgwlib\pfgwlib.vcxproj", "{57FE3265-69C2-47E5-ABE2-58850DDD3419}"
@@ -16,8 +14,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfmath", "pform\pfmath\pfmath.vcxproj", "{1B656D24-7652-4204-A18A-5F573F776552}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfoo", "pform\pfoo\pfoo.vcxproj", "{0B4F9FF0-E5FA-4F27-B37C-B7F7BCC2D881}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prmsieve", "pform\prmsieve\prmsieve.vcxproj", "{F8B1F9F1-6070-441B-A1FE-A8046B304E12}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openpfgw", "openpfgw.vcxproj", "{29BE98EF-058C-42E1-BD56-5E5A47AE7335}"
 EndProject
@@ -37,14 +33,6 @@ Global
 		{B6960240-04C4-4DA9-9A54-A370AE6AC826}.Release|Win32.Build.0 = Release|Win32
 		{B6960240-04C4-4DA9-9A54-A370AE6AC826}.Release|x64.ActiveCfg = Release|x64
 		{B6960240-04C4-4DA9-9A54-A370AE6AC826}.Release|x64.Build.0 = Release|x64
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Debug|Win32.Build.0 = Debug|Win32
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Debug|x64.ActiveCfg = Debug|x64
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Debug|x64.Build.0 = Debug|x64
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Release|Win32.ActiveCfg = Release|Win32
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Release|Win32.Build.0 = Release|Win32
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Release|x64.ActiveCfg = Release|x64
-		{F9B688E4-F693-4CC2-A4D6-737ABE1CED4A}.Release|x64.Build.0 = Release|x64
 		{F77AC7C5-0331-4D36-8216-2FC4A41D3FFA}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F77AC7C5-0331-4D36-8216-2FC4A41D3FFA}.Debug|Win32.Build.0 = Debug|Win32
 		{F77AC7C5-0331-4D36-8216-2FC4A41D3FFA}.Debug|x64.ActiveCfg = Debug|x64
@@ -93,14 +81,6 @@ Global
 		{0B4F9FF0-E5FA-4F27-B37C-B7F7BCC2D881}.Release|Win32.Build.0 = Release|Win32
 		{0B4F9FF0-E5FA-4F27-B37C-B7F7BCC2D881}.Release|x64.ActiveCfg = Release|x64
 		{0B4F9FF0-E5FA-4F27-B37C-B7F7BCC2D881}.Release|x64.Build.0 = Release|x64
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Debug|Win32.Build.0 = Debug|Win32
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Debug|x64.ActiveCfg = Debug|x64
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Debug|x64.Build.0 = Debug|x64
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Release|Win32.ActiveCfg = Release|Win32
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Release|Win32.Build.0 = Release|Win32
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Release|x64.ActiveCfg = Release|x64
-		{F8B1F9F1-6070-441B-A1FE-A8046B304E12}.Release|x64.Build.0 = Release|x64
 		{29BE98EF-058C-42E1-BD56-5E5A47AE7335}.Debug|Win32.ActiveCfg = Debug|Win32
 		{29BE98EF-058C-42E1-BD56-5E5A47AE7335}.Debug|Win32.Build.0 = Debug|Win32
 		{29BE98EF-058C-42E1-BD56-5E5A47AE7335}.Debug|x64.ActiveCfg = Debug|x64
