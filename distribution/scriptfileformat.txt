@@ -259,7 +259,7 @@ The variable ISPRIME is set to 1 (true) if the last number tested was prime,
 The variable ERRORLEVEL is set to the return value of the last executed
 shell command.
 
-The varialbe FACTORFOUND is set to a 1 if the Factorize function is called
+The variable FACTORFOUND is set to a 1 if the Factorize function is called
 and no factor is found.  FACTORFOUND will contain the smallest factor if
 Factorize did find a factor.  NOTE the number will NOT be modified, the
 Factorize function simply sets the FACTORFOUND global variable.
@@ -283,6 +283,7 @@ LEN
 LINEAR
 LUCASV
 LUCASU
+NEXTPRIME
 OPENFILEIN
 OPENFILEOUT
 OPENFILEAPP
@@ -315,6 +316,7 @@ ISPRP        (number  Set by PRP, PRIMEC, PRIMEM, PRIMEP and FACTORIZE)
 ISPRIME      (number  Set by PRP, PRIMEC, PRIMEM, PRIMEP and FACTORIZE)
 ERRORLEVEL   (number  Set by call to SHELL command, errorlevel return to shell)
 FACTORFOUND  (number  Set by FACTORIZE)
+PRIMEFOUND   (number  Set by NEXTPRIME)
 MINF         (number  input used by FACTORIZE)
 MAXF         (number  input used by FACTORIZE)
 MODF	       (string  input used by FACTORIZE, modular factoring string)

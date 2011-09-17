@@ -1,4 +1,24 @@
-Released as version 3.4.10   September 1, 2011
+Released as version 3.5.0   September 17, 2011
+
+Enhancements to: v3.5.0 Release
+   - Added a NEXTPRIME() function for scripts.  It will return the next prime after the
+     given argument.  This is guaranteed to return primes for any values below 1e15, but
+     can return composites for numbers above that value.
+   - Replaced primegen siever with my own.  The primegen code misses some primes (notable
+     primes that end with the digits "99999").  It was also limited to 32 bits.  The new
+     sieve can go up to 64 bits, but that would require a lot of memory, so for practical
+     reasons I have limited it to 1e16 for trail factoring and 1e15 for th NEXTPRIME() and
+     P() functions.  Another bonus is that there is no longer a penalty for trial factoring
+     above 2^31.
+   - Upped the limit for trivial factoring to 40 bits, i.e. input values 40 bits in size or
+     less will be trivially factored.  This will reduce the number of "composite" PRPs,
+     numbers with are output as PRP by pfgw, but which actually have small factors.  This
+     typically affects small base 3 numbers.
+   - Note that some of these changes will have an impact on 32-bit machines, but the
+     impact should be fairly small.
+   - With these changes, the pfglue an prmsieve are obsolete.
+   - Fixed a crash that was introduced into the GUI version in 3.4.10.
+
 
 Enhancements to: v3.4.10 Release
    - Fix buffer overflow in console version when outputting long messages.
