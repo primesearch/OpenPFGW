@@ -6,6 +6,7 @@
 #include "../pfoo/pffunctionsymbol.h"
 #include "../pfoo/pfintegersymbol.h"
 #include "../pfoo/f_prime.h"
+#include "../pfoo/f_nextprime.h"
 #include "../pfoo/f_fibonacci.h"
 #include "../pfoo/f_repunit.h"
 #include "../pfoo/f_cyclotomic.h"
@@ -459,6 +460,7 @@ void PFABCFile::RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
          if (!m_bInitializedTable)
          {
             m_tbl.AddSymbol(new F_Prime);
+            m_tbl.AddSymbol(new F_NextPrime);
             m_tbl.AddSymbol(new F_Fibonacci_U);
             m_tbl.AddSymbol(new F_Fibonacci_V);
             m_tbl.AddSymbol(new F_Fibonacci_F);
@@ -480,7 +482,7 @@ void PFABCFile::RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
          Integer *N=ex_evaluate(&m_tbl,expr);
          if (N)
          {
-            int n = (*N)&0x7FFFFFFF;
+            int n = ((*N) & INT_MAX);
             sprintf (g_ModularSieveString, "%s%d%s", head, n, tail);
             delete N;
          }

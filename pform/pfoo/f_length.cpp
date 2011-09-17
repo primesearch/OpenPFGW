@@ -64,8 +64,8 @@ PFBoolean F_Length::CallFunction(PFSymbolTable *pContext)
             Integer *B=((PFIntegerSymbol*)pBase)->GetValue();
             if(B)
             {
-               base=(*B)&(0x7fffffff);
-               if(((*B)!=base))
+               base = ((*B) & INT_MAX);
+               if (((*B)!=base))
                   base = 10;
             }
          }

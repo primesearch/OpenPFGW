@@ -147,7 +147,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)packages\gwnum\32bit\gwnum.lib;$(SolutionDir)packages\gmp\32bit\mpir.lib;$(SolutionDir)packages\nasmobj\mod.obj;$(SolutionDir)pform\pfglue\Win32\Release\pfglue.lib;$(SolutionDir)pform\pfgw\Win32\Release\pfgw.lib;$(SolutionDir)pform\pfgwlib\Win32\Release\pfgwlib.lib;$(SolutionDir)pform\pfio\Win32\Release\pfio.lib;$(SolutionDir)pform\pflib\Win32\Release\pflib.lib;$(SolutionDir)pform\pfmath\Win32\Release\pfmath.lib;$(SolutionDir)pform\pfoo\Win32\Release\pfoo.lib;$(SolutionDir)pform\prmsieve\Win32\Release\prmsieve.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)packages\gwnum\32bit\gwnum.lib;$(SolutionDir)packages\gmp\32bit\mpir.lib;$(SolutionDir)packages\nasmobj\mod.obj;$(SolutionDir)pform\pfgw\Win32\Release\pfgw.lib;$(SolutionDir)pform\pfgwlib\Win32\Release\pfgwlib.lib;$(SolutionDir)pform\pfio\Win32\Release\pfio.lib;$(SolutionDir)pform\pflib\Win32\Release\pflib.lib;$(SolutionDir)pform\pfmath\Win32\Release\pfmath.lib;$(SolutionDir)pform\pfoo\Win32\Release\pfoo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -200,7 +200,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)packages\gwnum\64bit\gwnum64.lib;$(SolutionDir)packages\gmp\64bit\mpir.lib;$(SolutionDir)pform\pfgw\x64\Release\newmain.obj;$(SolutionDir)pform\pfglue\x64\Release\pfglue.lib;$(SolutionDir)pform\pfgw\x64\Release\pfgw.lib;$(SolutionDir)pform\pfgwlib\x64\Release\pfgwlib.lib;$(SolutionDir)pform\pfio\x64\Release\pfio.lib;$(SolutionDir)pform\pflib\x64\Release\pflib.lib;$(SolutionDir)pform\pfmath\x64\Release\pfmath.lib;$(SolutionDir)pform\pfoo\x64\Release\pfoo.lib;$(SolutionDir)pform\prmsieve\x64\Release\prmsieve.lib;Nafxcw.lib;Libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)packages\gwnum\64bit\gwnum64.lib;$(SolutionDir)packages\gmp\64bit\mpir.lib;$(SolutionDir)pform\pfgw\x64\Release\newmain.obj;$(SolutionDir)pform\pfgw\x64\Release\pfgw.lib;$(SolutionDir)pform\pfgwlib\x64\Release\pfgwlib.lib;$(SolutionDir)pform\pfio\x64\Release\pfio.lib;$(SolutionDir)pform\pflib\x64\Release\pflib.lib;$(SolutionDir)pform\pfmath\x64\Release\pfmath.lib;$(SolutionDir)pform\pfoo\x64\Release\pfoo.lib;Nafxcw.lib;Libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -254,7 +254,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)packages\gwnum\32bit\gwnumd.lib;$(SolutionDir)packages\gmp\32bit\mpir.lib;$(SolutionDir)packages\nasmobj\mod.obj;$(SolutionDir)pform\pfgw\Win32\Debug\newmain.obj;$(SolutionDir)pform\pfglue\Win32\Debug\pfglue.lib;$(SolutionDir)pform\pfgw\Win32\Debug\pfgw.lib;$(SolutionDir)pform\pfgwlib\Win32\Debug\pfgwlib.lib;$(SolutionDir)pform\pfio\Win32\Debug\pfio.lib;$(SolutionDir)pform\pflib\Win32\Debug\pflib.lib;$(SolutionDir)pform\pfmath\Win32\Debug\pfmath.lib;$(SolutionDir)pform\pfoo\Win32\Debug\pfoo.lib;$(SolutionDir)pform\prmsieve\Win32\Debug\prmsieve.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)packages\gwnum\32bit\gwnumd.lib;$(SolutionDir)packages\gmp\32bit\mpir.lib;$(SolutionDir)packages\nasmobj\mod.obj;$(SolutionDir)pform\pfgw\Win32\Debug\newmain.obj;$(SolutionDir)pform\pfgw\Win32\Debug\pfgw.lib;$(SolutionDir)pform\pfgwlib\Win32\Debug\pfgwlib.lib;$(SolutionDir)pform\pfio\Win32\Debug\pfio.lib;$(SolutionDir)pform\pflib\Win32\Debug\pflib.lib;$(SolutionDir)pform\pfmath\Win32\Debug\pfmath.lib;$(SolutionDir)pform\pfoo\Win32\Debug\pfoo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -308,7 +308,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)packages\gwnum\64bit\gwnum64d.lib;$(SolutionDir)packages\gmp\64bit\mpir.lib;$(SolutionDir)pform\pfgw\x64\Debug\newmain.obj;$(SolutionDir)pform\pfglue\x64\Debug\pfglue.lib;$(SolutionDir)pform\pfgw\x64\Debug\pfgw.lib;$(SolutionDir)pform\pfgwlib\x64\Debug\pfgwlib.lib;$(SolutionDir)pform\pfio\x64\Debug\pfio.lib;$(SolutionDir)pform\pflib\x64\Debug\pflib.lib;$(SolutionDir)pform\pfmath\x64\Debug\pfmath.lib;$(SolutionDir)pform\pfoo\x64\Debug\pfoo.lib;$(SolutionDir)pform\prmsieve\x64\Debug\prmsieve.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)packages\gwnum\64bit\gwnum64d.lib;$(SolutionDir)packages\gmp\64bit\mpir.lib;$(SolutionDir)pform\pfgw\x64\Debug\newmain.obj;$(SolutionDir)pform\pfgw\x64\Debug\pfgw.lib;$(SolutionDir)pform\pfgwlib\x64\Debug\pfgwlib.lib;$(SolutionDir)pform\pfio\x64\Debug\pfio.lib;$(SolutionDir)pform\pflib\x64\Debug\pflib.lib;$(SolutionDir)pform\pfmath\x64\Debug\pfmath.lib;$(SolutionDir)pform\pfoo\x64\Debug\pfoo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

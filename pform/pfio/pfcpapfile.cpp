@@ -448,14 +448,14 @@ void PFCPAPFile::SwitchToVerify()
    // Ok, now sieve out the factors of primes [3..9973]
    int64 MaxNum = int64(m_fBaseInc) + (m_FoundPrimeGaps[0]-1)*m_nGap + int64(m_pdIntervalData[m_nNumIntervalData-1]);
    int64 MinNum = int64(m_fBaseInc) + (m_FoundPrimeGaps[0]-1)*m_nGap;
-
-   primeserver->restart();
-   primeserver->skip((uint32)3);
+   
    uint32 p;
-   primeserver->next(p);
+
+   // The NextPrime() will erturn 3
+   primeserver->SkipTo(2);
+   p = (uint32) primeserver->NextPrime();
 
    // Hacked & slashed code from CPAPSieve project (much has been changed to fit into this project)
-
    for (i = 0; i < eNumPrimesToFactorWith; i++)
    {
       // b's for factor primes are contained within the pre-calc'd array
@@ -482,11 +482,11 @@ void PFCPAPFile::SwitchToVerify()
          if (m_pnFactors[(num-MinNum)/2] == 1)
          {
             //printf ("CAP factor %d^%d+%.0f+%d+%.0f is %d\n", m_nBase, m_nExp, m_fBaseInc, (m_FoundPrimeGaps[0]-1)*m_nGap, m_pdIntervalData[(num-MinNum)/2], p);
-            m_pnFactors[ (num-MinNum)/2] = p;
+            m_pnFactors[(num-MinNum)/2] = p;
          }
          num += inc;
       }
-      primeserver->next(p);
+      p = (uint32) primeserver->NextPrime();
    }
 
 }
@@ -540,10 +540,9 @@ int PFCPAPFile::powNmodP(int p)
 
 void PFCPAPFile::BuildFactorizeBase()
 {
-   primeserver->restart();
-   primeserver->skip((uint32)3);
    uint32 p;
-   primeserver->next(p);
+   primeserver->SkipTo(3);
+   p = (uint32) primeserver->NextPrime();
    int Cnt = 0;
    if (m_nBase&1)
       m_bOddBase = true;
@@ -575,7 +574,7 @@ void PFCPAPFile::BuildFactorizeBase()
 
       m_FactorizeBase[Cnt++] = b;  // Starting place for the sieve of Eratosthenes for this prime into the "base" expression.
 
-      primeserver->next(p);
+      p = (uint32) primeserver->NextPrime();
    }
 #if defined (_DEBUG)
    if (p > 3000000000)

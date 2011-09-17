@@ -158,7 +158,7 @@ PFBoolean Exponentiator::OnInitialize()
                   }
 
                   pDestination=m_pTree;      // where we are aiming for
-                  bitindex=lg(exponent);     // this is how many bits are in the count
+                  bitindex=numbits(exponent);     // this is how many bits are in the count
                   m_dwStepsTotal+=(bitindex+1);
                   pField=GetFieldElements(pContext,pResidue,pMultiplier);
                   if(pField==NULL)
@@ -219,7 +219,7 @@ PFBoolean Exponentiator::Iterate()
                     pResidue=pEx->residue();
                     exponent=pEx->exponent();
                     pDestination=pEx->destination();
-                    bitindex=lg(exponent);
+                    bitindex=numbits(exponent);
 
                     delete pEx;
                 }
@@ -240,7 +240,7 @@ PFBoolean Exponentiator::Iterate()
 
              exponent=pDestination->prime();
              pDestination=NULL;
-             bitindex=lg(exponent);
+             bitindex=numbits(exponent);
          }
          else
          {
@@ -270,7 +270,7 @@ PFBoolean Exponentiator::Iterate()
 
              exponent=pDestination->child2->prime();
              pDestination=pDestination->child1;
-             bitindex=lg(exponent);
+             bitindex=numbits(exponent);
          }
          else
          {

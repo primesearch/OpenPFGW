@@ -733,17 +733,19 @@ UseDefault:;
       PFPrintfStderr("Error, GF divisibility command line switch was not correct format, using default syntax\n");
       goto UseDefault;
    }
-   primeserver->restart();
-   primeserver->skip(MinPrime);
+   
+   uint32 Cnt = 0, npr;
+
+   primeserver->SkipTo(MinPrime);
 
    GF_n_Subs = 0;
-   unsigned Cnt = 0, npr;
-   for (primeserver->next(npr); npr <= MaxPrime; primeserver->next(npr))
+   for (npr = (uint32) primeserver->NextPrime(); npr <= MaxPrime; npr = (uint32) primeserver->NextPrime())
       GF_n_Subs++;
+
    GF_Subs = new GF_SubFactor[GF_n_Subs];
 
-   primeserver->skip(MinPrime);
-   for (primeserver->next(npr); npr <= MaxPrime; primeserver->next(npr))
+   primeserver->SkipTo(MinPrime);
+   for (npr = (uint32) primeserver->NextPrime(); npr <= MaxPrime; npr = (uint32) primeserver->NextPrime())
       GF_Subs[Cnt++].prime = npr;
 
    pIntegerVals = new Integer[GF_n_MaxTry+1];
@@ -762,7 +764,7 @@ static void ProcessGF_Factor(Integer *N, const char *sNumStr, uint32 n, uint32 g
    uint32 gfn_exp;
    int bRetVal;
 
-   if (lg(*N) < 800)
+   if (numbits(*N) < 800)
       bRetVal = gwGF_Factor_gmp(N, n, gfn_base, &gfn_exp);
    else
       bRetVal = gwGF_Factor(N, n, gfn_base, &gfn_exp, sNumStr);
@@ -847,7 +849,7 @@ bool ProcessGF_Factors(Integer *N, const char *sNumStr)
       return true;
    }
 
-   if (lg(*N) < 800)
+   if (numbits(*N) < 800)
       bRetval = gwGF_LoadSubs_gmp(N, n);
    else
       bRetval = gwGF_LoadSubs(N, sNumStr, &k, n);

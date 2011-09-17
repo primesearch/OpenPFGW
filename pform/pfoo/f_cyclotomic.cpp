@@ -97,7 +97,6 @@ PFBoolean F_Cyclotomic::CallFunction(PFSymbolTable *pContext)
          {
             // if N the power of a prime, result is this prime, otherwise result is 1
             PFSymbolTable *pSubContext=new PFSymbolTable(pContext);
-            pContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31)));
             int iTrivial=PFFunctionSymbol::CallSubroutine("@trivial",pSubContext);
 
             IPFSymbol *pFactor=pSubContext->LookupSymbol("_TRIVIALFACTOR");

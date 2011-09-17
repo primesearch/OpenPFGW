@@ -34,7 +34,7 @@ int  StripTrailingWhiteSpace(char *string)
 {
   long  x;
 
-  x = strlen(string);
+  x = (long) strlen(string);
 
   while (x > 0 && (string[x-1] == ' '))
   {

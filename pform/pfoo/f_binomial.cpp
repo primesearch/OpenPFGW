@@ -62,7 +62,7 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
    // note the next line will allow C(2000000000,20) which is reasonable size (about 100 digits),
    // but it will also allow C(2000000000,1000000000) which is WAY out of range.  I don't know any
    // good way to validate the size of these things since there is so much variability.
-   if (*N > 0x7fffffff | *K > 0x7fffffff)
+   if (*N > INT_MAX | *K > INT_MAX)
       return PFBoolean::b_false;
 
    // NOTE this function is not optimal for C($a,$b) where a is big and b is small. In that circumstance,
@@ -75,8 +75,8 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
    // almost instantly.
    //
 
-   long n = *N&0x7FFFFFFF;
-   long k = *K&0x7FFFFFFF;
+   long n = (*N & INT_MAX);
+   long k = (*K & INT_MAX);
 
     Integer *r = new Integer(1);
 
@@ -87,8 +87,7 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
 
    Integer r1;
 
-   primeserver->restart();
-   uint32 Pr;
+   int32 Pr;
    // all primes p no greater than n
 
    // This lists what the "max" int is which can be raised to this power and still not overflow a 31 bit integer.
@@ -104,8 +103,8 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
         3,   3,   3,   3,   2,   2,   2,   2
    };
 
-   long p;
-   for(primeserver->next(Pr),p=Pr; p <= n; primeserver->next(Pr),p=Pr)
+   int32 p;
+   for(Pr = (int32) primeserver->NextPrime(),p=Pr; p <= n; Pr = (int32) primeserver->NextPrime(),p=Pr)
    {
       register long i1 = n, i2 = n - k, i3 = k;
       int expo=0;

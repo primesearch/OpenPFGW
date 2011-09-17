@@ -144,11 +144,11 @@ void CTextViewerDlg::ShowFile(const char *FName)
       fseek(in, -50000, SEEK_END);
       int Cnt = (int) fread(Buf, 1, 50000, in);
       Buf[Cnt] = 0;
-      m_smartEdt.AddString(Buf,false);
+      m_smartEdt.AddString(Buf);
       fclose(in);
    }
    else
-      m_smartEdt.AddString("   !!! File not found !!!", false);
+      m_smartEdt.AddString("   !!! File not found !!!");
    sprintf (Buf, "Help/Info File Viewer [%s]", FName);
    SetWindowText(Buf);
 

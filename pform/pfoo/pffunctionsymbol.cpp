@@ -4,6 +4,7 @@
 #include "pfintegersymbol.h"
 
 #include "f_prime.h"
+#include "f_nextprime.h"
 #include "f_fibonacci.h"
 #include "f_repunit.h"
 #include "f_cyclotomic.h"
@@ -87,7 +88,7 @@ int PFFunctionSymbol::CallSubroutine(const PFString &sRoutineName,PFSymbolTable 
          {
             PFIntegerSymbol *pI=(PFIntegerSymbol*)pSymbol;
             Integer *g=pI->GetValue();
-            iRetval=(*g)&0x7fffffff;      // All functions return positive integers!
+            iRetval = ((*g) & INT_MAX);      // All functions return positive integers!
          }
       }
 
@@ -102,6 +103,7 @@ int PFFunctionSymbol::CallSubroutine(const PFString &sRoutineName,PFSymbolTable 
 
 void PFFunctionSymbol::LoadExprFunctions(PFSymbolTable *psymRuntime)
 {
+   psymRuntime->AddSymbol(new F_NextPrime);
    psymRuntime->AddSymbol(new F_Prime);
    psymRuntime->AddSymbol(new F_Fibonacci_U);
    psymRuntime->AddSymbol(new F_Fibonacci_V);

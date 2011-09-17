@@ -79,7 +79,7 @@ double benchFactor(const char *expr, uint32 fmax,int rep,PFSymbolTable *pContext
    PFIntegerSymbol *pN=new PFIntegerSymbol("_N",pResult);
    pTestContext->AddSymbol(pN);
 
-   *len=lg(*pResult);
+   *len=numbits(*pResult);
 
    PFFactorizationSymbol *pffN;
    pTestContext->AddSymbol(pffN=new PFFactorizationSymbol("_NFACTOR"));
@@ -126,7 +126,7 @@ double benchPRP(const char *expr,int rep, int iterations, PFSymbolTable *pContex
    clock_t starttime,t1;
 #endif
    double totaltime=0;
-   *len=lg(*pResult);
+   *len=numbits(*pResult);
 
    for (DWORD dwP=0;dwP<DWORD(rep);dwP++)
    {

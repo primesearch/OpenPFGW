@@ -1,8 +1,0 @@
-The prime number generator included here is Dan Bernstein's primegen, with minor
-modifications to build from source in this distribution.
-
-primegen 0.97
-19990304
-Copyright 1999
-D. J. Bernstein, djb@pobox.com
-http://pobox.com/~djb/primegen.html

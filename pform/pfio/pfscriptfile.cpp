@@ -20,6 +20,10 @@ PFScriptFile::PFScriptFile(const char* FileName)
    pNew=new PFIntegerSymbol("FACTORFOUND",iFF);
    m_pTable->AddSymbol(pNew);
 
+   Integer *iPF=new Integer(1);
+   pNew=new PFIntegerSymbol("PRIMEFOUND",iPF);
+   m_pTable->AddSymbol(pNew);
+
    Integer *iMaxF=new Integer(0);
    pNew=new PFIntegerSymbol("MAXF",iMaxF);
    m_pTable->AddSymbol(pNew);

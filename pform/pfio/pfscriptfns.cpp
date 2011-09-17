@@ -655,14 +655,11 @@ bool PFScriptFile::Powmod(char *args) {
       delete iVal;
    }
 
-   // NOTE only GMP powm implemented at this time.  We NEED to also have
-   // GWoltman mod exponentation also, but for now, this will be there.
-
    PFIntegerSymbol *pVar=(PFIntegerSymbol *)pSymbol;
    Integer *iVal = new Integer;
 
    // For small numbers, use GMP for the expmod.  For large ones, use gwnum.
-   if (lg(n) < 650)
+   if (numbits(n) < 650)
       mpz_powm( iVal->gmp(), b.gmp(), e.gmp(), n.gmp());
    else
       GWPowMod(iVal, b, e, n, val3);
@@ -688,7 +685,7 @@ void PFScriptFile::GWPowMod(Integer *result, Integer b, Integer e, Integer n, ch
 
    gwX = b;
    gwY = 1;
-   iterations = s = lg(e);
+   iterations = s = numbits(e);
 
    i = 0;
    for (;;)
@@ -1031,7 +1028,6 @@ bool PFScriptFile::Factorize(char *args) {
 
    return true;
 }
-
 
 bool PFScriptFile::Print(char *args) {
 

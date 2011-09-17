@@ -44,7 +44,7 @@ bool IsPrp(Integer *N)
    Integer X = (*N);
    --X;           // X is the exponent, we are to calculate 3^X mod N
 
-   uint32 iTotal=lg(X);
+   uint32 iTotal=numbits(X);
 
    // if iTotal is less than 1000, then use GMP to do exponentaion (we need to work out the exact cutoff's, and
    // different reduction methods will also "change" this"
@@ -471,7 +471,7 @@ bool LoadFile(const char *Fname)
          PFPrintfStderr ( "\n\nerror, invalid JFCAP file\n");
          return false;
       }
-      if (nvalsleft > 0x7FFFFFFF)
+      if (nvalsleft > INT_MAX)
       {
          PFOutput::EnableOneLineForceScreenOutput();
          PFPrintfStderr ("Error, too many primes for this program!!!\n");

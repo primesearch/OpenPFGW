@@ -90,7 +90,7 @@ PFBoolean F_Sequence::CallFunction(PFSymbolTable *pContext)
          return PFBoolean::b_false;             // no retro
       }
 
-      int nn=(*N)&0x7FFFFFFF;
+      int nn = ((*N) & INT_MAX);
       if((*N)!=nn)
       {
          return PFBoolean::b_false;             // get real!
@@ -144,7 +144,7 @@ PFBoolean F_Sequence::CallFunction(PFSymbolTable *pContext)
          // So tell our primality tester this very important fact (In other words,
          // 'quit bothering me with this nonstandard syntax!' Note lg(N) is the
          // power of 2 less than N
-         int iLargest=(lg(B)>lg(C))?(lg(B)):(lg(C));
+         int iLargest=(numbits(B)>numbits(C))?(numbits(B)):(numbits(C));
          iLargest++;
          // we want ceil(iLargest * log2(10)). For a rough estimate, take log2(10) as
          // 1/3
@@ -569,7 +569,7 @@ PFBoolean F_NSW_S::CallFunction(PFSymbolTable *pContext)
    if(pS && pS->GetSymbolType()==INTEGER_SYMBOL_TYPE)
    {
       Integer *pN=((PFIntegerSymbol*)pS)->GetValue();
-      int n=(*pN)&0x7FFFFFFF;
+      int n = ((*pN) & INT_MAX);
       if(((*pN)==n)&&(n>=0))
       {
          Integer XX;
@@ -608,7 +608,7 @@ PFBoolean F_NSW_W::CallFunction(PFSymbolTable *pContext)
    if(pS && pS->GetSymbolType()==INTEGER_SYMBOL_TYPE)
    {
       Integer *pN=((PFIntegerSymbol*)pS)->GetValue();
-      int n=(*pN)&0x7FFFFFFF;
+      int n = ((*pN) & INT_MAX);
       if(((*pN)==n)&&(n>=0))
       {
          Integer XX;

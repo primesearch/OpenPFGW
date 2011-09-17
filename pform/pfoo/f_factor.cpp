@@ -382,19 +382,23 @@ PFBoolean F_Factor::OnInitialize()
 {
    // get an estimate of the limit. We will use the metric that we expect 32 bit numbers
    // to be fully factored. ie 2^5 bits are factored up to 2^13 primes.
-   if(pmax==0)
+   if (pmax==0)
    {
-      double dPrimes=7.0*lg(*pN)+1.0;
+      double dPrimes=7.0*numbits(*pN)+1.0;
       double pp=estimateLimit(dPrimes);
-      if(pp>2.1e9) pp=2.1e9;
-      if(pp<65536.0) pp=65536.0;
 
-      if((m_pffN==NULL)&&(m_pffNminus1==NULL)&&(m_pffNplus1==NULL))
+      if (pp > (double) primeserver->GetUpperLimit())
+         pmax = primeserver->GetUpperLimit();
+      else
+         pmax = (uint64) pp;
+
+      if (pmax < 65536) pmax=65536;
+
+      if ((m_pffN==NULL)&&(m_pffNminus1==NULL)&&(m_pffNplus1==NULL))
       {
-         pp=65536.0;
+         pmax=65536;
       }
 
-      pmax=(uint64)pp;
 #if !defined (NDEBUG) && (0)
       char i64Buf[40];
       PFPrintfStderr("Phil - pmax="ULL_FORMAT" (2)\n", pmax);
@@ -407,49 +411,36 @@ PFBoolean F_Factor::OnInitialize()
          if (m_bDualModFactor)
             // Note if dual modular factoring, then divide by 2 (well almost divide by 2)
             d *= 0.6;
-         // Now make sure that max factor is less than 2^48
-         int64 n=1;
-         //n<<=48;
-         n<<=62;
-         n -= 100000;
-         if (d>n)
-            d=(double)n;
-         pmax = (uint64)d;
+
+         if (d > (double) primeserver->GetUpperLimit())
+         {
+            delete primeserver;
+            primeserver = new PrimeServer(d);
+         }
+
+         pmax = primeserver->GetUpperLimit();
       }
 #if !defined (NDEBUG) && (0)
       PFPrintfStderr("Phil - pmax="ULL_FORMAT" (3)\n", pmax);
 #endif
 
       // did the user "request" a multiplier to the defalt factorization.
-      if (m_nPercentMultiplier!=100)
+      if (m_nPercentMultiplier != 100)
       {
          double d = m_nPercentMultiplier;
          d /= 100;
-         d *= (int64)pmax; // VC does NOT implement a unsigned int64 to double conversion
-         // Phil - no longer limit the pmax to 32 bits
-         int64 n=1;
-         //n<<=48;
-         n<<=62;
-         n -= 100000;
-         if (d>n)
-            d=(double)n;
-         pmax=(int64)d;
+         d *= (double) pmax;
+
+         if (d > (double) primeserver->GetUpperLimit())
+         {
+            delete primeserver;
+            primeserver = new PrimeServer(d);
+         }
+
+         pmax = primeserver->GetUpperLimit();
 #if !defined (NDEBUG) && (0)
          PFPrintfStderr("Phil - pmax="ULL_FORMAT" (4)\n", pmax);
 #endif
-      }
-
-      // Ok, now the values that are above 2^31 take 6 times as long to factor
-      // than the values below this level.  We take that into account.  We are
-      // trying for a factoring "time".  If there is values above the 2^31 level,
-      // then we only do 1/6 as many of them in the same time-frame, so we need to
-      // reduce our pmax accordingly.
-      if (pmax > 0x7FFFFFFF)
-      {
-         double d = (double)(int64)(pmax-0x7FFFFFFF);
-         d /= 6;
-         d += 0x7FFFFFFF;
-         pmax = (uint64)d;
       }
    }
 
@@ -457,7 +448,7 @@ PFBoolean F_Factor::OnInitialize()
    P1*=P1;
    pmaxadjust(pBiggest);
 
-   if(pmin>pmax)
+   if (pmin>pmax)
    {
       pmin=pmax;
    }
@@ -471,16 +462,15 @@ PFBoolean F_Factor::OnInitialize()
 
    if (!m_bModFactor)
    {
-      primeserver->restart();
-      primeserver->skip(pmin);
-      primeserver->next(p);
+      primeserver->SkipTo(pmin);
+      p = primeserver->NextPrime();
    }
    else
    {
       m_pEratMod->init();
       if (pmin && pmin-1 > m_pEratMod->GetModVal())
          m_pEratMod->skipto(pmin);
-      p=m_pEratMod->next();
+      p = m_pEratMod->next();
       if (m_bDualModFactor)
       {
          m_pEratMod2->init();
@@ -674,13 +664,13 @@ void F_Factor::OnPrompt()
 
 PFBoolean F_Factor::Iterate()
 {
-   if(p>pmax)
+   if (p>pmax)
    {
       return(PFBoolean::b_true);       // end the test
    }
    uint64 p2;
    if (!m_bModFactor)
-      primeserver->next(p2);
+      p2 = primeserver->NextPrime();
    else
    {
       if (m_bDualModFactor)
@@ -689,15 +679,11 @@ PFBoolean F_Factor::Iterate()
          p2=m_pEratMod->next();
    }
 
-// here for some debugging.
-//    if (p == 527873781173 || p2 == 527873781173)
-//       p2 = p2;
-
    // This is the ONLY 2^31 code left.
    uint64  li1, li2;
 
    FDEBUG(p,p2);
-   if(p2<=0x7fffffff)
+   if (p2 <= INT_MAX)
    {
        int  i1,i2;
       // Note that if the FP stack is not PERFECTLY clear before calling this function, then
@@ -798,7 +784,7 @@ PFBoolean F_Factor::Iterate()
 
    // ready for the next iteration
    if (!m_bModFactor)
-      primeserver->next(p);
+      p=primeserver->NextPrime();
    else
       p=m_pEratMod->next();
    return(PFBoolean::b_false);            // and its not quitting time yet

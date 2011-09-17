@@ -7,6 +7,12 @@
 F_Prime::F_Prime()
    : PFFunctionSymbol("p")
 {
+   m_pPrimeServer = 0;
+}
+
+F_Prime::~F_Prime()
+{
+   if (m_pPrimeServer) delete m_pPrimeServer;
 }
 
 DWORD F_Prime::MinimumArguments() const
@@ -33,52 +39,29 @@ PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
 {
    PFBoolean bRetval=PFBoolean::b_false;
    IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
-   if(pSymbol)
-   {
-      if(pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
-      {
-         Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
-         if(q)
-         {
-               int idx=(*q)&(0x7fffffff); // nothing unusual there
+   
+   if (!m_pPrimeServer)
+      m_pPrimeServer = new PrimeServer(1e15);
 
-            // Bug fix.  With out lousy primegen, we only get solid primes
-            // up to (2^15)^2.  That being the case, we only want to compute
-            // primes up to this value.  Anything over that is not correctly
-            // computed.
-            if (idx > 54400001)   // p(54400001) is 1073741237 which is just under (2^15)^2 whic is 1073741824
-               return bRetval;
+   if (pSymbol) return bRetval;
 
-            if((*q)==idx)
-            {
-               Integer *r=new Integer;
-               if(idx==0)
-                  {
-                  *r=1;
-                  bRetval=PFBoolean::b_true;
-               }
-               else
-               {
-                  // this is a really lousy implementation
-                  primeserver->restart();
-                  uint32 p=1;
-                  for(int32 i=0;i<idx;i++)
-                        primeserver->next(p);
-                     *r=p;
-                     bRetval=PFBoolean::b_true;
-               }
+   if (pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)  return bRetval;
 
-               if(!bRetval)
-               {
-                  delete r;
-               }
-               else
-               {
-                  pContext->AddSymbol(new PFIntegerSymbol("_result",r));
-               }
-            }
-         }
-      }
-   }
+   Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
+
+   if (!q) return bRetval;
+
+   uint64 idx = ((*q) & ULLONG_MAX); // nothing unusual there
+
+   if ((*q)!=idx)
+      return bRetval;
+
+   bRetval=PFBoolean::b_true;
+   Integer *r=new Integer;
+
+   *r = m_pPrimeServer->ByIndex(idx);
+
+   pContext->AddSymbol(new PFIntegerSymbol("_result",r));
+
    return bRetval;
 }

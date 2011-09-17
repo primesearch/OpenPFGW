@@ -97,13 +97,19 @@ PFNewPGenFile::PFNewPGenFile(const char* FileName)
 
 void Primorial(Integer *p, uint32 pp)
 {
-    primeserver->restart();
     Integer mm;
     mm=1;
+    uint32 i, q = 0;
 
-    uint32 q;
-    for(primeserver->next(q); q <= pp; primeserver->next(q))
-        mm*=q;
+    for (i=1; q<pp; i++)
+    {
+       q = (uint32) primeserver->ByIndex(i);
+
+       if (q > pp) break;
+
+       mm *= q;
+    }
+
     *p=mm;
 }
 

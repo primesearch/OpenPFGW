@@ -161,15 +161,15 @@ PFBoolean F_EndPlus1::CallFunction(PFSymbolTable *pContext)
                            Integer KTEST(KMAX+MKMIN);
                            KTEST/=F;
 
-                           if(KTEST>g_ExtraSQFree)
+                           if (KTEST>g_ExtraSQFree)
                            {
-                              if ( (KTEST) < 0x7FFFFFFF && lg(*n) > 2000)
-                                 PFPrintfLog("Proof incomplete rerun with -x%d\n", (KTEST)&0x7FFFFFFF);
+                              if ( KTEST < INT_MAX && numbits(*n) > 2000)
+                                 PFPrintfLog("Proof incomplete rerun with -x%d\n", KTEST&INT_MAX);
                               iRetval=PT_INCONCLUSIVE;
                            }
                            else
                            {
-                              int kCount=0,kMax=KTEST&0x7FFFFFFF; //MB: For status
+                              int kCount=0,kMax = (KTEST & INT_MAX); //MB: For status
                               iRetval=PT_PRIME;
 
                               PFSymbolTable *pSubContext=new PFSymbolTable(pContext);

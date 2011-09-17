@@ -10,7 +10,6 @@ extern char g_cpTestString[70];
 extern bool g_bGMPMode;
 extern PFString g_sTestMode;				// This will hold things like "PRP: ", "N+1: ", "F: ", "GF(b,3): ", ...
 
-
 // Under Windows, it's <io.h>, here's what it is for autconf
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

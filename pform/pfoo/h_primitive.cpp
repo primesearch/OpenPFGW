@@ -22,14 +22,13 @@ PFBoolean H_Primitive::Evaluate(PFSymbolTable *pTable,EVALUATOR fEval,Integer &N
          Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
          if(q)
          {
-               int idx=(*q)&(0x7fffffff); // nothing unusual there
+            int idx = ((*q) & INT_MAX); // nothing unusual there
             if((*q)==idx)
             {
                // its in range
                // index is now a small, trivially factorable integer
                // so why not run F_Trivial on it
                PFSymbolTable *pSubContext=new PFSymbolTable(pTable);
-               pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31)));
                int iTrivial=PFFunctionSymbol::CallSubroutine("@trivial",pSubContext);
 
                IPFSymbol *pFactor=pSubContext->LookupSymbol("_TRIVIALFACTOR");
@@ -73,7 +72,7 @@ PFBoolean H_Primitive::Evaluate(PFSymbolTable *pTable,EVALUATOR fEval,Integer &N
                            {
                               iMobius++;
                               // divide iIndex by this prime
-                              int iDivider=(fn->prime())&0x7FFFFFFF;
+                              int iDivider = ((fn->prime()) & INT_MAX);
                               iPower/=iDivider;
                            }
                            dwMask<<=1;

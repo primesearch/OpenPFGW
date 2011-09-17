@@ -79,10 +79,10 @@ unsigned long FactorNode::powerDepth() const
    unsigned long t1=0,t2=0;
    if(!isLeaf())
    {
-      t1=child1->powerDepth()+lg(child2->f)+1;     // get to node 1 and everafter
-      t2=child2->powerDepth()+lg(child1->f)+1;
+      t1=child1->powerDepth()+numbits(child2->f)+1;     // get to node 1 and everafter
+      t2=child2->powerDepth()+numbits(child1->f)+1;
    }
-   else t1=lg(f)+1;                          // at a child node just call this again
+   else t1=numbits(f)+1;                          // at a child node just call this again
    return(t1+t2);
 }
 

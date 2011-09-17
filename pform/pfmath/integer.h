@@ -37,7 +37,7 @@ protected:
 	void        m_subu(const Integer & y);
 	void        m_mulu(const int32 n);
 	void        m_mulu(const Integer & y);
-	int32		m_divu(const int32 n);
+	int32		   m_divu(const int32 n);
 	Integer     m_divu(const Integer & y);
 	void        m_sftru(const int32 n);
 	GW_INLINE	int32       m_andu(const int32 & n) const;
@@ -47,11 +47,12 @@ protected:
 	GW_INLINE	int32       m_oru(const int32 n) const;
 	GW_INLINE	void        m_oru(const Integer & y);
 
-	void		m_clr();
+	void		   m_clr();
 	GW_INLINE	void        m_set(const int32 n);
 	GW_INLINE	void        m_set(const Integer & y);
-	GW_INLINE	int32         m_cmp(const int32 n) const;
-	GW_INLINE	int32         m_cmp(const Integer & y) const;
+	GW_INLINE	int32       m_cmp(const int32 n) const;
+	GW_INLINE	int32       m_cmp(const uint64 n) const;
+	GW_INLINE	int32       m_cmp(const Integer & y) const;
 	GW_INLINE	void        m_add(const int32 n);
 	GW_INLINE	void        m_add(const Integer & y);
 	GW_INLINE	void        m_sub(const int32 n);
@@ -88,6 +89,7 @@ public:
 	friend int32 operator == (const Integer & x, int32 n);
 	friend int32 operator == (const Integer & x, const Integer & y);
 	friend int32 operator != (const Integer & x, int32 n);
+	friend int32 operator != (const Integer & x, uint64 n);
 	friend int32 operator != (const Integer & x, const Integer & y);
 	friend int32 operator <  (const Integer & x, int32 n);
 	friend int32 operator <  (const Integer & x, const Integer & y);
@@ -119,6 +121,7 @@ public:
 	GW_INLINE Integer & operator <<= (const int32 n);
 	GW_INLINE Integer & operator >>= (const int32 n);
 	GW_INLINE Integer & operator &= (const int32 n);
+	GW_INLINE Integer & operator &= (const uint64 n);
 	GW_INLINE Integer & operator &= (const Integer & y);
 	GW_INLINE Integer & operator |= (const int32 n);
 	GW_INLINE Integer & operator |= (const Integer & y);
@@ -144,8 +147,8 @@ public:
 	
 
 	void divmod(const Integer &d,Integer &q,Integer &r) const;
-	int32			m_mod(const int32 n) const;
-	void    m_mod(const uint64 n, uint64*p) const;
+	int32	m_mod(const int32 n) const;
+	void  m_mod(const uint64 n, uint64*p) const;
 	void	m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const;
 	void	m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const;
 
@@ -155,9 +158,9 @@ public:
 
 	friend Integer abs(const Integer & x);
 	friend void    swap(Integer & a, Integer & b);
-	friend int32    lg(const Integer & x);
-	friend int32    lg(const uint64 & x);
-	friend int32     bit(const Integer & x, const uint32 n); // n should be <= lg(x)
+	friend int32   numbits(const Integer & x);
+	friend int32   numbits(const uint64 & x);
+	friend int32   bit(const Integer & x, const uint32 n); // n should be <= lg(x)
 
 	friend uint32	crc(const Integer & x);
 	friend uint32	crc32(const Integer &x,uint32 crc);
@@ -166,7 +169,7 @@ public:
 	friend Integer shl(const Integer &x,const int32 n);	// returns x << n
 	friend Integer squareroot(const Integer & x); // floor of square root
 	friend Integer gcd(const Integer & x, const Integer & y);
-	friend int32     kro(const Integer & x, const Integer & y); // Kronecker symbol
+	friend int32   kro(const Integer & x, const Integer & y); // Kronecker symbol
 	friend uint32  crc32(const Integer &x);
 
 	friend Integer powm(const Integer & x, const int32 n, const Integer & N);  // modular power

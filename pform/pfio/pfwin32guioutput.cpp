@@ -43,19 +43,19 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, va_list &va)
    // Note that WinPFGW must delete[] this item.
    int BufLen = 2048;
    int ret;
-   char *Buffer = new char [BufLen];
-   ret = _vsnprintf(Buffer, BufLen, Fmt, va);
+   char *pBuffer = new char [BufLen];
+   ret = _vsnprintf(pBuffer, BufLen, Fmt, va);
    while (ret == -1)
    {
-      delete[] Buffer;
+      delete [] pBuffer;
       BufLen *= 2;
-      Buffer = new char[BufLen];
-      ret = _vsnprintf(Buffer, BufLen, Fmt, va);
+      pBuffer = new char[BufLen];
+      ret = _vsnprintf(pBuffer, BufLen, Fmt, va);
    }
 
-   if (strlen(Buffer) < 150 && memcmp(Buffer, "PFGW", 4))
+   if (strlen(pBuffer) < 150 && memcmp(pBuffer, "PFGW", 4))
    {
-      sprintf(g_cpTrayMsg, "WinPFGW: %s", Buffer);
+      sprintf(g_cpTrayMsg, "WinPFGW: %s", pBuffer);
       ret = (int) strlen(g_cpTrayMsg) - 1;
       while (ret && (g_cpTrayMsg[ret] == '\n' || g_cpTrayMsg[ret] == '\r'))
       {
@@ -66,26 +66,28 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, va_list &va)
    else
       strcpy(g_cpTrayMsg, "WinPFGW (Running)");
 
-   if (!PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_STDERR, (LPARAM)Buffer))
-      delete[] Buffer;
+   if (!PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_STDERR, (LPARAM)pBuffer))
+      delete [] pBuffer;
    return ret;
 }
 
 int PFWin32GUIOutput::PFPrintf(const char *Fmt, va_list &va)
 {
+   int BufLen = 2048;
    int ret;
+   char *pBuffer = new char [BufLen];
 
-   ret = vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
+   ret = vsnprintf(pBuffer, m_iBufferSize, Fmt, va);
    while (ret == -1)
    {
-      delete[] m_pBuffer;
+      delete[] pBuffer;
       m_iBufferSize *= 2;
-      m_pBuffer = new char[m_iBufferSize];
-      ret = _vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
+      pBuffer = new char[m_iBufferSize];
+      ret = _vsnprintf(pBuffer, m_iBufferSize, Fmt, va);
    }
 
-   PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_PRINTF, (LPARAM)m_pBuffer);
-
+   if (!PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_PRINTF, (LPARAM)pBuffer))
+      delete [] pBuffer;
    return ret;
 }
 

@@ -124,7 +124,7 @@ PFBoolean F_Fibonacci_F::CallFunction(PFSymbolTable *pContext)
          Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
          if(q)
          {
-               int idx=(*q)&(0x7fffffff); // nothing unusual there
+            int idx = ((*q) & INT_MAX); // nothing unusual there
             if((*q)==idx)
             {
                bRetval=helpFibonacci2(pContext,idx,*rU,*rV);
@@ -159,7 +159,7 @@ PFBoolean F_Fibonacci_L::CallFunction(PFSymbolTable *pContext)
          Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
          if(q)
          {
-               int idx=(*q)&(0x7fffffff); // nothing unusual there
+               int idx = ((*q) & INT_MAX); // nothing unusual there
             if((*q)==idx)
             {
                bRetval=helpFibonacci2(pContext,idx,*rU,*rV);

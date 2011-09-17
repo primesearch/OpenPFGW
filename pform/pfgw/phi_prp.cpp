@@ -58,7 +58,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
          ++PF;             // the first one to try
 
 #if 1
-         int Mod = PS&0x7FFFFFFF;
+         int Mod = (PS & INT_MAX);
          Erat_Mod Phi_mod(Mod);
          //Phi_mod.AddModCondition(8,1);
          //Phi_mod.AddModCondition(8,7);
@@ -76,7 +76,7 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 
          int k=1;
          Integer POW(iPhi);
-         int iTotal=lg(POW);
+         int iTotal=numbits(POW);
 
          Integer R;
 
@@ -145,16 +145,16 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
             }
          }
 
-         if(KMAX<10000) KMAX=10000;
+         if (KMAX<10000) KMAX=10000;
 
-         int kmax=KMAX&0x7FFFFFFF;
+         int kmax = (KMAX & INT_MAX);
          int klast=0;
 
          if(KMAX!=kmax) kmax=2000000000;
 
          if(bUnfactored||bDeep)
          {
-            PFPrintfStderr("%s: Trial factoring to %d*%d+1\n",g_cpTestString,kmax,PS&0x7FFFFFFF);
+            PFPrintfStderr("%s: Trial factoring to %d*%d+1\n",g_cpTestString, kmax, PS&INT_MAX);
          }
          while(k<kmax && (bUnfactored || bDeep))
          {
@@ -179,33 +179,18 @@ void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBool
 
             Q=1;
             iLog=0;
-            iNext=lg(PP);
+            iNext=numbits(PP);
 
             do
             {
                Q*=PP;
-               //iLog+=iNext;
-               iLog=lg(Q);
+               iLog=numbits(Q);
 
-#if 1
                uint64 u64prime = Phi_mod.next();
                PP = Integer(u64prime);
                k = (int)(u64prime/Mod);
-#else
 
-               do
-               {
-                  k++;
-                  PP+=PS;
-                  iSieve+=iStep;
-                  iSieve%=iWheel;
-               }
-               while(
-               ((iSieve%3)==0)||((iSieve%5)==0)||((iSieve%7)==0)||((iSieve%11)==0)||
-               ((iSieve%13)==0)||((iSieve%17)==0)||((iSieve%19)==0)||((iSieve%23)==0)||((iSieve%29)==0));
-#endif
-
-               iNext=lg(PP)+1;
+               iNext=numbits(PP)+1;
             }
             while(iLog+iNext<=320);    // amass up to 320 bits in Q.
 

@@ -38,7 +38,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate 3^X mod N
 
-   int iTotal=lg(X);
+   int iTotal=numbits(X);
 
    // if iTotal is less than 1000, then use GMP to do exponentaion (we need to work out the exact cutoff's, and
    // different reduction methods will also "change" this".  However, this code (The current Winbloze build) is
@@ -70,11 +70,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
          return 1;
       else
          if (p_n64ValidationResidue)
-         {
-            *p_n64ValidationResidue = X & 0x7fffffff;
-            *p_n64ValidationResidue |= ( (uint64)((X>>31)&0x7fffffff) << 31);
-            *p_n64ValidationResidue |= ( (uint64)((X>>62)&0x00000003) << 62);
-         }
+            *p_n64ValidationResidue = (X & ULLONG_MAX);
       return 0;
    }
    if (g_bGMPMode)
@@ -141,7 +137,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
    int   retval;
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate iBase^X mod N
-   int iTotal=lg(X);
+   int iTotal=numbits(X);
 
    // Data for the save/restore file.
    char RestoreName[13];   // file name will fit an 8.3
@@ -269,11 +265,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
       X %= *N;
 
       if (p_n64ValidationResidue)
-      {
-         *p_n64ValidationResidue = X & 0x7fffffff;
-         *p_n64ValidationResidue |= ( (uint64)((X>>31)&0x7fffffff) << 31);
-         *p_n64ValidationResidue |= ( (uint64)((X>>62)&0x00000003) << 62);
-      }
+         *p_n64ValidationResidue = (X & ULLONG_MAX);
 
       if (X==1)
          retval=1;

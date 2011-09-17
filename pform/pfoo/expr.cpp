@@ -433,41 +433,23 @@ PFBoolean D_MOD::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
     return(PFBoolean::b_true);
 }
 
-// Now handled as function GCD(p,q)
-//PFBoolean D_GCD::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
-//{
-//    Integer *q=s.Pop();
-//    if(q==NULL) return(PFBoolean::b_false);
-//    Integer *p=s.Peek();
-//    if(p==NULL) {delete q;return(PFBoolean::b_false);}
-//
-//    // replace what is in p by gcd(*p,*q)
-//
-//    Integer z=gcd(*p,*q);
-//    *p=z;
-//
-//    o.Remove();
-//    delete q;
-//    return(PFBoolean::b_true);
-//}
-
 PFBoolean D_POW::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
 {
-    Integer *q=s.Pop();
-    if(q==NULL) return(PFBoolean::b_false);
-    Integer *p=s.Peek();
-    if(p==NULL) {delete q;return(PFBoolean::b_false);}
-    if(m) (*p)%=m;
+   Integer *q=s.Pop();
+   if(q==NULL) return(PFBoolean::b_false);
+   Integer *p=s.Peek();
+   if(p==NULL) {delete q;return(PFBoolean::b_false);}
+   if(m) (*p)%=m;
 
-// Raising to the q th power is different, note that exponentiation
-// to large q just isn't possible
-    if(lg(*q)>30)       // max is 2^31-1
-    {
-        delete q;
-        return(PFBoolean::b_false);
-    }
-    int qq=(*q)&0x7fffffff;
-    delete q;
+   // Raising to the q th power is different, note that exponentiation
+   // to large q just isn't possible
+   if (numbits(*q)>30)       // max is 2^31-1
+   {
+       delete q;
+       return(PFBoolean::b_false);
+   }
+   int qq = ((*q) & INT_MAX);
+   delete q;
 
    if(qq==0)
    {
@@ -475,17 +457,16 @@ PFBoolean D_POW::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
    }
    else
    {
-
-    if(m)
-    {
+     if(m)
+     {
         Integer mm;
         mm=m;
         (*p)=powm(*p,qq,mm);
-    }
-    else (*p)=pow(*p,qq);
+     }
+     else (*p)=pow(*p,qq);
    }
-    o.Remove();
-    return(PFBoolean::b_true);
+   o.Remove();
+   return(PFBoolean::b_true);
 }
 
 PFBoolean D_EQUAL::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
@@ -736,49 +717,6 @@ PFBoolean MP_OPENPAREN::evaluate(PFStack<Integer> &/*s*/,PFStack<ExprOperator> &
    return(PFBoolean::b_false);   // should never be called
 }
 
-#if 0
-PFBoolean MP_RECURRENCE::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &/*o*/,int /*m*/)
-{
-   if(nBase!=g_n) return(PFBoolean::b_false);
-// functional evaluate the recurrence at this point in space
-   Integer *p=s.Peek();
-   if(p==NULL) return(PFBoolean::b_false);
-// check rBase is defined
-   if(rBase==0xffffffff) return(PFBoolean::b_false);
-// check q is in range
-   if((*p)<rBase) return(PFBoolean::b_false);
-   if((*p)>=(rBase+RECURRENCE_HISTORY)) return(PFBoolean::b_false);
-// in range to be plucked out of the recurrence table
-   unsigned long rindex=((*p)&0xffffffff)-rBase;
-   *p=recurrenceBuffer[(rindex+rLookup)%RECURRENCE_HISTORY];
-// o.remove();
-   return(PFBoolean::b_true); // should never be called
-}
-
-PFBoolean MP_PRIME::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
-{
-   Integer *p=s.Peek();
-   if(p==NULL) return(PFBoolean::b_false);
-    int index=(*p)&(0x7fffffff); // nothing unusual there
-
-    if((*p)!=index) return(PFBoolean::b_false);         // make sure you got what you expected
-
-    if(index==0)
-    {
-        *p=1;
-    }
-    else
-    {
-        int pr=first_prime();
-        for(int i=1;(pr>0)&&(i<index);i++)
-            pr=next_prime();
-        if(pr==0) return(PFBoolean::b_false);
-        *p=pr;
-    }
-   return(PFBoolean::b_true);
-}
-#endif
-
 MS_FACT::MS_FACT()
    : ExprOperator("!",MONADIC_SUFFIX,5), m_pMutant(NULL)
 {
@@ -797,21 +735,12 @@ ExprOperator *MS_FACT::Mutant() const
 
 void FactorialHelper(Integer *p, long nMultStep, int m)
 {
-// if (!m && nMultStep == 1 && ((*p)&0x7FFFFFFF) > 21000)
-// {
-//    // the break point where this mpz_ function is faster than our function is at about 21000!  From that point
-//    // on, the timings for the mpz_ function is faster.
-//    printf ("mpz_fac_ui\n");
-//    mpz_fac_ui(*(p->gmp()),((*p)&0x7FFFFFFF));
-//    return;
-//    }
-
    // here are the 4 "accumulators" used so that each of them grows to only 1/4 the size of the "final" result.
    // We should see improvements similar to the difference betwen Karatsuba compared to "classical" multiplication
    Integer mm2[4];
    mm2[0]=1; mm2[1]=1; mm2[2]=1;mm2[3]=1;
 
-   long nStop = *p&0x7FFFFFFF;
+   long nStop = ((*p) & INT_MAX);
    if (nMultStep > 1)
    {
       // find the first integer > 1 which will be in the "set" of factors  valid for this multifactorial.
@@ -823,7 +752,7 @@ void FactorialHelper(Integer *p, long nMultStep, int m)
       for (; q <= nStop; q+=nMultStep)
       {
          uint64 ui64Tmp=q;
-         for (; ui64Tmp*(q+nMultStep) < 0x7FFFFFFF && q < nStop;)
+         for (; ui64Tmp*(q+nMultStep) < INT_MAX && q < nStop;)
          {
             q += nMultStep;
             ui64Tmp *= q;
@@ -895,18 +824,19 @@ void FactorialHelper(Integer *p, long nMultStep, int m)
 
 PFBoolean MS_FACT::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &/*o*/,int m)
 {
-// the 'data' item allows for multifactorials
-    Integer *p=s.Peek();
-    if(p==NULL) return(PFBoolean::b_false);
-// if p is too large, forget it.
+   Integer *p=s.Peek();
+   if(p==NULL) return(PFBoolean::b_false);
+
+   // if p is too large, forget it.
    if((*p)<0) return PFBoolean::b_false;
+
    Integer gLimit=m_gData;
    gLimit*=1000000;
 
-    if((*p)>gLimit) return(PFBoolean::b_false);
+   if((*p)>gLimit) return(PFBoolean::b_false);
 
-    FactorialHelper(p,m_gData&0x7FFFFFFF,m);
-    return(PFBoolean::b_true);
+   FactorialHelper(p, m_gData&INT_MAX, m);
+   return(PFBoolean::b_true);
 }
 
 PFBoolean D_FACT::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
@@ -915,17 +845,16 @@ PFBoolean D_FACT::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
    if(q==NULL) return(PFBoolean::b_false);
    if((*q)<=0) {delete q; return(PFBoolean::b_false);}
 
-   // the 'data' item allows for multifactorials
-    Integer *p=s.Peek();
-    if(p==NULL) {delete q; return(PFBoolean::b_false);}
-// if p is too large, forget it.
+   Integer *p=s.Peek();
+   if(p==NULL) {delete q; return(PFBoolean::b_false);}
+   
+   // if p is too large, forget it.
    if((*p)<0) {delete q; return(PFBoolean::b_false);}
+   
    Integer gLimit=*q;
    gLimit*=1000000;
 
-    if((*p)>gLimit) {delete q; return(PFBoolean::b_false);}
-
-//    FactorialHelper(p,(*q)&0x7FFFFFFF,m);
+   if((*p)>gLimit) {delete q; return(PFBoolean::b_false);}
 
    if (m)
       *p %= m;
@@ -938,7 +867,7 @@ PFBoolean D_FACT::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int m)
 
    delete q;
    o.Remove();
-    return(PFBoolean::b_true);
+   return(PFBoolean::b_true);
 }
 
 MS_PRIM::MS_PRIM()
@@ -960,28 +889,28 @@ ExprOperator *MS_PRIM::Mutant() const
 
 PFBoolean PrimorialHelper(Integer *p, uint32 pp)
 {
-   primeserver->restart();
-    Integer mm;
-    mm=1;
+   uint64 q;
+   Integer mm;
+   mm=1;
 
-    uint32 q;
-    for(primeserver->next(q); q <= pp; primeserver->next(q))
-      mm*=q;
-    *p=mm;
+   for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
+     mm *= q;
 
-    return(PFBoolean::b_true);
+   *p=mm;
+
+   return(PFBoolean::b_true);
 }
 
 PFBoolean PrimorialHelper2(Integer *p, uint32 pp, uint32 m)
 {
-   primeserver->restart();
-   primeserver->skip(m);
+   uint64 q;
    Integer mm;
    mm=1;
+   
+   primeserver->SkipTo(m);
+   for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
+     mm *= q;
 
-   uint32 q;
-   for(primeserver->next(q); q <= pp; primeserver->next(q))
-      mm*=q;
    *p=mm;
 
    return(PFBoolean::b_true);
@@ -997,9 +926,9 @@ PFBoolean D_PRIM::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &o,int /*m*
     Integer *p=s.Peek();
     if(p==NULL) {delete q; return(PFBoolean::b_false);}
 
-    PFBoolean b = PrimorialHelper2(p,(*p)&0x7fffffff,(*q)&0x7FFFFFFF);
-   delete q;
-   o.Remove();
+    PFBoolean b = PrimorialHelper2(p, (*p)&INT_MAX, (*q)&INT_MAX);
+    delete q;
+    o.Remove();
     return(b);
 }
 
@@ -1007,22 +936,23 @@ PFBoolean MS_PRIM::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> & /*o*/,in
 {
     Integer *p=s.Peek();
     if(p==NULL) return(PFBoolean::b_false);
-// if p is too large, forget it.
+
+    // if p is too large, forget it.
     if((*p)>20000000) return(PFBoolean::b_false);
-    uint32 pp=(*p)&0x7fffffff;
+
+    uint32 pp= ((*p) & INT_MAX);
 
    if (m == 0)
       return PrimorialHelper(p,pp);
 
    // I don't think we can EVER get here.
 
-   primeserver->restart();
 
    Integer mm;
    mm=1;
 
-   uint32 q;
-   for(primeserver->next(q); q <= pp; primeserver->next(q))
+   uint64 q;
+   for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
    {
       mm*=(q%m);
       mm%=m;

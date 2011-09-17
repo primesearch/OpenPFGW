@@ -98,12 +98,12 @@ PFBoolean F_Smarandache::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   int cnt = (*C)&0x7FFFFFFF;
+   int cnt = ((*C) & INT_MAX);
    int nStart = 1;
    if(pStart!=NULL)
    {
       Integer *S = ((PFIntegerSymbol*)pStart)->GetValue();
-      nStart = (*S)&0x7FFFFFFF;
+      nStart = ((*S) & INT_MAX);
    }
 
    // calculate how big of a char[] array we need.
@@ -182,12 +182,12 @@ PFBoolean F_Smarandache_r::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   int cnt = (*C)&0x7FFFFFFF;
+   int cnt = ((*C) & INT_MAX);
    int nStart = cnt;
    if(pStart!=NULL)
    {
       Integer *S = ((PFIntegerSymbol*)pStart)->GetValue();
-      nStart = (*S)&0x7FFFFFFF;
+      nStart = ((*S) & INT_MAX);
    }
 
    // calculate how big of a char[] array we need.

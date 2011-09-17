@@ -757,8 +757,7 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
             }
             else if (bShowStr)
                m_SmartEdit.AddString(cp);
-            else
-               /* If in "SuperQuiet" mode, we must clean up this string, or we will leak to death! */
+
             delete [] cp;
          }
          break;
@@ -889,7 +888,7 @@ void CWinPFGWDlg::ThreadProc(void *m_ThisPointer)
    delete[] cp;
    // Run the damn thing.
 
-   primeserver = new PrimeGenerator();
+   primeserver = new PrimeServer();
 
    // Ok, now make the "magic" command line param.
    argv[argc] = new char [120];

@@ -7,23 +7,19 @@ PFSamplerSymbol::PFSamplerSymbol()
    :  IPFSymbol("_SAMPLER"), m_dwLastCRC(0), m_dwLargePrime(255),
       m_dwSmallIndex(0), m_dwAcceptIndex(0), m_dwSmallCount(0)
 {
+   uint32 p;
+
    // the sampler works in a simple way. You 'ask' for a prime, if
    // you use it, you 'accept' it. When you ask, tables are reset.
    // When you accept small primes (<256) they are moved to the end
    // of the small primes queue
 
-   // there are 54 primes less than 256, I think
-   primeserver->restart();
-   uint32 p;
-   do
+   for (int32 i=0; ; i++ )
    {
-      primeserver->next(p);
-      if(p<256)
-      {
-         m_dwSmallPrimes[m_dwSmallCount++]=p;
-      }
-   }
-   while(p<256);
+      p = (uint32) primeserver->ByIndex(i);
+      if (p > 256) break;
+      m_dwSmallPrimes[m_dwSmallCount++] = p;
+   };
 }
 
 PFSamplerSymbol::~PFSamplerSymbol()
@@ -68,12 +64,9 @@ uint32 PFSamplerSymbol::askagain()
    else
    {
       // ran out of little ones, so get a big one
-      if(m_dwLargePrime<256)
-      {
-         primeserver->restart();
-         primeserver->skip(m_dwLargePrime+1);
-      }
-      primeserver->next(m_dwLargePrime);
+      if (m_dwLargePrime<256)
+         primeserver->SkipTo(m_dwLargePrime+1);
+      m_dwLargePrime = (uint32) primeserver->NextPrime();
       r=m_dwLargePrime;
    }
    return r;

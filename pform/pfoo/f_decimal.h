@@ -4,7 +4,6 @@
 #include "pfiterativesymbol.h"
 
 class Integer;
-class PowerBuffer;
 class RecursionBuffer;
 
 class F_Decimal : public PFIterativeSymbol

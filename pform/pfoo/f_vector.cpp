@@ -68,7 +68,7 @@ PFBoolean F_Vector::OnExecute(PFSymbolTable *pContext)
       if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
       {
          Integer *ipmin=((PFIntegerSymbol*)pSymbol)->GetValue();
-         pmin=(*ipmin&0x7FFFFFFF);
+         pmin = ((*ipmin) & INT_MAX);
       }
       else
       {
@@ -82,7 +82,7 @@ PFBoolean F_Vector::OnExecute(PFSymbolTable *pContext)
       if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
       {
          Integer *ipmax=((PFIntegerSymbol*)pSymbol)->GetValue();
-         pmax=(*ipmax&0x7FFFFFFF);
+         pmax = ((*ipmax) & INT_MAX);
       }
       else
       {
@@ -127,9 +127,8 @@ PFBoolean F_Vector::OnInitialize()
    m_dwStepGranularity=2048;
    m_bStopOverride=PFBoolean::b_true;
 
-   primeserver->restart();
-   primeserver->skip(pmin);
-   primeserver->next(p);
+   primeserver->SkipTo(pmin);
+   p = (uint32) primeserver->NextPrime();
 
    return PFBoolean::b_true;
 }
@@ -147,7 +146,7 @@ PFBoolean F_Vector::Iterate()
       return(PFBoolean::b_true);       // end the test
    }
    uint32 p2;
-   primeserver->next(p2);
+   p2 = (uint32) primeserver->NextPrime();
    int i1,i2;
 
    pN->m_mod2(p,p2,&i1,&i2);
@@ -159,8 +158,8 @@ PFBoolean F_Vector::Iterate()
    {
       PFPrintfLog("%u: %d\n",p2,i2);
    }
-
-   primeserver->next(p);            // ready for the next iteration
+   
+   p = (uint32) primeserver->NextPrime(); // ready for the next iteration
    return(PFBoolean::b_false);            // and its not quitting time yet
 }
 

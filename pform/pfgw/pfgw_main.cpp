@@ -754,7 +754,7 @@ int pfgw_main(int argc,char *argv[])
    if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
    {
       Integer iSQ=*(((PFIntegerSymbol*)pSymbol)->GetValue());
-      g_ExtraSQFree=iSQ&0x7FFFFFFF;
+      g_ExtraSQFree = (iSQ & INT_MAX);
    }
 
    pSymbol=psymRuntime->LookupSymbol("_LOGFILE");
@@ -1265,7 +1265,6 @@ int pfgw_main(int argc,char *argv[])
          PFBoolean bTrivial=PFBoolean::b_false;
          if (g_bTrialFactor)
          {
-            psymRuntime->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^6
             PFFunctionSymbol::CallSubroutine("@trivial",psymRuntime);
             if (g_bExitNow)
                break;

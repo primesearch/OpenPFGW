@@ -1,4 +1,0 @@
-erat.o: erat.c erat.h ../types/uint64.h ../types/uint32.h \
- ../tables/twiddles.h ../tables/../types/uint32.h \
- ../tables/onemeg_cp7.h ../tables/pmod30.h ../compress/compri7.h \
- ../arith/math16.h ../arith/../types/uint32.h

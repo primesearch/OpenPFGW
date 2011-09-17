@@ -18,6 +18,7 @@
 
 extern unsigned long clocks_per_sec;
 
+PrimeServer *primeserver;
 
 int main(int argc, char *argv[])
 {
@@ -80,7 +81,8 @@ int main(int argc, char *argv[])
 
    memAlloc();
 
-   primeserver = new PrimeGenerator();
+   primeserver = new PrimeServer();
+   primeserver->SkipTo(1);
 
    // Setup the global ini object to the PFGW.INI file.  NOTE that any program written which will be
    // calling pfgw_main() will need to open the "correct" ini file.  PFGW.EXE opens PFGW.ini.  WinPFGW.exe

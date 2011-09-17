@@ -24,14 +24,14 @@ CSmartEditField::~CSmartEditField()
 {
 }
 
-int CSmartEditField::AddString(char *cpp, bool bDelete)
+int CSmartEditField::AddString(char *cpp)
 {
    int Len = (int) strlen(cpp);
    char *cp = new char [Len+20];
+
    memset(cp, 0, Len+20);
    strcpy(cp, cpp);
-   if (bDelete)
-      delete[] cpp;
+
    cpp = cp;
    char *cpEnd = &cp[strlen(cp)-1];
    int Eol = 0;

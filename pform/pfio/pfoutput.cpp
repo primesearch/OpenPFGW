@@ -31,7 +31,8 @@ PFOutput::PFOutput()
 PFOutput::~PFOutput()
 {
    CloseLogFile();
-   delete m_pBuffer;
+   if (m_pBuffer) delete m_pBuffer;
+   m_pBuffer = 0;
 }
 
 void PFOutput::InitLogFile(const char *FName, const int terseOutput)

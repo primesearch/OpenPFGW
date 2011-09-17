@@ -103,7 +103,6 @@ PFBoolean T_PRP::CallFunction(PFSymbolTable *pContext)
 
       if(bRetval && !bProcessed)
       {
-         pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
          int iRetval=CallSubroutine("@trivial",pSubContext);
          if(iRetval<0)
          {
@@ -352,7 +351,6 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 
       if(bRetval && !bProcessed)
       {
-         pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
          int iRetval=CallSubroutine("@trivial",pSubContext);
          if(iRetval!=-1)
          {
@@ -511,7 +509,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
 
          // Aim for cuberoot N. We need to find cuberoot N.
          // Note that N>2^lg. So we round up.
-         DWORD dwExponent=(lg(*pN)+3)/3;
+         DWORD dwExponent=(numbits(*pN)+3)/3;
          Integer *pT=new Integer(1);
          (*pT)<<=dwExponent;
          pSubContext->AddSymbol(new PFIntegerSymbol("_TARGET",pT));
@@ -596,7 +594,7 @@ PFBoolean T_Pocklington::CallFunction(PFSymbolTable *pContext)
             pSubContext->AddSymbol(pF);
             pSubContext->AddSymbol(pG);
 
-            PFPrintfLog("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*lg(*F))/double(lg(*pN)));
+            PFPrintfLog("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*numbits(*F))/double(numbits(*pN)));
 
             // the end call performs the Brillhart-Lehmer-Selfridge processing of the
             // Lenstra's Theorem result.
@@ -723,7 +721,6 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 
       if(bRetval && !bProcessed)
       {
-         pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
          int iRetval=CallSubroutine("@trivial",pSubContext);
          if(iRetval!=-1)
          {
@@ -882,7 +879,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 
          // Aim for cuberoot N. We need to find cuberoot N.
          // Note that N>2^lg. So we round up.
-         DWORD dwExponent=(lg(*pN)+3)/3;
+         DWORD dwExponent=(numbits(*pN)+3)/3;
          Integer *pT=new Integer(1);
          (*pT)<<=dwExponent;
          pSubContext->AddSymbol(new PFIntegerSymbol("_TARGET",pT));
@@ -995,7 +992,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
             pSubContext->AddSymbol(pF);
             pSubContext->AddSymbol(pG);
 
-            PFPrintfLog("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*lg(*G))/double(lg(*pN)));
+            PFPrintfLog("Calling Brillhart-Lehmer-Selfridge with factored part %.2f%%\n",double(100.0*numbits(*G))/double(numbits(*pN)));
 
             // the end call performs the Brillhart-Lehmer-Selfridge processing of the
             // Lenstra's Theorem result.
@@ -1125,7 +1122,6 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 
       if(bRetval && !bProcessed)
       {
-         pSubContext->AddSymbol(new PFIntegerSymbol("_trivial_depth",new Integer(31))); // only trivial factor to 2^31
          int iRetval=CallSubroutine("@trivial",pSubContext);
          if(iRetval!=-1)
          {
@@ -1489,8 +1485,8 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
                tv*=fProven;
                sPolisher="@endminus1";
                PFPrintfLog("Calling N-1 BLS with factored part %.2f%% and helper %.2f%% (%.2f%% proof)\n",
-                  double(100.0*lg(*F))/double(lg(*pN)),double(100.0*lg(*G))/double(lg(*pN)),
-                  double(100.0*lg(tv))/double(lg(*pN)));
+                  double(100.0*numbits(*F))/double(numbits(*pN)),double(100.0*numbits(*G))/double(numbits(*pN)),
+                  double(100.0*numbits(tv))/double(numbits(*pN)));
             }
             else
             {
@@ -1498,8 +1494,8 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
                tv*=gProven;
                sPolisher="@endplus1";
                PFPrintfLog("Calling N+1 BLS with factored part %.2f%% and helper %.2f%% (%.2f%% proof)\n",
-                  double(100.0*lg(*G))/double(lg(*pN)),double(100.0*lg(*F))/double(lg(*pN)),
-                  double(100.0*lg(tv))/double(lg(*pN)));
+                  double(100.0*numbits(*G))/double(numbits(*pN)),double(100.0*numbits(*F))/double(numbits(*pN)),
+                  double(100.0*numbits(tv))/double(numbits(*pN)));
             }
 
 

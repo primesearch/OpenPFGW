@@ -45,64 +45,52 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
       PFFactorizationSymbol *pFactorization=new PFFactorizationSymbol("_TRIVIALFACTOR");
 
       Integer *pN=((PFIntegerSymbol*)pSymbol)->GetValue();
-      // default to 31 bit trivial factor depth. This depth is needed for mobius and primative factoring, but for
-      // "normal" testing, trivial factoring this deep is actually way too much, and slows things down a lot. For
-      // "normal" testing, 2^6 is sufficient (GWIntegers may have problems below this size).
-      int nDepth=31;
-      pSymbol=pContext->LookupSymbol("_trivial_depth");
-      if (pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
-      {
-         PFIntegerSymbol *pI=(PFIntegerSymbol*)pSymbol;
-         Integer *g=pI->GetValue();
-         nDepth=(*g)&0x1F;
-         if (nDepth < 6)
-            nDepth = 6;
-      }
-      if((*pN)<0)
+
+      if ((*pN)<0)
       {
          bNeg=PFBoolean::b_true;
          (*pN)*=-1;
          iResult=TT_NEGATIVE;
       }
 
-      // now find out if the number is small. Remember lg() is greatest power of 2 no
-      // greater than N
-      if((*pN)<3)
+      // now find out if the number is small. Remember numbits() is greatest power of 2 no greater than N
+      if ((*pN)<3)
       {
          pFactorization->AddFactor(new FactorNode((*pN),1));
          // Zero, one, two
-         iResult=((*pN)&0x7fffffff);
+         iResult = ((*pN) & INT_MAX);
       }
-      else if(lg(*pN)<nDepth)    // Why not ? We can handle it!
-                                  //  because it is slow as hell!  Possibly it will be faster with a
-                           //  better prime generator, but for now it is SLOW.
-                           //
-                           // If we do NOT dip into this code for numbers less than 2^31, then the
-                           // V() and Phi() functions start failing!!!  We need to check into this!!!
+      else if (numbits(*pN) < 40)
       {
-         int dwFactor=(*pN)&0x7FFFFFFF;
+         // If we do NOT dip into this code for numbers less than 2^31, then the
+         // V() and Phi() functions start failing!!!  We need to check into this!!!
+         uint64 p, sqrtN;
+         uint64 rawN = ((*pN) & ULLONG_MAX);
+         int32 i;
 
-         primeserver->restart();
-         uint32 p;
+         sqrtN = (uint64) sqrt((double) rawN);
 
-          for(primeserver->next(p); dwFactor!=1 && p<65536; primeserver->next(p))
+         for (i=1; rawN!=1; i++)
          {
-            if(p*p>uint32(dwFactor))
+            p = primeserver->ByIndex(i);
+
+            if (p > sqrtN)
             {
-               pFactorization->AddFactor(new FactorNode(Integer(int(dwFactor)),1));
-               dwFactor=1;
+               pFactorization->AddFactor(new FactorNode(Integer(rawN),1));
+               rawN=1;
             }
             else
             {
                int iPower=0;
-               while((dwFactor%p)==0)
+               while ((rawN%p)==0)
                {
                   iPower++;
-                  dwFactor/=p;
+                  rawN /= (int) p;
                }
-               if(iPower>0)
+               if (iPower>0)
                {
-                  pFactorization->AddFactor(new FactorNode(Integer(int(p)),iPower));
+                  sqrtN = (uint64) sqrt((double) rawN);
+                  pFactorization->AddFactor(new FactorNode(Integer(p),iPower));
                }
             }
          }

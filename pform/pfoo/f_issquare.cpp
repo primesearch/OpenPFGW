@@ -79,17 +79,16 @@ PFBoolean F_IsSquare::CallFunction(PFSymbolTable *pContext)
                }
                else if(!bConclusive)
                {
+                  uint64 p;
                   // we don't know yet, so do some more tests
                   // using the kronecker symbol
-                  int iTests=lg(QQ)+1;    // for this many bits
-                  primeserver->restart();
-                  uint32 p;
-                  primeserver->next(p);         // forget mod 2
+                  int iTests=numbits(QQ)+1;    // for this many bits
+                  p = primeserver->NextPrime();         // forget mod 2
 
                   while(!bConclusive && iTests--)
                   {
-                     primeserver->next(p);
-                     int iKro=kro(QQ,int(p));
+                     p = primeserver->NextPrime();
+                     int iKro=kro(QQ,p);
                      if(iKro==-1)
                      {
                         bConclusive=PFBoolean::b_true;

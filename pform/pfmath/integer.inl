@@ -62,12 +62,12 @@ GW_INLINE Integer::Integer(uint64 n64)
 	uint32 n32 = uint32(n64>>32);
 	if (!n32)
 		// Simple case, n64 is only 32 bits.
-		mpz_init_set_ui(m_g,(uint32)(n64&0xFFFFFFFF));
+		mpz_init_set_ui(m_g,(uint32)(n64&UINT_MAX));
 	else
 	{
 		mpz_init_set_ui(m_g,n32);
 		mpz_mul_2exp(m_g, m_g, 32);
-		mpz_add_ui(m_g,m_g,(uint32)(n64&0xFFFFFFFF));
+		mpz_add_ui(m_g,m_g,(uint32)(n64&UINT_MAX));
 	}
 
 #if defined(_64BIT)
@@ -105,6 +105,17 @@ GW_INLINE void Integer::m_set(const Integer &y)
 GW_INLINE int32 Integer::m_cmp(const int32 n) const
 {
 	return mpz_cmp_si(m_g,n);
+}
+
+GW_INLINE int32 Integer::m_cmp(const uint64 n64) const
+{
+   uint32 n32 = uint32(n64>>32);
+
+   mpz_set_ui(*(mpz_t*)(&scrap), n32);
+	mpz_mul_2exp(*(mpz_t*)(&scrap), scrap, 32);
+	mpz_add_ui(*(mpz_t*)(&scrap), scrap, (uint32)(n64&UINT_MAX));
+
+   return mpz_cmp(m_g,scrap);
 }
 
 GW_INLINE int32 Integer::m_cmp(const Integer &y) const
@@ -436,6 +447,11 @@ GW_INLINE int32 operator != (const Integer & x, int32 n)
 	return (x.m_cmp(n) != 0);
 }
 
+GW_INLINE int32 operator != (const Integer & x, uint64 n)
+{
+	return (x.m_cmp(n) != 0);
+}
+
 GW_INLINE int32 operator != (const Integer & x, const Integer & y)
 {
 	return (x.m_cmp(y) != 0);
@@ -648,6 +664,13 @@ GW_INLINE Integer & Integer::operator &= (const int32 n)
 	return *this;
 }
 
+GW_INLINE Integer & Integer::operator &= (const uint64 n)
+{
+	// function not used.
+	m_andu(Integer(n));
+	return *this;
+}
+
 GW_INLINE Integer & Integer::operator &= (const Integer & y)
 {
 	// function not used.
@@ -668,7 +691,6 @@ GW_INLINE Integer & Integer::operator |= (const Integer & y)
 	m_oru(y);
 	return *this;
 }
-
 
 GW_INLINE Integer operator + (const Integer & x, const int32 n)
 {
@@ -818,13 +840,13 @@ GW_INLINE char* Integer::Itoa(const int32 base) const
 	return mpz_get_str (cp, base, m_g);
 }
 
-GW_INLINE int32 lg(const Integer &x)
+GW_INLINE int32 numbits(const Integer &x)
 {
 	return (int32) mpz_sizeinbase(x.m_g,2)-1;
 }
 
-GW_INLINE int32 lg(const uint64 &x)
+GW_INLINE int32 numbits(const uint64 &x)
 {
 	Integer t(x);
-	return (int32) lg(t);
+	return (int32) numbits(t);
 }

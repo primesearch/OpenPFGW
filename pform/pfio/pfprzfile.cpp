@@ -94,11 +94,7 @@ void PFPrZFile::LoadFirstLine()
    uint64 xx;
    if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
    {
-#if defined (_MSC_VER)
-      m_MaxNum = 0x7FFFFFFFFFFFFFFF;
-#else
-      m_MaxNum = 0x7FFFFFFFFFFFFFFFLL;
-#endif
+      m_MaxNum = LLONG_MAX;
       m_MinNum = pFileHead->KOffset();
    }
 
@@ -177,11 +173,7 @@ int PFPrZFile::SeekToLine(int LineNumber)
       uint64 xx;
       if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
       {
-#if defined (_MSC_VER)
-         m_MaxNum = 0x7FFFFFFFFFFFFFFF;
-#else
-         m_MaxNum = 0x7FFFFFFFFFFFFFFFLL;
-#endif
+         m_MaxNum = LLONG_MAX;
          m_MinNum = pFileHead->KOffset();
       }
       sprintf (s_Line, "%s", pFileHead->PrZ_GetFirstLine());
@@ -258,11 +250,7 @@ void PFPrZ_newpgen_File::LoadFirstLine()
    uint64 xx;
    if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
    {
-#if defined (_MSC_VER)
-      m_MaxNum = 0x7FFFFFFFFFFFFFFF;
-#else
-      m_MaxNum = 0x7FFFFFFFFFFFFFFFLL;
-#endif
+      m_MaxNum = LLONG_MAX;
       m_MinNum = pFileHead->KOffset();
    }
 
@@ -336,11 +324,7 @@ int PFPrZ_newpgen_File::SeekToLine(int LineNumber)
       uint64 xx;
       if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
       {
-#if defined (_MSC_VER)
-         m_MaxNum = 0x7FFFFFFFFFFFFFFF;
-#else
-         m_MaxNum = 0x7FFFFFFFFFFFFFFFLL;
-#endif
+         m_MaxNum = LLONG_MAX;
          m_MinNum = pFileHead->KOffset();
       }
       sprintf (s_Line, "%s", pFileHead->PrZ_GetFirstLine());

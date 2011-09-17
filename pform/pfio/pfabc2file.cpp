@@ -123,11 +123,10 @@ void PFABC2File::LoadFirstLine()
             if (m_nFirstPrime==-1)
                m_nFirstPrime=i;
 
-            primeserver->restart();
-            primeserver->skip(uint64(min[i]));
+            primeserver->SkipTo((uint64)min[i]);
             uint64 p;
-            primeserver->next(p);
-            array[i]=(double)(int64)p;
+            p = primeserver->NextPrime();
+            array[i]=(double)p;
             if (i==0 && array[i] > 3)
                array[i]--;
          }
@@ -173,23 +172,18 @@ SkipThisLine:;
       do
       {
          again=false;
-            if (m_eRangeType[i]==e_Prime)
+         if (m_eRangeType[i]==e_Prime)
          {
-                primeserver->restart();
-                primeserver->skip(uint64(array[i])+1);
-            uint64 p;
-                primeserver->next(p);
-            array[i]=(double)(int64)p;
-                if (array[i]>max[i])
+            primeserver->SkipTo((uint64)array[i]+1);
+            array[i]=(double) primeserver->NextPrime();
+            if (array[i]>max[i])
             {
-                    primeserver->restart();
-                    primeserver->skip(uint64(min[i]));
-               primeserver->next(p);
-                    array[i]=(double)(int64)p;
-                    i++;
-                    again=true;
-                }
+               primeserver->SkipTo((uint64) min[i]);
+               array[i]=(double) primeserver->NextPrime();
+               i++;
+               again=true;
             }
+         }
          else if (m_eRangeType[i]==e_In)
          {
             if (m_nSetNum[i]==max[i])
@@ -291,14 +285,18 @@ int PFABC2File::SeekToLine(int LineNumber)
    } else if (m_eRangeType[0]==e_In) {
       entries[0]=max[0]+1;
       array[0]=-1;
-   } else if (m_eRangeType[0]==e_Prime) {
-      primeserver->restart();
-      primeserver->skip(uint64(min[0]));
+   } else if (m_eRangeType[0]==e_Prime)
+   {
+      uint64 p;
+      primeserver->SkipTo((uint64)min[0]);
       j=0;
       array[0]=-1;
-      uint64 p;
-      for (primeserver->next(p); p <= (uint64)max[0]; primeserver->next(p))
+      p = primeserver->NextPrime();
+      while (p <= (uint64)max[0])
+      {
          j++;
+         p = primeserver->NextPrime();
+      }
       entries[0]=j;
    }
 
@@ -313,13 +311,16 @@ int PFABC2File::SeekToLine(int LineNumber)
          entries[i]=max[i]+1;
          array[i]=0;
       } else if (m_eRangeType[i]==e_Prime) {
-         primeserver->restart();
-         primeserver->skip(uint64(min[i]));
+         uint64 p;
+         primeserver->SkipTo(uint64(min[i]));
          j=0;
          array[i]=0;
-         uint64 p;
-         for (primeserver->next(p); p <= (uint64)max[i]; primeserver->next(p))
+         p = primeserver->NextPrime();
+         while (p <= (uint64)max[i])
+         {
             j++;
+            p = primeserver->NextPrime();
+         }
          entries[i]=j;
       }
       entries[i]*=entries[i-1];
@@ -350,26 +351,20 @@ int PFABC2File::SeekToLine(int LineNumber)
    for (i=0;i<=m_nLastLetter;i++) {
       if (m_eRangeType[i]==e_In) {
          m_nSetNum[i]=int(array[i]);
-         //array[i]=m_pSet[i][int(array[i])];
          strcpy(s_array[i],m_pSet[i][int(array[i])]);
       }
       else if (m_eRangeType[i]==e_Prime) {
-         primeserver->restart();
-         primeserver->skip(uint64(min[i]));
-         uint32 p32;
          uint64 p;
-         for (j=0;j<array[i];j++)
-            primeserver->next(p32);
+
+         for (j=0; j<array[i]; j++)
+            p = primeserver->ByIndex(j+1);
+         
+         p = primeserver->ByIndex(j+1);
+
          if (i == 0 && array[i] == -1)
-         {
-            primeserver->next(p);
-            array[i]=(double)(int64)(p-1);
-         }
+            array[i]=(double)(p-1);
          else
-         {
-            primeserver->next(p);
-            array[i]=(double)(int64)(p);
-         }
+            array[i]=(double)(p);
       }
    }
 

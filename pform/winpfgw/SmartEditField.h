@@ -12,9 +12,9 @@
 class CSmartEditField  
 {
 public:
-	int AddString(char *cp, bool bDelete=true);
 	CSmartEditField();
 	~CSmartEditField();
+	int AddString(char *cp);
 	int AttachCEdit(CEdit *pCe);
 	void ClearHighlight();
 	void ClearAll();

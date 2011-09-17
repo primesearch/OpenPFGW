@@ -1,1 +1,0 @@
-math16.o: math16.c math16.h ../types/uint32.h

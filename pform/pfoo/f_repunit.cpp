@@ -56,7 +56,7 @@ PFBoolean F_Repunit::CallFunction(PFSymbolTable *pContext)
             Integer *N=((PFIntegerSymbol*)pSymbol)->GetValue();
             if(N)
             {
-               int idx=(*N)&(0x7fffffff); // nothing unusual there
+               int idx = ((*N)& INT_MAX); // nothing unusual there
                if(((*N)==idx)&&(idx<10000000))
                {
                   Integer *P=((PFIntegerSymbol*)pPattern)->GetValue();
@@ -93,7 +93,7 @@ PFBoolean F_Repunit::CallFunction(PFSymbolTable *pContext)
                // PFGW runs up to about 40,000,000 bits
                // so we'll stop at 10 megadigit repunits
 
-                  int idx=(*q)&(0x7fffffff); // nothing unusual there
+               int idx = ((*q)& INT_MAX); // nothing unusual there
                if(((*q)==idx)&&(idx<10000000))
                {
                   Integer *r=new Integer(10);
