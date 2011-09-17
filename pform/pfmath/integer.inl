@@ -3,6 +3,10 @@
 /* I need signed ints, I have to be able to underflow */
 #define i52 int64
 
+#ifndef UINT_MAX
+#define UINT_MAX UINT32_MAX
+#endif
+
 // Can make return values sloppier (out by +/-p, say) by changing this
 //
 #define RET_SUB52(a,b,p) { i52 stab=a-b; if(stab<0) return stab+p; if(stab>=p) return stab-p; return stab; }

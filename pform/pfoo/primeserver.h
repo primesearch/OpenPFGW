@@ -8,7 +8,7 @@ extern PrimeServer *primeserver;
 class PrimeServer
 {
 public:
-	PrimeServer(uint64 upperLimit = 4000000000);
+	PrimeServer(uint64 upperLimit = 4000000000ULL);
 	PrimeServer(double upperLimit);
 
    ~PrimeServer();

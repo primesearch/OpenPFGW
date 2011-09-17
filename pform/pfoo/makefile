@@ -10,7 +10,7 @@ OLIB = algebra.o exponentiation.o exponentiator.o expr.o f_decimal.o f_factor.o 
 	nplus1exponentiator.o pffactorizationsymbol.o pffunctionsymbol.o pfintegersymbol.o \
 	pfiterativesymbol.o pfsamplersymbol.o pfstringsymbol.o powerbuffer.o primeserver.o \
 	recursionbuffer.o tests.o f_fibonacci.o f_repunit.o f_cyclotomic.o \
-	f_issquare.o f_endminus1.o f_endplus1.o h_mobius.o h_primitive.o \
+	f_issquare.o f_endminus1.o f_endplus1.o h_mobius.o h_primitive.o f_nextprime.o \
 	f_gcd.o f_binomial.o f_if.o f_smarandache.o f_sequence.o f_length.o pfintsymbol.o
 OUTDIR = .libs
 ALIB = $(OUTDIR)/pfoo.a
