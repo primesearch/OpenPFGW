@@ -45,6 +45,14 @@ inline uint64 _atou64(const char *s)
 }
 #endif // defined __cplusplus
 
+#ifndef INT_MAX
+#define INT_MAX INT32_MAX
+#define UINT_MAX UINT32_MAX
+#define LLONG_MAX INT64_MAX
+#define ULLONG_MAX UINT64_MAX
+#endif
+
+
 #if defined (_MSC_VER)
 // Remove these VC warning level 4 warnings
 //  C4514 unreferenced inline function has been removed
