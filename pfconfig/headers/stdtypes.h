@@ -11,8 +11,8 @@ typedef unsigned short uint16;
 typedef unsigned int uint32;
 
 #if defined (_MSC_VER)
-#define LL_FORMAT "%I64d" 
-#define ULL_FORMAT "%I64u" 
+#define LL_FORMAT "%I64d"
+#define ULL_FORMAT "%I64u"
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
 #else
@@ -24,13 +24,21 @@ typedef unsigned long long uint64;
 #define LL_FORMAT "%qd"
 #define ULL_FORMAT "%qu"
 
+#ifndef INT_MAX
+#define INT_MAX INT32_MAX
+#define UINT_MAX UINT32_MAX
+#define LLONG_MAX INT64_MAX
+#define ULLONG_MAX UINT64_MAX
+#endif
+
+
 // Provide compatiblity with VC's _atoi64() function for non-VC compilers.
 #if defined (__cplusplus)
 inline int64 _atoi64(const char *s)
 {
-	int64 i;
-	sscanf(s, "%lld", &i);
-	return i;
+   int64 i;
+   sscanf(s, "%lld", &i);
+   return i;
 }
 #endif // __cplusplus
 #endif // ! defined (_MSC_VER)
@@ -39,20 +47,21 @@ inline int64 _atoi64(const char *s)
 #if defined (__cplusplus)
 inline uint64 _atou64(const char *s)
 {
-	uint64 u;
-	sscanf(s, ULL_FORMAT, &u);
-	return u;
+   uint64 u;
+   sscanf(s, ULL_FORMAT, &u);
+   return u;
 }
 #endif // defined __cplusplus
 
 #if defined (_MSC_VER)
 // Remove these VC warning level 4 warnings
 //  C4514 unreferenced inline function has been removed
-//  C4511 copy constructor could not be generated      (In our code that is 100% what we want, non-copyable objects)
+//  C4511 copy constructor could not be generated      (that is what we want, non-copyable objects)
 //  C4512 assignment operator could not be generated   (ditto)
-//  C4127 conditional expression is constant           (Triggered by code like:   while(1) {}
+//  C4127 conditional expression is constant           (triggered by code like:   while(1) {}
 //  C4505 unreferenced local function has been removed (triggered by static functions in bmap.cxx)
-#pragma warning (disable : 4514 4511 4512 4127 4505)
+//  C4723 potential divide by 0                        (deliberately triggered)
+#pragma warning (disable : 4514 4511 4512 4127 4505 4723)
 #endif
 
 #endif
