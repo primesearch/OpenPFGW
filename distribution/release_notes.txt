@@ -1,14 +1,14 @@
-Released as version 3.5.0   September 17, 2011
+Released as version 3.5.0   September 22, 2011
 
 Enhancements to: v3.5.0 Release
    - Added a NEXTPRIME() function for scripts.  It will return the next prime after the
-     given argument.  This is guaranteed to return primes for any values below 1e15, but
-     can return composites for numbers above that value.
+     given argument.  This is guaranteed to return all primes below 2^64, but can return
+	  return composites for numbers above that value.
    - Replaced primegen siever with my own.  The primegen code misses some primes (notable
      primes that end with the digits "99999").  It was also limited to 32 bits.  The new
-     sieve can go up to 64 bits, but that would require a lot of memory, so for practical
-     reasons I have limited it to 1e16 for trail factoring and 1e15 for th NEXTPRIME() and
-     P() functions.  Another bonus is that there is no longer a penalty for trial factoring
+     sieve can go up to 64 bits, but starts with a limit of 4e9.  It will auto-increment
+     the upper limit by 100 until it reaches 2^64.  Outside of the small cost the occurs
+     when the limit is auto-bumped, there is no longer a penalty for trial factoring
      above 2^31.
    - Upped the limit for trivial factoring to 40 bits, i.e. input values 40 bits in size or
      less will be trivially factored.  This will reduce the number of "composite" PRPs,
