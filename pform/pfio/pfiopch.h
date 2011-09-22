@@ -30,6 +30,7 @@ typedef const TCHAR *LPCTSTR;
 #include <string.h>
 #include <time.h>
 
+#include "stdtypes.h"
 #include "pflib.h"
 #include "pfmath.h"
 #include "pfgwlib.h"

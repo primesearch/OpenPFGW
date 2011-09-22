@@ -24,13 +24,6 @@ typedef unsigned long long uint64;
 #define LL_FORMAT "%qd"
 #define ULL_FORMAT "%qu"
 
-#ifndef INT_MAX
-#define INT_MAX INT32_MAX
-#define UINT_MAX UINT32_MAX
-#define LLONG_MAX INT64_MAX
-#define ULLONG_MAX UINT64_MAX
-#endif
-
 
 // Provide compatiblity with VC's _atoi64() function for non-VC compilers.
 #if defined (__cplusplus)
@@ -65,3 +58,4 @@ inline uint64 _atou64(const char *s)
 #endif
 
 #endif
+
