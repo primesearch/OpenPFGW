@@ -41,7 +41,7 @@ PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
    
    if (!m_pPrimeServer)
-      m_pPrimeServer = new PrimeServer(1e15);
+      m_pPrimeServer = new PrimeServer();
 
    if (pSymbol) return bRetval;
 

@@ -413,10 +413,7 @@ PFBoolean F_Factor::OnInitialize()
             d *= 0.6;
 
          if (d > (double) primeserver->GetUpperLimit())
-         {
-            delete primeserver;
-            primeserver = new PrimeServer(d);
-         }
+            primeserver->SetUpperLimit(d);
 
          pmax = primeserver->GetUpperLimit();
       }
@@ -432,10 +429,7 @@ PFBoolean F_Factor::OnInitialize()
          d *= (double) pmax;
 
          if (d > (double) primeserver->GetUpperLimit())
-         {
-            delete primeserver;
-            primeserver = new PrimeServer(d);
-         }
+            primeserver->SetUpperLimit(d);
 
          pmax = primeserver->GetUpperLimit();
 #if !defined (NDEBUG) && (0)
@@ -448,10 +442,8 @@ PFBoolean F_Factor::OnInitialize()
    P1*=P1;
    pmaxadjust(pBiggest);
 
-   if (pmin>pmax)
-   {
-      pmin=pmax;
-   }
+   if (pmin > pmax)
+      pmin = pmax;
 
    double StepsVal = estimatePrimes((double)(int64)pmin,(double)(int64)pmax) / 2;
    m_dwStepsTotal =  (DWORD)(StepsVal/m_nModFactor + 1);

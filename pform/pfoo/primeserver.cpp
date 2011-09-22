@@ -12,18 +12,6 @@
 PrimeServer::PrimeServer(uint64 upperLimit)
 {
    m_UpperLimit = upperLimit;
-   m_pPrimeTable = 0;
-   m_pCompositeTable = 0;
-   m_pSieve = new uint8[RANGE_BYTES];
-   m_PrimesUsedInWindow = 0;
-
-   m_LowEndOfWindow = m_HighEndOfWindow = 0;
-   m_OutputWarning = false;
-   m_LastPrimeReturned = 0;
-   m_IndexOfLastPrimeReturned = 0;
-   m_LastSearchValue = 0;
-   m_MaxPrimeUsed = 0;
-   m_IndexInWindow = false;
 
    Initialize();
 
@@ -32,8 +20,8 @@ PrimeServer::PrimeServer(uint64 upperLimit)
 
 PrimeServer::PrimeServer(double upperLimit)
 {
-   if (upperLimit > 1e16)
-      ::PrimeServer((uint64) 1e16);
+   if (upperLimit > (double) ULLONG_MAX)
+      ::PrimeServer((uint64) ULLONG_MAX);
    else
       ::PrimeServer((uint64) upperLimit);
 }
@@ -45,12 +33,51 @@ PrimeServer::~PrimeServer()
    if (m_pSieve) delete [] m_pSieve;
 }
 
+void    PrimeServer::SetUpperLimit(double upperLimit)
+{
+   if (m_UpperLimit == ULLONG_MAX)
+   {
+      if (!m_OutputWarningSent)
+         PFPrintfStderr("Reached max sieving limit of %llu.  Sieve will return potential composites above that value.", m_UpperLimit);
+      m_OutputWarningSent = true;
+      return;
+   }
+
+   if (m_pPrimeTable) delete [] m_pPrimeTable;
+   if (m_pCompositeTable) delete [] m_pCompositeTable;
+   if (m_pSieve) delete [] m_pSieve;
+
+   if (upperLimit > (double) ULLONG_MAX)
+      m_UpperLimit = ULLONG_MAX;
+   else
+      m_UpperLimit = (uint64) upperLimit;
+
+   PFPrintfStderr("Sieve re-allocated with a limit of %llu.", m_UpperLimit);
+
+   Initialize();
+
+   BuildWindow(false, true);
+}
+
 void    PrimeServer::Initialize(void)
 {
    uint64   prevPrime, thisPrime;
    uint32   sqrtMax, i, composite;
    uint32   p, minp, *lowPrimes, lowPrimeCount;
    uint8   *sievePtr, *temp, *sieve;
+
+   m_pPrimeTable = 0;
+   m_pCompositeTable = 0;
+   m_pSieve = new uint8[RANGE_BYTES];
+   m_PrimesUsedInWindow = 0;
+
+   m_LowEndOfWindow = m_HighEndOfWindow = 0;
+   m_LastPrimeReturned = 0;
+   m_IndexOfLastPrimeReturned = 0;
+   m_LastSearchValue = 0;
+   m_MaxPrimeUsed = 0;
+   m_IndexInWindow = false;
+   m_OutputWarningSent = false;
 
    // Find all primes less than sqrt(MAX_PRIME)
    sqrtMax = (uint32) sqrt(sqrt((double) m_UpperLimit));
@@ -164,7 +191,6 @@ void  PrimeServer::BuildWindow(bool nextWindow, bool restart, uint64 searchValue
 
    if (restart)
    {
-      m_OutputWarning = false;
       m_PrimesUsedInWindow = 0;
       m_LastPrimeReturned = 0;
       m_IndexOfLastPrimeReturned = 0;
@@ -232,14 +258,7 @@ void    PrimeServer::SetupSieve(void)
          m_MaxPrimeUsed += m_pPrimeTable[m_PrimesUsedInWindow];
          m_PrimesUsedInWindow++;
          if (m_PrimesUsedInWindow == m_PrimesUsedInWindow)
-         {
-            if (!m_OutputWarning)
-            {
-               m_OutputWarning = true;
-               PFPrintfStderr("Warning;  Potential composites returned above %llu", m_UpperLimit * m_UpperLimit);
-            }
             break;
-         }
       }
    }
 
@@ -339,6 +358,10 @@ uint64   PrimeServer::NextPrime(bool isIndexing)
             m_LastBit = currentBit;
             m_LastByte = currentByte;
             m_LastPrimeReturned = candidate;
+
+            if (m_LastPrimeReturned  > m_UpperLimit - 100000)
+               SetUpperLimit(100.0 * m_UpperLimit);
+
             return m_LastPrimeReturned;
          }
 
@@ -411,6 +434,10 @@ uint64   PrimeServer::ByIndex(int64 index)
                if (++i == index)
                {
                   m_IndexOfLastPrimeReturned = index;
+
+                  if (candidate  > m_UpperLimit - 100000)
+                     SetUpperLimit(100.0 * m_UpperLimit);
+
                   return candidate;
                }
             }

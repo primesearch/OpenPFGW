@@ -25,10 +25,9 @@ public:
    // index by 1.  Note that ByIndex(1) = 2.
    uint64   ByIndex(int64 index);
 
-   // If the last (or next) prime might be composite
-   bool     GetMightBeComposite(void) { return m_OutputWarning; };
-
    uint64   GetUpperLimit(void) { return m_UpperLimit; };
+   
+   void     SetUpperLimit(double upperLimit);
 
 private:
    void     Initialize(void);
@@ -72,16 +71,15 @@ private:
    // These are used to hold the current sieve window.
    uint8   *m_pSieve;
 
-   // This indicates if we have output a message indicating that the primeserver
-   // has reached its limit.
-   bool     m_OutputWarning;
-
    // Holds last prime returned by NextPrime and ByIndex so that subsequent
    // calls don't need to start from the beginning.
    uint64   m_LastPrimeReturned;
    uint32   m_LastByte;
    uint8    m_LastBit;
    bool     m_IndexInWindow;
+
+   // Indicate if we warning user that sieve limit has been reached
+   bool     m_OutputWarningSent;
 
    // Holds last value passed to SkipTo so that subsequent calls to NextPrime
    // don't need to start from the beginning.  This is set to 0 by NextPrime.

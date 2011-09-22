@@ -13,7 +13,6 @@
 #include "pflib.h"
 #include "pfmath.h"
 #include "pfgwlib.h"
-#include "pfglue.h"
 #include "pfoo.h"
 #define __WinPFGW_MAIN__
 #include "pfio.h"
