@@ -171,7 +171,13 @@ void  PrimeServer::SetWindow(uint64 searchValue)
 {
    // If we are in the right window, then do nothing
    if (searchValue > m_LowEndOfWindow && searchValue < m_HighEndOfWindow)
+   {
+      m_PrimesUsedInWindow = 0;
+      m_LastPrimeReturned = 0;
+      m_IndexOfLastPrimeReturned = 0;
+      m_LastSearchValue = searchValue;
       return;
+   }
 
    BuildWindow(false, true, searchValue);
 }
@@ -309,7 +315,7 @@ uint64   PrimeServer::NextPrime(bool isIndexing)
 
    // If we just started our sieve, then return 2 as it is the first prime.  As the
    // tables hold no even values, we need special logic for it here.
-   if (searchFor == 0)
+   if (searchFor < 2)
    {
       m_IndexInWindow = false;
       m_LastPrimeReturned = 2;
@@ -385,6 +391,12 @@ uint64   PrimeServer::ByIndex(int64 index)
    uint64   candidate;
    uint32   currentByte, currentBit, i;
 
+   if (index == 1)
+   {
+      m_LastPrimeReturned = 2;
+      return m_LastPrimeReturned;
+   }
+
    if (index == m_IndexOfLastPrimeReturned + 1)
    {
       m_IndexOfLastPrimeReturned = index;
@@ -395,12 +407,6 @@ uint64   PrimeServer::ByIndex(int64 index)
    if (index < 1) return 1;
 
    m_IndexOfLastPrimeReturned = index;
-
-   if (index == 1)
-   {
-      m_LastPrimeReturned = 2;
-      return m_LastPrimeReturned;
-   }
 
    candidate = 0;
 

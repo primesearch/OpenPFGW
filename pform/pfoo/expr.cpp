@@ -893,6 +893,7 @@ PFBoolean PrimorialHelper(Integer *p, uint32 pp)
    Integer mm;
    mm=1;
 
+   primeserver->SkipTo(1);
    for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
      mm *= q;
 

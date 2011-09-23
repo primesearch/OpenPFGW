@@ -43,9 +43,9 @@ PFBoolean F_NextPrime::CallFunction(PFSymbolTable *pContext)
    if (!m_pPrimeServer)
       m_pPrimeServer = new PrimeServer();
 
-   if (pSymbol) return bRetval;
+   if (!pSymbol) return bRetval;
 
-   if (pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)  return bRetval;
+   if (pSymbol->GetSymbolType()!=INTEGER_SYMBOL_TYPE)  return bRetval;
 
    Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
 
