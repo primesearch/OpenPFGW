@@ -6,14 +6,7 @@ vpath %.asm .
 
 include ../../make.inc
 
-OSPECIAL = 
-ifeq ($(IS64),1)
-OLIB = integer.o
-endif
-
-ifeq ($(IS64),0)
 OLIB = integer.o mod.o
-endif
 
 OUTDIR	= .libs
 ALIB = $(OUTDIR)/pfmath.a
@@ -28,8 +21,6 @@ LD			= ld
 
 .PHONY:	all clean cleanlibs
 
-all:	$(ALIB)
-
 $(ALIB):	$(OLIB) $(OSPECIAL)
 	mkdir -p $(OUTDIR)
 	$(AR) ${ARFLAGS} $(ALIB) $^
@@ -43,7 +34,7 @@ $(ALIB):	$(OLIB) $(OSPECIAL)
 
 
 %.o:	%.asm
-	/usr/bin/nasm -fmacho -o $@ $<
+	/usr/bin/nasm -felf -o $@ $<
 
 
 maintainer-clean:	distclean
@@ -71,4 +62,4 @@ cleanlibs:
 dependencies:
 	$(CC) -MM -I. -I../.. $(srcdir)/*.cpp >deps.d
 	
-include deps.d
+

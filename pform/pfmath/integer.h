@@ -9,8 +9,8 @@ void memFree();
 
 #ifndef _64BIT
 
-extern "C" int32 Imod(uint32 * const a,const int32 n,const int32 len);
-extern "C" int32 Imod2(uint32 * const a,const int32 n1,const int32 n2,const int32 len, int32 *p1,int32 *p2);
+extern "C" int32 _Imod(uint32 * const a,const int32 n,const int32 len);
+extern "C" int32 _Imod2(uint32 * const a,const int32 n1,const int32 n2,const int32 len, int32 *p1,int32 *p2);
 
 #endif
 

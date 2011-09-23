@@ -2,6 +2,7 @@
 #define F_VECTOR_H
 
 #include "pfiterativesymbol.h"
+#include "integer.h"
 
 class Integer;
 class PFFactorizationSymbol;

@@ -69,7 +69,7 @@ int Integer::m_mod(const int32 n) const
    if (len < 0)
       len = -len;
 
-   r = Imod((uint32*)m_a, n, len);
+   r = _Imod((uint32*)m_a, n, len);
 
    return r;
 }

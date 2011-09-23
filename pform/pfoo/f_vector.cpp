@@ -3,6 +3,7 @@
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
 #include "primeserver.h"
+#include "integer.h"
 
 F_Vector::F_Vector()
    :  PFIterativeSymbol("@vector"), pN(NULL),

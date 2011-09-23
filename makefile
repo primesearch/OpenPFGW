@@ -4,19 +4,11 @@ srcdir=.
 CXX		=	g++
 include make.inc
 
-all:	quick
-
 pfgw32:	baselib integer fft pfoo io entrypoint
 	${CXX} ${CXXFLAGS}	\
-		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
-		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a packages/gmp/32bit/libgmp.a \
-		packages/gwnum/32bit/gwnum.a  -o pfgw32
-
-pfgw64:	baselib integer fft pfoo io entrypoint 
-	${CXX} ${CXXFLAGS}	\
-		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
-		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a packages/gmp/64bit/libgmp.a \
-		packages/gwnum/64bit/gwnum.a  -o pfgw64
+		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfglue/.libs/pfglue.a pform/pfgwlib/.libs/pfgwlib.a \
+		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a pform/prmsieve/.libs/prmsieve.a \
+		packages/gwnum/32bit/gwnum.a  packages/gwnum/32bit/gwnum.ld -lpthread -lstdc++ -lgmp -lgmpxx -static -o pfgw32s
 
 maintainer-clean:	distclean
 	rm -f configure

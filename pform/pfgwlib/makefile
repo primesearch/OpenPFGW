@@ -60,4 +60,3 @@ cleanlibs:
 dependencies:
 	$(CC) -MM -I. -I../.. $(srcdir)/*.c $(srcdir)/*.cpp >deps.d
 	
-include deps.d
