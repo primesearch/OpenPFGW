@@ -1,4 +1,12 @@
-Released as version 3.5.0   September 22, 2011
+Released as version 3.5.1   September 23, 2011
+
+Enhancements to: v3.5.1 Release
+   - Fixed a bug in trivial factoring as primeserver would return 3 when calling
+     the new ByIndex() function with a 1.
+   - Fixed a bug with using ABC files and primorials as primeserver didn't 
+     re-initialize after processing the first line.
+   - Fixed a bug with the p() and nextprime() functions when used in scripts.
+
 
 Enhancements to: v3.5.0 Release
    - Added a NEXTPRIME() function for scripts.  It will return the next prime after the
