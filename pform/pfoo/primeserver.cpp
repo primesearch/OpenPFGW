@@ -172,6 +172,7 @@ void  PrimeServer::SetWindow(uint64 searchValue)
    // If we are in the right window, then do nothing
    if (searchValue > m_LowEndOfWindow && searchValue < m_HighEndOfWindow)
    {
+      m_MaxPrimeUsed = 0;
       m_PrimesUsedInWindow = 0;
       m_LastPrimeReturned = 0;
       m_IndexOfLastPrimeReturned = 0;
@@ -197,6 +198,7 @@ void  PrimeServer::BuildWindow(bool nextWindow, bool restart, uint64 searchValue
 
    if (restart)
    {
+      m_MaxPrimeUsed = 0;
       m_PrimesUsedInWindow = 0;
       m_LastPrimeReturned = 0;
       m_IndexOfLastPrimeReturned = 0;
@@ -365,10 +367,10 @@ uint64   PrimeServer::NextPrime(bool isIndexing)
             m_LastByte = currentByte;
             m_LastPrimeReturned = candidate;
 
-            if (m_LastPrimeReturned  > m_UpperLimit - 100000)
+            if (candidate  > m_UpperLimit - 100000)
                SetUpperLimit(100.0 * m_UpperLimit);
 
-            return m_LastPrimeReturned;
+            return candidate;
          }
 
          if (currentBit == 0x80)
