@@ -6,7 +6,11 @@ vpath %.asm .
 
 include ../../make.inc
 
+ifeq ($(IS64),1)
+OLIB = integer.o
+else
 OLIB = integer.o mod.o
+endif
 
 OUTDIR	= .libs
 ALIB = $(OUTDIR)/pfmath.a
@@ -33,9 +37,13 @@ $(ALIB):	$(OLIB) $(OSPECIAL)
 	$(CXX) $(CXXFLAGS) -I. -I../.. -c -o $@ $<
 
 
+ifeq ($(ARCH),OSX)
+%.o:	%.asm
+	/usr/bin/nasm -fmacho -o $@ $<
+else
 %.o:	%.asm
 	/usr/bin/nasm -felf -o $@ $<
-
+endif
 
 maintainer-clean:	distclean
 	rm -f configure
