@@ -40,25 +40,19 @@ static inline i52 muladdmod52_pr(i52 x, i52 y, i52 a, i52 p, double prf)
 GW_INLINE Integer::Integer()
 {
 	mpz_init(m_g);
-#if defined(_64BIT)
 	mpz_init(scrap);
-#endif
 }
 
 GW_INLINE Integer::Integer(int32 n)
 {
 	mpz_init_set_si(m_g,n);
-#if defined(_64BIT)
 	mpz_init(scrap);
-#endif
 }
 
 GW_INLINE Integer::Integer(uint32 n)
 {
 	mpz_init_set_ui(m_g,n);
-#if defined(_64BIT)
 	mpz_init(scrap);
-#endif
 }
 
 GW_INLINE Integer::Integer(uint64 n64)
@@ -74,25 +68,19 @@ GW_INLINE Integer::Integer(uint64 n64)
 		mpz_add_ui(m_g,m_g,(uint32)(n64&UINT_MAX));
 	}
 
-#if defined(_64BIT)
 	mpz_init(scrap);
-#endif
 }
 
 GW_INLINE Integer::Integer(const Integer & x)
 {
 	mpz_init_set(m_g,x.m_g);
-#if defined(_64BIT)
 	mpz_init(scrap);
-#endif
 }
 
 GW_INLINE Integer::~Integer()
 {
 	mpz_clear(m_g);
-#if defined(_64BIT)
 	mpz_clear(scrap);
-#endif
 }
 
 GW_INLINE void Integer::m_set(const int32 n)
