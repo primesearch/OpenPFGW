@@ -1,15 +1,4 @@
-#include "fp_stchk.h" 
-#include "stdtypes.h" 
-#include "stdtypes.h.in"
-#include <climits>
-#ifndef INT_MAX
-#define INT_MAX INT32_MAX
-#define UINT_MAX UINT32_MAX
-#define LLONG_MAX INT64_MAX
-#define ULLONG_MAX UINT64_MAX
-#endif
-
-
+#include "fp_stchk.h"
 
 /* I need signed ints, I have to be able to underflow */
 #define i52 int64
@@ -241,7 +230,7 @@ GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64
 GW_INLINE void Integer::m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const
 {
 	DEBUG_ADJUST_FP_STACK(__FILE__, __LINE__);
-	_Imod2((uint32*)m_a,n1,n2,m_len,p1,p2);
+	Imod2((uint32*)m_a,n1,n2,m_len,p1,p2);
 }
 
 GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const

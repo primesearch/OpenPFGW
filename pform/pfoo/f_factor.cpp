@@ -6,7 +6,6 @@
 #include "pffactorizationsymbol.h"
 #include "primeserver.h"
 #include "expr.h"
-#include "integer.h"
 
 extern char g_cpTestString[70];  // Located in pfiterativesymbol.cpp
 extern int g_nIterationCnt;      // located in pfgw_main.cpp
