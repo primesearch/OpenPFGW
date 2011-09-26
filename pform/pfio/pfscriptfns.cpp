@@ -41,11 +41,23 @@ bool PFScriptFile::BadCommand()
    return true;
 }
 
-bool PFScriptFile::doCommand(char *cmd,char *args) {
+bool PFScriptFile::doCommand(char *cmd,char *args)
+{
    bool end=false;
-
+   int  i;
    uint32 oldIterCnt = g_nIterationCnt;
+
    g_nIterationCnt = 0;
+
+   // Remove trailing spaces
+   i = (int) strlen(args);
+   while (i)
+   {
+      if (args[i-1] != ' ')
+         break;
+
+      args[--i] = 0;
+   }
 
    // putting the commands into a switch (based on the first char) allows us to
    // significantly speed up processing, due to much fewer strcmp's being done
