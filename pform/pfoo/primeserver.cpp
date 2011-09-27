@@ -180,6 +180,9 @@ void  PrimeServer::SetWindow(uint64 searchValue)
       return;
    }
 
+   if (searchValue > m_UpperLimit)
+      SetUpperLimit(2.0 * searchValue);
+
    BuildWindow(false, true, searchValue);
 }
 
@@ -253,7 +256,7 @@ void    PrimeServer::SetupSieve(void)
    highEndOfWindow = m_LowEndOfWindow + RANGE_SIZE(RANGE_BYTES);
 
    // Extend the range of primes used for sieving if necessary
-   while (m_PrimesUsedInWindow < m_PrimesUsedInWindow)
+   while (m_PrimesUsedInWindow < m_PrimesInPrimeTable)
    {
       maxValue = m_MaxPrimeUsed * m_MaxPrimeUsed;
 
