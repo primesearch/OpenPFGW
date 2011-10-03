@@ -21,9 +21,13 @@ PrimeServer::PrimeServer(uint64 upperLimit)
 PrimeServer::PrimeServer(double upperLimit)
 {
    if (upperLimit > (double) ULLONG_MAX)
-      ::PrimeServer((uint64) ULLONG_MAX);
+       m_UpperLimit = ULLONG_MAX;
    else
-      ::PrimeServer((uint64) upperLimit);
+      m_UpperLimit = (uint64) upperLimit;
+
+   Initialize();
+
+   BuildWindow(false, true);
 }
 
 PrimeServer::~PrimeServer()
@@ -35,6 +39,8 @@ PrimeServer::~PrimeServer()
 
 void    PrimeServer::SetUpperLimit(double upperLimit)
 {
+   double ullong_max = (double) ULLONG_MAX;
+
    if (m_UpperLimit == ULLONG_MAX)
    {
       if (!m_OutputWarningSent)
@@ -47,7 +53,7 @@ void    PrimeServer::SetUpperLimit(double upperLimit)
    if (m_pCompositeTable) delete [] m_pCompositeTable;
    if (m_pSieve) delete [] m_pSieve;
 
-   if (upperLimit > (double) ULLONG_MAX)
+   if (upperLimit > ullong_max)
       m_UpperLimit = ULLONG_MAX;
    else
       m_UpperLimit = (uint64) upperLimit;
@@ -61,8 +67,8 @@ void    PrimeServer::SetUpperLimit(double upperLimit)
 
 void    PrimeServer::Initialize(void)
 {
-   uint64   prevPrime, thisPrime;
-   uint32   sqrtMax, i, composite;
+   uint64   prevPrime, thisPrime, composite;
+   uint32   sqrtMax, i;
    uint32   p, minp, *lowPrimes, lowPrimeCount;
    uint8   *sievePtr, *temp, *sieve;
 
@@ -175,6 +181,7 @@ void  PrimeServer::SetWindow(uint64 searchValue)
       m_MaxPrimeUsed = 0;
       m_PrimesUsedInWindow = 0;
       m_LastPrimeReturned = 0;
+      m_IndexInWindow = false;
       m_IndexOfLastPrimeReturned = 0;
       m_LastSearchValue = searchValue;
       return;
@@ -204,6 +211,7 @@ void  PrimeServer::BuildWindow(bool nextWindow, bool restart, uint64 searchValue
       m_MaxPrimeUsed = 0;
       m_PrimesUsedInWindow = 0;
       m_LastPrimeReturned = 0;
+      m_IndexInWindow = false;
       m_IndexOfLastPrimeReturned = 0;
       m_LastSearchValue = searchValue;
    }
@@ -398,6 +406,7 @@ uint64   PrimeServer::ByIndex(int64 index)
 
    if (index == 1)
    {
+      m_IndexInWindow = false;
       m_LastPrimeReturned = 2;
       return m_LastPrimeReturned;
    }
@@ -449,6 +458,7 @@ uint64   PrimeServer::ByIndex(int64 index)
                   if (candidate  > m_UpperLimit - 100000)
                      SetUpperLimit(100.0 * m_UpperLimit);
 
+                  m_LastPrimeReturned = candidate;
                   return candidate;
                }
             }

@@ -37,7 +37,7 @@ protected:
 	void        m_subu(const Integer & y);
 	void        m_mulu(const int32 n);
 	void        m_mulu(const Integer & y);
-	int32		   m_divu(const int32 n);
+	int32       m_divu(const int32 n);
 	Integer     m_divu(const Integer & y);
 	void        m_sftru(const int32 n);
 	GW_INLINE	int32       m_andu(const int32 & n) const;
@@ -68,6 +68,10 @@ protected:
 	void        m_neg();
 	void        m_abs();
 	GW_INLINE	void	m_shl(const int32 n);
+
+   int   mpz_sprp(mpz_t n, mpz_t a);
+   int   mpz_strongselfridge_prp(mpz_t n);
+   int   mpz_stronglucas_prp(mpz_t n, long int p, long int q);
 
 public:
 	Integer();
@@ -146,7 +150,7 @@ public:
 	friend Integer operator |  (const Integer & x, const Integer & y);
 	
 
-	void divmod(const Integer &d,Integer &q,Integer &r) const;
+	void  divmod(const Integer &d,Integer &q,Integer &r) const;
 	int32	m_mod(const int32 n) const;
 	void  m_mod(const uint64 n, uint64*p) const;
 	void	m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const;
@@ -155,6 +159,7 @@ public:
 	char * Itoa(const int32 base = 10) const;	// the caller MUST use operator delete[] to free up the returned string.
 	void atoI(const char * s, const int32 base = 10);
 	void Ipow(const int32 x, const int32 n); // x to the n as Integer 
+   Integer nextprime(void);
 
 	friend Integer abs(const Integer & x);
 	friend void    swap(Integer & a, Integer & b);
@@ -166,7 +171,7 @@ public:
 	friend uint32	crc32(const Integer &x,uint32 crc);
 
 	friend Integer pow(const Integer & x, const int32 n);
-	friend Integer shl(const Integer &x,const int32 n);	// returns x << n
+	friend Integer shl(const Integer & x, const int32 n);	// returns x << n
 	friend Integer squareroot(const Integer & x); // floor of square root
 	friend Integer gcd(const Integer & x, const Integer & y);
 	friend int32   kro(const Integer & x, const Integer & y); // Kronecker symbol

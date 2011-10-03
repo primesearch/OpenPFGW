@@ -12,7 +12,11 @@ F_NextPrime::F_NextPrime()
 
 F_NextPrime::~F_NextPrime()
 {
-   if (m_pPrimeServer) delete m_pPrimeServer;
+   if (m_pPrimeServer)
+   {
+      delete m_pPrimeServer;
+      m_pPrimeServer = 0;
+   }
 }
 
 DWORD F_NextPrime::MinimumArguments() const
@@ -39,9 +43,9 @@ PFBoolean F_NextPrime::CallFunction(PFSymbolTable *pContext)
 {
    PFBoolean bRetval=PFBoolean::b_false;
    IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
-   
+ 
    if (!m_pPrimeServer)
-      m_pPrimeServer = new PrimeServer();
+      m_pPrimeServer = new PrimeServer(1e12 + 10000);
 
    if (!pSymbol) return bRetval;
 
@@ -51,16 +55,21 @@ PFBoolean F_NextPrime::CallFunction(PFSymbolTable *pContext)
 
    if (!q) return bRetval;
 
-   uint64 last=(*q)&(ULLONG_MAX); // nothing unusual there
-
-   if ((*q)!=last)
-      return bRetval;
+   uint64 last=(*q)&(ULLONG_MAX);
 
    Integer *r=new Integer;
    bRetval=PFBoolean::b_true;
 
-   primeserver->SkipTo(last);
-   *r = primeserver->NextPrime();
+   // This should be faster than using the Integer::nextprime function
+   if ((q-last == 0) && last < (uint64) 1e12)
+   {
+      m_pPrimeServer->SkipTo(last);
+      *r = m_pPrimeServer->NextPrime();
+   }
+   else
+   {
+      *r = q->nextprime();
+   }
 
    pContext->AddSymbol(new PFIntegerSymbol("_result",r));
 
