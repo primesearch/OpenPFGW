@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v3.4.6 Release (March 2011)
+PrimeForm/GW documentation  PFGW v3.5.3 Release (October 2011)
 
    ---------
    - Index -
@@ -508,8 +508,9 @@ C.1. Expression-parts
 
  Functions:  (case of function name is not significant)
   p(x)     The x'th prime number
-  R(x)     Repunit                  r(13) --> 1111111111111
-  R(x,y)   Repeat pattern           r(5,17) --> 1717171717
+  nextprime(x) The next prime (or PRP) greater than x
+  R(x)     Repunit                   r(13) --> 1111111111111
+  R(x,y)   Repeat pattern            r(5,17) --> 1717171717
   F(x)     Fibonacci number
   U(x)     Fibonacci primitive part
   L(x)     Lucas number

@@ -1,4 +1,21 @@
-Released as version 3.5.1   September 23, 2011
+Released as version 3.5.4   October 5, 2011
+
+Enhancements to: v3.5.4 Release
+   - Fixed issue in p(x) for large x.
+
+
+Enhancements to: v3.5.3 Release
+   - New nextprime functionality which now can go above 2^64 using David Cleaver's
+     code.  Values below 2^64 are guaranteed to be prime.  This is not guaranteed
+     to be fast for very large inputs.
+
+
+Enhancements to: v3.5.2 Release
+   - Fixed bugs in the new nextprime function triggered by setting new window as
+     one of the variables wasn't getting reset.
+   - Remove trailing spaces from input lines as trailing space is used when looking
+     up variable name which can lead to script errors
+
 
 Enhancements to: v3.5.1 Release
    - Fixed a bug in trivial factoring as primeserver would return 3 when calling
