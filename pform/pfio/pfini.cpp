@@ -21,9 +21,6 @@ int _pfini_stricmp(const char *s1,const char *s2)
 #if defined (_MSC_VER)
 // static data, shared by the threads
 CRITICAL_SECTION PFIni::m_sCS;
-// Note "bugs" in Win95/NT3.51 force us to start from -1 for InterlockedIncrement and InterlockedDecrement
-// to work correctly.  The "bug" is that 0 is returned correctly, but positive/negative values are not
-// returned as the correct value, but they are returned as a positive or a negative.
 LONG PFIni::m_CntCS = -1;
 #endif
 

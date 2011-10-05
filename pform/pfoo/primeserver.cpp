@@ -44,7 +44,7 @@ void    PrimeServer::SetUpperLimit(double upperLimit)
    if (m_UpperLimit == ULLONG_MAX)
    {
       if (!m_OutputWarningSent)
-         PFPrintfStderr("Reached max sieving limit of %llu.  Sieve will return potential composites above that value.", m_UpperLimit);
+         PFPrintf("Reached max sieving limit of %llu.  Sieve will return potential composites above that value.", m_UpperLimit);
       m_OutputWarningSent = true;
       return;
    }
@@ -58,7 +58,7 @@ void    PrimeServer::SetUpperLimit(double upperLimit)
    else
       m_UpperLimit = (uint64) upperLimit;
 
-   PFPrintfStderr("Sieve re-allocated with a limit of %llu.", m_UpperLimit);
+   PFPrintf("Sieve re-allocated with a limit of %llu.", m_UpperLimit);
 
    Initialize();
 
@@ -369,7 +369,7 @@ uint64   PrimeServer::NextPrime(bool isIndexing)
          currentByte = 0;
       }
 
-      while (candidate < m_HighEndOfWindow)
+      while (candidate <= m_HighEndOfWindow)
       {
          if (candidate > searchFor && (m_pSieve[currentByte] & currentBit))
          {
@@ -401,8 +401,9 @@ uint64   PrimeServer::NextPrime(bool isIndexing)
 
 uint64   PrimeServer::ByIndex(int64 index)
 {
-   uint64   candidate;
-   uint32   currentByte, currentBit, i;
+   uint64   candidate, nextWindow;
+   int64    i;
+   uint32   currentByte, currentBit;
 
    if (index == 1)
    {
@@ -435,6 +436,8 @@ uint64   PrimeServer::ByIndex(int64 index)
       }
    }
 
+   BuildWindow(false, true);
+
    // Account for 2, which isn't in the table.
    i = m_PrimesInPrimeTable+1;
 
@@ -445,7 +448,7 @@ uint64   PrimeServer::ByIndex(int64 index)
       currentBit = 0x01;
       currentByte = 0;
 
-      while (candidate < m_HighEndOfWindow)
+      while (candidate <= m_HighEndOfWindow)
       {
          if (candidate >= m_MaxPrimeInPrimeTable)
          {
@@ -454,9 +457,6 @@ uint64   PrimeServer::ByIndex(int64 index)
                if (++i == index)
                {
                   m_IndexOfLastPrimeReturned = index;
-
-                  if (candidate  > m_UpperLimit - 100000)
-                     SetUpperLimit(100.0 * m_UpperLimit);
 
                   m_LastPrimeReturned = candidate;
                   return candidate;
@@ -475,6 +475,14 @@ uint64   PrimeServer::ByIndex(int64 index)
          candidate += 2;
       }
 
-      BuildWindow(true);
+      // If the upper end of the next window goes beyond the upper limit...
+      if (m_HighEndOfWindow + RANGE_SIZE(RANGE_BYTES) > m_UpperLimit)
+      {
+         nextWindow = m_LowEndOfWindow + RANGE_SIZE(RANGE_BYTES);
+         SetUpperLimit(100.0 * m_UpperLimit);
+         SetWindow(nextWindow);
+      }
+      else
+         BuildWindow(true);
    }
 }
