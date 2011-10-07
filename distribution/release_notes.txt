@@ -1,4 +1,9 @@
-Released as version 3.5.4   October 5, 2011
+Released as version 3.5.5   October 7, 2011
+
+Enhancements to: v3.5.5 Release
+   - Fixed issue in p(x) where returned value is off by one prime due to counting
+     a prime twice.
+   
 
 Enhancements to: v3.5.4 Release
    - Fixed issue in p(x) for large x.
