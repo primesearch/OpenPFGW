@@ -450,7 +450,7 @@ uint64   PrimeServer::ByIndex(int64 index)
 
       while (candidate <= m_HighEndOfWindow)
       {
-         if (candidate >= m_MaxPrimeInPrimeTable)
+         if (candidate > m_MaxPrimeInPrimeTable)
          {
             if (m_pSieve[currentByte] & currentBit)
             {
