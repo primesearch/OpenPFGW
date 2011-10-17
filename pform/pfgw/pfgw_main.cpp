@@ -833,7 +833,7 @@ int pfgw_main(int argc,char *argv[])
             }
             else
             {
-               iFactPercent=FactPercent&0x0000FFFF;
+               iFactPercent=FactPercent&0x00FFFFFF;
                PFOutput::EnableOneLineForceScreenOutput();
                PFPrintfStderr("Factoring numbers to %d%% of normal.\n\n", iFactPercent);
             }

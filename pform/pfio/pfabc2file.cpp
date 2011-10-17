@@ -123,7 +123,7 @@ void PFABC2File::LoadFirstLine()
             if (m_nFirstPrime==-1)
                m_nFirstPrime=i;
 
-            primeserver->SkipTo((uint64)min[i]);
+            primeserver->SkipTo((uint64)min[i]-1);
             uint64 p;
             p = primeserver->NextPrime();
             array[i]=(double)p;

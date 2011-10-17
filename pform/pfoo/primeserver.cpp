@@ -44,7 +44,7 @@ void    PrimeServer::SetUpperLimit(double upperLimit)
    if (m_UpperLimit == ULLONG_MAX)
    {
       if (!m_OutputWarningSent)
-         PFPrintf("Reached max sieving limit of %llu.  Sieve will return potential composites above that value.", m_UpperLimit);
+         PFPrintfStderr("Reached max sieving limit of %llu.  Sieve will return potential composites above that value.\n", m_UpperLimit);
       m_OutputWarningSent = true;
       return;
    }
@@ -58,7 +58,7 @@ void    PrimeServer::SetUpperLimit(double upperLimit)
    else
       m_UpperLimit = (uint64) upperLimit;
 
-   PFPrintf("Sieve re-allocated with a limit of %llu.", m_UpperLimit);
+   PFPrintfStderr("Sieve re-allocated with a limit of %llu.\n", m_UpperLimit);
 
    Initialize();
 
@@ -382,6 +382,71 @@ uint64   PrimeServer::NextPrime(bool isIndexing)
                SetUpperLimit(100.0 * m_UpperLimit);
 
             return candidate;
+         }
+
+         if (currentBit == 0x80)
+         {
+            currentBit = 0x01;
+            currentByte++;
+         }
+         else
+            currentBit <<= 1;
+
+         candidate += 2;
+      }
+
+      BuildWindow(true);
+   }
+}
+
+uint64   PrimeServer::PrevPrime(uint64 searchFor)
+{
+   uint64   candidate, prevValue = 0;
+   uint32   currentByte, i;
+   uint8    currentBit;
+
+   m_IndexInWindow = false;
+   m_LastPrimeReturned = 0;
+   m_LastSearchValue = 0;
+
+   // Handle these special cases
+   if (searchFor <= 2) return 0;
+   if (searchFor <= 3) return 2;
+
+   // If the next prime is in the table of low primes, then grab it from there
+   if (searchFor < m_MaxPrimeInPrimeTable)
+   {
+      candidate = 0;
+
+      for (i=0; i<m_PrimesInPrimeTable; i++)
+      {
+         candidate += m_pPrimeTable[i];
+
+         if (candidate >= searchFor)
+            return prevValue;
+
+         prevValue = candidate;
+      }
+   }
+
+   // Start before expected return value so that prevValue can be set before searchFor is reached.
+   SetWindow(searchFor - 10000);
+
+   // The next prime is going to be in the current window or the next window.
+   while (1 == 1)
+   {
+      candidate = m_LowEndOfWindow + 1;
+      currentBit = 0x01;
+      currentByte = 0;
+
+      while (candidate <= m_HighEndOfWindow)
+      {
+         if (m_pSieve[currentByte] & currentBit)
+         {
+            if (candidate >= searchFor)
+               return prevValue;
+
+            prevValue = candidate;
          }
 
          if (currentBit == 0x80)

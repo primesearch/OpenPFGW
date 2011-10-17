@@ -381,6 +381,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="f_nextprime.cpp" />
+    <ClCompile Include="f_prevprime.cpp" />
     <ClCompile Include="f_prime.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -629,6 +630,7 @@
     <ClInclude Include="f_issquare.h" />
     <ClInclude Include="f_length.h" />
     <ClInclude Include="f_nextprime.h" />
+    <ClInclude Include="f_prevprime.h" />
     <ClInclude Include="f_prime.h" />
     <ClInclude Include="f_repunit.h" />
     <ClInclude Include="f_sequence.h" />

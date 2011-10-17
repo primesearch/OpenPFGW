@@ -5,6 +5,7 @@
 
 #include "f_prime.h"
 #include "f_nextprime.h"
+#include "f_prevprime.h"
 #include "f_fibonacci.h"
 #include "f_repunit.h"
 #include "f_cyclotomic.h"
@@ -104,6 +105,7 @@ int PFFunctionSymbol::CallSubroutine(const PFString &sRoutineName,PFSymbolTable 
 void PFFunctionSymbol::LoadExprFunctions(PFSymbolTable *psymRuntime)
 {
    psymRuntime->AddSymbol(new F_NextPrime);
+   psymRuntime->AddSymbol(new F_PrevPrime);
    psymRuntime->AddSymbol(new F_Prime);
    psymRuntime->AddSymbol(new F_Fibonacci_U);
    psymRuntime->AddSymbol(new F_Fibonacci_V);

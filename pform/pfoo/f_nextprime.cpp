@@ -61,7 +61,7 @@ PFBoolean F_NextPrime::CallFunction(PFSymbolTable *pContext)
    bRetval=PFBoolean::b_true;
 
    // This should be faster than using the Integer::nextprime function
-   if ((q-last == 0) && last < (uint64) 1e12)
+   if (numbits(*q) < 60 && last < (uint64) 1e12)
    {
       m_pPrimeServer->SkipTo(last);
       *r = m_pPrimeServer->NextPrime();

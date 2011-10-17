@@ -20,6 +20,9 @@ public:
    // the primes starting from searchValue+1.
    uint64   NextPrime(bool isIndexing = false);
 
+   // Get the previous prime after a call to SkipToValue().
+   uint64   PrevPrime(uint64 searchFor);
+
    // If m_IndexOfLastPrimeReturned = 0, then index to the given prime.  PrimeServer
    // can then iterate through the primes as long as each successive call increments
    // index by 1.  Note that ByIndex(1) = 2.

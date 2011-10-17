@@ -301,10 +301,6 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
       {
          PFPrintfStderr("WARNING, trial factoring past 2^48 is NOT tested, and may not work correctly\n");
       }
-#if !defined (NDEBUG) && (0)
-      char i64Buf[40];
-      PFPrintfStderr("Phil - pmin="ULL_FORMAT" (1)\n", pmin);
-#endif
    }
 
    pmax=0;
@@ -319,10 +315,6 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
       {
          PFPrintfStderr("WARNING, trial factoring past 2^48 is NOT tested, and may not work correctly\n");
       }
-#if !defined (NDEBUG) && (0)
-      char i64Buf[40];
-      PFPrintfStderr("Phil - pmax="ULL_FORMAT" (1)\n", pmax);
-#endif
    }
 
    bDeep=PFBoolean::b_false;
@@ -344,7 +336,7 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
       {
          Integer FactPercent = *(((PFIntegerSymbol*)pSymbol)->GetValue());
          if (FactPercent > 0)
-            m_nPercentMultiplier=FactPercent&0x0000FFFF;
+            m_nPercentMultiplier=FactPercent&0x00FFFFFF;
       }
    }
 
@@ -392,17 +384,10 @@ PFBoolean F_Factor::OnInitialize()
       else
          pmax = (uint64) pp;
 
-      if (pmax < 65536) pmax=65536;
+      if (pmax < 100000) pmax = 100000;
 
       if ((m_pffN==NULL)&&(m_pffNminus1==NULL)&&(m_pffNplus1==NULL))
-      {
-         pmax=65536;
-      }
-
-#if !defined (NDEBUG) && (0)
-      char i64Buf[40];
-      PFPrintfStderr("Phil - pmax="ULL_FORMAT" (2)\n", pmax);
-#endif
+         pmax = 100000;
 
       if (m_bModFactor)
       {
@@ -413,13 +398,10 @@ PFBoolean F_Factor::OnInitialize()
             d *= 0.6;
 
          if (d > (double) primeserver->GetUpperLimit())
-            primeserver->SetUpperLimit(d);
-
-         pmax = primeserver->GetUpperLimit();
+            primeserver->SetUpperLimit(2.0 * d);
+         
+         pmax = (uint64) d;
       }
-#if !defined (NDEBUG) && (0)
-      PFPrintfStderr("Phil - pmax="ULL_FORMAT" (3)\n", pmax);
-#endif
 
       // did the user "request" a multiplier to the defalt factorization.
       if (m_nPercentMultiplier != 100)
@@ -429,12 +411,9 @@ PFBoolean F_Factor::OnInitialize()
          d *= (double) pmax;
 
          if (d > (double) primeserver->GetUpperLimit())
-            primeserver->SetUpperLimit(d);
+            primeserver->SetUpperLimit(2.0 * d);
 
-         pmax = primeserver->GetUpperLimit();
-#if !defined (NDEBUG) && (0)
-         PFPrintfStderr("Phil - pmax="ULL_FORMAT" (4)\n", pmax);
-#endif
+         pmax = (uint64) d;
       }
    }
 
@@ -470,11 +449,6 @@ PFBoolean F_Factor::OnInitialize()
             m_pEratMod2->skipto(pmin);
       }
    }
-
-#ifndef NDEBUG
-   if(p==1) {PFPrintfStderr("ERROR!! primegen returned 1 as the first prime\n"); exit(0); }
-#endif
-
 
    // before doing anything else, why not read in the factor helper
 BailOut:;

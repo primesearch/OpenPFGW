@@ -160,6 +160,7 @@ public:
 	void atoI(const char * s, const int32 base = 10);
 	void Ipow(const int32 x, const int32 n); // x to the n as Integer 
    Integer nextprime(void);
+   Integer prevprime(void);
 
 	friend Integer abs(const Integer & x);
 	friend void    swap(Integer & a, Integer & b);

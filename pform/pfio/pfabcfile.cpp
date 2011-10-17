@@ -7,6 +7,7 @@
 #include "../pfoo/pfintegersymbol.h"
 #include "../pfoo/f_prime.h"
 #include "../pfoo/f_nextprime.h"
+#include "../pfoo/f_prevprime.h"
 #include "../pfoo/f_fibonacci.h"
 #include "../pfoo/f_repunit.h"
 #include "../pfoo/f_cyclotomic.h"
@@ -461,6 +462,7 @@ void PFABCFile::RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
          {
             m_tbl.AddSymbol(new F_Prime);
             m_tbl.AddSymbol(new F_NextPrime);
+            m_tbl.AddSymbol(new F_PrevPrime);
             m_tbl.AddSymbol(new F_Fibonacci_U);
             m_tbl.AddSymbol(new F_Fibonacci_V);
             m_tbl.AddSymbol(new F_Fibonacci_F);

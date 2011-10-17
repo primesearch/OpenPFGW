@@ -2,6 +2,7 @@
 #include "integer.h"
 #include "../pfgwlib/gwcontext.h"
 #include "../pfgwlib/gwinteger.h"
+#include "../pfoo/primeserver.h"
 
 #ifndef GW_INLINE_ENABLED
 #include "integer.inl"
@@ -11,6 +12,8 @@
 #define PRP_COMPOSITE 0
 #define PRP_PRP 1
 #define PRP_PRIME 2
+
+extern bool volatile g_bExitNow;
 
 // Initialize the libraries' memory allocation
 void memAlloc()
@@ -160,14 +163,30 @@ uint32 crc32(const Integer &x)
 Integer Integer::nextprime(void)
 {
    Integer  y;
-   int      ret;
-   bool     canUse = false;
+   int      ret, i;
+   bool     canUse = false, smallFactor;
+   PrimeServer *primeServer;
 
    y = *this;
+   if (!(y & 1)) y--;
 
-   while (!canUse)
+   primeServer = new PrimeServer(100000.0);
+
+   while (!canUse && !g_bExitNow)
    {
-      mpz_nextprime(y.m_g, y.m_g);
+      y += 2;
+
+      smallFactor = false;
+      for (i=1; i<500; i++)
+      {
+         if (y % (int32) primeserver->ByIndex(i) == 0)
+         {
+            smallFactor = true;
+            break;
+         }
+      }
+
+      if (smallFactor) continue;
 
       mpz_set_ui(scrap, 2);
 
@@ -181,8 +200,56 @@ Integer Integer::nextprime(void)
          break;
    }
 
+   delete primeServer;
    return y;
 }
+
+Integer Integer::prevprime(void)
+{
+   Integer  y;
+   int      ret, i;
+   bool     canUse = false, smallFactor;
+   PrimeServer *primeServer;
+
+   y = *this;
+   if (y <= 3) return 2;
+
+   if (!(y & 1)) y++;
+
+   primeServer = new PrimeServer(100000.0);
+
+   while (!canUse && !g_bExitNow)
+   {
+      y -= 2;
+
+      smallFactor = false;
+      for (i=1; i<500; i++)
+      {
+         if (y % (int32) primeserver->ByIndex(i) == 0)
+         {
+            smallFactor = true;
+            break;
+         }
+      }
+
+      if (smallFactor) continue;
+
+      mpz_set_ui(scrap, 2);
+
+      // with a base of 2, mpz_sprp, won't return PRP_ERROR
+      // so, only check for PRP_PRIME here
+      if (mpz_sprp(y.m_g, scrap) == PRP_PRIME)
+         break;
+
+      ret = mpz_strongselfridge_prp(y.m_g);
+      if (ret == PRP_PRIME || ret == PRP_PRP)
+         break;
+   }
+
+   delete primeServer;
+   return y;
+}
+
 
 /* *********************************************************************************************
  * mpz_sprp: (also called a Miller-Rabin pseudoprime)
