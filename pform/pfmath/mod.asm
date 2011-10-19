@@ -1,6 +1,9 @@
 	BITS	32
+	GLOBAL	Imod
 	GLOBAL	_Imod
+	GLOBAL	Imod2
 	GLOBAL	_Imod2
+	GLOBAL	Imodtest
 	GLOBAL	_Imodtest
 
 	SECTION	.text
