@@ -1,5 +1,9 @@
 #include "fp_stchk.h"
 
+#ifndef UINT32_MAX
+#include <climits>
+#endif
+
 /* I need signed ints, I have to be able to underflow */
 #define i52 int64
 
