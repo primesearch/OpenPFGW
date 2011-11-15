@@ -477,7 +477,7 @@ int   Integer::mpz_stronglucas_prp(mpz_t n, long int p, long int q)
   mpz_init_set_si(qh, 1);
   mpz_init_set_si(tmp,0);
 
-  for (j = mpz_sizeinbase(s,2)-1; j >= 1; j--)
+  for (j = (int) mpz_sizeinbase(s,2)-1; j >= 1; j--)
   {
     /* ql = ql*qh (mod n) */
     mpz_mul(ql, ql, qh);

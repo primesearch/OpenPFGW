@@ -29,9 +29,6 @@
     <ClCompile Include="pfgw_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="phi_prp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="save_restore_prp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

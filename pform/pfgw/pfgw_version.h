@@ -21,12 +21,12 @@
 
 // 0-dev 1-stable 2-release
 
-#define	RELEASE_LEVEL	0
-//#define	RELEASE_LEVEL	1
+//#define	RELEASE_LEVEL	0
+#define	RELEASE_LEVEL	1
 //#define	RELEASE_LEVEL	2
 
-#define	RELEASE_VERSION         "3.5.6"
-#define	BUILD_DATE              "20111017"
+#define	RELEASE_VERSION         "3.5.7"
+#define	BUILD_DATE              "20111115"
 
 #ifdef _64BIT
 #define  BITNESS                 "64BIT"

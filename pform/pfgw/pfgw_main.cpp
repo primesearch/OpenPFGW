@@ -186,7 +186,7 @@ CLOptionElement clList[]=
    {cl_string,    false,   "_FERMFACTOR"},      // g (Also -gap= gapper code, and now -gx for extended GF divisiblity)
    {cl_string,    true,    "_HELPER"},          // h
    {cl_boolean,   false,   "_INFO"},            // i lists info such as GMP.dll, and CPU information (from Woltman v22 code)
-   {cl_string,    true,    "_JBC"},             // j (Base 2 Phi test code, remove when done, well, maybe it stays as a Mersenne override)
+   {cl_illegal,   false,   ""},                 // j
    {cl_boolean,   false,   "_TERSE_OUTPUT"},    // k
    {cl_string,    false,   "_LOGFILE"},         // l
    {cl_boolean,   false,   "_BENCH"},           // m
@@ -999,28 +999,9 @@ int pfgw_main(int argc,char *argv[])
    }
 
    pSymbol=psymRuntime->LookupSymbol("_VECTORMODE");
-   IPFSymbol *pSymbolJ=psymRuntime->LookupSymbol("_JBC");
    if(pSymbol)
    {
       vectorout(sFilename,psymRuntime);
-   }
-   else if(pSymbolJ && pSymbolJ->GetSymbolType()==STRING_SYMBOL_TYPE)
-   {
-      PFString sPhi=pSymbolJ->GetStringValue();
-
-      if (sPhi == "test")
-      {
-         for (int i = 400; i < 501; i++)
-         {
-            char Buf[6];
-            sprintf(Buf, "%d", i);
-            sPhi = Buf;
-            PhiCofactorExperiment(psymRuntime,sPhi,bFactor,bDeep,bOnlyFactors);
-         }
-         exit(0);
-      }
-
-      PhiCofactorExperiment(psymRuntime,sPhi,bFactor,bDeep,bOnlyFactors);
    }
    else
    {
