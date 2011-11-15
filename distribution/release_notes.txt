@@ -1,4 +1,10 @@
-Released as version 3.5.6   October 17, 2011
+Released as version 3.5.7   NOvember 15, 2011
+
+Enhancements to: v3.5.7 Release
+   - Removed -j option.  It has used special modular reduction since gwnum v25,
+     which means that it actually did the exact same thing as a PRP test for
+     2^<exp>-1.
+
 
 Enhancements to: v3.5.6 Release
    - Added prevprime() function.

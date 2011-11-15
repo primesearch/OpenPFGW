@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v3.5.6 Release (October 2011)
+PrimeForm/GW documentation  PFGW v3.5.7 Release (November 2011)
 
    ---------
    - Index -
@@ -415,17 +415,6 @@ B.4. The options.
      all tests.  By default PFGW will do roundoff checking on the first 50,
      the last 50, and every 128th iteration.
 
- -j  DWT FFT test on Phi(b,2)
-     This option will use the DWT FFT logic to test numbers of the form
-     Phi(b,2) up to 6 times faster than the generic FFT mode.
-     This also contains Fermats and Mersennes as a subset.
-     Example: pfgw -j44497
-     This will test the same number as pfgw -q2^44497-1
-     (Phi(44497,2) = M27 = 2^44497-1), but the -j code should
-     work much faster.
-     Note, if using PFGW to find Mersennes, then be SURE to see the rules
-     for usage on the GIMPS site. 
-
  -u  set the "Update Interval" to this number.
      Default update interval is 2500 (2500*50 when factoring). This will change
      the default value to the value listed.  To turn OFF outputting incremental
@@ -545,10 +534,9 @@ C.1. Expression-parts
 
 C.2. Optimised expressions
  Optimised expressions include:
-  k.2^n+-1  
-  k.2^n+-c  (c to 42 bits)
+  k.b^n+-1  
+  k.b^n+-c  (c to 42 bits)
   b^n+1     (GFN's)
-  Phi(b,2)  (use the -j command line switch)
 
 C.3. Some expression-parser-quirks
  C.3.1 Round-off
