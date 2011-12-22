@@ -4,8 +4,15 @@
 
 #include "pfabctaskcompleted.h"
 
-PFABCTaskCompleted::PFABCTaskCompleted(const char *pExpr)
+PFABCTaskCompleted::PFABCTaskCompleted(const char *pExpr, const char *pABC)
 {
+   FILE *f;
+   int    valueCount, skipped;
+   uint64 values[26];
+   char   scanLine[500];
+   char   logLine[500];
+   char  *tp;
+
    m_DoneList = NULL;
    m_nDoneCnt = 0;
    memset(m_DoneListTemp, 0, sizeof(m_DoneListTemp));
@@ -35,6 +42,79 @@ PFABCTaskCompleted::PFABCTaskCompleted(const char *pExpr)
       m_bPrimes = true;
    }
    m_WhichDone = c-'a';
+
+   if (!m_bPrimes) return;
+
+   if (strlen(pABC) > 300) return;
+   cp = strstr(pABC, " ");
+   if (!cp) return;
+   while (*cp && *cp == ' ') cp++;
+
+   memset(scanLine, 0, sizeof(scanLine));
+   tp = scanLine;
+   valueCount = 0;
+   while (*cp)
+   {
+      if (*cp != '$') { *tp = *cp; tp++; cp++; continue; }
+
+      strcat(tp, "%llu");
+      tp += 4;
+      cp += 2;
+      valueCount++;
+   }
+
+   if (!valueCount) return;
+
+   skipped = 0;
+
+   f = fopen("pfgw.log", "r");
+   if (f)
+   {
+      cp = fgets(logLine, sizeof(logLine), f);
+      while (cp && strlen(logLine) < sizeof(logLine)-2)
+      {
+         if (sscanf(logLine, scanLine, &values[0], &values[1], &values[2], &values[3], &values[4], &values[5], &values[6], &values[7],
+                                       &values[8], &values[9], &values[10], &values[11], &values[12], &values[13], &values[14],
+                                       &values[15], &values[16], &values[17], &values[18], &values[19], &values[20],
+                                       &values[21], &values[22], &values[23], &values[25], &values[25]) == valueCount)
+         {
+            if (ProcessThisValue(values[m_WhichDone]))
+            {
+               skipped++;
+               AddPrimeOrComposite(values[m_WhichDone]);
+            }
+         }
+         cp = fgets(logLine, sizeof(logLine), f);
+      }
+
+      fclose(f);
+   }
+
+   f = fopen("pfgw-prime.log", "r");
+   if (f)
+   {
+      cp = fgets(logLine, sizeof(logLine), f);
+      while (cp && strlen(logLine) < sizeof(logLine)-2)
+      {
+         if (sscanf(logLine, scanLine, &values[0], &values[1], &values[2], &values[3], &values[4], &values[5], &values[6], &values[7],
+                                       &values[8], &values[9], &values[10], &values[11], &values[12], &values[13], &values[14],
+                                       &values[15], &values[16], &values[17], &values[18], &values[19], &values[20],
+                                       &values[21], &values[22], &values[23], &values[25], &values[25]) == valueCount)
+         {
+            if (ProcessThisValue(values[m_WhichDone]))
+            {
+               skipped++;
+               AddPrimeOrComposite(values[m_WhichDone]);
+            }
+         }
+         cp = fgets(logLine, sizeof(logLine), f);
+      }
+
+      fclose(f);
+   }
+
+   if (skipped)
+      PFPrintfStderr("Found %d previous PRPs/Primes for distinct $%c.\n", skipped, c);
 }
 
 PFABCTaskCompleted::~PFABCTaskCompleted()
@@ -58,6 +138,15 @@ bool PFABCTaskCompleted::ProcessThisValue(char *s_array[26])
       return true;
    uint64 x;
    sscanf(s_array[m_WhichDone], LL_FORMAT, &x);
+
+   return ProcessThisValue(x);
+}
+
+bool PFABCTaskCompleted::ProcessThisValue(uint64 x)
+{
+   if (!m_nDoneTempCnt && !m_nDoneCnt)
+      return true;
+
    uint32 i;
    for (i = 0; i < m_nDoneTempCnt; ++i)
    {
@@ -87,6 +176,12 @@ void PFABCTaskCompleted::AddPrimeOrComposite(char *s_array[26], bool bIsPrime)
 
    uint64 x;
    sscanf(s_array[m_WhichDone], LL_FORMAT, &x);
+
+   AddPrimeOrComposite(x);
+}
+
+void PFABCTaskCompleted::AddPrimeOrComposite(uint64 x)
+{
    uint32 i;
 
    for (i = 0; i < m_nCompletedTemp; ++i)

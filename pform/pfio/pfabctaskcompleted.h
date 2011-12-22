@@ -17,7 +17,7 @@ struct Complete_t
 class PFABCTaskCompleted
 {
 	public:
-		PFABCTaskCompleted(const char *pExpr);
+		PFABCTaskCompleted(const char *pExpr, const char *pABC);
 		~PFABCTaskCompleted();
 
 		bool ProcessThisValue(char *s_array[26]);
@@ -40,8 +40,11 @@ class PFABCTaskCompleted
 		Complete_t  m_CompletedTemp[16];	// A temp unsorted list, to avoid sorting.
 		uint32 m_nCompleted;
 		uint32 m_nCompletedTemp;
+      
+      bool ProcessThisValue(uint64 x);
+      void AddPrimeOrComposite(uint64 x);
 
-		// When a value is completed, it is "added" to the list of dones (this is only done once).  
+      // When a value is completed, it is "added" to the list of dones (this is only done once).  
 		// Note it is NOT removed from the m_pCompleted list, but "could" be (that would cause a resort),
 		// but we might be able to do that if we set the Value to a high number (like 0xFFFFFFFFFFFFFFFF, 
 		// then it will sort to the top, and we could reduce the m_nCompleted number by the number of these

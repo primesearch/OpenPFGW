@@ -82,7 +82,6 @@ void PFABCFile::ProcessFirstLine(char *FirstLine)
    *m_szCommentData = 0;
    *m_szModFactor = 0;
 
-
    // These MUST be deleted each time a new first line is parsed!  This was a HUGE memory leak, found
    // when I started to process ABCD files with "imbedded" ABCD lines within the file (i.e. a file
    // that is a concatenation of ABCD files).  These were critical leaks.  They leaked the length of
@@ -144,7 +143,7 @@ void PFABCFile::ProcessFirstLine(char *FirstLine)
          {
             delete m_pCompleted;
             m_pCompleted = 0;
-            m_pCompleted = new PFABCTaskCompleted(cp);
+            m_pCompleted = new PFABCTaskCompleted(cp, FirstLine);
 
             char Buf[120];
             sprintf (Buf, " Processing for at most %d %s\n", m_pCompleted->nHowMany(), m_pCompleted->bProcessingForPrimes()?"Primes":"Composites");
