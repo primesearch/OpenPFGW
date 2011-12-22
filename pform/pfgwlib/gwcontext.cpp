@@ -6,7 +6,7 @@
 #include "pfini.h"
 
 #ifdef _MSC_VER
-#include "wingmp.h"
+#include "mpir.h"
 #else
 #include "gmp.h"
 #endif
