@@ -1,5 +1,4 @@
-PrimeForm/GW File format documentation version (alpha) 1.2.dev.1.0
-  updated to PFGW v1.2 Release (January 30, 2005)
+PrimeForm/GW File format documentation version
 
 Synapsis:
 
@@ -29,8 +28,10 @@ The command line version does not need the modular syntax, since modular
 syntax will be generated for each line in the ABC(2) file, with any ABC
 variables ($a $b, ...) filled in.   
 
-A "new" addition to the comment syntax in the ABC/ABC2/ABCD/PrZ format
-specification is:   // {number_primes,$var,#} or // {number_comps,$var,#}
+You can add certain comment syntax in the ABC/ABC2/ABCD/PrZ formats that
+impact which input PFGW will test.  The specification is:
+    // {number_primes,$var,#} or
+    // {number_comps,$var,#}
 These will stop processing "matching" $var when $var is a prime.  For example
 ABC $a*2^$b+1 // {number_primes,$b,1}
 3 92
@@ -47,7 +48,11 @@ would process 3*2^92+1, 7*2^90+1, then 7*2^92+1.  At that point, 7*2^92+1
 would be found PRP.  Because of the {number_primes,$b,1} is satisfied (the
 first prime found), ALL remaining $a*2^92+1 would NOT be processed (or any
 value where $b was 92).  Thus $a == 13, 21, 27 would not be tested for 
-$a*2^92+1 (even though 27*2^92+1 is prime).  
+$a*2^92+1 (even though 27*2^92+1 is prime).
+
+As of PFGW 3.6.0, if stopped and restarted, PFGW will read the pfgw.log and
+pfgw-prime.log files to find records from the ABC file that don't need to
+be processed.
 
 
 
