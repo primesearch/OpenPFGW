@@ -1,6 +1,6 @@
 Released as version 3.6.0   December 22, 2011
 
-Enhancements to: v3.6.0 Release
+Enhancements to: v3.6.0 Development Release
    - Upgraded Windows builds to use MPIR 2.4.0 and renamed header to mpir.h, not wingmp.h.
    - When using the number_primes feature, read pfgw.log and pfgw-prime.log to build
      list of values to be skipped from the ABC input.

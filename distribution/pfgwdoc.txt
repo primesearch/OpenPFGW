@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v3.5.7 Release (November 2011)
+PrimeForm/GW documentation  PFGW v3.6.0 (December 2011)
 
    ---------
    - Index -
