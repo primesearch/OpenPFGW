@@ -2,6 +2,7 @@ Released as version 3.6.1   January 18, 2012
 
 Enhancements to: v3.6.1 Development Release
    - Use clang for Mac build as llvm-gcc miscompiles gmp which leads to some tests hanging.
+   - Upgrade Mac build to use GMP 5.0.02 instead of GMP 5.0.1.
 
 
 Enhancements to: v3.6.0 Development Release
