@@ -8,6 +8,7 @@
 #ifndef PFLIB_PFSTRING_H
 #define PFLIB_PFSTRING_H
 
+#include <string.h>
 #include "pffastbuffer.h"
 #include "pfboolean.h"
 #include "pfarray.h"

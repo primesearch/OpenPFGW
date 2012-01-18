@@ -37,7 +37,7 @@ PFStack<T>::~PFStack()
 template<class T>
 void PFStack<T>::Push(T* pObject)
 {
-	AddTail(pObject);
+	this->AddTail(pObject);
 }
 
 template<class T>
