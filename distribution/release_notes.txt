@@ -1,4 +1,8 @@
-Released as version 3.6.0   December 22, 2011
+Released as version 3.6.1   January 18, 2012 
+
+Enhancements to: v3.6.1 Development Release
+   - Use clang for Mac build as llvm-gcc miscompiles gmp which leads to some tests hanging.
+
 
 Enhancements to: v3.6.0 Development Release
    - Upgraded Windows builds to use MPIR 2.4.0 and renamed header to mpir.h, not wingmp.h.
