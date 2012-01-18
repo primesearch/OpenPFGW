@@ -1,4 +1,5 @@
 #include "fp_stchk.h"
+#include <climits>
 
 #ifndef UINT32_MAX
 #include <climits>
