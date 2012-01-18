@@ -202,7 +202,7 @@ static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
          continue;
       }
 
-      bRetval = GFNDivisibilityTest("GF_sprime_%d: %.50s %d/%d\r", N, sNumStr, X, GF_Subs[j].prime, 0, 0, n-1, &GF_Subs[j].subN);
+      bRetval = GFNDivisibilityTest("GF_sprime_%d: %.50s %d/%d       \r", N, sNumStr, X, GF_Subs[j].prime, 0, 0, n-1, &GF_Subs[j].subN);
 
       if (GF_b_SaveIntermed)
       {
@@ -350,7 +350,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
       }
       Nm1 = (*N)-1;
 
-      bRetval = GFNDivisibilityTest("GF_%d: %.50s %d/%d\r", N, sNumStr, X, gfn_base, 0, 0, n, &XX);
+      bRetval = GFNDivisibilityTest("GF_%d: %.50s %d/%d           \r", N, sNumStr, X, gfn_base, 0, 0, n, &XX);
 
       if (XX == 1)
       {
@@ -396,8 +396,8 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
    }
    Nm1 = (*N)-1;
 
-   bRetval = GFNDivisibilityTest("xGF_'%d'_%d: %.50s %d/%d\r", N, sNumStr, X, gfn_base, gfn_base, nCur_a, n, &XX);
-   bRetval = GFNDivisibilityTest("xGF_%d_'%d': %.50s %d/%d\r", N, sNumStr, X, nCur_a, gfn_base, nCur_a, n, &XXa);
+   bRetval = GFNDivisibilityTest("xGF_'%d'_%d: %.50s %d/%d       \r", N, sNumStr, X, gfn_base, gfn_base, nCur_a, n, &XX);
+   bRetval = GFNDivisibilityTest("xGF_%d_'%d': %.50s %d/%d       \r", N, sNumStr, X, nCur_a, gfn_base, nCur_a, n, &XXa);
 
    while((XX+XXa) % *(N) != 0 && n < gfn_exp_max)
    {
