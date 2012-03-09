@@ -357,6 +357,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\pfconfig\headers\pflib.h" />
     <ClInclude Include="bpfsystem.h" />
     <ClInclude Include="crc32.h" />
     <ClInclude Include="erat_mod.h" />
@@ -369,7 +370,6 @@
     <ClInclude Include="pfbuffer.h" />
     <ClInclude Include="pffastbuffer.h" />
     <ClInclude Include="pfforwarditerator.h" />
-    <ClInclude Include="pflib.h" />
     <ClInclude Include="pflibpch.h" />
     <ClInclude Include="pflist.h" />
     <ClInclude Include="pflistnode.h" />

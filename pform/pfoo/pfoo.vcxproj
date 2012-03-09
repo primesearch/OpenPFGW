@@ -614,6 +614,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\pfconfig\headers\pfoo.h" />
     <ClInclude Include="algebra.h" />
     <ClInclude Include="exponentiation.h" />
     <ClInclude Include="exponentiator.h" />
@@ -649,7 +650,6 @@
     <ClInclude Include="pfintegersymbol.h" />
     <ClInclude Include="pfintsymbol.h" />
     <ClInclude Include="pfiterativesymbol.h" />
-    <ClInclude Include="pfoo.h" />
     <ClInclude Include="pfoopch.h" />
     <ClInclude Include="pfsamplersymbol.h" />
     <ClInclude Include="pfstringsymbol.h" />

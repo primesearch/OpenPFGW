@@ -19,10 +19,10 @@
     <ClInclude Include="integer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pfmath.h">
+    <ClInclude Include="pfmathpch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pfmathpch.h">
+    <ClInclude Include="..\..\pfconfig\headers\pfmath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

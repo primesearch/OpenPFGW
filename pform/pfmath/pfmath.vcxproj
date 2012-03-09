@@ -238,8 +238,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\pfconfig\headers\pfmath.h" />
     <ClInclude Include="integer.h" />
-    <ClInclude Include="pfmath.h" />
     <ClInclude Include="pfmathpch.h" />
   </ItemGroup>
   <ItemGroup>

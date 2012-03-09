@@ -91,9 +91,6 @@
     <ClInclude Include="pfforwarditerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pflib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pflibpch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -128,6 +125,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wpfsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\pfconfig\headers\pflib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

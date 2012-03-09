@@ -232,9 +232,6 @@
     <ClInclude Include="pfiterativesymbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pfoo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pfoopch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -266,6 +263,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="f_prevprime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\pfconfig\headers\pfoo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
