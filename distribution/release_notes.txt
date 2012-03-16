@@ -1,4 +1,8 @@
-Released as version 3.6.2   March 9, 2012 
+Released as version 3.6.3   March 16, 2012 
+
+Enhancements to: v3.6.3 Development Release
+   - Updated to gwnum v27.5, which introduces AMD Bulldozer support
+
 
 Enhancements to: v3.6.2 Development Release
    - Updated to gwnum v27.4, which introduces AVX support
