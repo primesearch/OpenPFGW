@@ -282,13 +282,21 @@ GW_INLINE uint32 Integer::m_andu(const uint32 & n) const
 
 GW_INLINE uint64 Integer::m_andu(const uint64 & n) const
 {
-	// This is a quick hack.  It works "fine" for a little endian.
+	// This is a quick hack.  It works "fine" for little endian.
 	uint64 l;
-	if (m_len < 2)
+
+   // For 32-bit Windows builds, this is fine, but for 64-bit Windows
+   // builds mpz_get_ui returns a long, which is 32 bits even though
+   // the limb is 64 bits.
+#if defined(_MSC_VER) && defined(_64BIT)
+   l = *(uint64*)(m_a);
+#else
+   if (m_len < 2)
 		l = mpz_get_ui(m_g);
 	else
-		l = *(uint64*)(m_a);
-	return l & n;
+      l = *(uint64*)(m_a);
+#endif
+   return l & n;
 }
 
 GW_INLINE void Integer::m_andu(const Integer & y)
