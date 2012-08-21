@@ -36,8 +36,8 @@ optional for the first form, but required for the second form.  Note that the
 second form can take advantage of special modular reduction logic for 
 expressions in the form k*b^n+/-c.  If specified then this is output to
 the log file instead of the decimal expansion of <value>.  PRP will set
-the variable ISPRP to true of the value is PRP.  It will set ISPRIME to
-true if the value is trivially prime.
+the variable ISPRP to true if the value is PRP or prime.  It will set
+ISPRP and ISPRIME to true if the value is trivially prime.
 
     PRIMEC <strvarname>
     PRIMEP <strvarname>
@@ -105,29 +105,29 @@ is the \n.  The \n does not output a 'n' char, but outputs a "new line",
 i.e. if this string is output using the PRINT function, then it will cover
 more than 1 line of screen (similar to the \n new line in the C language).
 The valid ESCAPES are:   (these are the same as in C)
-\a	  // Bell
-\b	  // Backspace
-\f	  // Form Feed
-\n	  // New line
-\r	  // Carriage return
-\t	  // tab
-\v	  // Verticle tab
-\"	  // Double Quote
-\'	  // Single Quote
-\\	  // Backslash
-\?	  // Literal Quote
+\a    // Bell
+\b    // Backspace
+\f    // Form Feed
+\n    // New line
+\r    // Carriage return
+\t    // tab
+\v    // Verticle tab
+\"    // Double Quote
+\'    // Single Quote
+\\    // Backslash
+\?    // Literal Quote
 \xH[H] // Output literal char that is the ASCII hex value of H (or HH HHH ...).
 \O[OO] // Output literal char that is the ASCII octal value of O (or OO OOO ...).
 \      // a \ followed by any char not listed above, will simply output the char.
        // Thus \y would simply output a 'y' char.
 
-	POWMOD <varnameres>,<varnamebase>,<varnameexp>,<varnamemod>
+  POWMOD <varnameres>,<varnamebase>,<varnameexp>,<varnamemod>
 The first parameter will contain the returned value from the powmod function
 where varnameres = (varnamebase^varnameexp)%varnamemod.  The variables for
 the right side of this equation can be either variable names containing a value
 or an expression.
 
-	STRTOINT <varname>,<stringvar>
+  STRTOINT <varname>,<stringvar>
 Converts a string into a number.  So STRTOINT x,strval would set x to whatever 
 integer value the string strval contained.  strval MUST be a variable.  Literal
 strings are not handled (i.e. STRTOINT x,"12345" is invalid).  Expressions in
@@ -319,4 +319,4 @@ FACTORFOUND  (number  Set by FACTORIZE)
 PRIMEFOUND   (number  Set by NEXTPRIME)
 MINF         (number  input used by FACTORIZE)
 MAXF         (number  input used by FACTORIZE)
-MODF	       (string  input used by FACTORIZE, modular factoring string)
+MODF         (string  input used by FACTORIZE, modular factoring string)
