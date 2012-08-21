@@ -303,7 +303,7 @@ void PFScriptFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p
    } else {
       PFIntegerSymbol *pVar=(PFIntegerSymbol *)pSymbol;
       Integer *iVal;
-      if (bIsPRP)
+      if (bIsPRP || bIsPrime)
          iVal=new Integer(1);
       else
          iVal=new Integer(0);
