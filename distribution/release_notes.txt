@@ -1,4 +1,12 @@
-Released as version 3.6.3   March 16, 2012 
+Released as version 3.6.4   August 21, 2012 
+
+
+Enhancements to: v3.6.4 Development Release
+   - Found and fixed an issue with 64-bit Windows builds that affects
+     numbers between 32 and 64 bits in size.  One known problem was
+     occuring when trying to factor the inputs of that size.
+   - Set ISPRP if ISPRIME is set
+
 
 Enhancements to: v3.6.3 Development Release
    - Updated to gwnum v27.5, which introduces AMD Bulldozer support
@@ -64,7 +72,7 @@ Enhancements to: v3.5.1 Release
 Enhancements to: v3.5.0 Release
    - Added a NEXTPRIME() function for scripts.  It will return the next prime after the
      given argument.  This is guaranteed to return all primes below 2^64, but can return
-    return composites for numbers above that value.
+     return composites for numbers above that value.
    - Replaced primegen siever with my own.  The primegen code misses some primes (notable
      primes that end with the digits "99999").  It was also limited to 32 bits.  The new
      sieve can go up to 64 bits, but starts with a limit of 4e9.  It will auto-increment
