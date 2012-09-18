@@ -1,4 +1,11 @@
-Released as version 3.6.4   August 21, 2012 
+Released as version 3.6.6   September 17, 2012 
+
+Enhancements to: v3.6.6 Development Release - September 17, 2012
+   - Updated to gwnum v27.8 (fixed infinite loop with small AVX FFTs)
+
+
+Enhancements to: v3.6.5 Development Release - September 8, 2012
+   - Updated to gwnum v27.7 (various updates)
 
 
 Enhancements to: v3.6.4 Development Release
