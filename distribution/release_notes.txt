@@ -1,5 +1,9 @@
-Released as version 3.6.6   September 17, 2012 
+Released as version 3.6.7   November 29, 2012 
 
+Enhancements to: v3.6.7 Development Release - November 29, 2012
+   - Fixed a crash that occurs when using helper files.
+
+   
 Enhancements to: v3.6.6 Development Release - September 17, 2012
    - Updated to gwnum v27.8 (fixed infinite loop with small AVX FFTs)
 
