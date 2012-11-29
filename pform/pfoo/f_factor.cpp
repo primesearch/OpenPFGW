@@ -122,9 +122,9 @@ class FactorHelperArray
       ~FactorHelperArray() {delete[] m_Array;m_Array=0;m_nArray=0;m_nMaxArray=0;}
       void AddFactor(const Integer *pI);
       uint32 Count() { return m_nArray;}
-      const Integer *GetItem(uint32 i) {if (i <= 0 || i > m_nArray) return 0; return &m_Array[i]; }
+      const Integer *GetItem(int32 i) {if (i < 0 || i > m_nArray) return 0; return &m_Array[i]; }
    private:
-      uint32 m_nArray, m_nMaxArray;
+      int32 m_nArray, m_nMaxArray;
       Integer *m_Array;
 
 };
@@ -136,7 +136,7 @@ void FactorHelperArray::AddFactor(const Integer *pI)
    {
       m_nMaxArray += 100;
       Integer *p = new Integer[m_nMaxArray];
-      for (uint32 x = 0; x < m_nArray; ++x)
+      for (int32 x = 0; x < m_nArray; ++x)
          p[x] = m_Array[x];
       delete[] m_Array;
       m_Array = p;
