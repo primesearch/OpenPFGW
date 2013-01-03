@@ -44,11 +44,15 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, va_list &va)
    int BufLen = 2048;
    int ret;
    char *pBuffer = new char [BufLen];
+
    ret = _vsnprintf(pBuffer, BufLen, Fmt, va);
-   while (ret == -1)
+   while (ret == -1 || ret > BufLen)
    {
       delete [] pBuffer;
-      BufLen *= 2;
+      if (ret == -1)
+         BufLen *= 2;
+      else
+         BufLen = ret + 100;
       pBuffer = new char[BufLen];
       ret = _vsnprintf(pBuffer, BufLen, Fmt, va);
    }
@@ -77,13 +81,16 @@ int PFWin32GUIOutput::PFPrintf(const char *Fmt, va_list &va)
    int ret;
    char *pBuffer = new char [BufLen];
 
-   ret = vsnprintf(pBuffer, m_iBufferSize, Fmt, va);
-   while (ret == -1)
+   ret = _vsnprintf(pBuffer, BufLen, Fmt, va);
+   while (ret == -1 || ret > BufLen)
    {
       delete[] pBuffer;
-      m_iBufferSize *= 2;
-      pBuffer = new char[m_iBufferSize];
-      ret = _vsnprintf(pBuffer, m_iBufferSize, Fmt, va);
+      if (ret == -1)
+         BufLen *= 2;
+      else
+         BufLen = ret + 100;
+      pBuffer = new char[BufLen];
+      ret = _vsnprintf(pBuffer, BufLen, Fmt, va);
    }
 
    if (!PostMessage((HWND)m_hWnd, WinPFGW_MSG, M_PRINTF, (LPARAM)pBuffer))

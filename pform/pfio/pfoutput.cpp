@@ -104,9 +104,14 @@ int PFPrintfStderr(const char *Fmt, ...)
 int PFPrintf(const char *Fmt, ...)
 {
    va_list va;
-   va_start(va, Fmt);
-   int ret = pOutputObj->PFPrintf(Fmt, va);
-   va_end(va);
+   int ret = -1;
+
+   while (ret == -1)
+   {
+      va_start(va, Fmt);
+      ret = pOutputObj->PFPrintf(Fmt, va);
+      va_end(va);
+   }
    return ret;
 }
 
@@ -114,9 +119,15 @@ int PFPrintf(const char *Fmt, ...)
 int PFPrintfLog(const char *Fmt, ...)
 {
    va_list va;
-   va_start(va, Fmt);
-   int ret = pOutputObj->PFPrintf(Fmt, va);
-   va_end(va);
+   int ret = -1;
+
+   while (ret == -1)
+   {
+      va_start(va, Fmt);
+      ret = pOutputObj->PFPrintf(Fmt, va);
+      va_end(va);
+   }
+
    va_start(va, Fmt);
    pOutputObj->PFLogPrintf(Fmt, va);
    va_end(va);

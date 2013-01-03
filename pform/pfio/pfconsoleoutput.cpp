@@ -35,13 +35,17 @@ int PFConsoleOutput::PFPrintf(const char *Fmt, va_list &va)
    int    ret;
    bool   bShowStr=true;
 
+   // If the buffer isn't large enough, re-allocate the buffer and return -1
    ret = vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
-   while (ret == -1)
+   if (ret == -1 || ret > m_iBufferSize)
    {
       delete[] m_pBuffer;
-      m_iBufferSize *= 2;
+      if (ret == -1)
+         m_iBufferSize *= 2;
+      else
+         m_iBufferSize = ret + 100;
       m_pBuffer = new char[m_iBufferSize];
-      ret = vsnprintf(m_pBuffer, m_iBufferSize, Fmt, va);
+      return -1;
    }
 
    if (g_eConsoleMode != eVerbose)
