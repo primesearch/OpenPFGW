@@ -1,4 +1,13 @@
-Released as version 3.6.7   November 29, 2012 
+Released as version 3.7.0   January 4, 2013 
+
+Enhancements to: v3.7.0 Development Release - January 4, 2013
+   - Fixed console output on *nix caused by my misunderstanding of
+     what vsnprintf returns, which differs between Windows and *nix.
+   - Restored tree factoring code which is much faster than factoring
+     code that was in 3.x.  It was in pfgw 1.2, but was somehow
+     removed, probably by me, but I have no memory of making such
+     an extensive change to the code.
+
 
 Enhancements to: v3.6.7 Development Release - November 29, 2012
    - Fixed a crash that occurs when using helper files.
@@ -87,7 +96,7 @@ Enhancements to: v3.5.0 Release
    - Replaced primegen siever with my own.  The primegen code misses some primes (notable
      primes that end with the digits "99999").  It was also limited to 32 bits.  The new
      sieve can go up to 64 bits, but starts with a limit of 4e9.  It will auto-increment
-     the upper limit by 100 until it reaches 2^64.  Outside of the small cost the occurs
+     the upper limit by 100 until it reaches 2^64.  Outside of the small cost that occurs
      when the limit is auto-bumped, there is no longer a penalty for trial factoring
      above 2^31.
    - Upped the limit for trivial factoring to 40 bits, i.e. input values 40 bits in size or
