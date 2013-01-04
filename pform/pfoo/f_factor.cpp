@@ -9,11 +9,11 @@
 
 extern char g_cpTestString[70];  // Located in pfiterativesymbol.cpp
 extern int g_nIterationCnt;      // located in pfgw_main.cpp
+bool g_bSingleLineMode=true;
 
 bool g_bHideNoFactor=false;
 bool g_bReLoadFactorFile=false;
 
-//#define GWDEBUG(X) {Integer XX;XX=X;printf(#X "=");mpz_out_str(stdout,16,XX.gmp();printf("\n");}
 #undef INTDEBUG
 #define INTDEBUG(X) {printf(#X "=");mpz_out_str(stdout,16,(X).gmp();printf("\n");}
 
@@ -159,6 +159,14 @@ F_Factor::F_Factor()
       m_pEratMod(NULL), m_pEratMod2(NULL),
       m_pffNminus1(NULL), m_pffN(NULL), m_pffNplus1(NULL)
 {
+	m_nLittleTrees = 0;
+	m_pTreeFactorize = new TreeFactorize(1);
+	m_bUseTreeFactorize = false;
+	m_nLittleMaxPR=0;
+	m_bUseTinyTrick = false;
+
+	m_nTinyTrickCnt=0;
+	m_nTinyTrickCntMax=0;
 }
 
 F_Factor::~F_Factor()
@@ -166,6 +174,8 @@ F_Factor::~F_Factor()
    delete m_pEratMod;
    delete m_pEratMod2;
    delete pHelperArray;
+
+   delete m_pTreeFactorize;
 }
 
 DWORD F_Factor::MinimumArguments() const
@@ -198,6 +208,8 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
       pN=((PFIntegerSymbol*)pSymbol)->GetValue();
       bRetval=PFBoolean::b_true;
    }
+   
+	m_bUseTinyTrick=false;
 
    m_sHelperFile="";
    pSymbol=pContext->LookupSymbol("_HELPER");
@@ -372,83 +384,203 @@ void F_Factor::CleanupHelperFileObject()
 
 PFBoolean F_Factor::OnInitialize()
 {
-   // get an estimate of the limit. We will use the metric that we expect 32 bit numbers
-   // to be fully factored. ie 2^5 bits are factored up to 2^13 primes.
-   if (pmax==0)
-   {
-      double dPrimes=7.0*numbits(*pN)+1.0;
-      double pp=estimateLimit(dPrimes);
+	// get an estimate of the limit. We will use the metric that we expect 32 bit numbers
+	// to be fully factored. ie 2^5 bits are factored up to 2^13 primes.
+	if(pmax==0)
+	{
+		double pp;
+		if (numbits(*pN) > 400)
+		{
+			// Use Jen's guestimate value (due to the fact we KNOW we are using TreeFactorizer
+			// At the 85631# level, it takes the "default" factoring from 11776475 to 134968309
+			// which is 11.5x larger.  The time taken to "fully" default factor went from 
+			// 53s for the PFGW dual FPU factoring, to 65s for the new TreeFactor (but TreeFactor
+			// went 11.5x deeper.
+		    pp=(numbits(*pN)*100)*(sqrt((float) numbits(*pN))/32);
+		}
+		else
+		{
+			double dPrimes=7.0*numbits(*pN)+1.0;
+			pp=estimateLimit(dPrimes);
+			if(pp>2.1e9) pp=2.1e9;
+		}
+		if(pp<65536.0) pp=65536.0;
+		
+		if((m_pffN==NULL)&&(m_pffNminus1==NULL)&&(m_pffNplus1==NULL))
+		{
+			pp=65536.0;
+		}
+		pmax=(uint64)pp;
 
-      if (pp > (double) primeserver->GetUpperLimit())
-         pmax = primeserver->GetUpperLimit();
-      else
-         pmax = (uint64) pp;
+		if (m_bModFactor)
+		{
+			pmax *= m_pEratMod->GetModVal();
+			double d = (double)(int64)pmax;
+			if (m_bDualModFactor)
+				// Note if dual modular factoring, then divide by 2 (well almost divide by 2)
+				d *= 0.6;
+			int64 n=(((int64)1)<<62)-100000;
+			if (d>n)
+				d=(double)n;
+			pmax = (uint64)d;
+		}
 
-      if (pmax < 100000) pmax = 100000;
+		// did the user "request" a multiplier to the defalt factorization.
+		if (m_nPercentMultiplier!=100)
+		{
+			double d = m_nPercentMultiplier;
+			d /= 100;
+			d *= (int64)pmax;
+			int64 n= (((int64)1)<<62)-100000;
+			if (d>n)
+				d=(double)n;
+			pmax=(int64)d;
+		}
 
-      if ((m_pffN==NULL)&&(m_pffNminus1==NULL)&&(m_pffNplus1==NULL))
-         pmax = 100000;
+		// Ok, now the values that are above 2^31 take 6 times as long to factor
+		// than the values below this level.  We take that into account.  We are
+		// trying for a factoring "time".  If there is values above the 2^31 level,
+		// then we only do 1/6 as many of them in the same time-frame, so we need to
+		// reduce our pmax accordingly.
+		if (numbits(*pN) > 400)
+		{
+			if (pmax > 0xFFFFFFFF)
+			{
+				// Not nearly as bad of a "hit" here.
+				double d = (double)(int64)(pmax-0xFFFFFFFF);
+				d /= 1.6;
+				d += 0xFFFFFFFF;
+				pmax = (uint64)d;
+			}
+		}
+		else
+		{
+			if (pmax > 0x7FFFFFFF)
+			{
+				double d = (double)(int64)(pmax-0x7FFFFFFF);
+				d /= 6;
+				d += 0x7FFFFFFF;
+				pmax = (uint64)d;
+			}
+		}
+	}
 
-      if (m_bModFactor)
-      {
-         pmax *= m_pEratMod->GetModVal();
-         double d = (double)(int64)pmax;
-         if (m_bDualModFactor)
-            // Note if dual modular factoring, then divide by 2 (well almost divide by 2)
-            d *= 0.6;
+	P1=pmax;
+	P1*=P1;
+	pmaxadjust(pBiggest);
 
-         if (d > (double) primeserver->GetUpperLimit())
-            primeserver->SetUpperLimit(2.0 * d);
-         
-         pmax = (uint64) d;
-      }
+	if (pmin>pmax)
+		pmin=pmax;
+			
+	double StepsVal = estimatePrimes((double)(int64)pmin,(double)(int64)pmax) / 2;
+	m_dwStepsTotal =  (DWORD)(StepsVal/m_nModFactor + 1);
+	m_dwStepGranularity=2048;
+	m_bStopOverride=PFBoolean::b_true;
 
-      // did the user "request" a multiplier to the defalt factorization.
-      if (m_nPercentMultiplier != 100)
-      {
-         double d = m_nPercentMultiplier;
-         d /= 100;
-         d *= (double) pmax;
+	Timer.Start();
 
-         if (d > (double) primeserver->GetUpperLimit())
-            primeserver->SetUpperLimit(2.0 * d);
+	if (!m_bModFactor)
+	{
+		primeserver->SkipTo(pmin);
+	}
+	else
+	{
+		m_pEratMod->init();
+		if (pmin && pmin-1 > m_pEratMod->GetModVal())
+			m_pEratMod->skipto(pmin);
+		if (m_bDualModFactor)
+		{
+			m_pEratMod2->init();
+			if (pmin && pmin-1 > m_pEratMod2->GetModVal())
+				m_pEratMod2->skipto(pmin);
+		}
+	}
 
-         pmax = (uint64) d;
-      }
-   }
+	m_bUseTreeFactorize = true;
 
-   P1=pmax;
-   P1*=P1;
-   pmaxadjust(pBiggest);
+	uint32 nLeavesBefore = m_pTreeFactorize->GetNumLeaves();
 
-   if (pmin > pmax)
-      pmin = pmax;
+	m_pTreeFactorize->BuildTree(pN->gmp(), pmax);
+	uint32 nLeavesAfter = m_pTreeFactorize->GetNumLeaves();
 
-   double StepsVal = estimatePrimes((double)(int64)pmin,(double)(int64)pmax) / 2;
-   m_dwStepsTotal =  (DWORD)(StepsVal/m_nModFactor + 1);
-   m_dwStepGranularity=2048;
-   m_bStopOverride=PFBoolean::b_true;
+	m_bUseTinyTrick = false;
+	if (nLeavesAfter >= 10)
+	{
+		m_nTinyTrickCnt=0;
+		if (m_bModFactor)
+		{
+			m_nTinyTrickCntMax=6;
+			m_bUseTinyTrick = true;
+			if (m_bDualModFactor)
+			{
+				for (uint32 i = 0; i < 6; ++i)
+				{
+					m_64TinyTrickFactors[i] = m_pEratMod->next();
+					m_64TinyTrickFactors[i+1] = m_pEratMod2->next();
+				}
+			}
+			else
+			{
+				for (uint32 i = 0; i < 12; ++i)
+					m_64TinyTrickFactors[i] = m_pEratMod->next();
+			}
+		}	
+		else
+		{
+			double diff = nLeavesBefore;
+			diff /= nLeavesAfter;
+			m_bCompletedLittlePR = false; // assume we have none
 
-   Timer.Start();
+			if (pmin >= 250000)
+				m_bCompletedLittlePR = true;
+			else if (!m_nLittleMaxPR)
+				m_nLittleMaxPR = (uint32)pmin;
 
-   if (!m_bModFactor)
-   {
-      primeserver->SkipTo(pmin);
-      p = primeserver->NextPrime();
-   }
-   else
-   {
-      m_pEratMod->init();
-      if (pmin && pmin-1 > m_pEratMod->GetModVal())
-         m_pEratMod->skipto(pmin);
-      p = m_pEratMod->next();
-      if (m_bDualModFactor)
-      {
-         m_pEratMod2->init();
-         if (pmin && pmin-1 > m_pEratMod2->GetModVal())
-            m_pEratMod2->skipto(pmin);
-      }
-   }
+			if (pmin < 3)
+			{
+				m_nTinyTrickCntMax=3;
+				m_bUseTinyTrick = true;
+				primeserver->SkipTo(17);	// We will do  2,3 and 5,7 and 11,13 as "old" type Nash double FPU factorized values (and not in the small trees)
+				m_64TinyTrickFactors[0] =2;
+				m_64TinyTrickFactors[1] =3;
+				m_64TinyTrickFactors[2] =5;
+				m_64TinyTrickFactors[3] =7;
+				m_64TinyTrickFactors[4] =11;
+				m_64TinyTrickFactors[5] =13;
+				m_nLittleMaxPR = 17;
+			}
+
+			if (!g_bSingleLineMode && (diff < .9 || diff > 1.1) && pmin < 250000)
+			{
+				m_nLittleMaxPR = (uint32)pmin;
+				for (m_nLittleTrees = 0; m_nLittleTrees < sizeof(m_pLittleTrees)/sizeof(m_pLittleTrees[0]); ++m_nLittleTrees)
+				{
+					m_pLittleTrees[m_nLittleTrees].BuildTree(pN->gmp(), m_nLittleMaxPR+2000);
+					m_nLittleMaxPR = (uint32)m_pLittleTrees[m_nLittleTrees].LoadPrimesIntoTree();
+
+					// make sure that we start from the "next" prime, and do not redo the last one.
+					m_nLittleMaxPR += 2;
+
+					if (m_nLittleMaxPR > 250000)
+						break;
+				}
+			}
+		}
+		p = pmin;
+		g_nIterationCnt /= 1000;	// remove this "extra" iteration count value.
+	}
+	else
+	{
+		m_bUseTreeFactorize = false;
+		if (m_bModFactor)
+			p=m_pEratMod->next();
+		else
+			p = primeserver->NextPrime();
+	}
+
+#ifndef NDEBUG
+	if(p==1) {PFPrintfStderr("ERROR!! primegen returned 1 as the first prime\n"); exit(0); }
+#endif
 
    // before doing anything else, why not read in the factor helper
 BailOut:;
@@ -625,135 +757,323 @@ void F_Factor::OnPrompt()
    }
 }
 
+bool F_Factor::IterateTreeFactorize(TreeFactorize *pTree)
+{
+	if (m_pffN)
+	{
+		bool bdeep = bDeep;
+		pTree->FillFactorFoundTable(0, bdeep);
+		if(pTree->NumFoundFactors())
+		{
+			for (uint32 i = 0; i < pTree->NumFoundFactors(); ++i)
+			{
+				const FoundFactor *p = pTree->GetFoundFactor(i);
+				// First, only accept factors that are "within" range.  NOTE this new tree
+				// method handles a "set" of factors, so it is easy to have factors either
+				// too large, (or too small).  If one of those is found, ignore it.
+				if (p->Factor >= pmin && p->Factor <= pmax)
+				{
+					if (!bdeep && pTree->NumFoundFactors() > i+1)
+					{
+						// find the minimal factor.  NOTE without this "hack" the mimimal factor is frequently NOT found.
+						uint64 pMin = p->Factor;
+						for (uint32 j = i+1; j < pTree->NumFoundFactors(); ++j)
+						{
+							p = pTree->GetFoundFactor(j);
+							if (p->Factor < pMin)
+								pMin = p->Factor;
+						}
+						Integer P(pMin);
+						int pc=ExactPower(Q,P);
+						if(pc!=0)
+						{
+							m_pffN->AddFactor(new FactorNode(p->Factor,pc));
+							return true;	// we want the factorization to bail (we have fully factored it)
+						}
+					}
+					Integer P(p->Factor);
+
+					// here is an "already" written version of the ExactPower function.  I have not yet had time
+					// yet to see if it is faster or not. but it does give correct results.
+					//int pc=mpz_remove(*(Q.gmp()), *(Q.gmp()),*(P.gmp()));
+					int pc=ExactPower(Q,P);
+					if(pc!=0)
+					{
+						m_pffN->AddFactor(new FactorNode(p->Factor,pc));
+						if(!bdeep)
+						{
+							return true;	// we want the factorization to bail (we have fully factored it)
+						}
+						pmaxadjust(&Q);
+					}
+				}
+			}
+			pTree->ResetToNoFactors();
+		}
+	}
+
+	if(m_pffNminus1)					// divides N-1
+	{
+		pTree->FillFactorFoundTable(1, true);
+
+		if(pTree->NumFoundFactors())
+		{
+			for (uint32 i = 0; i < pTree->NumFoundFactors(); ++i)
+			{
+				const FoundFactor *p = pTree->GetFoundFactor(i);
+				// First, only accept factors that are "within" range.  NOTE this new tree
+				// method handles a "set" of factors, so it is easy to have factors either
+				// too large, (or too small).  If one of those is found, ignore it.
+				if (p->Factor >= pmin && p->Factor <= pmax)
+				{
+					Integer P(p->Factor);
+
+					// here is an "already" written version of the ExactPower function.  I have not yet had time
+					// yet to see if it is faster or not. but it does give correct results.
+					//int pc=mpz_remove(*(Q.gmp()), *(Q.gmp()),*(P.gmp()));
+					int pc=ExactPower(R,P);
+					if(pc!=0)
+					{
+						m_pffNminus1->AddFactor(new FactorNode(p->Factor,pc));
+						pmaxadjust(&R);
+					}
+				}
+			}
+			pTree->ResetToNoFactors();
+		}
+	}
+	if(m_pffNplus1)
+	{
+		pTree->FillFactorFoundTable(-1, true);
+
+		if(pTree->NumFoundFactors())
+		{
+			for (uint32 i = 0; i < pTree->NumFoundFactors(); ++i)
+			{
+				const FoundFactor *p = pTree->GetFoundFactor(i);
+				// First, only accept factors that are "within" range.  NOTE this new tree
+				// method handles a "set" of factors, so it is easy to have factors either
+				// too large, (or too small).  If one of those is found, ignore it.
+				if (p->Factor >= pmin && p->Factor <= pmax)
+				{
+					Integer P(p->Factor);
+
+					// here is an "already" written version of the ExactPower function.  I have not yet had time
+					// yet to see if it is faster or not. but it does give correct results.
+					//int pc=mpz_remove(*(Q.gmp()), *(Q.gmp()),*(P.gmp()));
+					int pc=ExactPower(S,P);
+					if(pc!=0)
+					{
+						m_pffNplus1->AddFactor(new FactorNode(p->Factor,pc));
+						pmaxadjust(&S);
+					}
+				}
+			}
+			pTree->ResetToNoFactors();
+		}
+	}
+	return false;
+}
+
 //#define FDEBUG(x,y)   fprintf(stderr,"%u %u\n",p,p2)
 #define  FDEBUG(x,y)
 
 PFBoolean F_Factor::Iterate()
 {
-   if (p>pmax)
-   {
-      return(PFBoolean::b_true);       // end the test
-   }
-   uint64 p2;
-   if (!m_bModFactor)
-      p2 = primeserver->NextPrime();
-   else
-   {
-      if (m_bDualModFactor)
-         p2=m_pEratMod2->next();
-      else
-         p2=m_pEratMod->next();
-   }
+	uint64 p2;
+	if(p>pmax)
+	{
+		if (m_bUseTreeFactorize)
+			g_nIterationCnt *= 1000;
+		return(PFBoolean::b_true);			// end the test
+	}
 
-   // This is the ONLY 2^31 code left.
-   uint64  li1, li2;
+	if (m_bUseTreeFactorize)
+	{
+		if (m_bUseTinyTrick)
+		{
+			if (m_nTinyTrickCnt == m_nTinyTrickCntMax)
+				m_bUseTinyTrick = false;
+			else
+			{
+				p = m_64TinyTrickFactors[m_nTinyTrickCnt<<1];
+				p2 = m_64TinyTrickFactors[(m_nTinyTrickCnt<<1)+1];
+				++m_nTinyTrickCnt;
+				goto TinyTrick;
+			}
+		}
+		if (m_bModFactor)
+		{
+			p = m_pTreeFactorize->LoadPrimesIntoTree(m_pEratMod, m_pEratMod2);
+		}
+		else
+		{
+			if (!m_bCompletedLittlePR)
+			{
+				for (uint32 i = 0; i < m_nLittleTrees; ++i)
+				{
+					m_pLittleTrees[i].ComputeTreeResidues(pN->gmp());
 
-   FDEBUG(p,p2);
-   if (p2 <= INT_MAX)
-   {
-       int  i1,i2;
-      // Note that if the FP stack is not PERFECTLY clear before calling this function, then
-      // there it will have problems and not work right (this was found inside of APSieve).
-      // I think this bug may ALSO be in pfgw in some instances during factoring.
+					if (IterateTreeFactorize(&m_pLittleTrees[i]))
+					{
+						g_nIterationCnt *= 1000;
+						return(PFBoolean::b_true);
+					}
 
-      // Note that STAT=120 and TAGS=FFFF should be seen in the VC registers debug window.
-      pN->m_mod2((int)p,(int)p2,&i1,&i2);
-      if (i1<0) i1+=(int)p;
-      if (i2<0) i2+=(int)p2;
-      li1=i1;
-      li2=i2;
-   }
-   else
-   {
-      pN->m_mod2(p, p2, &li1, &li2);
-   }
+					m_dwStepsDone += (m_pLittleTrees[i].GetNumLeaves()/2)-1;
+					
+				}
+				m_bCompletedLittlePR = true;
 
-   if(m_pffN && (li1==0))
-   {
-      Integer P(p);
+				// Skip past the end of our primes in the little trees.
+				primeserver->SkipTo(m_nLittleMaxPR);
+			}
+			p = m_pTreeFactorize->LoadPrimesIntoTree();
+		}
+		m_pTreeFactorize->ComputeTreeResidues(pN->gmp());
 
-      // here is an "already" written version of the ExactPower function.  I have not yet had time
-      // yet to see if it is faster or not. but it does give correct results.
-      //int pc=mpz_remove(*(Q.gmp()), *(Q.gmp()),*(P.gmp()));
-      int pc=ExactPower(Q,P);
-      if(pc!=0)
-      {
-         m_pffN->AddFactor(new FactorNode(p,pc));
-         if(!bDeep)
-         {
-            return(PFBoolean::b_true);
-         }
-         pmaxadjust(&Q);
-      }
-   }
-   else
-   {
-      if(m_pffNminus1 && (li1==1))              // divides N-1
-      {
-         Integer P(p);
-         uint32 pc=ExactPower(R,P);
-         if(pc!=0)
-         {
-            m_pffNminus1->AddFactor(new FactorNode(p,pc));
-            pmaxadjust(&R);
-         }
-      }
-      if(m_pffNplus1 && (li1==p-1))
-      {
-         Integer P(p);
-         uint32 pc=ExactPower(S,P);
-         if(pc!=0)
-         {
-            m_pffNplus1->AddFactor(new FactorNode(p,pc));
-            pmaxadjust(&S);
-         }
-      }
-   }
+		m_dwStepsDone += (m_pTreeFactorize->GetNumLeaves()/2)-1;
+      OnPrompt();
 
-   if(m_pffN && (li2==0))
-   {
-      Integer P(p2);
-      uint32 pc=ExactPower(Q,P);
-      if(pc!=0)
-      {
-         m_pffN->AddFactor(new FactorNode(p2,pc));
-         if(!bDeep)
-         {
-            return(PFBoolean::b_true);
-         }
-         pmaxadjust(&Q);
-      }
-   }
-   else
-   {
-      if(m_pffNminus1 && (li2==1))              // divides N-1
-      {
-         Integer P(p2);
-         uint32 pc=ExactPower(R,P);
-         if(pc!=0)
-         {
-            m_pffNminus1->AddFactor(new FactorNode(p2,pc));
-            pmaxadjust(&R);
-         }
-      }
-      if(m_pffNplus1 && (li2==p2-1))
-      {
-         Integer P(p2);
-         uint32 pc=ExactPower(S,P);
-         if(pc!=0)
-         {
-            m_pffNplus1->AddFactor(new FactorNode(p2,pc));
-            pmaxadjust(&S);
-         }
-      }
-   }
+		if (IterateTreeFactorize(m_pTreeFactorize))
+		{
+			g_nIterationCnt *= 1000;
+			return(PFBoolean::b_true);
+		}
+		return(PFBoolean::b_false);				// and its not quitting time yet
+	}
 
-   // ready for the next iteration
-   if (!m_bModFactor)
-      p=primeserver->NextPrime();
-   else
-      p=m_pEratMod->next();
-   return(PFBoolean::b_false);            // and its not quitting time yet
+	// Use the "original" factoring code, not the new TreeFactorizer code
+	if (!m_bModFactor)
+		p2 = primeserver->NextPrime();
+	else
+	{
+		if (m_bDualModFactor)
+			p2=m_pEratMod2->next();
+		else
+			p2=m_pEratMod->next();
+	}
+	// If using TreeFactorizor and starting from prime of 2, then we DO do 3 calls to here (for 2,3 5,7 and 11,13)
+	// This is to "hopefully" factor the number without having to call
+	TinyTrick:;
+
+	// This is the ONLY 2^31 code left.
+	uint64  li1, li2;
+
+	FDEBUG(p,p2);
+	if(p2<=0x7fffffff)
+	{
+		int	i1,i2;
+		// Note if the FP stack is not PERFECTLY clear before calling this function, then
+		// there it will have problems and not work right (this was found inside of APSieve).
+		// I think this bug may ALSO be in pfgw in some instances during factoring.
+
+		// NOTE that STAT=120 and TAGS=FFFF should be seen in the VC registers debug window.
+		pN->m_mod2((int)p,(int)p2,&i1,&i2);
+		if(i1<0) 
+			i1+=(int)p;
+		if(i2<0) 
+			i2+=(int)p2;
+		li1=i1;
+		li2=i2;
+	}
+	else
+	{
+		pN->m_mod2(p, p2, &li1, &li2);
+	}
+
+	if(m_pffN && (li1==0))
+	{
+		Integer P(p);
+
+		// here is an "already" written version of the ExactPower function.  I have not yet had time
+		// yet to see if it is faster or not. but it does give correct results.
+		//int pc=mpz_remove(*(Q.gmp()), *(Q.gmp()),*(P.gmp()));
+		int pc=ExactPower(Q,P);
+		if(pc!=0)
+		{
+			m_pffN->AddFactor(new FactorNode(p,pc));
+			if(!bDeep)
+			{
+				if (m_bUseTreeFactorize)
+					g_nIterationCnt *= 1000;
+				return(PFBoolean::b_true);
+			}
+			pmaxadjust(&Q);
+		}
+	}
+	else 
+	{
+		if(m_pffNminus1 && (li1==1))					// divides N-1
+		{
+			Integer P(p);
+			uint32 pc=ExactPower(R,P);
+			if(pc!=0)
+			{
+				m_pffNminus1->AddFactor(new FactorNode(p,pc));
+				pmaxadjust(&R);
+			}
+		}
+		if(m_pffNplus1 && (li1==p-1))
+		{
+			Integer P(p);
+			uint32 pc=ExactPower(S,P);
+			if(pc!=0)
+			{
+				m_pffNplus1->AddFactor(new FactorNode(p,pc));
+				pmaxadjust(&S);
+			}
+		}
+	}
+
+	if(m_pffN && (li2==0))
+	{
+		Integer P(p2);
+		uint32 pc=ExactPower(Q,P);
+		if(pc!=0)
+		{
+			m_pffN->AddFactor(new FactorNode(p2,pc));
+			if(!bDeep)
+			{
+				if (m_bUseTreeFactorize)
+					g_nIterationCnt *= 1000;
+				return(PFBoolean::b_true);
+			}
+			pmaxadjust(&Q);
+		}
+	}
+	else 
+	{
+		if(m_pffNminus1 && (li2==1))					// divides N-1
+		{
+			Integer P(p2);
+			uint32 pc=ExactPower(R,P);
+			if(pc!=0)
+			{
+				m_pffNminus1->AddFactor(new FactorNode(p2,pc));
+				pmaxadjust(&R);
+			}
+		}
+		if(m_pffNplus1 && (li2==p2-1))
+		{
+			Integer P(p2);
+			uint32 pc=ExactPower(S,P);
+			if(pc!=0)
+			{
+				m_pffNplus1->AddFactor(new FactorNode(p2,pc));
+				pmaxadjust(&S);
+			}
+		}
+	}
+	// get ready for the next iteration
+	if (!m_bUseTinyTrick)
+	{
+		if (!m_bModFactor)
+			p = primeserver->NextPrime();
+		else
+			p=m_pEratMod->next();
+	}
+	return(PFBoolean::b_false);				// and its not quitting time yet
 }
 
 void F_Factor::checkBiggest(PFFactorizationSymbol *pF,Integer *pTarget)

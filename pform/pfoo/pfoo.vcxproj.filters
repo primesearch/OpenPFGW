@@ -131,6 +131,9 @@
     <ClCompile Include="f_prevprime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="treefactorize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algebra.h">
@@ -266,6 +269,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\pfconfig\headers\pfoo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="treefactorize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

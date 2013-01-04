@@ -612,6 +612,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="treefactorize.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\pfconfig\headers\pfoo.h" />
@@ -659,6 +660,7 @@
     <ClInclude Include="symboltypes.h" />
     <ClInclude Include="testreturns.h" />
     <ClInclude Include="tests.h" />
+    <ClInclude Include="treefactorize.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
