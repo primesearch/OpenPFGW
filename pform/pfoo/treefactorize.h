@@ -21,6 +21,7 @@
 #endif
 
 class Erat_Mod;
+class TreeFactorize;
 
 struct FoundFactor
 {
