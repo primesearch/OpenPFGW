@@ -193,7 +193,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\pfconfig\headers;..\..\;..\pfmath;..\pflib;..\..\packages\gmp\64bit;..\..\packages\gwnum;..\..\pform\pfgw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\pfconfig\headers;..\..\;..\pfmath;..\pflib;..\..\packages\gmp\64bit;..\..\packages\gwnum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_64BIT;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

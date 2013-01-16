@@ -7,7 +7,7 @@
 #include "pfmath.h"
 
 class PFIni;
-
+class Integer;
 
 class PFSimpleFile
 {

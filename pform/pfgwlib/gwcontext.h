@@ -9,6 +9,8 @@
 #include "../../packages/gwnum/cpuid.h"
 #endif
 
+#include "../pfmath/integer.h"
+
 void getCpuInfo (void);
 void getCpuDescription (
 			char	*buf,			/* A 512 byte buffer */
