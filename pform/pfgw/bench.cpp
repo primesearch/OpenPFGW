@@ -305,7 +305,7 @@ void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32 minF, int
          else if (f < 10000) f += 100;
          else if (f < 1000000) f += 1000;
          else if (f < 10000000) f += 10000;
-         f += 100000;
+         else f += 100000;
       }
       else
       {
@@ -315,7 +315,7 @@ void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32 minF, int
          else if (f < 1000000) f += 300000;
          else if (f < 10000000) f += 3000000;
          else if (f < 100000000) f += 30000000;
-         else if (f < 1000000000) f += 300000000;
+         else f += 300000000;
       }
 
       if (f > 1000) { dwPRPRepeat = 20; dwPRPIterations = 200; }
@@ -393,7 +393,7 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int
          else if (n < 10000) n += 100;
          else if (n < 1000000) n += 1000;
          else if (n < 10000000) n += 10000;
-         n += 100000;
+         else n += 100000;
       }
       else
       {
@@ -403,7 +403,7 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int
          else if (n < 1000000) n += 300000;
          else if (n < 10000000) n += 3000000;
          else if (n < 100000000) n += 30000000;
-         else if (n < 1000000000) n += 300000000;
+         else n += 300000000;
       }
 
       if (n > 1000) { dwPRPRepeat = 20; dwPRPIterations = 200; }
