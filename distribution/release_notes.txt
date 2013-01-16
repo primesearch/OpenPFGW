@@ -1,4 +1,9 @@
-Released as version 3.7.0   January 4, 2013 
+Released as version 3.7.1   January 14, 2013 
+
+Enhancements to: v3.7.1 Development Release - January 14, 2013
+   - Add new -B option for benchmarking and removed -m.  Please
+     review pfgwdoc.txt fo more details.
+
 
 Enhancements to: v3.7.0 Development Release - January 4, 2013
    - Fixed console output on *nix caused by my misunderstanding of
