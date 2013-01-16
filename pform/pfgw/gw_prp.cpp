@@ -103,9 +103,12 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
 
 void  bench_gwPRP(Integer *N, uint32 iterations)
 {
+   int iDone=0, iTotal;
    Integer testN;
    Integer X = (*N);
+
    --X;            // X is the exponent, we are to calculate 3^X mod N
+   iTotal = numbits(X);
 
    // create a context
    gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
@@ -121,11 +124,20 @@ void  bench_gwPRP(Integer *N, uint32 iterations)
 
    for(; iterations; iterations--)
    {
-      gwsetnormroutine(&gwdata, 0, 0, iterations&1);
-      gwsquare(gwX);
+      int errchk = ErrorCheck(iDone, iTotal);
+
+      gw_clear_maxerr(&gwdata);
+      gwsetnormroutine(&gwdata, 0, errchk, bit(X,iterations));
+
+      // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
+      // error during the last iteration.
+      if (iterations < 30)
+         gwsquare_carefully(gwX);
+      else
+         gwsquare(gwX);
    }
 
-   DestroyModulus ();
+   DestroyModulus();
 }
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).

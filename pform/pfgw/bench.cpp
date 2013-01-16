@@ -59,19 +59,19 @@ void dispTiming(double f, int x)
    char fmt[5];
 
    if (f<1e-12) sprintf(buf,"---");
-   else if (f<1e-7) sprintf(buf,"%ldps",(long)(1e12*f));
-   else if (f<1e-4) sprintf(buf,"%ldns",(long)(1e9*f));
-   else if (f<1e-1) sprintf(buf,"%ldus",(long)(1e6*f));
-   else if (f<100)  sprintf(buf,"%ldms",(long)(1e3*f));
-   else if (f<600) sprintf(buf,"%lds",(long)(f));
-   else if (f<7200) sprintf(buf,"%ldmi",(long)(f/60));
-   else if (f<172800) sprintf(buf,"%ldhr",(long)(f/3600));
-   else sprintf(buf,"%ldd",(long)(f/86400));
-   sprintf(fmt,"%%%ds",x);
-   PFPrintfLog(fmt,buf);
+   else if (f<1e-8) sprintf(buf, "%ld ps",(long)(1e12*f));
+   else if (f<1e-5) sprintf(buf, "%ld ns",(long)(1e9*f));
+   else if (f<1e-2) sprintf(buf, "%ld us",(long)(1e6*f));
+   else if (f<10)   sprintf(buf, "%ld ms",(long)(1e3*f));
+   else if (f<600)  sprintf(buf, "%ld s ",(long)(f));
+   else if (f<7200) sprintf(buf, "%ld mi",(long)(f/60));
+   else if (f<172800) sprintf(buf, "%ld hr",(long)(f/3600));
+   else sprintf(buf,"%ld dy",(long)(f/86400));
+   sprintf(fmt, "%%%ds", x);
+   PFPrintfLog(fmt, buf);
 }
 
-double benchFactor(const char *expr, uint32 fmax,int rep,PFSymbolTable *pContext, double *len)
+double benchFactor(const char *expr, uint32 fmax, int rep, PFSymbolTable *pContext, double *len)
 {
    PFSymbolTable *pTestContext=new PFSymbolTable(pContext);
 
@@ -113,7 +113,24 @@ double benchFactor(const char *expr, uint32 fmax,int rep,PFSymbolTable *pContext
 #endif
 }
 
-double benchPRP(const char *expr,int rep, int iterations, PFSymbolTable *pContext, double *len)
+bool getFFTInfo(const char *expr, PFSymbolTable *pContext, char *fftInfo)
+{
+   PFSymbolTable *pTestContext=new PFSymbolTable(pContext);
+
+   Integer *pResult=ex_evaluate(pTestContext,expr);
+
+   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
+
+   if (CreateModulus(pResult, g_cpTestString, true)) return false;
+
+   gwfft_description(&gwdata, fftInfo);
+
+   DestroyModulus();
+
+   return true;
+}
+
+double benchPRP(const char *expr, uint32 rep, uint32 iterations, PFSymbolTable *pContext, double *len)
 {
    PFSymbolTable *pTestContext=new PFSymbolTable(pContext);
 
@@ -128,8 +145,10 @@ double benchPRP(const char *expr,int rep, int iterations, PFSymbolTable *pContex
    double totaltime=0;
    *len=numbits(*pResult);
 
-   for (DWORD dwP=0;dwP<DWORD(rep);dwP++)
+   for (uint32 dwP=0; dwP<rep; dwP++)
    {
+      if (g_bExitNow) break;
+
 #if defined (NEW_TIMER)
       Timer1.Start();
       Timer2.Start();
@@ -154,17 +173,14 @@ double benchPRP(const char *expr,int rep, int iterations, PFSymbolTable *pContex
 
    delete pTestContext;
 #if defined (NEW_TIMER)
-   return (totaltime/iterations/rep);
+   return (totaltime/(iterations*rep));
 #else
-   return (totaltime/clocks_per_sec/iterations/rep);
+   return (totaltime/(clocks_per_sec*iterations*rep));
 #endif
 }
 
-
-void bench(PFSymbolTable *pContext)
+void benchmarkFactor(PFSymbolTable *pContext)
 {
-   PFPrintfLog("Benchmarking PrimeForm/GW!  This may take several minutes.\n");
-
    uint32 i,k;
    double sum, total;
    double len;
@@ -174,8 +190,9 @@ void bench(PFSymbolTable *pContext)
    DWORD dwFactorRepeat=40;
    long FactorTestValues[]={500, 800, 1000, 1600, 1800, 2500, 3100, 0};
 
-
    sum=total=0;
+   
+   PFPrintfLog("\nBenchmarking trial factoring!\n");
 
    PFPrintfLog("Timing Trial Factoring   [time/factorbit]\n");
    PFPrintfLog("-----------------------------------------\n");
@@ -185,6 +202,8 @@ void bench(PFSymbolTable *pContext)
 
    for (i=0;FactorTestValues[i];i++)
    {
+      if (g_bExitNow) break;
+
       k=FactorTestValues[i];
 
       pContext->AddSymbol(new PFIntegerSymbol("k",new Integer(k)));
@@ -219,48 +238,270 @@ void bench(PFSymbolTable *pContext)
       dispTiming(sum*(1l<<k)*(1l<<k),7);
       PFPrintfLog("\n");
    }
+}
 
-   // Second benchmark: PRP testing
-   double dpp1,dpp2;
-   DWORD dwPRPRepeat=20;
-   DWORD dwPRPIterations=500;
+void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32 minF, int32 maxF, bool allFFT)
+{
+   char   last_fftlen[200], next_fftlen[200];
+   double tpb, tpe, bits;
+   int32  f;
+   int32  dwPRPRepeat;
+   int32  dwPRPIterations;
+   
+   PFPrintfLog("\nBenchmarking generic modular reduction for %s!\n", expression);
 
-   sum=total=0;
-   PFPrintfLog("Timing PRP test    [time/iterationbit]\n");
-   PFPrintfLog("--------------------------------------\n");
-   PFPrintfLog(" Test      2^k-1       2^k+1\n");
+   PFPrintfLog("[appx max f]   [num bits]   [iter time]  [PRP time]  [FFT used]\n");
+   PFPrintfLog("--------------------------------------------------------------------------------\n");
 
-   for (k=5000;k<=50000;k+=5000)
+   dwPRPRepeat = 10;
+   dwPRPIterations = 50;
+   f = minF;
+
+   if (f > 10000000) f = f - (f % 10000000);
+   else if (f > 1000000) f = f - (f % 1000000);
+   else if (f > 100000) f = f - (f % 100000);
+   else if (f > 10000) f = f - (f % 10000);
+   else if (f > 1000) f = f - (f % 1000);
+   else if (f > 100) f = f - (f % 100);
+
+   pContext->AddSymbol(new PFIntegerSymbol("f", new Integer(f)));
+
+   getFFTInfo(expression, pContext, last_fftlen);
+
+   while (f <= maxF)
    {
-      PFPrintfLog("%5ld   ",k);
+      if (g_bExitNow) break;
 
-      pContext->AddSymbol(new PFIntegerSymbol("k",new Integer(k)));
+      pContext->AddSymbol(new PFIntegerSymbol("f", new Integer(f)));
 
-      dpp1=benchPRP("2^k-1",dwPRPRepeat,dwPRPIterations,pContext,&len);
-      sum+=dpp1;
-      total+=len*log(len)/log(2.0);
-      dpp1/=len*log(len)/log(2.0);
+      if (!getFFTInfo(expression, pContext, next_fftlen)) break;
 
-      dpp2=benchPRP("2^k+1",dwPRPRepeat,dwPRPIterations,pContext,&len);
-      sum+=dpp2;
-      total+=len*log(len)/log(2.0);
-      dpp2/=len*log(len)/log(2.0);
+      if (!allFFT || strcmp(last_fftlen, next_fftlen) || f == maxF)
+      {
+         PFPrintfLog("%10ld   ", f);
 
-      dispTiming(dpp1,8);
-      PFPrintfLog("   "); dispTiming(dpp2,8);
-      PFPrintfLog("\n");
-      PFfflush(stdout);
+         pContext->AddSymbol(new PFIntegerSymbol("f", new Integer(f)));
+
+         tpb = benchPRP(expression, dwPRPRepeat, dwPRPIterations, pContext, &bits);
+
+         tpe = tpb * bits;
+
+         PFPrintfLog("%10ld   ", (int64) bits);
+
+         dispTiming(tpb, 11);
+         dispTiming(tpe, 12);
+
+         PFPrintfLog("     %s\n", last_fftlen);
+         PFfflush(stdout);
+
+         strcpy(last_fftlen, next_fftlen);
+      }
+      
+      if (f == maxF) break;
+
+      if (allFFT)
+      {
+         if (f < 1000) f += 10;
+         else if (f < 10000) f += 100;
+         else if (f < 1000000) f += 1000;
+         else if (f < 10000000) f += 10000;
+         f += 100000;
+      }
+      else
+      {
+         if (f < 1000) f += 300;
+         else if (f < 10000) f += 3000;
+         else if (f < 100000) f += 30000;
+         else if (f < 1000000) f += 300000;
+         else if (f < 10000000) f += 3000000;
+         else if (f < 100000000) f += 30000000;
+         else if (f < 1000000000) f += 300000000;
+      }
+
+      if (f > 1000) { dwPRPRepeat = 20; dwPRPIterations = 200; }
+      if (f > 1000000) { dwPRPRepeat = 10; dwPRPIterations = 100; }
+
+      if (f > maxF) f = maxF;
+   }
+   
+   PFPrintfLog("\n");
+   PFfflush(stdout);
+}
+
+void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int32 maxN, double k, uint32 b, int32 c, bool allFFT)
+{
+   char   last_fftlen[200], next_fftlen[200];
+   double tpb, tpe, bits;
+   int32  n;
+   int32  dwPRPRepeat;
+   int32  dwPRPIterations;
+
+   PFPrintfLog("\nBenchmarking special modular reduction for %s!\n", expression);
+
+   PFPrintfLog("[appx max n]   [num bits]   [iter time]  [PRP time]  [FFT used]\n");
+   PFPrintfLog("--------------------------------------------------------------------------------\n");
+
+   dwPRPRepeat = 10;
+   dwPRPIterations = 50;
+   n = minN;
+
+   if (n > 10000000) n = n - (n % 10000000);
+   else if (n > 1000000) n = n - (n % 1000000);
+   else if (n > 100000) n = n - (n % 100000);
+   else if (n > 10000) n = n - (n % 10000);
+   else if (n > 1000) n = n - (n % 1000);
+   else if (n > 100) n = n - (n % 100);
+
+   gwmap_to_fft_info(&gwdata, k, b, 90, c);
+
+   gwfft_description (&gwdata, last_fftlen);
+
+   while (n <= maxN)
+   {
+      if (g_bExitNow) break;
+
+      if (gwmap_to_fft_info(&gwdata, k, b, n, c) > 1) break;
+
+      gwfft_description (&gwdata, next_fftlen);
+
+      if (!allFFT || strcmp(last_fftlen, next_fftlen) || n == maxN)
+      {
+         PFPrintfLog("%10ld   ", n);
+
+         pContext->AddSymbol(new PFIntegerSymbol("n", new Integer(n)));
+
+         tpb = benchPRP(expression, dwPRPRepeat, dwPRPIterations, pContext, &bits);
+
+         tpe = tpb * bits;
+         
+         PFPrintfLog("%10ld   ", (int64) bits);
+
+         dispTiming(tpb, 11);
+         dispTiming(tpe, 12);
+
+         PFPrintfLog("     %s\n", last_fftlen);
+         PFfflush(stdout);
+
+         strcpy(last_fftlen, next_fftlen);
+      }
+
+      if (n == maxN) break;
+
+      if (allFFT)
+      {
+         if (n < 1000) n += 10;
+         else if (n < 10000) n += 100;
+         else if (n < 1000000) n += 1000;
+         else if (n < 10000000) n += 10000;
+         n += 100000;
+      }
+      else
+      {
+         if (n < 1000) n += 300;
+         else if (n < 10000) n += 3000;
+         else if (n < 100000) n += 30000;
+         else if (n < 1000000) n += 300000;
+         else if (n < 10000000) n += 3000000;
+         else if (n < 100000000) n += 30000000;
+         else if (n < 1000000000) n += 300000000;
+      }
+
+      if (n > 1000) { dwPRPRepeat = 20; dwPRPIterations = 200; }
+      if (n > 1000000) { dwPRPRepeat = 10; dwPRPIterations = 100; }
+
+      if (n > maxN) n = maxN;
+   }
+   
+   PFPrintfLog("\n");
+   PFfflush(stdout);
+}
+
+void benchmark(PFSymbolTable *pContext, char *parameter)
+{
+   char genericExpression[200], specialExpression[200];
+   char *cPtr;
+   int error_code;
+   double  k;
+   uint32 b;
+   int32 c, d;
+   int32 minN = 100, maxN = 10000000;
+   int32 minF = 100, maxF = 1000000;
+   bool allFFT = false, haveGenericExp = false, haveSpecialExp = false;
+   bool doGeneric = false, doSpecial  = false, doFactor = false;
+ 
+   cPtr = strtok(parameter, ",");
+   if (!cPtr) { doSpecial = doGeneric = true; }
+
+   while (cPtr)
+   {
+      if (!strcmp(cPtr, "fft")) allFFT = true;
+      else if (!strcmp(cPtr, "fact")) doFactor = true;
+      else if (!strcmp(cPtr, "spec")) doSpecial = true;
+      else if (!strcmp(cPtr, "gen")) doGeneric = true;
+      else if (!memcmp(cPtr, "minf=", 5)) { doGeneric = true; minF = atol(cPtr+5); }
+      else if (!memcmp(cPtr, "maxf=", 5)) { doGeneric = true; maxF = atol(cPtr+5); }
+      else if (!memcmp(cPtr, "minn=", 5)) { doSpecial = true; minN = atol(cPtr+5); }
+      else if (!memcmp(cPtr, "maxn=", 5)) { doSpecial = true; maxN = atol(cPtr+5); }
+      else if (!memcmp(cPtr, "gexp=", 5))
+      {
+         strcpy(genericExpression, cPtr+5);
+         doGeneric = haveGenericExp = true;
+      }
+      else if (!memcmp(cPtr, "sexp=", 5))
+      {
+         sprintf(specialExpression, "%send1", cPtr+5);
+         doSpecial = false;
+
+         if (sscanf(specialExpression, "(%lf*%u^n%d)/%dend%d", &k, &b, &c, &d, &error_code) == 5)       { doSpecial = haveSpecialExp = true; }
+         if (!doSpecial && sscanf(specialExpression, "%u^n%dend%d", &b, &c, &error_code) == 3)          { doSpecial = haveSpecialExp = true; k = 1; d = 1; }
+         if (!doSpecial && sscanf(specialExpression, "%lf*%u^n%dend%d", &k, &b, &c, &error_code) == 4)  { doSpecial = haveSpecialExp = true; d = 1; }
+         if (!doSpecial && sscanf(specialExpression, "(%u^n%d)/%dend%d", &b, &c, &d, &error_code) == 4) { doSpecial = haveSpecialExp = true; k = 1; }
+         if (!doSpecial && sscanf(specialExpression, "Phi(n,%u)/%dend%d", &b, &d, &error_code) == 3)    { doSpecial = haveSpecialExp = true; k = 1; c = -1; }
+         if (!doSpecial && sscanf(specialExpression, "Phi(n,%u)end%d",  &b, &error_code) == 2)          { doSpecial = haveSpecialExp = true; k = 1; c = -1; d = 1; }
+
+         if (!haveSpecialExp)
+         {
+            PFPrintf("Invalid expression ignored: %s\n", cPtr+5);
+            return;
+         }
+
+         strcpy(specialExpression, cPtr+5);
+      }
+      else
+      {
+         PFPrintf("Invalid parameter ignored: %s\n", cPtr);
+         return;
+      }
+
+      cPtr = strtok(NULL, ",");
    }
 
-   if (total) sum/=total; else sum=0;
-   PFPrintfLog("-----------------------------------\n");
-   PFPrintfLog("Estimate for PRP test\n");
-   PFPrintfLog("-----------------------------------\n");
-   for (k=5;k<=23;k++)
+   if (allFFT && !doGeneric && !doSpecial) doGeneric = doSpecial = true;
+
+   if (minF < 100) minF = 100;
+   if (maxF < minF) maxF = minF * 10;
+   if (minN < 100) minN = 100;
+   if (maxN < minN) maxN = minN * 10;
+   
+   if (!haveGenericExp)
+      strcpy(genericExpression, "f!-1");
+
+   if (!haveSpecialExp)
    {
-      double prptime=sum*(1l<<k)*(1l<<k)*k;
-      PFPrintfLog("%8ld: ",1l<<k);
-      dispTiming(prptime,7);
-      PFPrintfLog("\n");
+      strcpy(specialExpression, "3*2^n+1");
+      k = 3.0;
+      b = 2;
+      c = 1;
    }
+
+   PFPrintfLog("Benchmarking!  This may take several minutes.\n");
+
+   if (!g_bExitNow && doFactor)
+      benchmarkFactor(pContext);
+
+   if (!g_bExitNow && doGeneric)
+      benchmarkGeneric(pContext, genericExpression, minF, maxF, allFFT);
+
+   if (!g_bExitNow && doSpecial)
+      benchmarkSpecial(pContext, specialExpression, minN, maxN, k, b, c, allFFT);
 }

@@ -189,7 +189,7 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // j
    {cl_boolean,   false,   "_TERSE_OUTPUT"},    // k
    {cl_string,    false,   "_LOGFILE"},         // l
-   {cl_boolean,   false,   "_BENCH"},           // m
+   {cl_illegal,   false,   ""},                 // m
    {cl_illegal,   false,   ""},                 // n
    {cl_string,    false,   "_ONLYFACTORS"},     // o
    {cl_illegal,   false,   ""},                 // p
@@ -204,7 +204,7 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // y
    {cl_illegal,   false,   ""},                 // z
    {cl_illegal,   false,   ""},                 // A
-   {cl_illegal,   false,   ""},                 // B
+   {cl_string,    false,   "_BENCHMARK"},       // B
    {cl_string,    false,   "_CONSOLE_OUTPUT_MODE"},    // C
    {cl_illegal,   false,   ""},                 // D
    {cl_illegal,   false,   ""},                 // E
@@ -991,11 +991,11 @@ int pfgw_main(int argc,char *argv[])
       fTmp->WriteToString(LPCTSTR(pSymbol->GetStringValue()));
       g_ShowTestResult = true;
    }
-
-   pSymbol=psymRuntime->LookupSymbol("_BENCH");
+   
+   pSymbol=psymRuntime->LookupSymbol("_BENCHMARK");
    if(pSymbol)
    {
-      bench(psymRuntime);
+      benchmark(psymRuntime, (char *) LPCTSTR(pSymbol->GetStringValue()));
    }
 
    pSymbol=psymRuntime->LookupSymbol("_VECTORMODE");

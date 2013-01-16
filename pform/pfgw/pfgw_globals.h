@@ -58,6 +58,7 @@ bool ProcessGF_Factors(Integer *N, const char *sNumStr);
 // in bench.cpp
 void vectorout(PFString &sFilename,PFSymbolTable *psymRuntime);
 void bench(PFSymbolTable *pContext);
+void benchmark(PFSymbolTable *pContext, char *parameter);
 
 extern "C" int pfgw_main(int argc,char *argv[]);
 void pfgw_main_init();
