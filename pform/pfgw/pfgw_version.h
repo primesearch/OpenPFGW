@@ -25,8 +25,8 @@
 //#define	RELEASE_LEVEL	1
 //#define	RELEASE_LEVEL	2
 
-#define	RELEASE_VERSION         "3.7.1"
-#define	BUILD_DATE              "20130115"
+#define	RELEASE_VERSION         "3.7.2"
+#define	BUILD_DATE              "20130122"
 
 #ifdef _64BIT
 #define  BITNESS                 "64BIT"
