@@ -412,14 +412,14 @@ void NodeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
 	else  // handle the "transition", where some are over and some are under 32 bits.  For non-VC builds all above 32 bits are handled here
 	{
 		uint32 n32 = uint32((m_ffFactors[0].Factor)>>32);
-		mpz_init_set_ui(m_mpzData,n32);
+		mpz_set_ui(m_mpzData,n32);
 		mpz_mul_2exp(m_mpzData, m_mpzData, 32);
 		mpz_add_ui(m_mpzData,m_mpzData,(uint32)((m_ffFactors[0].Factor)&0xFFFFFFFF));
 
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
 		{
 			n32 = uint32((m_ffFactors[i].Factor)>>32);
-			mpz_init_set_ui(m_ftreeRoot->m_mpzScratch,n32);
+			mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 			mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
 			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 			mpz_mul(m_mpzData, m_mpzData, m_ftreeRoot->m_mpzScratch);
@@ -482,13 +482,13 @@ void NodeFactorize::LoadPrimesIntoTree()
 	else  // handle the "transition", where some are over and some are under 32 bits.
 	{
 		uint32 n32 = uint32((m_ffFactors[0].Factor)>>32);
-		mpz_init_set_ui(m_mpzData,n32);
+		mpz_set_ui(m_mpzData,n32);
 		mpz_mul_2exp(m_mpzData, m_mpzData, 32);
 		mpz_add_ui(m_mpzData,m_mpzData,(uint32)((m_ffFactors[0].Factor)&0xFFFFFFFF));
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
 		{
 			n32 = uint32((m_ffFactors[i].Factor)>>32);
-			mpz_init_set_ui(m_ftreeRoot->m_mpzScratch,n32);
+			mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 			mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
 			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 			mpz_mul(m_mpzData, m_mpzData, m_ftreeRoot->m_mpzScratch);
@@ -600,7 +600,7 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 				// For VC, we only use this code for the "transition" from 32 to 64 bit.  Once we are
 				// fully into 64 bit land (i.e. 2 limbs for a GMP), we use the code in the #if above
 				uint32 n32 = uint32((m_ffFactors[i].Factor)>>32);
-				mpz_init_set_ui(m_ftreeRoot->m_mpzScratch,n32);
+				mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 				mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
 				mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 
@@ -707,7 +707,7 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 		for (i = 0; i < m_nNumUsedFactors; ++i)
 		{
 			uint32 n32 = uint32((m_ffFactors[i].Factor)>>32);
-			mpz_init_set_ui(m_ftreeRoot->m_mpzScratch,n32);
+			mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 			mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
 			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 
