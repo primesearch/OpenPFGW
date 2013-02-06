@@ -204,7 +204,8 @@ GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
 GW_INLINE void Integer::m_mod2(const int32 n1,const int32 n2,int32 *p1,int32 *p2) const
 {
    *p1 = (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n1);
-	*p2 = (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
+   if (p2 != 0)
+      *p2 = (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n2);
 }
 
 GW_INLINE void Integer::m_mod2(const uint64 n1,const uint64 n2,uint64 *p1,uint64 *p2) const
