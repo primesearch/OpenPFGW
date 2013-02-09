@@ -373,8 +373,8 @@ void NodeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
 		unsigned til = (m_nMaxLeafFactors>>1);
 		for (i = 0; i < til; ++i)
 		{
-			m_ffFactors[i].Factor=pEratMod->next();
-			m_ffFactors[i].Factor=pEratMod2->next();
+			m_ffFactors[2*i].Factor=pEratMod->next();
+			m_ffFactors[2*i+1].Factor=pEratMod2->next();
 		}
 		if (m_nMaxLeafFactors & 1)
 		{
@@ -728,6 +728,8 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 void NodeFactorize::ComputeTreeResidues(mpz_t Candi)
 {
    unsigned int i;
+
+   if (mpz_cmp_ui(m_mpzData, 0) == 0) return;
 
    mpz_fdiv_r(m_mpzResidue, Candi, m_mpzData);
 	for (i = 0; i < m_nNumBranches; ++i)

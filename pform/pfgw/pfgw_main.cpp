@@ -1409,7 +1409,7 @@ int pfgw_main(int argc,char *argv[])
                }
                else
                {
-                  PFPrintfLog("%s has factors: %s\n",LPCTSTR(sNumber),LPCTSTR(sFactorization));
+                  PFPrintfLog("%s has factors: %s\n%c",LPCTSTR(sNumber),LPCTSTR(sFactorization), ((!bDeep || _Q==1) ? '\n' : ' '));
                   if (!bDeep || _Q==1)
                      pFile->CurrentNumberIsPRPOrPrime(false, false, &bMsgValid, &sMessage);
 

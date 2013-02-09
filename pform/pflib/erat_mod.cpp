@@ -647,12 +647,13 @@ uint64 Erat_Mod::next()
             if (bYes && m_ModConditions[i].bOnlyAcceptIfTrue)
                return Ret;
             if (!bYes && !m_ModConditions[i].bOnlyAcceptIfTrue)
-               return Ret;
+               return Ret; 
          }
       }
       else
          break;
-   };
+   }
+ 
    return Ret;
 }
 
