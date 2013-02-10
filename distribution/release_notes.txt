@@ -1,7 +1,12 @@
-Released as version 3.7.2   January 23, 2013 
+Released as version 3.7.3   February 10, 2013 
+
+Enhancements to: v3.7.3 Development Release - January February 10, 2013
+   - Fixed division by zero error in tree factoring code.
+
 
 Enhancements to: v3.7.2 Development Release - January 23, 2013
    - Fixed memory leak in tree factoring code.
+
 
 Enhancements to: v3.7.1 Development Release - January 14, 2013
    - Add new -B option for benchmarking and removed -m.  Please
