@@ -770,16 +770,13 @@ F.1.1. LLR              http://jpenne.free.fr/index2.html
 F.1.2. Proth            http://www.utm.edu/research/primes/programs/gallot/
 F.1.3. Primo (ECPP)     http://www.ellipsa.net/
 F.1.4. VFYPR            http://anthony.d.forbes.googlepages.com/vfypr.htm
-F.1.5. ECPP             http://ultralix.polytechnique.fr/~morain/Prgms/ecpp.english.html
+F.1.5. ECPP             http://www.lix.polytechnique.fr/~morain/Prgms/ecpp.english.html
 F.1.6  genefer      (*) http://pagesperso-orange.fr/yves.gallot/primes/download.html
 
-F.2. Factorisation programs
+F.2. Factorization programs
 F.2.1. GMP-ECM      (*) http://ecm.gforge.inria.fr/
 F.2.4. GGNFS        (*) http://sourceforge.net/projects/ggnfs/
 F.2.4. msieve       (*) http://www.boo.net/~jasonp/qs.html
-F.2.2. UBASIC's rho     http://www.rkmath.rikkyo.ac.jp/~kida/ubasic.htm
-F.2.3. UBASIC's emcx    http://www.rkmath.rikkyo.ac.jp/~kida/ubasic.htm
-F.2.4. PPMPQS           http://www.asahi-net.or.jp/~KC2H-MSM/cn/
 
 A fairly comprehensive list of available factoring software can be found at Mersenne
 Forum, http://www.mersenneforum.org/showthread.php?t=3255.  Similarly a comprehensive
@@ -787,18 +784,16 @@ list of factoring projects can be found at
 http://www.mersenneforum.org/showthread.php?t=9611
 
 F.3. Sieving programs
-F.3.1. sr<x>sieve   (*) http://www.geocities.com/g_w_reynolds/
-F.3.2. gcwsieve     (*) http://www.geocities.com/g_w_reynolds/
+F.3.1. sr<x>sieve   (*) http://www.mersenneforum.org/showthread.php?t=15833
+F.3.2. gcwsieve     (*) https://sites.google.com/site/geoffreywalterreynolds/programs/
 F.3.3. NewPGen          http://www.utm.edu/research/primes/programs/NewPGen/
 F.3.4. APSieve          http://groups.yahoo.com/group/primeform/files/Sieving+Programs/
-F.3.6. GFNSieve         http://groups.yahoo.com/group/primenumbers/files/
-F.3.7. FermFact         http://groups.yahoo.com/group/FermatNumbers/files/
-F.3.8. MultiSieve       http://home.roadrunner.com/~mrodenkirch/
-
+F.3.5. GFNSieve         http://groups.yahoo.com/group/primenumbers/files/
+F.3.6. FermFact         http://groups.yahoo.com/group/FermatNumbers/files/
+F.3.7. MultiSieve       http://home.roadrunner.com/~mrodenkirch/
 
 F.3. Others
-F.3.1. PRP              http://www.mersenne.org/gimps/
-F.3.2. UBASIC           http://www.rkmath.rikkyo.ac.jp/~kida/ubasic.htm
-F.3.3. Phrot        (*) http://home.roadrunner.com/~mrodenkirch/
+F.3.1. Phrot        (*) http://home.roadrunner.com/~mrodenkirch/home/Phrot.html
+F.3.2. PRPNet       (*) http://home.roadrunner.com/~mrodenkirch/home/PRPNet.html
  
  
