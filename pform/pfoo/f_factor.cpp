@@ -540,7 +540,7 @@ PFBoolean F_Factor::OnInitialize()
 			{
 				m_nTinyTrickCntMax=3;
 				m_bUseTinyTrick = true;
-				primeserver->SkipTo(17);	// We will do  2,3 and 5,7 and 11,13 as "old" type Nash double FPU factorized values (and not in the small trees)
+				primeserver->SkipTo(16);	// We will do  2,3 and 5,7 and 11,13 as "old" type Nash double FPU factorized values (and not in the small trees)
 				m_64TinyTrickFactors[0] =2;
 				m_64TinyTrickFactors[1] =3;
 				m_64TinyTrickFactors[2] =5;
