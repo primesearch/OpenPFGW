@@ -736,6 +736,8 @@ UseDefault:;
    
    uint32 Cnt = 0, npr;
 
+   MinPrime--;
+
    primeserver->SkipTo(MinPrime);
 
    GF_n_Subs = 0;
