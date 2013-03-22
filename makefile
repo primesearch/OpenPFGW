@@ -8,13 +8,13 @@ pfgw64:	baselib integer fft pfoo io entrypoint
 	${CXX} ${CXXFLAGS}	\
 		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
 		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a \
-		packages/gmp/64bit/libgmp.a packages/gwnum/64bit/gwnum.a  -lpthread -lstdc++ -o pfgw64
+		packages/gmp/64bit/libgmp.a packages/gwnum/64bit/gwnum.a  -Wl,-no_pie -lpthread -lstdc++ -o pfgw64
 
 pfgw32:	baselib integer fft pfoo io entrypoint
 	${CXX} ${CXXFLAGS}	\
 		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
 		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a \
-		packages/gmp/32bit/libgmp.a packages/gwnum/32bit/gwnum.a  -lpthread -lstdc++ -o pfgw32
+		packages/gmp/32bit/libgmp.a packages/gwnum/32bit/gwnum.a  -Wl,-no_pie -lpthread -lstdc++ -o pfgw32
 
 maintainer-clean:	distclean
 	rm -f configure
