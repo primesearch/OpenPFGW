@@ -451,7 +451,7 @@ void PFCPAPFile::SwitchToVerify()
    
    uint32 p;
 
-   // The NextPrime() will erturn 3
+   // The NextPrime() will return 3
    primeserver->SkipTo(2);
    p = (uint32) primeserver->NextPrime();
 
