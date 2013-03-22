@@ -1,6 +1,13 @@
-Released as version 3.7.3   February 10, 2013 
+Released as version 3.7.4   March 22, 2013 
 
-Enhancements to: v3.7.3 Development Release - January February 10, 2013
+Enhancements to: v3.7.4 Development Release - March 22, 2013
+   - Reverted back to non-tree factoring code as it can miss factors
+     and sometimes crashes.
+   - Fix bug when using -gxo{a,b} as it would start searching at a+1
+     instead of a.
+
+
+Enhancements to: v3.7.3 Development Release - February 10, 2013
    - Fixed division by zero error in tree factoring code.
 
 
