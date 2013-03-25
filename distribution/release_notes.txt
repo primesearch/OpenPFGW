@@ -1,4 +1,9 @@
-Released as version 3.7.4   March 22, 2013 
+Released as version 3.7.5   March 25, 2013 
+
+Enhancements to: v3.7.5 Development Release - March 25, 2013
+   - 3.7.4 reverted back to the wrong code.  That is fixed now.
+   - Found and fixed a Win64 bug when using -e.
+
 
 Enhancements to: v3.7.4 Development Release - March 22, 2013
    - Reverted back to non-tree factoring code as it can miss factors
