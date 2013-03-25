@@ -2,15 +2,12 @@
 #define F_FACTOR_H
 
 #include "pfiterativesymbol.h"
-#include "treefactorize.h"
 
 class Integer;
 class PFFactorizationSymbol;
 class PFSimpleFile;
 class Erat_Mod;
 class FactorHelperArray;
-
-class TreeFactorize;
 
 class F_Factor : public PFIterativeSymbol
 {
@@ -25,17 +22,6 @@ class F_Factor : public PFIterativeSymbol
 
 	FactorHelperArray *pHelperArray;
 	
-	TreeFactorize m_pLittleTrees[8];
-	uint32 m_nLittleTrees;
-	uint32 m_nLittleMaxPR;
-	bool m_bCompletedLittlePR;
-	bool m_bUseTinyTrick;
-	uint32 m_nTinyTrickCnt;
-	uint32 m_nTinyTrickCntMax;			// for "normal" factoring, the max is set to 3, and 6 m_64TinyTrickFactors are filled in (thus 3 calls to dual factoring)
-	uint64 m_64TinyTrickFactors[12];	// for modular factoring, the max is set to 6, and all 12 m_64TinyTrickFactors are filled in (6 calls to dual)
-	TreeFactorize *m_pTreeFactorize;
-	bool m_bUseTreeFactorize;
-
 	PFString m_sHelperFile;	// the name helper file
 	static PFSimpleFile *pFactorHelperFile;	// the actual helper file object
 	
@@ -63,8 +49,6 @@ class F_Factor : public PFIterativeSymbol
 	void checkBiggest(PFFactorizationSymbol *,Integer *);
 	void pmaxadjust(Integer *pChanged);
 	
-	bool IterateTreeFactorize(TreeFactorize *pTree);
-
 public:
 	F_Factor();
 	~F_Factor();
