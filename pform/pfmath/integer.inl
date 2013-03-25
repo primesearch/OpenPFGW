@@ -168,7 +168,11 @@ GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
 	mpz_mul_2exp(*(mpz_t*)(&scrap), scrap, 32);
 	mpz_add_ui(*(mpz_t*)(&scrap), scrap, (uint32)(n1&0xFFFFFFFF));
    mpz_mod(*(mpz_t*)(&scrap), m_g, scrap);
+#if defined(_MSC_VER) && defined(_64BIT)
+   *p1 = *(uint64*)(scrap->_mp_d);
+#else
    *p1 = mpz_get_ui(scrap);
+#endif
 }
 #else
 GW_INLINE void Integer::m_mod(const uint64 n1, uint64 *p1) const
