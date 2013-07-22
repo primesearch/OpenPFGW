@@ -1,6 +1,11 @@
-Released as version 3.7.5   March 25, 2013 
+Released as version 3.7.7   July 22, 2013 
 
-Enhancements to: v3.7.5 Development Release - July 15, 2013
+Enhancements to: v3.7.7 Development Release - July 22, 2013
+   - Fixed an issue when using the -f switch to do modular factoring.
+     It would occassionally miss factors around 2^31.
+   
+
+Enhancements to: v3.7.6 Development Release - July 15, 2013
    - Updated to gwnum v27.11 to address issues with small AVX FFTs.
    
 
