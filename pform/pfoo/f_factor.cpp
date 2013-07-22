@@ -649,7 +649,7 @@ PFBoolean F_Factor::Iterate()
    uint64  li1, li2;
 
    FDEBUG(p,p2);
-   if (p2 <= INT_MAX)
+   if (p <= INT_MAX && p2 <= INT_MAX)
    {
        int  i1,i2;
       // Note that if the FP stack is not PERFECTLY clear before calling this function, then
