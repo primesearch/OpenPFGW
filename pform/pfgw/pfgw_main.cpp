@@ -1241,6 +1241,8 @@ int pfgw_main(int argc,char *argv[])
             continue;         // just go straight to the next puppy
          }
 
+         bMsgValid = false;
+
          // The trivial test should identify real simple cases that screw it all up
          // like negatives, 0, 1, small
          PFBoolean bTrivial=PFBoolean::b_false;
@@ -1357,6 +1359,7 @@ int pfgw_main(int argc,char *argv[])
 
          // try to factor the thing
          bool bPrimalityTest=true;
+         bMsgValid = false;
 
          if (bFactor && !bTrivial)
          {
@@ -1449,6 +1452,7 @@ int pfgw_main(int argc,char *argv[])
             }
          }
 
+         bMsgValid = false;
          if (bPrimalityTest && !bTrivial)
          {
             if (bOnlyFactors)
