@@ -132,10 +132,11 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 
 int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
 {
+   char part1[20], part2[2000];
    Line[0] = 0;
    fgets(Line, sizeofLine, m_fpInputFile);
 
-   // Bug fix request from Joe mclean.  If there was a leading space on an ABC file (or other formats probably), then
+   // Bug fix request from Joe McLean.  If there was a leading space on an ABC file (or other formats probably), then
    // the ABC parser built the wrong file.  This simply work around simply left trims the line.
    char *cp = Line;
    while (*cp == ' ' || *cp == '\t')
@@ -143,8 +144,11 @@ int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
    if (cp != Line)
       memmove(Line, cp, strlen(cp)+1);
 
-   // if we left trim, then we might as well right trim also.
-   // This code added to GetNextLine function.
+   if (strstr(Line, " | "))
+   {
+      sscanf(Line, "%s | %s", part1, part2);
+      sprintf(Line, "(%s) %% %s", part2, part1);
+   }
 
    // NOTE that a file which does NOT have a \n at the end of it will read the last line, but IMMEDIATELY return
    // feof() of true.  In that case, we do have a valid input line (even though feof() is true.  We need to
