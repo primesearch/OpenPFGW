@@ -31,7 +31,7 @@ Enhancements to: v3.7.2 Development Release - January 23, 2013
 
 Enhancements to: v3.7.1 Development Release - January 14, 2013
    - Add new -B option for benchmarking and removed -m.  Please
-     review pfgwdoc.txt fo more details.
+     review pfgwdoc.txt for more details.
 
 
 Enhancements to: v3.7.0 Development Release - January 4, 2013
@@ -139,7 +139,7 @@ Enhancements to: v3.5.0 Release
      typically affects small base 3 numbers.
    - Note that some of these changes will have an impact on 32-bit machines, but the
      impact should be fairly small.
-   - With these changes, the pfglue an prmsieve are obsolete.
+   - With these changes, the pfglue and prmsieve are obsolete.
    - Fixed a crash that was introduced into the GUI version in 3.4.10.
 
 
