@@ -136,9 +136,26 @@ int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
    Line[0] = 0;
    fgets(Line, sizeofLine, m_fpInputFile);
 
+   char *cp = Line;
+   while (isdigit(*cp))
+      cp++;
+
+   if (*cp == ' ' && *(cp+1) == '|' && *(cp+2) == ' ')
+   {
+      char temp[5000];
+      *cp = 0;
+      char *cp2 = cp+3;
+      while (*cp2 != 0 && *cp2 != '\n' && *cp2 != '\r')
+         cp2++;
+
+      *cp2 = 0;
+      sprintf(temp, "(%s)%%%s", cp+3, Line);
+      sprintf(Line, "%s\n", temp);
+   }
+
    // Bug fix request from Joe McLean.  If there was a leading space on an ABC file (or other formats probably), then
    // the ABC parser built the wrong file.  This simply work around simply left trims the line.
-   char *cp = Line;
+   cp = Line;
    while (*cp == ' ' || *cp == '\t')
       cp++;
    if (cp != Line)
