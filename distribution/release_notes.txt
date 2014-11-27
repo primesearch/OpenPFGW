@@ -1,5 +1,14 @@
 Released as version 3.7.7   July 22, 2013 
 
+Enhancements to: v3.7.8 Development Release - November 27, 2014
+   - Updated to vwnum v28.5.
+   - Updated to Visual Studio 2012.
+   - Addressed new compiler issues raised by clang.
+   - Allow pfgw to validate factors in .log files generated from various sieving
+     programs.  Each line in the input file must have the form:  factor | number.
+     pfgw will convert that to number%factor and evaluate that expression.
+
+
 Enhancements to: v3.7.7 Development Release - July 22, 2013
    - Fixed an issue when using the -f switch to do modular factoring.
      It would occassionally miss factors around 2^31.
