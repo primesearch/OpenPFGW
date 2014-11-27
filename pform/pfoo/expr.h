@@ -25,7 +25,9 @@ public:
    friend PFBoolean ex_parseArguments(PFString &w,PFStringArray& tfArguments);
    friend ExprOperator *ex_seekOperator(PFStack<ExprOperator> &s,PFString &w);
    friend PFBoolean ex_clearOnInteger(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m);
+   friend PFBoolean ex_stackPrecedence(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m);
    friend PFBoolean ex_stackPrecedence(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m,ExprOperator *op);
+   friend Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e);
    friend Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
    friend PFBoolean ex_clearMonadicSuffixes(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m);
 };

@@ -212,6 +212,12 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
          int errchk = ErrorCheck(iDone, iTotal);
 
          gw_clear_maxerr(&gwdata);
+
+         if (i > 29 && g_nIterationCnt && ((((iDone+1)%g_nIterationCnt)==0) || bFirst || !i))
+            gwstartnextfft(&gwdata, 1);
+         else
+            gwstartnextfft(&gwdata, 0);
+
          gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
@@ -222,7 +228,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
             gwsquare(gwX);
 
          iDone++;
-         if(g_nIterationCnt && (((iDone%g_nIterationCnt)==0) || bFirst || !i))
+         if (g_nIterationCnt && (((iDone%g_nIterationCnt)==0) || bFirst || !i))
          {
             if (*RestoreName)
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iBase, e_gwnum, N);
@@ -320,7 +326,7 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
       haveFatalError = true;
    }
 
-   if (gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
+   if (!haveFatalError && gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
    {
       sprintf(buffer1, "Detected in MAXERR>%.2f (round off check) in %s", g_dMaxErrorAllowed, caller);
       sprintf(buffer2, "Iteration: %d/%d ERROR: ROUND OFF %.5g>%.2f", currentIteration, maxIterations, gw_get_maxerr(&gwdata), g_dMaxErrorAllowed);

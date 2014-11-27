@@ -112,7 +112,7 @@ PFBoolean F_EndPlus1::CallFunction(PFSymbolTable *pContext)
                            }
 
                            Integer KMAX=(Q-1-R);
-                           Integer MKMIN;
+                           Integer MKMIN=0;
 
                            if(KMAX>=0)
                            {

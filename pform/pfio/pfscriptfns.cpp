@@ -13,6 +13,7 @@ extern int g_nIterationCnt;
 bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
 
 #ifndef _MSC_VER
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e);
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 #endif
 

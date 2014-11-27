@@ -790,9 +790,9 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
          }
 
          g_sTestMode = "F: ";
-         g_nIterationCnt *= 1000;
+         //g_nIterationCnt *= 1000;
          int iRetval=CallSubroutine("@factor",pSubContext);
-         g_nIterationCnt /= 1000;
+         //g_nIterationCnt /= 1000;
          g_sTestMode = "";
 
          if(iRetval!=-1)

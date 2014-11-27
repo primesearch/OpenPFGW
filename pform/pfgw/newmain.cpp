@@ -20,7 +20,7 @@ extern unsigned long clocks_per_sec;
 
 PrimeServer *primeserver;
 
-int main(int argc, char *argv[])
+int newmain(int argc, char *argv[])
 {
    clocks_per_sec=CLOCKS_PER_SEC;
 

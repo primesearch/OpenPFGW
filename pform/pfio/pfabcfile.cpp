@@ -20,6 +20,7 @@
 #include "../pfoo/f_smarandache.h"
 #include "../pfoo/f_sequence.h"
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e);
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 
 extern char g_ModularSieveString[256];

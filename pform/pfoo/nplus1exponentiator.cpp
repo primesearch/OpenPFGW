@@ -47,7 +47,7 @@ PFBoolean NPlus1Exponentiator::testLeaf()
     else
    {
    Integer G=gcd(U,m_N);
-   Integer G(1);
+   //Integer G(1);
         if(G!=1)
       {
          PFIntegerSymbol sDummy("dummy",NULL);
@@ -69,7 +69,8 @@ PFBoolean NPlus1Exponentiator::testLeaf()
 
    delete pILOR;
 #endif
-AddToResults(pDestination);
+
+	AddToResults(pDestination);
 
     ShowPrompt();
     return bRetval;

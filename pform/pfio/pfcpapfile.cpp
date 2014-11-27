@@ -9,6 +9,7 @@
 
 PFBoolean bRequestFactorize;
 
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e);
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 
 int PFCPAPFile::m_nStartingPoint[13] = { 0, 0, 0, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6 };

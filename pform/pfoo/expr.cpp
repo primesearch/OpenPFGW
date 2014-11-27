@@ -1083,6 +1083,11 @@ PFBoolean ex_clearOnInteger(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m)
     return(rv);
 }
 
+PFBoolean ex_stackPrecedence(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m)
+{
+   return ex_stackPrecedence(i, o, m, 0);
+}
+
 PFBoolean ex_stackPrecedence(PFStack<Integer> &i,PFStack<ExprOperator> &o,int m,ExprOperator *op)
 {
     ExprOperator *p;
@@ -1442,7 +1447,12 @@ Integer *ex_prepRecurrence()
 }
 #endif
 
-Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &s,int m /*,PFBoolean testRecur*/)
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &s)
+{
+   return ex_evaluate(pContext, s, 0);
+}
+
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &s,int m)
 {
 #if 0
    if(s.Left(7)=="LIBRARY")
