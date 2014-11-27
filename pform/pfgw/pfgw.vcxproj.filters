@@ -23,13 +23,13 @@
     <ClCompile Include="gw_prp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="newmain.cpp">
+    <ClCompile Include="save_restore_prp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pfgw_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="save_restore_prp.cpp">
+    <ClCompile Include="newmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
