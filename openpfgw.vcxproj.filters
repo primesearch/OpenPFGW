@@ -5,6 +5,9 @@
       <UniqueIdentifier>{d16c2b9a-7b1f-4372-8d7c-e2bc906c0768}</UniqueIdentifier>
       <Extensions>*.txt;*.pfgw;*.</Extensions>
     </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{8dd4901f-dba6-443a-9871-311c2e95aff7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="abcfileformats.txt">
@@ -43,5 +46,8 @@
     <None Include="scriptfileformat.txt">
       <Filter>Documents</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pform\main.cpp" />
   </ItemGroup>
 </Project>
