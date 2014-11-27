@@ -20,7 +20,11 @@ extern unsigned long clocks_per_sec;
 
 PrimeServer *primeserver;
 
+#if defined (_MSC_VER)
 int newmain(int argc, char *argv[])
+#else
+int main(int argc, char *argv[])
+#endif
 {
    clocks_per_sec=CLOCKS_PER_SEC;
 

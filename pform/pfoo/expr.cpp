@@ -16,6 +16,7 @@
 //extern volatile long g_a, g_b, g_c;
 
 PFBoolean ex_parseArguments(PFString &w,PFStringArray& tfArguments);
+Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &s,int m);
 
 //************************************************************************************************
 // NOTES on memory usage.
@@ -1154,7 +1155,10 @@ PFBoolean ex_matchparen(const PFString &s)
         for(DWORD i=0;i<s.GetLength();i++)
         {
             if(s[i]=='(') p++;
-            if(s[i]==')') if(p--) {} else {return PFBoolean::b_false;}
+            if(s[i]==')') 
+            {
+               if(p--) {} else {return PFBoolean::b_false;}
+            }
         }
         if(p) return(PFBoolean::b_false);
     }

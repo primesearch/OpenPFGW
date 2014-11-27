@@ -276,7 +276,7 @@ void    PrimeServer::SetupSieve(void)
       {
          m_MaxPrimeUsed += m_pPrimeTable[m_PrimesUsedInWindow];
          m_PrimesUsedInWindow++;
-         if (m_PrimesUsedInWindow == m_PrimesUsedInWindow)
+         if (m_PrimesUsedInWindow == m_PrimesInPrimeTable)
             break;
       }
    }
