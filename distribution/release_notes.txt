@@ -1,5 +1,9 @@
 Released as version 3.7.7   July 22, 2013 
 
+Enhancements to: v3.7.9 Development Release - April 12, 2015
+   - Updated to gwnum v28.6.
+
+
 Enhancements to: v3.7.8 Development Release - November 27, 2014
    - Updated to gwnum v28.5.
    - Updated to Visual Studio 2012.
