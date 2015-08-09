@@ -2,17 +2,22 @@
 #define F_TRIVIAL_H
 
 #include "pffunctionsymbol.h"
+#include "primeserver.h"
 
 class F_Trivial : public PFFunctionSymbol
 {
 public:
 	F_Trivial();
+   ~F_Trivial();
 	
 	DWORD MinimumArguments() const;
 	DWORD MaximumArguments() const;
 	DWORD GetArgumentType(DWORD dwIndex) const;
 	PFString GetArgumentName(DWORD dwIndex) const;
 	PFBoolean CallFunction(PFSymbolTable *pContext);
+
+private:
+   PrimeServer *m_pPrimeServer;
 };
 
 // The values in the _result for F_Trivial are enumerated below

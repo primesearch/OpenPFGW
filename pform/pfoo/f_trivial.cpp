@@ -5,11 +5,16 @@
 #include "pffactorizationsymbol.h"
 
 #include "factornode.h"
-#include "primeserver.h"
 
 F_Trivial::F_Trivial()
    : PFFunctionSymbol("@trivial")
 {
+   m_pPrimeServer = new PrimeServer();
+}
+
+F_Trivial::~F_Trivial()
+{
+   delete m_pPrimeServer;
 }
 
 DWORD F_Trivial::MinimumArguments() const
@@ -72,8 +77,7 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
 
          for (i=1; rawN!=1; i++)
          {
-            p = primeserver->ByIndex(i);
-
+            p = m_pPrimeServer->ByIndex(i);
             if (p > sqrtN)
             {
                pFactorization->AddFactor(new FactorNode(Integer(rawN),1));
