@@ -94,23 +94,6 @@ B.2. .INI file
   DefaultSettings=   Sets default settings.
                      For example: DefaultSettings=-b139
                      will make PFGW always use base 139 for testing
-  CPUtype=           Sets your CPU-type.
-                     You can use 5 or lower for Pentium-optimized code,
-                     and 6 or higher for Pentium-II-optimized code.
-                     It can make a few percent difference.
-                     The list:
-                     CPUType=3 is a Cyrix 6x86 (or unknown type)
-                     CPUType=4 is a 486
-                     CPUType=5 is a Pentium
-                     CPUType=6 is a Pentium Pro
-                     CPUType=7 is an AMD K6
-                     CPUType=8 is a Celeron
-                     CPUType=9 is a PentiumII
-                     CPUType=10 is a PentiumIII
-                     CPUType=11 is an AMD Athlon/Duron
-                     CPUType=12 is a Pentium 4.
-                     NOTE the CPUType is obsolete with the v22 Woltman
-                     code. This has MOVED to the [Woltman_FFTs] section
 
   Verbose=true       Print out FFT element size (and some other information)
   HideNoFactor=true  Do not print out "unused" factors from a factor intput file
@@ -123,32 +106,7 @@ B.2. .INI file
                      and prime tests.  This is most useful for developers 
                      during the testing/debugging stages.
 
- There is now a "new" section which can be in any .ini file which PFGW
- (or the PFGW library code) might use.  This is the section [Woltman_FFTs]
- This section allows "overriding" the default FFT behavior (in case your
- PC is not CPU recognized correctly).  Here is the section, and a
- description of the values:   (Note this section will NOT exist by default)
-  [Woltman_FFTs]
-  CpuOverride=1         ; 1 or 0.  If 1, then CpuType & CpuSpeed are used
-  CPUtype=??            ; see comment above
-  CpuSpeed=400          ; The CPU speed of the PC
-  CpuSupportsRDTSC=1    ; 1 forces usage of RDTSC code, 0 forces not to use
-  CpuSupportsCMOV=1     ; 1 forces usage of CMOV code, 0 forces not to use
-  CpuSupportsPrefetch=1 ; 1 forces usage of Prefetch code, 0 forces not to use
-  CpuSupportsSSE=0      ; 1 forces usage of SSE code, 0 forces not to use
-  CpuSupportsSSE2=0     ; 1 forces usage of SSE2 code, 0 forces not to use
-  CpuSupportsMMX=1      ; 1 forces usage of MMX code, 0 forces not to use
- Note that you should NOT be changing any of these unless you know what
- you are doing. These changes can EASILY cause PFGW to abort with illegal
- instruction exceptions or cause it to run slower.
-
-
-B.3. Network mode (Currently only in Win32 builds)
- In the network-mode, pfgw will accept numbers from a server, test them,
- and send back the results.
- See Networkformat.txt and Network2format.txt for details.
-
-B.4. The options.
+B.3. The options.
  Remember that these command-line options may need to be entered differently
  on some systems. For example, systems using a "bash" shell may need to add
  extra quotes or escape characters to allow certain forms to be input.  Some

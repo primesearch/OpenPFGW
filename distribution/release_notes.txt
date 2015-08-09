@@ -1,5 +1,9 @@
 Released as version 3.7.7   July 22, 2013 
 
+Enhancements to: v3.7.10 Development Release - August 9, 2015
+   - Fixed trial division bug that has existed since 3.4.0.  This bug
+     caused PFGW to miss factors larger than 64000 during trial division.
+
 Enhancements to: v3.7.9 Development Release - April 12, 2015
    - Updated to gwnum v28.6.
 
