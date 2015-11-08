@@ -474,21 +474,23 @@ C.1. Expression-parts
   p(x)     The x'th prime number
   nextprime(x) The next prime (or PRP) greater than x
   prevprime(x) The previous prime (or PRP) less than x
-  R(x)     Repunit                   r(13) --> 1111111111111
-  R(x,y)   Repeat pattern            r(5,17) --> 1717171717
+  R(x)     Repunit                     r(13) --> 1111111111111
+  R(x,y)   Repeat pattern              r(5,17) --> 1717171717
   F(x)     Fibonacci number
   U(x)     Fibonacci primitive part
   L(x)     Lucas number
   V(x)     Lucas primitive part
   Phi(x,y) Cyclotomic number
   gcd(x,y) Greatest Common Divisor
-  len(x)   Length of x (base 10)     len(12345)   --> 5
-  len(x,y) Length of x (base x)      len(12345,2) --> 14
+  len(x)   Length of x (base 10)       len(12345)   --> 5
+  len(x,y) Length of x (base x)        len(12345,2) --> 14
   C(x,y)   Binomials
-  Sm(x)    Smarandache               Sm(13)   --> 12345678910111213
-  Sm(x,y)  Smarandache               Sm(13,4) --> 45678910111213123
-  Smr(x)   reverse Smarandache       Smr(12)  --> 121110987654321
-  Smr(x,y) reverse Smarandache       Smr(12,6)--> 654321121110987
+  Sm(x)    Smarandache                 Sm(13)    --> 12345678910111213
+  Sm(x,y)  Smarandache                 Sm(13,4)  --> 45678910111213123
+  Smr(x)   reverse Smarandache         Smr(12)   --> 121110987654321
+  Smr(x,y) reverse Smarandache         Smr(12,6) --> 654321121110987
+  SmW(x)   Smarandache-Wellin          SmW(13)   --> 23571113 (all primes <= 13)
+  SmWp(x)  Smarandache-Wellin          SmWp(13)  --> 2357111317192329313741 (primes by index <= 13)
   lucasU(p,q,x) generalized (p,q)-Lucas sequence (U part)
   lucasV(p,q,x) generalized (p,q)-Lucas sequence (V part)
   primU(p,q,x)  primitive part of lucasU
