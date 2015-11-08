@@ -134,6 +134,17 @@ int PFPrintfLog(const char *Fmt, ...)
    return ret;
 }
 
+// This writes to pfgw.log
+int PFPrintfLogOnly(const char *Fmt, ...)
+{
+   va_list va;
+
+   va_start(va, Fmt);
+   pOutputObj->PFLogPrintf(Fmt, va);
+   va_end(va);
+   return 0;
+}
+
 void PFPrintfClearCurLine(int line_len)
 {
    // this is a "no-op" for the GUI version, but does a fprintf(stderr, "\r%79.79s\r", " ") for the console mode

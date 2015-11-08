@@ -34,6 +34,7 @@ void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, con
 int PFPrintfStderr(const char *Fmt, ...);
 int PFPrintf(const char *Fmt, ...);
 int PFPrintfLog(const char *Fmt, ...);
+int PFPrintfLogOnly(const char *Fmt, ...);
 
 };
 

@@ -277,7 +277,7 @@ in any order on the command-line, and are prefixed by a '-' sign.\n\
 file name entered will be ignored when using either the -- or -q options\n\
 \n\
 -l<logfilename> will output all text not only to the screen, but also to \n\
-the logfilename file (if <logfilename> is blank, then pfgw.out is used\n\
+the logfilename file (if <logfilename> is not specified, then pfgw.out is used\n\
 \n";
 //test.  (-d is also used to \"deep\" test NewPGen multi-prime searches)\n";
 LPCTSTR Help_Text3 = "\
@@ -313,8 +313,6 @@ LPCTSTR Help_Text4 = "\
 \n\
 -b<number> allows you to override the PRP testing base, which defaults\n\
 to 3. Legal bases are in the range 2 to 255.\n\
-\n\
--n  Nice mode (reduce PC's priority to idle, Win32 only)\n\
 \n\
 -v will process the numbers in the input file in modular vector form.\n\
 For each prime in a factor range set by the -s and -e flags, the value\n\
@@ -1464,7 +1462,10 @@ int pfgw_main(int argc,char *argv[])
                if (sOnlyFactorType=="d"||sOnlyFactorType=="D")
                {
                   PFString sDecimal=pN->GetStringValue();
-                  PFPrintfLog("%s: %s\n",LPCTSTR(sNumber),LPCTSTR(sDecimal));
+                  if (g_bTerseOutput)
+                     PFPrintfLogOnly("%s: %s\n",LPCTSTR(sNumber),LPCTSTR(sDecimal));
+                  else
+                     PFPrintfLog("%s: %s\n",LPCTSTR(sNumber),LPCTSTR(sDecimal));
                }
                else
                   PFPrintfLog("%s has no small factor.\n",LPCTSTR(sNumber));
