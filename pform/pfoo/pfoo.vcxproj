@@ -416,6 +416,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="f_smarandache-wellin.cpp" />
     <ClCompile Include="f_smarandache.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -640,6 +641,7 @@
     <ClInclude Include="f_prime.h" />
     <ClInclude Include="f_repunit.h" />
     <ClInclude Include="f_sequence.h" />
+    <ClInclude Include="f_smarandache-wellin.h" />
     <ClInclude Include="f_smarandache.h" />
     <ClInclude Include="f_trivial.h" />
     <ClInclude Include="f_vector.h" />
