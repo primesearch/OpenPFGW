@@ -284,6 +284,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="f_copeland-erdos.cpp" />
     <ClCompile Include="f_cyclotomic.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -626,6 +627,7 @@
     <ClInclude Include="exponentiator.h" />
     <ClInclude Include="expr.h" />
     <ClInclude Include="f_binomial.h" />
+    <ClInclude Include="f_copeland-erdos.h" />
     <ClInclude Include="f_cyclotomic.h" />
     <ClInclude Include="f_decimal.h" />
     <ClInclude Include="f_endminus1.h" />

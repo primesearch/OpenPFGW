@@ -137,6 +137,9 @@
     <ClCompile Include="f_smarandache-wellin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="f_copeland-erdos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algebra.h">
@@ -278,6 +281,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="f_smarandache-wellin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_copeland-erdos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
