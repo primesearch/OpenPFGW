@@ -55,6 +55,7 @@ class PFSimpleFile
       FILE *m_fpInputFile;
       char *m_cpFileName;
       PFIni *m_pIni;
+      char *m_nCurrentLine;
 
       // Used to "store" the current line's expression.  this value is stored into the ini file upon destruction
       // ALL derived classes should use this "variable" to build expressions into

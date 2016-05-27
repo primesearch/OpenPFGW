@@ -1,9 +1,12 @@
-Released as version 3.8.0   November 8, 2015 
+Released as version 3.8.0   May 27, 2016
 
-Enhancements to: v3.8.0 Development Release - November 8, 2015
+Enhancements to: v3.8.0 Development Release - May 27, 2016
    - Add Smarandache-Wellin functions (SmW and SmWp).
+   - Add Copeland-Erdos function (CE).
    - If using both -k and -od, then the decimal expansion is only written to 
      the log.
+   - Allow input lines to be up to 5000000 bytes.  This will allow easy
+     verification of factors of large decimal values.
 
 Enhancements to: v3.7.10 Development Release - August 9, 2015
    - Fixed trial division bug that has existed since 3.4.0.  This bug

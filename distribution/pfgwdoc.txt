@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v3.6.0 (December 2011)
+PrimeForm/GW documentation  PFGW v3.8.0 (May 2016)
 
    ---------
    - Index -
@@ -491,6 +491,7 @@ C.1. Expression-parts
   Smr(x,y) reverse Smarandache         Smr(12,6) --> 654321121110987
   SmW(x)   Smarandache-Wellin          SmW(13)   --> 23571113 (all primes <= 13)
   SmWp(x)  Smarandache-Wellin          SmWp(13)  --> 2357111317192329313741 (primes by index <= 13)
+  CE(x)    Copeland-Erdos              CE(11)    --> 23571113171 (11 digits of concatenation of primes)
   lucasU(p,q,x) generalized (p,q)-Lucas sequence (U part)
   lucasV(p,q,x) generalized (p,q)-Lucas sequence (V part)
   primU(p,q,x)  primitive part of lucasU

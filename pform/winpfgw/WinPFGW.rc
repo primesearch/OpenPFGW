@@ -82,7 +82,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_ICON_GREEN,IDC_STATIC,7,21,20,20
     LTEXT           "Change String Resource, NOT this!   Open WinPFGW Version 3.8.0 with save/restore code",IDC_STATIC_WINPFGW_VERSION,41,10,225,18,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2000/2015 OpenPFGW group",IDC_STATIC,41,49,142,8
+    LTEXT           "Copyright (C) 2000/2016 OpenPFGW group",IDC_STATIC,41,49,142,8
     DEFPUSHBUTTON   "OK",IDOK,7,136,33,14,WS_GROUP
     LTEXT           "GUI Developed by Jim Fougeron",IDC_STATIC,41,59,119,8
     LTEXT           "And ""ultra"" quiet mode for GF/Fermat factor searching",IDC_STATIC,41,39,186,8,SS_NOPREFIX
@@ -177,7 +177,7 @@ BEGIN
             VALUE "FileDescription", "WinPFGW"
             VALUE "FileVersion", "3, 8, 0, 0"
             VALUE "InternalName", "WinPFGW"
-            VALUE "LegalCopyright", "Copyright (C) 2000-2015 OpenPFGW project.  Written by Jim Fougeron and Mark Rodenkirch"
+            VALUE "LegalCopyright", "Copyright (C) 2000-2016 OpenPFGW.  Written by Jim Fougeron and Mark Rodenkirch"
             VALUE "OriginalFilename", "WinPFGW.exe"
             VALUE "ProductName", "WinPFGW (OpenPFGW Application)"
             VALUE "ProductVersion", "3, 8, 0, 0"

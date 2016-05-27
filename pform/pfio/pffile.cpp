@@ -15,17 +15,22 @@
 extern bool g_bTerseOutput;
 extern bool g_ShowTestResult;
 
+#define MAX_INPUT_LINE_LENGTH 5000000
+
 // default protected constructor.  It is used as the "default" constructor needed for the PFStringFile class.
 PFSimpleFile::PFSimpleFile()
   : m_nCurrentLineNum(1), m_nCurrentPhysicalLineNum(1),
     m_fpInputFile(0), m_cpFileName(NULL), m_pIni(NULL), m_sCurrentExpression(""), m_bEOF(false)
 {
+   m_nCurrentLine = new char[MAX_INPUT_LINE_LENGTH];
 }
 
 PFSimpleFile::PFSimpleFile(const char* FileName)
   : m_nCurrentLineNum(1), m_nCurrentPhysicalLineNum(1),
     m_fpInputFile(0), m_cpFileName(NULL), m_pIni(NULL), m_sCurrentExpression(""), m_bEOF(false)
 {
+   m_nCurrentLine = new char[MAX_INPUT_LINE_LENGTH];
+
    m_cpFileName = new char[strlen(FileName)+1];
    strcpy(m_cpFileName, FileName);
    m_fpInputFile = fopen(m_cpFileName, "rt");
@@ -49,6 +54,7 @@ PFSimpleFile::~PFSimpleFile()
       m_pIni->ForceFlush();
    }
    delete[] m_cpFileName;
+   delete[] m_nCurrentLine;
 }
 
 int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
@@ -132,39 +138,41 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 
 int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
 {
-   char part1[20], part2[2000];
    Line[0] = 0;
    fgets(Line, sizeofLine, m_fpInputFile);
-
+   
    char *cp = Line;
-   while (isdigit(*cp))
-      cp++;
-
-   if (*cp == ' ' && *(cp+1) == '|' && *(cp+2) == ' ')
-   {
-      char temp[5000];
-      *cp = 0;
-      char *cp2 = cp+3;
-      while (*cp2 != 0 && *cp2 != '\n' && *cp2 != '\r')
-         cp2++;
-
-      *cp2 = 0;
-      sprintf(temp, "(%s)%%%s", cp+3, Line);
-      sprintf(Line, "%s\n", temp);
-   }
 
    // Bug fix request from Joe McLean.  If there was a leading space on an ABC file (or other formats probably), then
    // the ABC parser built the wrong file.  This simply work around simply left trims the line.
    cp = Line;
    while (*cp == ' ' || *cp == '\t')
       cp++;
+
    if (cp != Line)
       memmove(Line, cp, strlen(cp)+1);
 
-   if (strstr(Line, " | "))
+   if (*Line != 'A' && strstr(Line, " | "))
    {
-      sscanf(Line, "%s | %s", part1, part2);
-      sprintf(Line, "(%s) %% %s", part2, part1);
+      cp = Line;
+
+      while (*cp != 0) {
+         if (*cp == '\n' || *cp == '\r')
+            *cp = 0;
+         else
+            cp++;
+      }
+      
+     // Change "xx | yyyyyy" into "(yyyyyy) % x"
+      cp = strstr(Line, " | ");
+
+      char divisor[500];
+      *cp = 0;
+      *(cp+2) = '(';
+
+      sprintf(divisor, ") %% %s\n", Line);
+      strcpy(Line, cp + 2);
+      strcat(Line, divisor);
    }
 
    // NOTE that a file which does NOT have a \n at the end of it will read the last line, but IMMEDIATELY return
@@ -184,7 +192,6 @@ int PFSimpleFile::GetNextLine(PFString &sLine, Integer *, bool *b, PFSymbolTable
    if (m_bEOF)
       return e_eof;
 
-   char Line[5000];
 ReadRestOfThisLine:;
    if (feof(m_fpInputFile))
    {
@@ -200,56 +207,56 @@ ReadRestOfThisLine:;
       return e_ok;
    }
 
-   ReadLine(Line, sizeof(Line));
+   ReadLine(m_nCurrentLine, MAX_INPUT_LINE_LENGTH);
    m_nCurrentPhysicalLineNum++;
 
-   int LineLen = (int) strlen(Line);
+   int LineLen = (int) strlen(m_nCurrentLine);
    int bGotEOL=false;
-   while (LineLen && (Line[LineLen-1] == '\n' || Line[LineLen-1] == '\r') )
+   while (LineLen && (m_nCurrentLine[LineLen-1] == '\n' || m_nCurrentLine[LineLen-1] == '\r') )
    {
       bGotEOL = true;
-      Line[--LineLen]  = 0;
+      m_nCurrentLine[--LineLen]  = 0;
    }
 
    if (!bGotEOL)
    {
       // Eat any comment.
-      char *cp = strstr(Line, "//");
+      char *cp = strstr(m_nCurrentLine, "//");
       if (cp)
          *cp = 0;
-      LineLen = (int) strlen(Line);
+      LineLen = (int) strlen(m_nCurrentLine);
       // Eat trailing white space.
-      while (LineLen && (Line[LineLen-1] == ' ' || Line[LineLen-1] == '\t'))
-         Line[--LineLen] = 0;
-      sLine += Line;
+      while (LineLen && (m_nCurrentLine[LineLen-1] == ' ' || m_nCurrentLine[LineLen-1] == '\t'))
+         m_nCurrentLine[--LineLen] = 0;
+      sLine += m_nCurrentLine;
       goto ReadRestOfThisLine;
    }
-   if (!Line[0])
+   if (!m_nCurrentLine[0])
       goto ReadRestOfThisLine;
 
    // Eat any comment.
-   char *cp = strstr(Line, "//");
+   char *cp = strstr(m_nCurrentLine, "//");
    if (cp)
       *cp = 0;
-   LineLen = (int) strlen(Line);
+   LineLen = (int) strlen(m_nCurrentLine);
 
    // Check for continuation char
-   if (Line[LineLen-1] == '\\')
+   if (m_nCurrentLine[LineLen-1] == '\\')
    {
-      Line[LineLen-1] = 0;
-      sLine += Line;
+      m_nCurrentLine[LineLen-1] = 0;
+      sLine += m_nCurrentLine;
       goto ReadRestOfThisLine;
    }
 
    // right trim the line
-   while (LineLen && (Line[LineLen-1] == ' ' || Line[LineLen-1] == '\t') )
-      Line[--LineLen]  = 0;
+   while (LineLen && (m_nCurrentLine[LineLen-1] == ' ' || m_nCurrentLine[LineLen-1] == '\t') )
+      m_nCurrentLine[--LineLen]  = 0;
    // Did our right trim eat all of the line, if so, then read the next line.
    if (!LineLen)
       goto ReadRestOfThisLine;
 
    // got the line.
-   sLine += Line;
+   sLine += m_nCurrentLine;
    m_sCurrentExpression = sLine;
 
    m_nCurrentLineNum++;
