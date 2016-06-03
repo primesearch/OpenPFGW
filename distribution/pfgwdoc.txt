@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v3.8.0 (May 2016)
+PrimeForm/GW documentation  PFGW v3.8.1 (June 2016)
 
    ---------
    - Index -
@@ -643,7 +643,11 @@ D.7. SCRIPT - file
      source file into an input file (in the SCRIPT format) for PFGW
      to operate with.
 
-D.8  Save/Resume files
+D.8  DECIMAL - file
+     This takes a decimal value then extract substrings from it to 
+     be PRP tested.
+     
+D.9  Save/Resume files
      Although not actually a "input" file type, PFGW does save its
      processing "state" information, from time to time, while doing
      PRP testing.   The files saved, have "strange" names, and end
