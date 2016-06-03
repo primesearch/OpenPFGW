@@ -62,6 +62,9 @@
     <ClCompile Include="prz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pfdecimalfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pfabc2file.h">
@@ -91,12 +94,6 @@
     <ClInclude Include="pfini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pfnetworkfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pfnetworkfile2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pfnewpgenfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,6 +107,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="prz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfdecimalfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

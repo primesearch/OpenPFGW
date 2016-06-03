@@ -298,6 +298,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="pfdecimalfile.cpp" />
     <ClCompile Include="pffile.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -406,11 +407,10 @@
     <ClInclude Include="pfabctaskcompleted.h" />
     <ClInclude Include="pfcheckfile.h" />
     <ClInclude Include="pfcpapfile.h" />
+    <ClInclude Include="pfdecimalfile.h" />
     <ClInclude Include="pffile.h" />
     <ClInclude Include="pffilesymbol.h" />
     <ClInclude Include="pfini.h" />
-    <ClInclude Include="pfnetworkfile.h" />
-    <ClInclude Include="pfnetworkfile2.h" />
     <ClInclude Include="pfnewpgenfile.h" />
     <ClInclude Include="pfoutput.h" />
     <ClInclude Include="pfprzfile.h" />

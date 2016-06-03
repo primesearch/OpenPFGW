@@ -9,6 +9,7 @@
 #include "pfabc2file.h"
 #include "pfcpapfile.h"
 #include "pfscriptfile.h"
+#include "pfdecimalfile.h"
 #include "pfcheckfile.h"
 #include "pfprzfile.h"
 
@@ -152,7 +153,7 @@ int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
    if (cp != Line)
       memmove(Line, cp, strlen(cp)+1);
 
-   if (*Line != 'A' && strstr(Line, " | "))
+   if (*Line != 'A' && *Line != 'D' && strstr(Line, " | "))
    {
       cp = Line;
 
@@ -440,6 +441,8 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
             pf = new PFABCDFile(FileName);
          else if (!strncmp(Line, "ABC2 ", 5))
             pf = new PFABC2File(FileName);
+         else if (!strncmp(Line, "DECIMAL ", 8))
+            pf = new PFDecimalFile(FileName);
          else if (!strncmp(Line, "PrZ", 3)) // In win32 this IS the string, but in Unix, it might not be, so only look at the first 3 chars
          {
             fp = fopen(FileName, "rb");
