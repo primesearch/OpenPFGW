@@ -21,6 +21,7 @@ class PFDecimalFile : public PFSimpleFile
 
 	private:
       char *m_nDecimalLine;
+      char *m_nNextLine;
 
 };
 

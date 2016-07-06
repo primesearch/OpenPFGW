@@ -22,28 +22,29 @@ PFDecimalFile::PFDecimalFile(const char* FileName)
    : PFSimpleFile(FileName)
 {
    m_nDecimalLine = new char[MAX_INPUT_LINE_LENGTH];
+   m_nNextLine = new char[MAX_INPUT_LINE_LENGTH];
 }
 
 PFDecimalFile::~PFDecimalFile()
 {
    delete [] m_nDecimalLine;
+   delete [] m_nNextLine;
 }
 
 void PFDecimalFile::LoadFirstLine()
 {
    char *pos;
-   char *theLine = new char[MAX_INPUT_LINE_LENGTH];
 
    if (!g_bTerseOutput)
       PFPrintfLog("Recognized DECIMAL Sieve file: \n");
 
-   if (ReadLine(theLine, MAX_INPUT_LINE_LENGTH))
+   if (ReadLine(m_nNextLine, MAX_INPUT_LINE_LENGTH))
    {
       fclose(m_fpInputFile);
       throw "Not a valid DECIMAL sieve file.  EOF reached";
    }
 
-   pos = strchr(theLine, ' ');
+   pos = strchr(m_nNextLine, ' ');
    if (!pos)
    {
       fclose(m_fpInputFile);
@@ -61,15 +62,13 @@ void PFDecimalFile::LoadFirstLine()
 
    strcpy(m_nDecimalLine, pos);
 
-   delete [] theLine;
-
    // don't count this "first" line, we have to "reset" to line 0 numbering.
    m_nCurrentLineNum = 1;
 }
 
 int PFDecimalFile::GetNextLine(PFString &sLine, Integer *, bool *b, PFSymbolTable *)
 {
-   char theLine[100], *pos;
+   char *pos;
    int  lineLength = 0;
    int  length;
 
@@ -94,33 +93,36 @@ int PFDecimalFile::GetNextLine(PFString &sLine, Integer *, bool *b, PFSymbolTabl
          return e_eof;
       }
 
-      ReadLine(theLine, sizeof(theLine));
+      ReadLine(m_nNextLine, MAX_INPUT_LINE_LENGTH);
+
+      if (!isdigit(*m_nNextLine))
+         return 0;
 
       m_nCurrentPhysicalLineNum++;
 
-      lineLength = (int) strlen(theLine);
+      lineLength = (int) strlen(m_nNextLine);
 
-      while (lineLength && (theLine[lineLength-1] == '\n' || theLine[lineLength-1] == '\r') )
-         theLine[--lineLength]  = 0;
+      while (lineLength && (m_nNextLine[lineLength-1] == '\n' || m_nNextLine[lineLength-1] == '\r') )
+         m_nNextLine[--lineLength]  = 0;
 
       // Eat any comment.
-      char *cp = strstr(theLine, "//");
+      char *cp = strstr(m_nNextLine, "//");
       if (cp)
          *cp = 0;
 
-      lineLength = (int) strlen(theLine);
+      lineLength = (int) strlen(m_nNextLine);
 
       // right trim the line
-      while (lineLength && (theLine[lineLength-1] == ' ' || theLine[lineLength-1] == '\t') )
-         theLine[--lineLength]  = 0;
+      while (lineLength && (m_nNextLine[lineLength-1] == ' ' || m_nNextLine[lineLength-1] == '\t') )
+         m_nNextLine[--lineLength]  = 0;
    }
 
    // theLine specifies either the length of the substring of the decimal
    // from the first line or specifies a divisor for one of them.
-   pos = strstr(theLine, " % ");
+   pos = strstr(m_nNextLine, " % ");
 
-   if ((pos && sscanf(theLine, "(%d)", &length) != 1) ||
-       (!pos && sscanf(theLine, "%d", &length) != 1))
+   if ((pos && sscanf(m_nNextLine, "(%d)", &length) != 1) ||
+       (!pos && sscanf(m_nNextLine, "%d", &length) != 1))
    {
       PFOutput::EnableOneLineForceScreenOutput();
       PFPrintfStderr("Invalid format on line %d", m_nCurrentLineNum);
