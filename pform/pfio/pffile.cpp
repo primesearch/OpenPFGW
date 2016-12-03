@@ -16,7 +16,7 @@
 extern bool g_bTerseOutput;
 extern bool g_ShowTestResult;
 
-#define MAX_INPUT_LINE_LENGTH 5000000
+#define MAX_INPUT_LINE_LENGTH 10000010
 
 // default protected constructor.  It is used as the "default" constructor needed for the PFStringFile class.
 PFSimpleFile::PFSimpleFile()
@@ -141,7 +141,14 @@ int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
 {
    Line[0] = 0;
    fgets(Line, sizeofLine, m_fpInputFile);
-   
+
+   if (strlen(Line) == sizeofLine - 1)
+   {
+      Line[20] = 0;
+      PFPrintfLog("The current line starting with '%s' is too long.  The maximum line length allowed is %d.\n", Line, sizeofLine);
+      throw "The input line is too long.  Cannot process";
+   }
+
    char *cp = Line;
 
    // Bug fix request from Joe McLean.  If there was a leading space on an ABC file (or other formats probably), then

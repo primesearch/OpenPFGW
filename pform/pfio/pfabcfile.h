@@ -6,7 +6,8 @@
 #include "pffile.h"
 #include "pfabctaskcompleted.h"
 
-#define ABCLINELEN 60000
+// Memory is cheap.
+#define ABCLINELEN 10000010
 
 #define ABCMAXEXPR 200
 #define ABCMAXVAR  26

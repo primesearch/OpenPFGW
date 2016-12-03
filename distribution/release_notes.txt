@@ -1,4 +1,10 @@
-Released as version 3.8.1   MJune 3, 2016
+Released as version 3.8.3   December 3, 2016
+
+Enhancements to: v3.8.3 Development Release - December 3, 2016
+   - Increased support of first line in ABC file to 10,000,000 characters.
+
+Enhancements to: v3.8.2 Development Release - July 7, 2016
+   - Fixed issue when restarting pfgw with a DECIMAL file.
 
 Enhancements to: v3.8.1 Development Release - June 3, 2016
    - Added DECIMAL file format support.
