@@ -140,7 +140,7 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
 {
    Line[0] = 0;
-   fgets(Line, sizeofLine, m_fpInputFile);
+   char *get = fgets(Line, sizeofLine, m_fpInputFile);
 
    if (strlen(Line) == sizeofLine - 1)
    {

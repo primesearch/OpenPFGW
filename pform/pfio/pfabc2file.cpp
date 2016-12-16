@@ -33,27 +33,27 @@ void PFABC2File::LoadFirstLine()
    char Letter[10];
    char *HoldSet[1000];
    char *tempPtr;
-   char *tmpLineBuf = new char[ABCLINELEN];
+   char *tempLine = new char[ABCLINELEN];
 
    for (j = 0; j < 1000; ++j)
       HoldSet[j] = 0;
 
    for (i=0;i<=m_nLastLetter;i++)
    {
-      if (ReadLine(Line, ABCLINELEN))
+      if (ReadLine(tempLine, ABCLINELEN))
       {
-         if (*Line==0)
+         if (*tempLine==0)
          {
-            delete[] tmpLineBuf;
+            delete[] tempLine;
             throw "Not enough range information in ABC2 file";
          }
       }
       temp = 0;
-      if (strstr(Line, " downto "))
+      if (strstr(tempLine, " downto "))
       {
          // NOTE min and max are "reversed" due to min being larger than max.  Also, step MUST be negative.
          m_eRangeType[i]=e_NormDown;
-         temp=sscanf(Line,"%1s: from %lf downto %lf step %lf",Letter,&min[i],&max[i],&step[i]);
+         temp=sscanf(tempLine, "%1s: from %lf downto %lf step %lf", Letter, &min[i], &max[i], &step[i]);
          if (temp==3)
             step[i]=-1;
          if (temp < 3)
@@ -61,37 +61,37 @@ void PFABC2File::LoadFirstLine()
       }
       if (temp == 0)
       {
-         temp=sscanf(Line,"%1s: from %lf to %lf step %lf",Letter,&min[i],&max[i],&step[i]);
+         temp=sscanf(tempLine, "%1s: from %lf to %lf step %lf", Letter, &min[i], &max[i], &step[i]);
          m_eRangeType[i]=e_Norm;
          if (temp<4)
             step[i]=1;
       }
       if (temp<3)
       {
-         temp=sscanf(Line,"%1s: primes from %lf to %lf",Letter,&min[i],&max[i]);
+         temp=sscanf(tempLine, "%1s: primes from %lf to %lf", Letter, &min[i], &max[i]);
 
          if (temp<3)
          {
-            temp=sscanf(Line,"%1s: in { %s ",Letter,s_array[i]);
+            temp=sscanf(tempLine, "%1s: in { %s ", Letter, s_array[i]);
             if (temp<2)
             {
-               delete[] tmpLineBuf;
+               delete[] tempLine;
                throw "Invalid range information in ABC2 file";
             }
             m_eRangeType[i]=e_In;
-            tempPtr=strchr(Line,'{')+1;
+            tempPtr=strchr(tempLine, '{')+1;
             while (tempPtr[0]==' ')
                tempPtr++;
             for (j=0;j<1000;j++)
             {
-               if (sscanf(tempPtr,"%s",tmpLineBuf)!=1)
+               if (sscanf(tempPtr, "%s", tempLine)!=1)
                   break;
-               if (!strcmp(tmpLineBuf, "}"))
+               if (!strcmp(tempLine, "}"))
                   break;
 
                // Increase the size a "holdset" value can be
-               HoldSet[j] = new char[strlen(tmpLineBuf)+1];
-               strcpy(HoldSet[j], tmpLineBuf);
+               HoldSet[j] = new char[strlen(tempLine)+1];
+               strcpy(HoldSet[j], tempLine);
 
                // fix bug where there is no "trailing" space in the "set" before the closing }
                if (strchr(HoldSet[j], '}'))
@@ -136,11 +136,11 @@ void PFABC2File::LoadFirstLine()
 
       if (LetterNumber(Letter[0])!=i)
       {
-         delete[] tmpLineBuf;
+         delete[] tempLine;
          throw "Lines in wrong order in ABC2 file";
       }
    }
-   delete[] tmpLineBuf;
+   delete[] tempLine;
    array[0]-=step[0];
    if (m_eRangeType[0]==e_In) {
       m_nSetNum[0]=-1;

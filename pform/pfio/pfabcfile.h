@@ -35,7 +35,7 @@ class PFABCFile : public PFSimpleFile
 
 		int LetterNumber(char Letter);
 		char *sFormat[ABCMAXEXPR];  //Make the maximum number of espressions is ABCMAXEXPR.
-		char *Line;
+		char *m_Line;
 
 		enum { e_And,e_Or,e_Invalid };
 		

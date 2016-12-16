@@ -22,14 +22,15 @@ class PFPrZFile : public PFABCFile
 	protected:
 		void LoadFirstLine();
 		void CutOutFirstLine();
-		int  ReadLine(char *Line, int sizeofLine);
+		int  ReadLine(char *lineBuffer, int sizeofLine);
 
 		int64	m_i64Accum;
 		uint64  m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
 		bool	m_bReadNextLineFromFile;
 		bool	m_bIgnoreOutput;
-		char	m_ABCLookingLine[ABCLINELEN];
+		char  *m_ABCLookingLine;
 		PrZ_Section_Header_Base *pFileHead;
+      char  *m_Line1;
 
 	private:
 };
@@ -51,14 +52,15 @@ class PFPrZ_newpgen_File : public PFNewPGenFile
 
 	protected:
 		void LoadFirstLine();
-		int  ReadLine(char *Line, int sizeofLine);
+		int  ReadLine(char *lineBuffer, int sizeofLine);
  
 		uint64	m_i64Accum;
-		uint64  m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
+		uint64   m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
 		uint32	m_nAccum;
 		bool	m_bReadNextLineFromFile;
 		bool	m_bIgnoreOutput;
 		char	m_NPGLookingLine[256];
+      char  *m_Line1;
 
 	private:
 };

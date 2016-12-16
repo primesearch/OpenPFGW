@@ -37,7 +37,7 @@ int PFABCFile::LetterNumber(char Letter)
 }
 
 PFABCFile::PFABCFile(const char* FileName)
-   : PFSimpleFile(FileName), Line(0), m_nLastLetter(-1),
+   : PFSimpleFile(FileName), m_Line(0), m_nLastLetter(-1),
      m_nExprs(1), m_nCurrentMultiPrime(0), m_nCurrentMultiLine(0),
      m_nCurrentPrimeCount(0), m_bLastNumberPrime(false),
      m_bLastLineAnd(false), m_pCompleted(NULL)
@@ -47,7 +47,7 @@ PFABCFile::PFABCFile(const char* FileName)
       s_array[i] = 0;
    for (i = 0; i < ABCMAXEXPR; ++i)
       sFormat[i] = 0;
-   Line = new char[ABCLINELEN];
+   m_Line = new char[ABCLINELEN];
    m_SigString = "ABC File";
    m_bInitializedTable = false;
 }
@@ -57,13 +57,13 @@ void PFABCFile::LoadFirstLine()
    if (!g_bTerseOutput)
       PFPrintfLog("Recognized ABC Sieve file: \n");
 
-   if (ReadLine(Line, ABCLINELEN))
+   if (ReadLine(m_Line, ABCLINELEN))
    {
       fclose(m_fpInputFile);
       throw "Error, Not a valid ABC Sieve file";
    }
 
-   ProcessFirstLine(Line);
+   ProcessFirstLine(m_Line);
 
    // don't count this "first" line, we have to "reset" to line 0 numbering.
    m_nCurrentLineNum = 1;
@@ -243,7 +243,7 @@ void PFABCFile::ProcessFirstLine(char *FirstLine)
 PFABCFile::~PFABCFile()
 {
    delete m_pCompleted;
-   delete[] Line;
+   delete[] m_Line;
    int i;
    for (i = ABCMAXEXPR-1; i >= 0; --i)
       delete[] sFormat[i];
@@ -273,7 +273,7 @@ SkipThisLine:;
    if (m_nCurrentMultiPrime==0) {
       bStoreThisExpression=true;
       m_nCurrentPrimeCount=0;
-      if (ReadLine(Line, ABCLINELEN)) {
+      if (ReadLine(m_Line, ABCLINELEN)) {
          if (m_pIni)
             m_pIni->SetFileProcessing(false);
          m_bEOF = true;
@@ -281,7 +281,7 @@ SkipThisLine:;
          return e_eof;
       }
       // This code will now correctly skip blank lines in the file
-      tempPtr=&Line[-1];
+      tempPtr = &m_Line[-1];
       for (i=0;i<=m_nLastLetter;i++)
       {
          if (!tempPtr)
@@ -319,8 +319,8 @@ SkipThisLine:;
 
 void PFABCFile::MakeExpr(PFString &sLine)
 {
-   char Buff[ABCLINELEN<<1];
-   char Format[ABCLINELEN];
+   char *Buff = new char[ABCLINELEN<<1];
+   char *Format = new char[ABCLINELEN];
    char *tempPtr,*tempPtr2,*bufPtr;
 
    strcpy(Format,sFormat[m_nCurrentMultiPrime]);
@@ -341,6 +341,9 @@ void PFABCFile::MakeExpr(PFString &sLine)
    while (*cp == ' ')
       cp++;
    sLine=cp;
+
+   delete [] Buff;
+   delete [] Format;
 }
 
 int PFABCFile::SeekToLine(int LineNumber)
@@ -349,7 +352,7 @@ int PFABCFile::SeekToLine(int LineNumber)
    {
       fseek(m_fpInputFile, 0, SEEK_SET);
       m_nCurrentPhysicalLineNum = 1;
-      ReadLine(Line, ABCLINELEN);
+      ReadLine(m_Line, ABCLINELEN);
       m_nCurrentLineNum = 1;
       if (m_pIni)
          m_pIni->SetFileProcessing(true);
@@ -357,7 +360,7 @@ int PFABCFile::SeekToLine(int LineNumber)
    }
    while (m_nCurrentLineNum < LineNumber)
    {
-      if (ReadLine(Line,ABCLINELEN)) {
+      if (ReadLine(m_Line, ABCLINELEN)) {
          if (m_pIni)
             m_pIni->SetFileProcessing(false);
          m_bEOF = true;

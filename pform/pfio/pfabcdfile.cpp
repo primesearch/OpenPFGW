@@ -7,7 +7,7 @@ extern bool g_bVerbose;
 extern bool g_bTerseOutput;
 
 PFABCDFile::PFABCDFile(const char* FileName)
-   : PFABCFile(FileName)
+   : PFABCFile(FileName), m_Line1(0), m_TempLine(0)
 {
    for (uint32 i = 0; i < 26; i++)
       m_i64Accum[i] = 0;
@@ -15,19 +15,21 @@ PFABCDFile::PFABCDFile(const char* FileName)
    m_bReadNextLineFromFile = false;
    m_bIgnoreOutput = false;
    m_SigString = "ABCD File";
+   m_Line1 = new char[ABCLINELEN];
+   m_TempLine = new char[ABCLINELEN];
+   m_ABCLookingLine = new char[ABCLINELEN];
 }
-
-char s_Line[ABCLINELEN];
 
 void PFABCDFile::CutOutFirstLine()
 {
+   char *temp = new char[ABCLINELEN];
+
    // Ok, cut our our [line2] stuff, rebuild the line, and let ABCFile::ProccessFirstLine have at it.
-   char Line2[ABCLINELEN];
-   char *cp = strchr(s_Line, '[');
+   char *cp = strchr(m_Line1, '[');
    if (!cp)
       throw "Error, Not a valid ABCD Sieve file, Can't find a [ char in the first line";
-   strcpy(Line2, cp);
-   char *cp1 = strchr(Line2, ']');
+   strcpy(temp, cp);
+   char *cp1 = strchr(temp, ']');
    if (!cp1)
       throw "Error, Not a valid ABCD Sieve file, Can't find a ] char in the first line";
    *cp1++ = 0;
@@ -36,12 +38,12 @@ void PFABCDFile::CutOutFirstLine()
    strcpy(cp, cp1);
 
    // eat the ABCD down to a ABC
-   memmove (&s_Line[3], &s_Line[4], strlen(&s_Line[4]));
+   memmove(&m_Line1[3], &m_Line1[4], strlen(&m_Line1[4]));
 
    // We already have the first line, so don't hit the file again until we pass over this data.
    m_bReadNextLineFromFile = false;
 
-   cp = &Line2[1];
+   cp = &temp[1];
    while (*cp == ' ' || *cp == '\t')
       ++cp;
 
@@ -69,6 +71,7 @@ void PFABCDFile::CutOutFirstLine()
    }
 
    // Ready to roll.
+   delete [] temp;
 }
 
 void PFABCDFile::LoadFirstLine()
@@ -76,12 +79,11 @@ void PFABCDFile::LoadFirstLine()
    if (!g_bTerseOutput)
       PFPrintfLog("Recognized ABCD Sieve file: \n");
 
-   if (PFSimpleFile::ReadLine(s_Line, sizeof(s_Line)))
+   if (PFSimpleFile::ReadLine(m_Line1, ABCLINELEN))
    {
       fclose(m_fpInputFile);
       throw "Error, Not a valid ABCD Sieve file";
    }
-   s_Line[sizeof(s_Line)-1] = 0;
 
    CutOutFirstLine();
 
@@ -90,7 +92,7 @@ void PFABCDFile::LoadFirstLine()
    m_nCurrentPhysicalLineNum = 0;
 
    // Now use PFABCFile to process the line.
-   PFABCFile::ProcessFirstLine(s_Line);
+   ProcessFirstLine(m_Line1);
 
    // don't count this "first" line, we have to "reset" to line 0 numbering.
    m_nCurrentLineNum = 1;
@@ -98,7 +100,8 @@ void PFABCDFile::LoadFirstLine()
 
 PFABCDFile::~PFABCDFile()
 {
-   // Nothing to do.
+   delete [] m_Line1;
+   delete [] m_TempLine;
 }
 
 int PFABCDFile::ReadLine(char *_Line, int sizeofLine)
@@ -116,14 +119,14 @@ ReadLineAgain_0:;
    // Load new line, compute delta, make a "fake" line, and return it.
 
 ReadLineAgain:;
-   char TmpLine[ABCLINELEN];
-   if (PFSimpleFile::ReadLine(TmpLine, sizeof(TmpLine)))
+
+   if (PFSimpleFile::ReadLine(m_TempLine, ABCLINELEN))
    {
       fclose(m_fpInputFile);
       return true;
    }
 
-   char *cp = TmpLine;
+   char *cp = m_TempLine;
    while (*cp == ' ' || *cp == '\t')
       ++cp;
 
@@ -137,16 +140,8 @@ ReadLineAgain:;
    }
 
    // Handle ABCD lines here
-#if !defined (_MSC_VER)
    if (!strncmp(cp, "ABCD ", 5))
-#else
-   // NON PORTIBLE WARNING.  This will ONLY work on 32 bit little-endian systems (Intel)
-   if ('DCBA' == *(unsigned long*)cp)
-#endif
    {
-      // Don't inc line count here.
-//    ++m_nCurrentPhysicalLineNum;
-//    ++m_nCurrentLineNum;
       if (g_bVerbose)
       {
          PFOutput::EnableOneLineForceScreenOutput();
@@ -156,9 +151,9 @@ ReadLineAgain:;
       // Now process this as though it was a "first" line.  This will reinitialize the PFABC stuff to this new value
       try
       {
-         strcpy(s_Line, cp);
+         strcpy(m_Line1, cp);
          CutOutFirstLine();
-         PFABCFile::ProcessFirstLine(s_Line);
+         ProcessFirstLine(m_Line1);
       }
       catch(char *s)
       {
@@ -211,7 +206,7 @@ ReadLineAgain:;
             ++m_nCurrentPhysicalLineNum;
             ++m_nCurrentLineNum;
             // undo what was done
-            cp = TmpLine;
+            cp = m_TempLine;
             while (*cp == ' ' || *cp == '\t')
                ++cp;
 
@@ -244,7 +239,7 @@ ReadLineAgain:;
          ++m_nCurrentLineNum;
 
          // undo what was done
-         cp = TmpLine;
+         cp = m_TempLine;
          while (*cp == ' ' || *cp == '\t')
             ++cp;
          m_i64Accum[0] -= _atoi64(cp);
@@ -290,11 +285,11 @@ int PFABCDFile::SeekToLine(int LineNumber)
    m_bEOF = false;
    try
    {
-      PFSimpleFile::ReadLine(s_Line, ABCLINELEN);
+      PFSimpleFile::ReadLine(m_Line1, ABCLINELEN);
       CutOutFirstLine();
       m_nCurrentPhysicalLineNum = 0;
       m_nCurrentLineNum = 0;
-      PFABCFile::ProcessFirstLine(s_Line);
+      ProcessFirstLine(m_Line1);
    }
    catch(char *s)
    {
@@ -309,7 +304,7 @@ int PFABCDFile::SeekToLine(int LineNumber)
    }
    while (m_nCurrentLineNum < LineNumber)
    {
-      if (ReadLine(Line,sizeof(Line))) {
+      if (ReadLine(m_Line1, ABCLINELEN)) {
          if (m_pIni)
             m_pIni->SetFileProcessing(false);
          m_bEOF = true;

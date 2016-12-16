@@ -70,7 +70,7 @@ int PFDecimalFile::GetNextLine(PFString &sLine, Integer *, bool *b, PFSymbolTabl
 {
    char *pos;
    int  lineLength = 0;
-   int  length;
+   int  length = 0;
 
    if (b)
       *b = false;       // this simple file class does not "remember" or "fill in" the Integer value, ever
