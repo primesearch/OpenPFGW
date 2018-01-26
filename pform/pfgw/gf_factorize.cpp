@@ -1065,7 +1065,7 @@ Try_Next_a:;
       }
    }
 
-   PFPrintfLog("GFN testing completed\n");
+   PFPrintfLog("GFN testing completed for %s\n", LPCTSTR(sNumStr));
 
    return true;
 }
