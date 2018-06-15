@@ -832,7 +832,7 @@ PFBoolean MS_FACT::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> &/*o*/,int
    if((*p)<0) return PFBoolean::b_false;
 
    Integer gLimit=m_gData;
-   gLimit*=1000000;
+   gLimit*=10000000;
 
    if((*p)>gLimit) return(PFBoolean::b_false);
 
@@ -940,7 +940,7 @@ PFBoolean MS_PRIM::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> & /*o*/,in
     if(p==NULL) return(PFBoolean::b_false);
 
     // if p is too large, forget it.
-    if((*p)>20000000) return(PFBoolean::b_false);
+    if((*p)>100000000) return(PFBoolean::b_false);
 
     uint32 pp= ((*p) & INT_MAX);
 
