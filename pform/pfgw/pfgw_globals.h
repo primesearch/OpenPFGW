@@ -2,6 +2,7 @@
 #define PFGW_GLOBALS_H__
 
 extern int iBase;
+extern int g_Threads;
 extern int g_nIterationCnt;
 extern bool volatile g_bExitNow;
 extern bool volatile g_bExited;
@@ -32,23 +33,23 @@ enum ePRPType {e_gwPRP, e_GFN_DTWPRP, e_Phi_DTWPRP, e_GFN_Factorize};
 enum eContextType {e_FFTW=2, e_gwnum};
 
 void CreateRestoreName(Integer *N, char RestoreName[13]);
-bool RestoreState(ePRPType e_gwPRP, char *RestoreName, uint32 *iDone, GWInteger *gwX, uint32 iBase, eContextType eCType);
-bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32 iDone, GWInteger *gwX, uint32 iBase, eContextType eCType, Integer *N, bool bForce=false);
+bool RestoreState(ePRPType e_gwPRP, char *RestoreName, uint32_t *iDone, GWInteger *gwX, uint32_t iBase, eContextType eCType);
+bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32_t iDone, GWInteger *gwX, uint32_t iBase, eContextType eCType, Integer *N, bool bForce=false);
 
 
 // in gw_prp.cpp
-int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue);
-void bench_gwPRP(Integer *N, uint32 iterations);
-int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue, int fftSize);
+int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue);
+void bench_gwPRP(Integer *N, uint32_t iterations);
+int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize);
 
 // in phi_prp.cpp
 void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors);
 
 // in gw_gapper.cpp
-void gw_gapper(const char *FName, int MinGap, uint64 restart=0);
+void gw_gapper(const char *FName, int MinGap, uint64_t restart=0);
 
 // in gf_factorize.cpp
-bool IsValidGF_FactorForm(const char *sNumber, Integer *k=NULL, uint32 *n=NULL);
+bool IsValidGF_FactorForm(const char *sNumber, Integer *k=NULL, uint32_t *n=NULL);
 void Parse_GF_FactorCommandLine(const char *sCmdLine, bool *bOnlyGFNs);
 // The return from ProcessGF_Factors is only stating that the number was proper form or not.  NOT whether
 // the number was a factor or not.  By returning the result of the IsValidGF_FactorForm, then we can avoid

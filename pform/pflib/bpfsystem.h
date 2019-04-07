@@ -44,7 +44,7 @@ private:
 	BPFThread &operator=(const BPFThread &);
 
 protected:
-	friend int32 thread_entry_point(LPVOID);
+	friend int32_t thread_entry_point(LPVOID);
 	void Startup();
 
 	friend class BPFSystem;

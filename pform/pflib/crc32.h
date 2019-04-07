@@ -1,3 +1,5 @@
+#include <inttypes.h>
+
 #if !defined (OPENPFGW__CRC_32_H)
 #define OPENPFGW__CRC_32_H
 
@@ -20,7 +22,7 @@
 #endif
 
 void crc_init();
-uint32 crc_byte(unsigned char c,uint32 crc=0);
+uint32_t crc_byte(unsigned char c, uint32_t crc=0);
 
 
 #endif

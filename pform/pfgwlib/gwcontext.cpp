@@ -45,7 +45,7 @@ int  StripTrailingWhiteSpace(char *string)
   return x;
 }
 
-bool EvenlyDivides(uint64 k, uint32 b, uint32 n, int32 c, int32 d)
+bool EvenlyDivides(uint64_t k, uint32_t b, uint32_t n, int32_t c, int32_t d)
 {
    Integer tempInteger(b);
 
@@ -66,8 +66,8 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
    char  testString[100];
    int   error_code;
    double   k;
-   uint32 b, n;
-   int32 c, d;
+   uint32_t b, n;
+   int32_t c, d;
  
    StripTrailingWhiteSpace(expression);
 
@@ -102,7 +102,7 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
       if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &d, &error_code) == 6)
       {
          sprintf(testString, "(%lf*%u^%u%+d)/%d", k, b, n, c, d);
-         if (!strcmp(testString, expression) && k < 1e53 && EvenlyDivides((uint64) k, b, n, c, d))
+         if (!strcmp(testString, expression) && k < 1e53 && EvenlyDivides((uint64_t) k, b, n, c, d))
             return CreateSpecialModulus(gmp, k, b, n, c);
       }
 
@@ -139,7 +139,8 @@ int CreateSpecialModulus(mpz_ptr gmp, double k, unsigned long b, unsigned long n
    int   error_code;
 
    gwset_irrational_general_mod(&gwdata, false);
-   error_code = gwsetup (&gwdata, k, b, n, c);
+   gwset_num_threads(&gwdata, g_Threads);
+   error_code = gwsetup(&gwdata, k, b, n, c);
 
    // debugging output
    if (error_code)
@@ -171,6 +172,7 @@ int CreateGenericModulus(mpz_ptr gmp)
    int error_code;
 
    gwset_irrational_general_mod(&gwdata, false);
+   gwset_num_threads(&gwdata, g_Threads);
 
    if (sizeof (mp_limb_t) == sizeof (uint32_t))
       error_code = gwsetup_general_mod (&gwdata, (uint32_t *) gmp->_mp_d, gmp->_mp_size);

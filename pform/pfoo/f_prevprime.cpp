@@ -1,22 +1,17 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_prevprime.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 F_PrevPrime::F_PrevPrime()
    : PFFunctionSymbol("PrevPrime")
 {
-   m_pPrimeServer = 0;
 }
 
 F_PrevPrime::~F_PrevPrime()
 {
-   if (m_pPrimeServer)
-   {
-      delete m_pPrimeServer;
-      m_pPrimeServer = 0;
-   }
 }
 
 DWORD F_PrevPrime::MinimumArguments() const
@@ -43,9 +38,6 @@ PFBoolean F_PrevPrime::CallFunction(PFSymbolTable *pContext)
 {
    PFBoolean bRetval=PFBoolean::b_false;
    IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
- 
-   if (!m_pPrimeServer)
-      m_pPrimeServer = new PrimeServer(1e12 + 10000);
 
    if (!pSymbol) return bRetval;
 
@@ -55,20 +47,12 @@ PFBoolean F_PrevPrime::CallFunction(PFSymbolTable *pContext)
 
    if (!q) return bRetval;
 
-   uint64 last=(*q)&(ULLONG_MAX);
+   uint64_t last=(*q)&(ULLONG_MAX);
 
    Integer *r=new Integer;
    bRetval=PFBoolean::b_true;
 
-   // This should be faster than using the Integer::prevprime function
-   if (numbits(*q) < 60 && last < (uint64) 1e12)
-   {
-      *r = m_pPrimeServer->PrevPrime(last);
-   }
-   else
-   {
-      *r = q->prevprime();
-   }
+   *r = primesieve::nth_prime(-1, last);
 
    pContext->AddSymbol(new PFIntegerSymbol("_result",r));
 

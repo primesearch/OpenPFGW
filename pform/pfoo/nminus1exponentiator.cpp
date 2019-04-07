@@ -5,7 +5,6 @@
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
 #include "pfsamplersymbol.h"
-#include "primeserver.h"
 #include "testreturns.h"
 
 NMinus1Exponentiator::NMinus1Exponentiator()
@@ -26,7 +25,7 @@ FiniteField *NMinus1Exponentiator::GetFieldElements(PFSymbolTable *pContext,Resi
 
    PFSamplerSymbol *pSampler=(PFSamplerSymbol*)pContext->LookupSymbol("_SAMPLER");
 
-   uint32 p=pSampler->ask(m_N);
+   uint32_t p=pSampler->ask(m_N);
 
    // Officially, we don't need to do this kronecker test if the factor set
    // doesn't include 2. If we avoid it, we can often select a smaller proving

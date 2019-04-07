@@ -2,7 +2,6 @@
 #include "f_endminus1.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 #include "testreturns.h"
 
 #undef INTDEBUG

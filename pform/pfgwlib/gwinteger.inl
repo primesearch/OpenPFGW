@@ -15,14 +15,14 @@ GW_INLINE void gwfft(const GWInteger &s,GWInteger &d)
    gwfft (&gwdata, s.g, d.g);
 }
 
-GW_INLINE void gwsquare(GWInteger &s)
+GW_INLINE void gwsquare2(GWInteger &s)
 {
-   gwsquare (&gwdata, s.g);
+   gwsquare2(&gwdata, s.g, s.g);
 }
 
-GW_INLINE void gwsquare_carefully(GWInteger &s)
+GW_INLINE void gwsquare2_carefully(GWInteger &s)
 {
-   gwsquare_carefully (&gwdata, s.g);
+   gwsquare2_carefully (&gwdata, s.g, s.g);
 }
 
 GW_INLINE void gwmul(GWInteger &s, GWInteger &d)

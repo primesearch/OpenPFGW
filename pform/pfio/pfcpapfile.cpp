@@ -2,9 +2,11 @@
 //
 //   This class is based upon the PFSimpleFile, and adds NewPGen logic
 
-#include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
+#include <vector>
+#include <primesieve.hpp>
+#include "pfiopch.h"
 #include "pfcpapfile.h"
 
 PFBoolean bRequestFactorize;
@@ -447,22 +449,26 @@ void PFCPAPFile::SwitchToVerify()
    }
 
    // Ok, now sieve out the factors of primes [3..9973]
-   int64 MaxNum = int64(m_fBaseInc) + (m_FoundPrimeGaps[0]-1)*m_nGap + int64(m_pdIntervalData[m_nNumIntervalData-1]);
-   int64 MinNum = int64(m_fBaseInc) + (m_FoundPrimeGaps[0]-1)*m_nGap;
+   int64_t MaxNum = int64_t(m_fBaseInc) + (m_FoundPrimeGaps[0]-1)*m_nGap + int64_t(m_pdIntervalData[m_nNumIntervalData-1]);
+   int64_t MinNum = int64_t(m_fBaseInc) + (m_FoundPrimeGaps[0]-1)*m_nGap;
    
-   uint32 p;
+   std::vector<uint32_t> vPrimes;
+   std::vector<uint32_t>::iterator it;
+   uint32_t p;
 
-   // The NextPrime() will return 3
-   primeserver->SkipTo(2);
-   p = (uint32) primeserver->NextPrime();
+   primesieve::generate_n_primes(eNumPrimesToFactorWith, 3, &vPrimes);
+
+   it = vPrimes.begin();
 
    // Hacked & slashed code from CPAPSieve project (much has been changed to fit into this project)
-   for (i = 0; i < eNumPrimesToFactorWith; i++)
+   while (it != vPrimes.end())
    {
+      p = *it;
+
       // b's for factor primes are contained within the pre-calc'd array
       // m_FactorizeBase, now remove any k = +/-b mod p.
-      int64 num = m_FactorizeBase[i];
-      int64 inc = p<<1;
+      int64_t num = m_FactorizeBase[i];
+      int64_t inc = p<<1;
       int first = -1;
       if (num < MinNum)
       {
@@ -487,7 +493,8 @@ void PFCPAPFile::SwitchToVerify()
          }
          num += inc;
       }
-      p = (uint32) primeserver->NextPrime();
+
+      it++;
    }
 
 }
@@ -524,8 +531,8 @@ int PFCPAPFile::SimpleIntArraySortCompare(const void *x, const void *y)
 
 int PFCPAPFile::powNmodP(int p)
 {
-   int64 w = 1;
-   int64 x = m_nBase;
+   int64_t w = 1;
+   int64_t x = m_nBase;
    int n = m_nExp;
    for (;;)
    {
@@ -541,23 +548,30 @@ int PFCPAPFile::powNmodP(int p)
 
 void PFCPAPFile::BuildFactorizeBase()
 {
-   uint32 p;
-   primeserver->SkipTo(3);
-   p = (uint32) primeserver->NextPrime();
    int Cnt = 0;
    if (m_nBase&1)
       m_bOddBase = true;
+
+   std::vector<uint32_t> vPrimes;
+   std::vector<uint32_t>::iterator it;
+   uint32_t p = 0;
+
+#if defined (_DEBUG)
+   PFPrintfStderr("\nBuilding Factor Base for consective part of CPAP checking\n");
+#endif
+
+   primesieve::generate_n_primes(eNumPrimesToFactorWith, 5, &vPrimes);
+
+   it = vPrimes.begin();
 
    // Hacked & slashed code from CPAPSieve project (much has been changed to fit into this project)
    // Before there was no "pre-calcing" of the b's  In the real sieve, we simply keep finding b's
    // and running them.  Here in this code, I simply want to factor a VERY small amount, to simply
    // remove a large portion of the composites when checking a found AP-n to see if it is consecutive.
-
-#if defined (_DEBUG)
-   PFPrintfStderr("\nBuilding Factor Base for consective part of CPAP checking\n");
-#endif
-   while (Cnt < eNumPrimesToFactorWith)
+   while (it != vPrimes.end())
    {
+      p = *it;
+
       int b = powNmodP(p);
       b = ((-1*b)%p) + p;
       if (m_bOddBase)
@@ -575,8 +589,9 @@ void PFCPAPFile::BuildFactorizeBase()
 
       m_FactorizeBase[Cnt++] = b;  // Starting place for the sieve of Eratosthenes for this prime into the "base" expression.
 
-      p = (uint32) primeserver->NextPrime();
+      it++;
    }
+
 #if defined (_DEBUG)
    if (p > 3000000000)
    {

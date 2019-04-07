@@ -1,8 +1,8 @@
 #include "pfmathpch.h"
+#include <vector>
 #include "integer.h"
 #include "../pfgwlib/gwcontext.h"
 #include "../pfgwlib/gwinteger.h"
-#include "../pfoo/primeserver.h"
 
 #ifndef GW_INLINE_ENABLED
 #include "integer.inl"
@@ -26,7 +26,7 @@ void memFree()
 }
 
 // multiplication
-void Integer::m_mul(const int32 n)
+void Integer::m_mul(const int32_t n)
 {
    if(n>=0)
    {
@@ -40,7 +40,7 @@ void Integer::m_mul(const int32 n)
 }
 
 // division
-long Integer::m_div(const int32 n)
+long Integer::m_div(const int32_t n)
 {
    Integer r;
    if(n>=0)
@@ -52,16 +52,18 @@ long Integer::m_div(const int32 n)
       mpz_tdiv_qr_ui(m_g,r.m_g,m_g,-n);
       mpz_neg(m_g,m_g);
    }
-   return mpz_get_si(r.m_g);
+
+   // Not convinced this is right.  What if m_g > 31 bits?
+   return (int32_t) mpz_get_si(r.m_g);
 }
 
 #ifdef _64BIT
-int  Integer::m_mod(const int32 n) const
+int  Integer::m_mod(const int32_t n) const
 {
-   return (int32) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n);
+   return (int32_t) mpz_mod_ui(*(mpz_t*)(&scrap),m_g,n);
 }
 #else
-int Integer::m_mod(const int32 n) const
+int Integer::m_mod(const int32_t n) const
 {
    int   r;
 
@@ -77,13 +79,13 @@ int Integer::m_mod(const int32 n) const
    if (len < 0)
       len = -len;
 
-   r = Imod((uint32*)m_a, n, len);
+   r = Imod((uint32_t*)m_a, n, len);
 
    return r;
 }
 #endif
 
-void Integer::m_sftr(const int32 n)
+void Integer::m_sftr(const int32_t n)
 {
    if(n>=0)
    {
@@ -114,7 +116,7 @@ Integer &Integer::operator=(const GWInteger &I)
    return *this;
 }
 
-int bit(const Integer &x,const uint32 n)
+int bit(const Integer &x,const uint32_t n)
 {
    int r=0;
 
@@ -133,22 +135,22 @@ int bit(const Integer &x,const uint32 n)
    return r;
 }
 
-uint32 crc32(const Integer &x)
+uint32_t crc32(const Integer &x)
 {
    mp_limb_t l;
-   uint32 crcval=0;
+   uint32_t crcval=0;
    char *p=(char *)(&l);
 
    l=(mp_limb_t)(x.m_len);
 
-   uint32 i,j;
+   uint32_t i,j;
 
    for(i=0;i<sizeof(mp_limb_t);i++)
    {
       crcval=crc_byte(p[i],crcval);
    }
 
-   for(j=0;j<(uint32)abs(x.m_len);j++)
+   for(j=0;j<(uint32_t)abs(x.m_len);j++)
    {
       l=x.m_a[j];
       for(i=0;i<sizeof(mp_limb_t);i++)
@@ -158,98 +160,6 @@ uint32 crc32(const Integer &x)
    }
    return crcval;
 }
-
-// Thanks to David Cleaver and his code from  http://sourceforge.net/projects/mpzprp/files/
-Integer Integer::nextprime(void)
-{
-   Integer  y;
-   int      ret, i;
-   bool     canUse = false, smallFactor;
-   PrimeServer *primeServer;
-
-   y = *this;
-   if (!(y & 1)) y--;
-
-   primeServer = new PrimeServer(100000.0);
-
-   while (!canUse && !g_bExitNow)
-   {
-      y += 2;
-
-      smallFactor = false;
-      for (i=1; i<500; i++)
-      {
-         if (y % (int32) primeserver->ByIndex(i) == 0)
-         {
-            smallFactor = true;
-            break;
-         }
-      }
-
-      if (smallFactor) continue;
-
-      mpz_set_ui(scrap, 2);
-
-      // with a base of 2, mpz_sprp, won't return PRP_ERROR
-      // so, only check for PRP_PRIME here
-      if (mpz_sprp(y.m_g, scrap) == PRP_PRIME)
-         break;
-
-      ret = mpz_strongselfridge_prp(y.m_g);
-      if (ret == PRP_PRIME || ret == PRP_PRP)
-         break;
-   }
-
-   delete primeServer;
-   return y;
-}
-
-Integer Integer::prevprime(void)
-{
-   Integer  y;
-   int      ret, i;
-   bool     canUse = false, smallFactor;
-   PrimeServer *primeServer;
-
-   y = *this;
-   if (y <= 3) return 2;
-
-   if (!(y & 1)) y++;
-
-   primeServer = new PrimeServer(100000.0);
-
-   while (!canUse && !g_bExitNow)
-   {
-      y -= 2;
-
-      smallFactor = false;
-      for (i=1; i<500; i++)
-      {
-         if (y % (int32) primeserver->ByIndex(i) == 0)
-         {
-            smallFactor = true;
-            break;
-         }
-      }
-
-      if (smallFactor) continue;
-
-      mpz_set_ui(scrap, 2);
-
-      // with a base of 2, mpz_sprp, won't return PRP_ERROR
-      // so, only check for PRP_PRIME here
-      if (mpz_sprp(y.m_g, scrap) == PRP_PRIME)
-         break;
-
-      ret = mpz_strongselfridge_prp(y.m_g);
-      if (ret == PRP_PRIME || ret == PRP_PRP)
-         break;
-   }
-
-   delete primeServer;
-   return y;
-}
-
 
 /* *********************************************************************************************
  * mpz_sprp: (also called a Miller-Rabin pseudoprime)

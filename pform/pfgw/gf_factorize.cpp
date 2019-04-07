@@ -1,5 +1,7 @@
 #include "primeformpch.h"
 #include <signal.h>
+#include <vector>
+#include <primesieve.hpp>
 #include "../../pform/pfio/pfini.h"
 
 #include "pfgw_globals.h"
@@ -10,15 +12,15 @@
 #endif
 
 static bool GF_bExtendedGFNLogic;
-static uint32 nCur_a=1;
+static uint32_t nCur_a=1;
 
-static uint32 GF_n_MinTry, GF_n_MaxTry, GF_n_Subs;
+static uint32_t GF_n_MinTry, GF_n_MaxTry, GF_n_Subs;
 static bool GF_b_SaveIntermed, GF_b_QuickMode, GF_b_DoSingleCheck;
 
 bool GF_b_DoGFFactors;  // tells WinPFGW that we are USING GFFactors.
 
-static uint32 *pMap_GF, *_pMap_GF;
-static uint32 *pMap_xGF[401], *_pMap_xGF[401];
+static uint32_t *pMap_GF, *_pMap_GF;
+static uint32_t *pMap_xGF[401], *_pMap_xGF[401];
 static bool bGFNMapInit=false;
 extern int g_CompositeAthenticationLevel;
 bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
@@ -26,9 +28,9 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
                                int base, int x, int y, int iTotal, Integer *outX);
 
 // Not super efficient, but it will not be called enough to make much difference
-static uint32 gcd(uint32 x, uint32 y)
+static uint32_t gcd(uint32_t x, uint32_t y)
 {
-   uint32 t;
+   uint32_t t;
    for (;;)
    {
       if (y == 0)
@@ -39,7 +41,7 @@ static uint32 gcd(uint32 x, uint32 y)
    }
 }
 
-static bool IsTrivial_GF(uint32 a)
+static bool IsTrivial_GF(uint32_t a)
 {
    // Filter out the perfect even powers.  NOTE the perfect odd powers are also "trivial" IF the
    if (a < 10000)
@@ -51,13 +53,13 @@ static bool IsTrivial_GF(uint32 a)
 }
 
 
-static bool IsTrivial_xGF(uint32 a, uint32 b)
+static bool IsTrivial_xGF(uint32_t a, uint32_t b)
 {
    if (b >= a)
    {
       if (b == a)
          return true;
-      uint32 t = b;
+      uint32_t t = b;
       b = a;
       a = t;
    }
@@ -77,7 +79,7 @@ static bool IsTrivial_xGF(uint32 a, uint32 b)
 static void _InitGFTrivials()
 {
    Init_pMap2(1, 10000, &_pMap_GF, &pMap_GF);
-   uint32 nvalsleft, i, j;
+   uint32_t nvalsleft, i, j;
    Set_All_bits_false2(1, 10000, nvalsleft, pMap_GF);
    // Filter out the perfect even powers.  NOTE the perfect odd powers are also "trivial" IF the
    for (i = 2; i <= 100; ++i)
@@ -109,12 +111,12 @@ static void FreeGFTrivials()
 {
    if (!bGFNMapInit) return;
    bGFNMapInit=false;
-   for (uint32 i = 400; i >= 2; --i)
+   for (uint32_t i = 400; i >= 2; --i)
       Free_pMap2(&(_pMap_xGF[i]));
    Free_pMap2(&_pMap_GF);
 }
 
-bool IsValidGF_FactorForm(const char *sNumber, Integer *k, uint32 *n)
+bool IsValidGF_FactorForm(const char *sNumber, Integer *k, uint32_t *n)
 {
    // See if sNumber is of the form k*2^n+1.   (Now also handles k.2^n+1 since * and . are both multiply chars)
    //
@@ -160,12 +162,12 @@ struct GF_SubFactor
    int      prime;
 }*GF_Subs;
 
-static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
+static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32_t n)
 {
    int bRetval = 0;
 
    static Integer XX, X, Nm1;
-   static uint32 last_N;
+   static uint32_t last_N;
    if (last_N != n)
    {
       mpz_set_ui(X.gmp(),1);
@@ -177,7 +179,7 @@ static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32 n)
    char *k_text = k->Itoa();
    CTimer Timer;
    Timer.Start();
-   for (uint32 j = 0; j < GF_n_Subs; j++)
+   for (uint32_t j = 0; j < GF_n_Subs; j++)
    {
       char GF_IntermedFName[120];
       sprintf (GF_IntermedFName, "%s_%d_%d.gfi", k_text, n, GF_Subs[j].prime);
@@ -221,7 +223,7 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
                                int base, int x, int y, int iTotal, Integer *outX)
 {
    int   fftSize, haveError;
-   uint32 lastLineLength = 0;
+   uint32_t lastLineLength = 0;
    int   ii, iDone, errchk;
    char  temp[120];
    CTimer Timer;
@@ -254,9 +256,9 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
          gwsetnormroutine(&gwdata, 0, errchk, bit(X, ii));
 
          if (ii < 30)
-            gwsquare_carefully(*gwX);
+            gwsquare2_carefully(*gwX);
          else
-            gwsquare(*gwX);
+            gwsquare2(*gwX);
 
          if (g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
          {
@@ -294,12 +296,12 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
    return haveError;
 }
 
-static int gwGF_LoadSubs_gmp(Integer *N, uint32 n)
+static int gwGF_LoadSubs_gmp(Integer *N, uint32_t n)
 {
    int bRetval = 0;
 
    static Integer X, Nm1;
-   static uint32 last_N;
+   static uint32_t last_N;
    if (last_N != n)
    {
       mpz_set_ui(X.gmp(),1);
@@ -308,7 +310,7 @@ static int gwGF_LoadSubs_gmp(Integer *N, uint32 n)
    }
    Nm1 = (*N)-1;
 
-   for (uint32 j = 0; j < GF_n_Subs; j++)
+   for (uint32_t j = 0; j < GF_n_Subs; j++)
    {
       Integer BASE(GF_Subs[j].prime);
       mpz_powm( GF_Subs[j].subN.gmp(), BASE.gmp(), X.gmp(), N->gmp());
@@ -317,13 +319,13 @@ static int gwGF_LoadSubs_gmp(Integer *N, uint32 n)
 }
 
 // This function is only called from ProcessGF_Factor
-static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, const char *sNumStr)
+static int gwGF_Factor(Integer *N, uint32_t n, uint32_t gfn_base, uint32_t *gfn_exp, const char *sNumStr)
 {
    int bRetval=0;
 
    static Integer XX, X, Nm1, XXa;
-   static uint32 last_N;
-   uint32 gfn_exp_max = --n;
+   static uint32_t last_N;
+   uint32_t gfn_exp_max = --n;
    // if kro(b,N) == -1 then b^2^(n-1) can NOT be == +1 so the N-1 residue can NOT happen before n-1, so simply
    // ignore the starting check from b^2^(n-20) and simply go straight to b^2^(n-1)
    CTimer Timer;
@@ -387,7 +389,7 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
       n -= 3;        // X/=2^3
    else if (n > 2)
       --n;        // X/=2^1
-   uint32 nStart = n;
+   uint32_t nStart = n;
    if (last_N != n)
    {
       mpz_set_ui(X.gmp(),1);
@@ -424,14 +426,14 @@ static int gwGF_Factor(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp, c
 }
 
 // This function is only called from ProcessGF_Factor
-static int gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_exp)
+static int gwGF_Factor_gmp(Integer *N, uint32_t n, uint32_t gfn_base, uint32_t *gfn_exp)
 {
    int bRetval=0;
 
    static Integer XX, XXa, X, Nm1;
-   static uint32 last_N;
+   static uint32_t last_N;
 
-   uint32 gfn_exp_max = --n;
+   uint32_t gfn_exp_max = --n;
    if(!GF_bExtendedGFNLogic || nCur_a == 1)
    {
       // "Traditional" GFN search
@@ -494,7 +496,7 @@ static int gwGF_Factor_gmp(Integer *N, uint32 n, uint32 gfn_base, uint32 *gfn_ex
       n -= 3;        // X/=2^3
    else if (gfn_exp_max > 2)
       --n;        // X/=2^1
-   uint32 nStart = n;
+   uint32_t nStart = n;
    if (last_N != n)
    {
       mpz_set_ui(X.gmp(),1);
@@ -541,15 +543,15 @@ void CleanupGFs()
    FreeGFTrivials();
 }
 
-uint32 s_Factors[1000];
-uint32 s_nFactors;
+uint32_t s_Factors[1000];
+uint32_t s_nFactors;
 
-bool OnlySmallFactors(uint32 n)
+bool OnlySmallFactors(uint32_t n)
 {
    if (!GF_bExtendedGFNLogic && IsTrivial_GF(n))
       return false;
    s_nFactors = 0;
-   for (uint32 i = 0; i < GF_n_Subs && n > 1; i++)
+   for (uint32_t i = 0; i < GF_n_Subs && n > 1; i++)
    {
       while(n%GF_Subs[i].prime == 0)
       {
@@ -562,8 +564,8 @@ bool OnlySmallFactors(uint32 n)
 
 static void DumpPatterns()
 {
-   uint32 TotTests=0;
-   for (uint32 a = GF_n_MinTry; a <= GF_n_MaxTry; a++)
+   uint32_t TotTests=0;
+   for (uint32_t a = GF_n_MinTry; a <= GF_n_MaxTry; a++)
    {
       if (OnlySmallFactors(a))
       {
@@ -574,7 +576,7 @@ static void DumpPatterns()
 
          if (GF_bExtendedGFNLogic)
          {
-            for (uint32 b = GF_n_MinTry; b < a; b++)
+            for (uint32_t b = GF_n_MinTry; b < a; b++)
                if (OnlySmallFactors(b) && !IsTrivial_xGF(a, b))
                   TotTests += !!PFPrintfLog ("Test for xGF(??,%d,%d)\n", a, b);
          }
@@ -659,7 +661,7 @@ UseDefault:;
          p[4].prime = 11;
       }
       pIntegerVals = new Integer[13];
-      for (uint32 i = 0; i < 13; ++i)
+      for (uint32_t i = 0; i < 13; ++i)
          pIntegerVals[i] = -1;
 
       // Ok now dump out what we are searching for:
@@ -684,7 +686,7 @@ UseDefault:;
          }
          if (GF_n_MinTry > GF_n_MaxTry)
          {
-            uint32 t = GF_n_MaxTry;
+            uint32_t t = GF_n_MaxTry;
             GF_n_MaxTry = GF_n_MinTry;
             GF_n_MinTry = t;
          }
@@ -693,7 +695,7 @@ UseDefault:;
          GF_Subs[1].prime = GF_n_MaxTry;
          GF_n_Subs = 2;
          pIntegerVals = new Integer[GF_n_MaxTry+1];
-         for (uint32 i = 0; i < GF_n_MaxTry+1; ++i)
+         for (uint32_t i = 0; i < GF_n_MaxTry+1; ++i)
          {
             if (i != GF_n_MinTry)
                pIntegerVals[i] = -1;
@@ -717,7 +719,7 @@ UseDefault:;
       GF_Subs[0].prime = GF_n_MaxTry;
       GF_n_Subs = 1;
       pIntegerVals = new Integer[GF_n_MaxTry+1];
-      for (uint32 i = 0; i < GF_n_MaxTry+1; ++i)
+      for (uint32_t i = 0; i < GF_n_MaxTry+1; ++i)
          pIntegerVals[i] = -1;
       // Ok now dump out what we are searching for:
       if (DumpSearchPatterns)
@@ -726,32 +728,37 @@ UseDefault:;
       return;
    }
 
-   unsigned MinPrime, MaxPrime;
-   if (sscanf(sCmdLine, "{%d,%d}{%d,%d}", &MinPrime, &MaxPrime, &GF_n_MinTry, &GF_n_MaxTry) != 4)
+   unsigned minPrime, maxPrime;
+   if (sscanf(sCmdLine, "{%d,%d}{%d,%d}", &minPrime, &maxPrime, &GF_n_MinTry, &GF_n_MaxTry) != 4)
    {
       PFOutput::EnableOneLineForceScreenOutput();
       PFPrintfStderr("Error, GF divisibility command line switch was not correct format, using default syntax\n");
       goto UseDefault;
    }
    
-   uint32 Cnt = 0, npr;
+   uint32_t Cnt = 0;
 
-   MinPrime--;
+   minPrime--;
 
-   primeserver->SkipTo(MinPrime);
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
 
-   GF_n_Subs = 0;
-   for (npr = (uint32) primeserver->NextPrime(); npr <= MaxPrime; npr = (uint32) primeserver->NextPrime())
-      GF_n_Subs++;
+   vPrimes.clear();
 
+   primesieve::generate_primes(minPrime, maxPrime, &vPrimes);
+
+   GF_n_Subs = (uint32_t) vPrimes.size();
    GF_Subs = new GF_SubFactor[GF_n_Subs];
 
-   primeserver->SkipTo(MinPrime);
-   for (npr = (uint32) primeserver->NextPrime(); npr <= MaxPrime; npr = (uint32) primeserver->NextPrime())
-      GF_Subs[Cnt++].prime = npr;
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
+   {
+      GF_Subs[Cnt++].prime = (uint32_t) *it;
+      it++;
+   }
 
    pIntegerVals = new Integer[GF_n_MaxTry+1];
-   for (uint32 i = 0; i < GF_n_MaxTry+1; ++i)
+   for (uint32_t i = 0; i < GF_n_MaxTry+1; ++i)
       pIntegerVals[i] = -1;
 
    // Ok now dump out what we are searching for:
@@ -760,10 +767,10 @@ UseDefault:;
 }
 
 
-static void ProcessGF_Factor(Integer *N, const char *sNumStr, uint32 n, uint32 gfn_base)
+static void ProcessGF_Factor(Integer *N, const char *sNumStr, uint32_t n, uint32_t gfn_base)
 {
    clock_t start=clock();
-   uint32 gfn_exp;
+   uint32_t gfn_exp;
    int bRetVal;
 
    if (numbits(*N) < 800)
@@ -824,14 +831,14 @@ bool ProcessGF_Factors(Integer *N, const char *sNumStr)
 {
    static Integer k;  // we don't need to call constructor every time.
    static Integer OrigI;
-   uint32 n, b;
+   uint32_t n, b;
    int    bRetval;
    Integer I, J;
 
    if (!IsValidGF_FactorForm(LPCTSTR(sNumStr), &k, &n))
       return false;
 
-   uint32 exp_m1=n-1;
+   uint32_t exp_m1=n-1;
    clock_t start=clock();
 
    if (GF_b_DoSingleCheck)
@@ -879,7 +886,7 @@ bool ProcessGF_Factors(Integer *N, const char *sNumStr)
             PFPrintfStderr("GF_chk_%d:   \r", b);
          }
          pIntegerVals[b] = GF_Subs[s_Factors[0]].subN;
-         for (uint32 j = 1; j < s_nFactors; j++)
+         for (uint32_t j = 1; j < s_nFactors; j++)
          {
             pIntegerVals[b] *= GF_Subs[s_Factors[j]].subN;
             pIntegerVals[b] %= (*N);

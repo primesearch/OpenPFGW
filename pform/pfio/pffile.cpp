@@ -1,7 +1,7 @@
 //  PFFile class for file handling
-#include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
+#include "pfiopch.h"
 
 // also includes pffile.h but defines PFNewPGenFile class which is needed for the openInputFile() function.
 #include "pfnewpgenfile.h"
@@ -140,7 +140,7 @@ int PFSimpleFile::SecondStageConstruction(PFIni* pIniFile)
 int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
 {
    Line[0] = 0;
-   char *get = fgets(Line, sizeofLine, m_fpInputFile);
+   fgets(Line, sizeofLine, m_fpInputFile);
 
    if (strlen(Line) == sizeofLine - 1)
    {
@@ -331,7 +331,7 @@ int PFSimpleFile::GetCurrentLineNumbers(int &nVirtualLineNumber, int &nPhysicalL
 }
 
 // in the "base" class, these values don't make since, but the virtual function needs to be here.
-int PFSimpleFile::GetKNB(uint64 & /*k*/, uint64 & /*n*/, unsigned & /*b*/)
+int PFSimpleFile::GetKNB(uint64_t & /*k*/, uint64_t & /*n*/, unsigned & /*b*/)
 {
    return e_unknown;
 }
@@ -427,9 +427,9 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
    fclose(fp);
 
    char c;
-   uint64 u64tmp; // Unused right now, but may be useful in the future (tells the depth of the sieving)
+   uint64_t u64tmp; // Unused right now, but may be useful in the future (tells the depth of the sieving)
    int len, base, bits;
-   int count = sscanf(Line, ""ULL_FORMAT":%c:%d:%d:%d", &u64tmp, &c, &len, &base, &bits);
+   int count = sscanf(Line, "%" PRIu64":%c:%d:%d:%d", &u64tmp, &c, &len, &base, &bits);
 
    // set null so that we can delete in the catch
    PFSimpleFile *pf=0;

@@ -116,9 +116,6 @@
     <ClCompile Include="powerbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="primeserver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="recursionbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -251,9 +248,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="powerbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="primeserver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="recursionbuffer.h">

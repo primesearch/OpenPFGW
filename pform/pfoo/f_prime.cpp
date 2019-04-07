@@ -1,18 +1,17 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_prime.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 F_Prime::F_Prime()
    : PFFunctionSymbol("p")
 {
-   m_pPrimeServer = 0;
 }
 
 F_Prime::~F_Prime()
 {
-   if (m_pPrimeServer) delete m_pPrimeServer;
 }
 
 DWORD F_Prime::MinimumArguments() const
@@ -39,9 +38,6 @@ PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
 {
    PFBoolean bRetval=PFBoolean::b_false;
    IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
-   
-   if (!m_pPrimeServer)
-      m_pPrimeServer = new PrimeServer();
 
    if (!pSymbol) return bRetval;
 
@@ -51,7 +47,7 @@ PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
 
    if (!q) return bRetval;
 
-   uint64 idx = ((*q) & ULLONG_MAX); // nothing unusual there
+   uint64_t idx = ((*q) & ULLONG_MAX); // nothing unusual there
 
    if ((*q)!=idx)
       return bRetval;
@@ -59,7 +55,7 @@ PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
    bRetval=PFBoolean::b_true;
    Integer *r=new Integer;
 
-   *r = m_pPrimeServer->ByIndex(idx);
+   *r = primesieve::nth_prime(idx);
 
    pContext->AddSymbol(new PFIntegerSymbol("_result",r));
 

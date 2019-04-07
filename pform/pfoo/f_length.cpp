@@ -2,7 +2,6 @@
 #include "f_length.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 // f_length is "kinda" like lg, ln and log or log(n,b).  It is basically ceiling(log(n))
 

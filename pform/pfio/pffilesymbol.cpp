@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "pfiopch.h"
 #include "pffilesymbol.h"
 

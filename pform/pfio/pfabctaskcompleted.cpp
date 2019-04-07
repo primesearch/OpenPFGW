@@ -1,14 +1,13 @@
-#include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "pfiopch.h"
 #include "pfabctaskcompleted.h"
 
 PFABCTaskCompleted::PFABCTaskCompleted(const char *pExpr, const char *pABC)
 {
    FILE *f;
    int    valueCount, skipped;
-   uint64 values[26];
+   uint64_t values[26];
    char   scanLine[500];
    char   logLine[500];
    char  *tp;
@@ -125,9 +124,9 @@ PFABCTaskCompleted::~PFABCTaskCompleted()
 
 int u64Search(const void *x, const void *y)
 {
-   if (*(uint64*)x > *(uint64*)y)
+   if (*(uint64_t*)x > *(uint64_t*)y)
       return 1;
-   if (*(uint64*)x == *(uint64*)y)
+   if (*(uint64_t*)x == *(uint64_t*)y)
       return 0;
    return -1;
 }
@@ -136,18 +135,18 @@ bool PFABCTaskCompleted::ProcessThisValue(char *s_array[26])
 {
    if (!m_nDoneTempCnt && !m_nDoneCnt)
       return true;
-   uint64 x;
-   sscanf(s_array[m_WhichDone], LL_FORMAT, &x);
+   uint64_t x;
+   sscanf(s_array[m_WhichDone], "%" SCNu64"", &x);
 
    return ProcessThisValue(x);
 }
 
-bool PFABCTaskCompleted::ProcessThisValue(uint64 x)
+bool PFABCTaskCompleted::ProcessThisValue(uint64_t x)
 {
    if (!m_nDoneTempCnt && !m_nDoneCnt)
       return true;
 
-   uint32 i;
+   uint32_t i;
    for (i = 0; i < m_nDoneTempCnt; ++i)
    {
       if (x == m_DoneListTemp[i])
@@ -174,15 +173,15 @@ void PFABCTaskCompleted::AddPrimeOrComposite(char *s_array[26], bool bIsPrime)
    if (!bIsPrime && m_bPrimes)
       return;
 
-   uint64 x;
-   sscanf(s_array[m_WhichDone], LL_FORMAT, &x);
+   uint64_t x;
+   sscanf(s_array[m_WhichDone], "%" SCNu64"", &x);
 
    AddPrimeOrComposite(x);
 }
 
-void PFABCTaskCompleted::AddPrimeOrComposite(uint64 x)
+void PFABCTaskCompleted::AddPrimeOrComposite(uint64_t x)
 {
-   uint32 i;
+   uint32_t i;
 
    for (i = 0; i < m_nCompletedTemp; ++i)
    {
@@ -226,12 +225,12 @@ void PFABCTaskCompleted::AddPrimeOrComposite(uint64 x)
    }
 }
 
-void PFABCTaskCompleted::AddDone(uint64 Value)
+void PFABCTaskCompleted::AddDone(uint64_t Value)
 {
    if (m_nDoneTempCnt == sizeof(m_DoneListTemp)/sizeof(m_DoneListTemp[0]))
    {
-      uint64  *p = m_DoneList;
-      m_DoneList = new uint64[m_nDoneCnt + sizeof(m_DoneListTemp)/sizeof(m_DoneListTemp[0])];
+      uint64_t  *p = m_DoneList;
+      m_DoneList = new uint64_t[m_nDoneCnt + sizeof(m_DoneListTemp)/sizeof(m_DoneListTemp[0])];
       memcpy(m_DoneList, p, m_nDoneCnt*sizeof(m_DoneList[0]));
       memcpy(&m_DoneList[m_nDoneCnt], m_DoneListTemp, sizeof(m_DoneListTemp));
       m_nDoneCnt += sizeof(m_DoneListTemp)/sizeof(m_DoneListTemp[0]);

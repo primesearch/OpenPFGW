@@ -31,7 +31,7 @@ class PFSimpleFile
       // they are used in some of the derived classes, and are declared here as virtual, so that
       // a PFSimpleFile *v pointer can be used and ALL possible functions will work fine (even if
       // they do nothing in this base class).
-      virtual int GetKNB(uint64 &k, uint64 &n, unsigned &b);
+      virtual int GetKNB(uint64_t &k, uint64_t &n, unsigned &b);
       virtual void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
    protected:

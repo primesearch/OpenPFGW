@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------
-| Copyright 1995-2013 Mersenne Research, Inc.  All rights reserved
+| Copyright 1995-2017 Mersenne Research, Inc.  All rights reserved
 | Author:  George Woltman
 | Email: woltman@alum.mit.edu
 |
@@ -56,6 +56,10 @@ extern double CPU_SPEED;		/* Actual CPU Speed in MHz */
 #define CPU_FMA3		0x8000	/* Intel fused multiply-add instructions supported */
 #define CPU_FMA4		0x10000	/* AMD fused multiply-add instructions supported */
 #define CPU_AVX2		0x20000	/* AVX2 instructions supported */
+#define CPU_PREFETCHW		0x40000	/* PREFETCHW (the Intel version) instruction supported */
+#define CPU_PREFETCHWT1		0x80000	/* PREFETCHWT1 instruction supported */
+#define CPU_AVX512F		0x100000/* AVX512F instructions supported */
+#define CPU_AVX512PF		0x200000/* AVX512PF instructions supported */
 extern unsigned int CPU_FLAGS;		/* Cpu capabilities */
 extern unsigned int CPU_CORES;		/* Number CPU cores */
 extern unsigned int CPU_HYPERTHREADS;	/* Number of virtual processors that each CPU core supports. */
@@ -82,10 +86,12 @@ extern unsigned int CPU_SIGNATURE;	/* Vendor-specific family number, model numbe
 #define CPU_ARCHITECTURE_CORE_2		4
 #define CPU_ARCHITECTURE_CORE_I7	5		/* Core i3/i5/i7 */
 #define CPU_ARCHITECTURE_ATOM		6
+#define CPU_ARCHITECTURE_PHI		7		/* Xeon Phi, Knights Landing with AVX-512 */
 #define CPU_ARCHITECTURE_INTEL_OTHER	99
 #define CPU_ARCHITECTURE_AMD_K8		100
 #define CPU_ARCHITECTURE_AMD_K10	101
 #define CPU_ARCHITECTURE_AMD_BULLDOZER	102
+#define CPU_ARCHITECTURE_AMD_ZEN	103
 #define CPU_ARCHITECTURE_AMD_OTHER	199
 #define CPU_ARCHITECTURE_OTHER		999
 extern int CPU_ARCHITECTURE;		/* Our attempt to derive the CPU architecture. */

@@ -3,16 +3,16 @@
 
 class PFSamplerSymbol : public IPFSymbol
 {
-	uint32 m_dwLastCRC;
-	uint32 m_dwLargePrime;
+	uint32_t m_dwLastCRC;
+	uint32_t m_dwLargePrime;
 	
-	uint32 m_dwSmallPrimes[60];
-	uint32 m_dwAcceptedPrimes[60];
+	uint32_t m_dwSmallPrimes[60];
+	uint32_t m_dwAcceptedPrimes[60];
 	
-	uint32 m_dwSmallIndex;
-	uint32 m_dwAcceptIndex;
+	uint32_t m_dwSmallIndex;
+	uint32_t m_dwAcceptIndex;
 	
-	uint32 m_dwSmallCount;
+	uint32_t m_dwSmallCount;
 	
 public:
 	PFSamplerSymbol();
@@ -21,9 +21,9 @@ public:
 	DWORD GetSymbolType() const;
 	PFString GetStringValue();
 	
-	uint32 ask(const Integer &N);
-	uint32 askagain();
-	void accept(uint32 p);
+	uint32_t ask(const Integer &N);
+	uint32_t askagain();
+	void accept(uint32_t p);
 private:
 	void rearrange();
 };

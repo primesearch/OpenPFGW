@@ -24,8 +24,8 @@ class PFPrZFile : public PFABCFile
 		void CutOutFirstLine();
 		int  ReadLine(char *lineBuffer, int sizeofLine);
 
-		int64	m_i64Accum;
-		uint64  m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
+		int64_t	m_i64Accum;
+		uint64_t  m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
 		bool	m_bReadNextLineFromFile;
 		bool	m_bIgnoreOutput;
 		char  *m_ABCLookingLine;
@@ -46,17 +46,17 @@ class PFPrZ_newpgen_File : public PFNewPGenFile
 //		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0);
 
 		// gw_Gapper uses this class, and not the PFGenericFile class, so I need to export a couple of things
-		uint64 MinNum() { return m_MinNum; }
-		uint64 MaxNum() { return m_MaxNum; }
-		uint64 nValsLeft() {return prz_nvalsleft;}
+		uint64_t MinNum() { return m_MinNum; }
+		uint64_t MaxNum() { return m_MaxNum; }
+		uint64_t nValsLeft() {return prz_nvalsleft;}
 
 	protected:
 		void LoadFirstLine();
 		int  ReadLine(char *lineBuffer, int sizeofLine);
  
-		uint64	m_i64Accum;
-		uint64   m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
-		uint32	m_nAccum;
+		uint64_t	m_i64Accum;
+		uint64_t   m_MinNum, m_MaxNum, m_KOffset, prz_nvalsleft;
+		uint32_t	m_nAccum;
 		bool	m_bReadNextLineFromFile;
 		bool	m_bIgnoreOutput;
 		char	m_NPGLookingLine[256];

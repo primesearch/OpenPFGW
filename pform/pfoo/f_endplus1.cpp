@@ -2,7 +2,6 @@
 #include "f_endplus1.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 #include "testreturns.h"
 
 extern int g_ExtraSQFree;

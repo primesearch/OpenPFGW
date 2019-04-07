@@ -81,7 +81,7 @@ const PFBoolean &BPFEvent::IsManual() const
 
 // threads
 // A thread is a tricky thing.
-int32 thread_entry_point(LPVOID pParam)
+int32_t thread_entry_point(LPVOID pParam)
 {
    BPFThread *pThread=(BPFThread*)pParam;
    pThread->Startup();

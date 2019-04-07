@@ -1,4 +1,6 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_trivial.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
@@ -9,12 +11,10 @@
 F_Trivial::F_Trivial()
    : PFFunctionSymbol("@trivial")
 {
-   m_pPrimeServer = new PrimeServer();
 }
 
 F_Trivial::~F_Trivial()
 {
-   delete m_pPrimeServer;
 }
 
 DWORD F_Trivial::MinimumArguments() const
@@ -69,35 +69,50 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
       {
          // If we do NOT dip into this code for numbers less than 2^31, then the
          // V() and Phi() functions start failing!!!  We need to check into this!!!
-         uint64 p, sqrtN;
-         uint64 rawN = ((*pN) & ULLONG_MAX);
-         int32 i;
+         uint64_t p, sqrtN;
+         uint64_t rawN = ((*pN) & ULLONG_MAX);
 
-         sqrtN = (uint64) sqrt((double) rawN);
+         sqrtN = (uint64_t) sqrt((double) rawN);
+         std::vector<uint64_t> vPrimes;
+         std::vector<uint64_t>::iterator it;
 
-         for (i=1; rawN!=1; i++)
+         vPrimes.clear();
+
+         // This should be large enough for trivial factors
+         primesieve::generate_primes(1, 1000000, &vPrimes);
+
+         it = vPrimes.begin();
+         while (it != vPrimes.end())
          {
-            p = m_pPrimeServer->ByIndex(i);
+            p = *it;
+
             if (p > sqrtN)
             {
-               pFactorization->AddFactor(new FactorNode(Integer(rawN),1));
-               rawN=1;
+               pFactorization->AddFactor(new FactorNode(Integer(rawN), 1));
+               rawN = 1;
             }
             else
             {
-               int iPower=0;
-               while ((rawN%p)==0)
+               int iPower = 0;
+               while ((rawN%p) == 0)
                {
                   iPower++;
-                  rawN /= (int) p;
+                  rawN /= (int)p;
                }
                if (iPower>0)
                {
-                  sqrtN = (uint64) sqrt((double) rawN);
-                  pFactorization->AddFactor(new FactorNode(Integer(p),iPower));
+                  sqrtN = (uint64_t)sqrt((double)rawN);
+                  pFactorization->AddFactor(new FactorNode(Integer(p), iPower));
                }
             }
+
+            if (rawN == 1)
+               break;
+
+            it++;
          }
+         
+
          iResult=TT_FACTOR;
       }  // endif we have a small number
       else

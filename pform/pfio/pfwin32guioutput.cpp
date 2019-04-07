@@ -4,8 +4,6 @@
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
-#include "pfiopch.h"
-
 // Skip this whole file, unless building with VC.
 
 #if defined (_MSC_VER)
@@ -13,13 +11,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "pfiopch.h"
 #include "pfoutput.h"
 #include "windows.h"
 #include "..\winpfgw\winbloz_msg.h"
 
 char g_cpTrayMsg[200] = "\0";
 
-PFWin32GUIOutput::PFWin32GUIOutput(int hWnd) : PFOutput(), m_hWnd(hWnd)
+PFWin32GUIOutput::PFWin32GUIOutput(long long hWnd) : PFOutput(), m_hWnd(hWnd)
 {
 }
 

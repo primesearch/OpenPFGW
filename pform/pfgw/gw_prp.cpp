@@ -19,7 +19,7 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
+int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
 {
    // First check to see if N divides iBase
    if (N->gmp()->_mp_size == 1 && Integer(iBase) % *N == 0)
@@ -101,7 +101,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64 *p_n64ValidationResidue)
    return testResult;
 }
 
-void  bench_gwPRP(Integer *N, uint32 iterations)
+void  bench_gwPRP(Integer *N, uint32_t iterations)
 {
    int iDone=0, iTotal;
    Integer testN;
@@ -132,9 +132,9 @@ void  bench_gwPRP(Integer *N, uint32 iterations)
       // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
       // error during the last iteration.
       if (iterations < 30)
-         gwsquare_carefully(gwX);
+         gwsquare2_carefully(gwX);
       else
-         gwsquare(gwX);
+         gwsquare2(gwX);
    }
 
    DestroyModulus();
@@ -144,11 +144,11 @@ void  bench_gwPRP(Integer *N, uint32 iterations)
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64ValidationResidue, int fftSize)
+int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize)
 {
    int   retval;
    Integer X = (*N);
-   --X;            // X is the exponent, we are to calculate iBase^X mod N
+   --X;            // X is the exponent, we are to calculate iiBase^X mod N
    int iTotal=numbits(X);
 
    // Data for the save/restore file.
@@ -166,8 +166,8 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
       GWInteger gwX;
 
       // I think we're ready to go, let's do it.
-      gwX=iBase;               // initialise X to A^1.
-      gwsetmulbyconst(&gwdata, iBase);      // and multiplier
+      gwX= iiBase;               // initialise X to A^1.
+      gwsetmulbyconst(&gwdata, iiBase);      // and multiplier
 
       // keep a simple iteration counter just for rudimentary progress output
       int iDone=0;
@@ -196,8 +196,8 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
       if (*RestoreName && !access(RestoreName, 0))
 #endif
       {
-         uint32 DoneBits;
-         if (RestoreState(e_gwPRP, RestoreName, &DoneBits, &gwX, iBase, e_gwnum))
+         uint32_t DoneBits;
+         if (RestoreState(e_gwPRP, RestoreName, &DoneBits, &gwX, iiBase, e_gwnum))
          {
             // The number not only passes the hash, but EVERY check was successful.  We are working with the right number.
             iDone = DoneBits;
@@ -223,15 +223,15 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
          // error during the last iteration.
          if (i < 30)
-            gwsquare_carefully(gwX);
+            gwsquare2_carefully(gwX);
          else
-            gwsquare(gwX);
+            gwsquare2(gwX);
 
          iDone++;
          if (g_nIterationCnt && (((iDone%g_nIterationCnt)==0) || bFirst || !i))
          {
             if (*RestoreName)
-               SaveState(e_gwPRP, RestoreName, iDone, &gwX, iBase, e_gwnum, N);
+               SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N);
             static int lastLineLen;
             bFirst=false;
             // 150 bytes will not overflow, since we "force" the max size within the sprintf()
@@ -270,7 +270,7 @@ int prp_using_gwnum(Integer *N, uint32 iBase, const char *sNumStr, uint64 *p_n64
          if (g_bExitNow)
          {
             if (*RestoreName)
-               SaveState(e_gwPRP, RestoreName, iDone, &gwX, iBase, e_gwnum, N, true);
+               SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N, true);
 
             return -2; // we really do not know at this time.  It is NOT a true error, but is undetermined, due to not comple processing
          }

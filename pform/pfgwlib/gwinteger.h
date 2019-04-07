@@ -30,8 +30,8 @@ public:
 	friend class Integer;
 	friend void gwcopy(const GWInteger &s,GWInteger &d);
 	friend void gwfft(const GWInteger &s,GWInteger &d);
-	friend void gwsquare(GWInteger &s);
-   friend void gwsquare_carefully(GWInteger &s);
+	friend void gwsquare2(GWInteger &s);
+   friend void gwsquare2_carefully(GWInteger &s);
 	friend void gwmul(GWInteger &s, GWInteger &d);
 	friend void gwmul_carefully(GWInteger &s, GWInteger &d);
 	friend void gwfftmul(GWInteger &s,GWInteger &d);

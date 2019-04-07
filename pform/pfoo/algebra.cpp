@@ -112,9 +112,9 @@ void IntegerResidue::square(int maxSteps, int stepsLeft)
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
    // Square carefully the first 30 and last 30 steps
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(R);
+      gwsquare2_carefully(R);
    else
-      gwsquare(R);
+      gwsquare2(R);
 }
 
 void IntegerResidue::squaremultiply(Multiplier *l, int maxSteps, int stepsLeft)
@@ -161,9 +161,9 @@ void IntegerMultiplier::squaremulInteger(GWInteger &X, int maxSteps, int stepsLe
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
    // Square carefully the first 30 and last 30 steps
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(X);
+      gwsquare2_carefully(X);
    else
-      gwsquare(X);
+      gwsquare2(X);
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);
    gwfftmul(M,X);
 }
@@ -194,9 +194,9 @@ void SmallIntegerMultiplier::squaremulInteger(GWInteger &X, int maxSteps, int st
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
    // Square carefully the first 30 and last 30 steps
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(X);
+      gwsquare2_carefully(X);
    else
-      gwsquare(X);
+      gwsquare2(X);
 }
 
 //==============================================================
@@ -297,9 +297,9 @@ void FieldLucasSmall::squaremulcross(GWInteger &u, int maxSteps, int stepsLeft)
    gwsetmulbyconst(&gwdata,(D-1)*2);
    // Square carefully the first 30 and last 30 steps
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(u);
+      gwsquare2_carefully(u);
    else
-      gwsquare(u);
+      gwsquare2(u);
 }
 
 // A 'medium' has a possibly 32-bit multiplier rather than an 8 bit one, so
@@ -339,9 +339,9 @@ void FieldLucasMedium::squaremulcross(GWInteger &u, int maxSteps, int stepsLeft)
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);     // b(u) = n+2
    // Square carefully the first 30 and last 30 steps
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(u);
+      gwsquare2_carefully(u);
    else
-      gwsquare(u);               // b(u) = 2n+d+5
+      gwsquare2(u);               // b(u) = 2n+d+5
    gwsmallmul(2.0*(D-1.0),u);
 }
 
@@ -391,9 +391,9 @@ void FieldLucasLarge::squaremulcross(GWInteger &u, int maxSteps, int stepsLeft)
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,0);  // b(u) n+2
    // Square carefully the first 30 and last 30 steps
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
-      gwsquare_carefully(u);
+      gwsquare2_carefully(u);
    else
-      gwsquare(u);                     // b(u) 2n+4
+      gwsquare2(u);                     // b(u) 2n+4
                               // b(u) n+2
    gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
    gwsetmulbyconst(&gwdata,2);
@@ -457,7 +457,7 @@ void IntegerLucasResidue::square(int maxSteps, int stepsLeft)
       gwcopy(v,s2);
       gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,1);
       gwsetmulbyconst(&gwdata,2);
-      gwsquare_carefully(v);        // v' is 2v^2
+      gwsquare2_carefully(v);        // v' is 2v^2
       gwsetmulbyconst(&gwdata,4);
       gwmul_carefully(s2,u);        // u' is 4uv
    }
@@ -488,13 +488,13 @@ void IntegerLucasResidue::squaremultiply(Multiplier *x, int maxSteps, int stepsL
    gwsetmulbyconst(&gwdata,2);
    if (maxSteps - stepsLeft < 30 || stepsLeft < 30)
    {
-      gwsquare_carefully(v);                 // b(u) 2n+7 b(v) 2n+7
-      gwsquare_carefully(u);
+      gwsquare2_carefully(v);                 // b(u) 2n+7 b(v) 2n+7
+      gwsquare2_carefully(u);
    }
    else
    {
-      gwsquare(v);                           // b(u) 2n+7 b(v) 2n+7
-      gwsquare(u);
+      gwsquare2(v);                           // b(u) 2n+7 b(v) 2n+7
+      gwsquare2(u);
    }
    gwadd(s1,v);                              // b(u) 2n+8 2n+d+6 n+d+4
    gwadd(s1,u);                              // b(v) 2n+8 2n+d+6 n+d+4

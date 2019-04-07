@@ -1,8 +1,8 @@
 //  PFFile class for file handling
-#include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "pfiopch.h"
 
 // also includes pffile.h but defines PFNewPGenFile class which is needed for the openInputFile() function.
 #include "pfnewpgenfile.h"

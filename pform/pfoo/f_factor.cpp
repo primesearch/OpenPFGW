@@ -1,10 +1,11 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_factor.h"
 #include "factornode.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
 #include "pffactorizationsymbol.h"
-#include "primeserver.h"
 #include "expr.h"
 
 extern char g_cpTestString[70];  // Located in pfiterativesymbol.cpp
@@ -27,18 +28,18 @@ Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e);
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 #endif
 
-uint32 ExactPower(Integer &X,const Integer &P_)
+uint32_t ExactPower(Integer &X,const Integer &P_)
 {
    Integer P = P_;
-   uint32 iRetval=0;
+   uint32_t iRetval=0;
    static Integer *pPowers[32];     // plenty big enough
 
    Integer XX,YY,ZZ;
    Integer *apItems[3];
 
-   uint32 iCurrent=0;
-   uint32 iQuotient=1;
-   uint32 iRemainder=2;
+   uint32_t iCurrent=0;
+   uint32_t iQuotient=1;
+   uint32_t iRemainder=2;
 
    apItems[iCurrent]=&XX;
    apItems[iQuotient]=&YY;
@@ -47,8 +48,8 @@ uint32 ExactPower(Integer &X,const Integer &P_)
    XX=X;
 
    pPowers[0]=&P;                // copy the pointer
-   uint32 iMaxIndex=0;              // how many we have created
-   uint32 iCurrentPower=1;
+   uint32_t iMaxIndex=0;              // how many we have created
+   uint32_t iCurrentPower=1;
    Integer *PP=pPowers[0];          // the current power of P
 
    bool bScanning=true;
@@ -122,10 +123,10 @@ class FactorHelperArray
       FactorHelperArray() {m_Array=0;m_nArray=0;m_nMaxArray=0;}
       ~FactorHelperArray() {delete[] m_Array;m_Array=0;m_nArray=0;m_nMaxArray=0;}
       void AddFactor(const Integer *pI);
-      uint32 Count() { return m_nArray;}
-      const Integer *GetItem(int32 i) {if (i < 0 || i > m_nArray) return 0; return &m_Array[i]; }
+      uint32_t Count() { return m_nArray;}
+      const Integer *GetItem(int32_t i) {if (i < 0 || i > m_nArray) return 0; return &m_Array[i]; }
    private:
-      int32 m_nArray, m_nMaxArray;
+      int32_t m_nArray, m_nMaxArray;
       Integer *m_Array;
 
 };
@@ -136,11 +137,11 @@ void FactorHelperArray::AddFactor(const Integer *pI)
    if (m_nArray == m_nMaxArray)
    {
       m_nMaxArray += 100;
-      Integer *p = new Integer[m_nMaxArray];
-      for (int32 x = 0; x < m_nArray; ++x)
-         p[x] = m_Array[x];
+      Integer *pArray = new Integer[m_nMaxArray];
+      for (int32_t x = 0; x < m_nArray; ++x)
+         pArray[x] = m_Array[x];
       delete[] m_Array;
-      m_Array = p;
+      m_Array = pArray;
    }
    m_Array[m_nArray++] = *pI;
 }
@@ -155,7 +156,7 @@ F_Factor::F_Factor()
       pN(NULL), Q(0), R(0), S(0), P1(0), pBiggest(NULL), pHelperArray(NULL),
       m_sHelperFile(""), pmin(0), pmax(0),
       bFactorAtAll(PFBoolean::b_false),  bDeep(PFBoolean::b_false),
-      p(0), m_nPercentMultiplier(100),
+      m_nPercentMultiplier(100), maxpTested(0),
       m_bModFactor(false), m_bDualModFactor(false), m_nModFactor(1),
       m_pEratMod(NULL), m_pEratMod2(NULL),
       m_pffNminus1(NULL), m_pffN(NULL), m_pffNplus1(NULL)
@@ -164,8 +165,12 @@ F_Factor::F_Factor()
 
 F_Factor::~F_Factor()
 {
-   delete m_pEratMod;
-   delete m_pEratMod2;
+   if (m_pEratMod)
+      delete m_pEratMod;
+
+   if (m_pEratMod2)
+      delete m_pEratMod2;
+
    delete pHelperArray;
 }
 
@@ -296,7 +301,7 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
    {
       Integer *ipmin=((PFIntegerSymbol*)pSymbol)->GetValue();
       // Phil's hack to get a 64-bit value
-      uint64 n=1;
+      uint64_t n=1;
       ipmin->m_mod(n<<62, &pmin);
       if (pmin > n<<48)
       {
@@ -310,7 +315,7 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
    {
       Integer *ipmax=((PFIntegerSymbol*)pSymbol)->GetValue();
       // Phil's hack to get a 64-bit value
-      uint64 n=1;
+      uint64_t n=1;
       ipmax->m_mod(n<<62, &pmax);
       if (pmax > n<<48)
       {
@@ -344,21 +349,6 @@ PFBoolean F_Factor::OnExecute(PFSymbolTable *pContext)
    return bRetval;
 }
 
-double F_Factor::estimatePrimes(double l)
-{
-   double d=0.0;
-   if(l>3.0)
-   {
-      d=(l/(log(l)-1.0));
-   }
-   return d;
-}
-
-double F_Factor::estimatePrimes(double l1,double l2)
-{
-   return(estimatePrimes(l2)-estimatePrimes(l1));
-}
-
 // we will call it "the first 4n primes" for an n-bit number
 double F_Factor::estimateLimit(double x)
 {
@@ -380,10 +370,7 @@ PFBoolean F_Factor::OnInitialize()
       double dPrimes=7.0*numbits(*pN)+1.0;
       double pp=estimateLimit(dPrimes);
 
-      if (pp > (double) primeserver->GetUpperLimit())
-         pmax = primeserver->GetUpperLimit();
-      else
-         pmax = (uint64) pp;
+      pmax = (uint64_t) pp;
 
       if (pmax < 100000) pmax = 100000;
 
@@ -393,15 +380,12 @@ PFBoolean F_Factor::OnInitialize()
       if (m_bModFactor)
       {
          pmax *= m_pEratMod->GetModVal();
-         double d = (double)(int64)pmax;
+         double d = (double)(int64_t)pmax;
          if (m_bDualModFactor)
             // Note if dual modular factoring, then divide by 2 (well almost divide by 2)
             d *= 0.6;
 
-         if (d > (double) primeserver->GetUpperLimit())
-            primeserver->SetUpperLimit(2.0 * d);
-         
-         pmax = (uint64) d;
+         pmax = (uint64_t) d;
       }
 
       // did the user "request" a multiplier to the defalt factorization.
@@ -411,10 +395,7 @@ PFBoolean F_Factor::OnInitialize()
          d /= 100;
          d *= (double) pmax;
 
-         if (d > (double) primeserver->GetUpperLimit())
-            primeserver->SetUpperLimit(2.0 * d);
-
-         pmax = (uint64) d;
+         pmax = (uint64_t) d;
       }
    }
 
@@ -425,24 +406,23 @@ PFBoolean F_Factor::OnInitialize()
    if (pmin > pmax)
       pmin = pmax;
 
-   double StepsVal = estimatePrimes((double)(int64)pmin,(double)(int64)pmax) / 2;
-   m_dwStepsTotal =  (DWORD)(StepsVal/m_nModFactor + 1);
+   uint64_t StepsVal = primesieve::count_primes(1, pmax);
+   m_dwStepsTotal =  (uint32_t)(StepsVal/m_nModFactor) + 1;
+   // Since we test two primes at a time
+   m_dwStepsTotal >>= 1;
    m_dwStepGranularity=2048;
    m_bStopOverride=PFBoolean::b_true;
 
    Timer.Start();
 
    if (!m_bModFactor)
-   {
-      primeserver->SkipTo(pmin);
-      p = primeserver->NextPrime();
-   }
+      psIterator.skipto(pmin);
    else
    {
       m_pEratMod->init();
       if (pmin && pmin-1 > m_pEratMod->GetModVal())
          m_pEratMod->skipto(pmin);
-      p = m_pEratMod->next();
+
       if (m_bDualModFactor)
       {
          m_pEratMod2->init();
@@ -530,7 +510,7 @@ BailOut:;
       bool bResultValid;
       bResultValid=false;
 
-      uint32 Cnt = 0;
+      uint32_t Cnt = 0;
       while(bRunHelper && Cnt < pHelperArray->Count() && !g_bExitNow)
       {
          // hmm, there is no screen output in this loop, should there be???
@@ -542,7 +522,7 @@ BailOut:;
 
          if(m_pffN && (I==0))
          {
-            uint32 pc=ExactPower(Q,pp);
+            uint32_t pc=ExactPower(Q,pp);
             if(pc!=0)
             {
                m_pffN->AddFactor(new FactorNode(pp,pc));
@@ -558,7 +538,7 @@ BailOut:;
          if(m_pffNminus1 && (I==1))             // divides N-1
          {
             bUsed = true;
-            uint32 pc=ExactPower(R,pp);
+            uint32_t pc=ExactPower(R,pp);
             if(pc!=0)
             {
                m_pffNminus1->AddFactor(new FactorNode(pp,pc));
@@ -569,7 +549,7 @@ BailOut:;
          if(m_pffNplus1 && (I==(*pResult)-1))
          {
             bUsed = true;
-            uint32 pc=ExactPower(S,pp);
+            uint32_t pc=ExactPower(S,pp);
             if(pc!=0)
             {
                m_pffNplus1->AddFactor(new FactorNode(pp,pc));
@@ -594,27 +574,21 @@ BailOut:;
    }
 
    if(bFactorAtAll && ((m_pffN)||(m_pffNminus1)||(m_pffNplus1)) )
-      PFPrintf("trial factoring to " ULL_FORMAT "\n",pmax);
+      PFPrintf("trial factoring to %" PRIu64"\n", pmax);
 
    return PFBoolean::b_true;
 }
 
 void F_Factor::OnPrompt()
 {
-// provided estimate primes is an overestimate, this will work
-
-   double StepsVal = estimatePrimes((double)(int64)p,(double)(int64)pmax) / 2;
-   m_dwStepsTotal =  (DWORD)(StepsVal/m_nModFactor + 1);
-   m_dwStepsTotal+=m_dwStepsDone;
-
    // Update the screen if it has been a while
    if (g_nIterationCnt && Timer.GetSecs() > 5)
    {
       char Buf[256];
       if (*g_cpTestString)
-         sprintf(Buf,"F: %.50s %lu/%lu\r",g_cpTestString, m_dwStepsDone,m_dwStepsTotal);
+         sprintf(Buf,"F: %.50s %lu/%lu (trial factor to %" PRIu64")\r",g_cpTestString, m_dwStepsDone,m_dwStepsTotal,pmax);
       else
-         sprintf(Buf,"F: %lu/%lu\r",m_dwStepsDone,m_dwStepsTotal);
+         sprintf(Buf,"F: %lu/%lu (trial factor to %" PRIu64")\r",m_dwStepsDone,m_dwStepsTotal,pmax);
       int thisLineLen = (int) strlen(Buf);
       if (lastLineLen > thisLineLen)
          // When mixing stdio, stderr and redirection with a \r stderr output,
@@ -631,130 +605,88 @@ void F_Factor::OnPrompt()
 
 PFBoolean F_Factor::Iterate()
 {
-   if (p>pmax)
-   {
-      return(PFBoolean::b_true);       // end the test
+   uint64_t p1, p2;
+
+   if (!m_bModFactor) {
+      p1 = psIterator.next_prime();
+      p2 = psIterator.next_prime();
    }
-   uint64 p2;
-   if (!m_bModFactor)
-      p2 = primeserver->NextPrime();
    else
    {
+      p1 = m_pEratMod->next();
+
       if (m_bDualModFactor)
          p2=m_pEratMod2->next();
       else
          p2=m_pEratMod->next();
    }
 
-   // This is the ONLY 2^31 code left.
-   uint64  li1, li2;
+   maxpTested = p2;
 
-   FDEBUG(p,p2);
-   if (p <= INT_MAX && p2 <= INT_MAX)
-   {
-       int  i1,i2;
-      // Note that if the FP stack is not PERFECTLY clear before calling this function, then
-      // there it will have problems and not work right (this was found inside of APSieve).
-      // I think this bug may ALSO be in pfgw in some instances during factoring.
+   uint64_t  li1, li2;
 
-      // Note that STAT=120 and TAGS=FFFF should be seen in the VC registers debug window.
-      pN->m_mod2((int)p,(int)p2,&i1,&i2);
-      if (i1<0) i1+=(int)p;
-      if (i2<0) i2+=(int)p2;
-      li1=i1;
-      li2=i2;
-   }
-   else
-   {
-      pN->m_mod2(p, p2, &li1, &li2);
-   }
+   pN->m_mod2(p1, p2, &li1, &li2);
 
-   if(m_pffN && (li1==0))
+   if (checkForFactor(p1, li1))
+      return(PFBoolean::b_true);
+
+   if (checkForFactor(p2, li2))
+      return(PFBoolean::b_true);
+
+   if (p1 > pmax)
+      return(PFBoolean::b_true);       // end the test
+
+   return(PFBoolean::b_false);            // and its not quitting time yet
+}
+
+bool F_Factor::checkForFactor(uint64_t p, uint64_t rem) {
+   if (m_pffN && (rem == 0))
    {
       Integer P(p);
 
       // here is an "already" written version of the ExactPower function.  I have not yet had time
       // yet to see if it is faster or not. but it does give correct results.
-      //int pc=mpz_remove(*(Q.gmp()), *(Q.gmp()),*(P.gmp()));
-      int pc=ExactPower(Q,P);
-      if(pc!=0)
+
+      int pc = ExactPower(Q, P);
+      if (pc != 0)
       {
-         m_pffN->AddFactor(new FactorNode(p,pc));
-         if(!bDeep)
-         {
-            return(PFBoolean::b_true);
-         }
+         m_pffN->AddFactor(new FactorNode(p, pc));
+
+         if (!bDeep)
+            return true;
+
          pmaxadjust(&Q);
       }
    }
    else
    {
-      if(m_pffNminus1 && (li1==1))              // divides N-1
+      if (m_pffNminus1 && (rem == 1))              // divides N-1
       {
          Integer P(p);
-         uint32 pc=ExactPower(R,P);
-         if(pc!=0)
+
+         uint32_t pc = ExactPower(R, P);
+
+         if (pc != 0)
          {
-            m_pffNminus1->AddFactor(new FactorNode(p,pc));
+            m_pffNminus1->AddFactor(new FactorNode(p, pc));
             pmaxadjust(&R);
          }
       }
-      if(m_pffNplus1 && (li1==p-1))
+      if (m_pffNplus1 && (rem == p - 1))
       {
          Integer P(p);
-         uint32 pc=ExactPower(S,P);
-         if(pc!=0)
+
+         uint32_t pc = ExactPower(S, P);
+
+         if (pc != 0)
          {
-            m_pffNplus1->AddFactor(new FactorNode(p,pc));
+            m_pffNplus1->AddFactor(new FactorNode(p, pc));
             pmaxadjust(&S);
          }
       }
    }
 
-   if(m_pffN && (li2==0))
-   {
-      Integer P(p2);
-      uint32 pc=ExactPower(Q,P);
-      if(pc!=0)
-      {
-         m_pffN->AddFactor(new FactorNode(p2,pc));
-         if(!bDeep)
-         {
-            return(PFBoolean::b_true);
-         }
-         pmaxadjust(&Q);
-      }
-   }
-   else
-   {
-      if(m_pffNminus1 && (li2==1))              // divides N-1
-      {
-         Integer P(p2);
-         uint32 pc=ExactPower(R,P);
-         if(pc!=0)
-         {
-            m_pffNminus1->AddFactor(new FactorNode(p2,pc));
-            pmaxadjust(&R);
-         }
-      }
-      if(m_pffNplus1 && (li2==p2-1))
-      {
-         Integer P(p2);
-         uint32 pc=ExactPower(S,P);
-         if(pc!=0)
-         {
-            m_pffNplus1->AddFactor(new FactorNode(p2,pc));
-            pmaxadjust(&S);
-         }
-      }
-   }
-
-   // ready for the next iteration
-   if (!m_bModFactor)
-      p=primeserver->NextPrime();
-   else
-      p=m_pEratMod->next();
-   return(PFBoolean::b_false);            // and its not quitting time yet
+   return false;
 }
 
 void F_Factor::checkBiggest(PFFactorizationSymbol *pF,Integer *pTarget)
@@ -784,11 +716,11 @@ void F_Factor::pmaxadjust(Integer *PP)
    {
       // yes we are going too far
       Integer PMAX=squareroot(*pBiggest);
-      //PMAX.m_mod(uint64(1)<<48, &pmax);
-      PMAX.m_mod(uint64(1)<<62, &pmax);
+      //PMAX.m_mod(uint64_t(1)<<48, &pmax);
+      PMAX.m_mod(uint64_t(1)<<62, &pmax);
 #if !defined (NDEBUG) && (0)
       char i64Buf[40];
-      PFPrintfStderr("Phil - pmax="ULL_FORMAT" (5)\n", pmax);
+      PFPrintfStderr("Phil - pmax=%" PRIu64" (5)\n", pmax);
 #endif
       P1=pmax;
       P1*=P1;
@@ -802,13 +734,10 @@ PFBoolean F_Factor::OnCleanup(PFSymbolTable * /*pContext*/)
 
 PFBoolean F_Factor::OnCompleted(PFSymbolTable *pContext)
 {
-   pContext->AddSymbol(new PFIntegerSymbol("_factoredto",new Integer(p)));
-   P1=p;
-   P1*=P1;
+   pContext->AddSymbol(new PFIntegerSymbol("_factoredto",new Integer(maxpTested)));
+   P1 = maxpTested;
+   P1 *= P1;
 
-   // Fixed a BIG memory leak.  the destory for F_Factor is only called on program exit.  I was using the
-   // destructor to clean up a EratMod object.  This destruction needs to be done after each factor trial, and
-   // not only one time at the end of program  run.
    delete m_pEratMod;
    m_pEratMod = NULL;
 

@@ -20,10 +20,10 @@ class PFABC2File : public PFABCFile
 		char **m_pSet[26];
 		int m_nSetNum[26];
 		int m_nFirstPrime;  // The number of the first variable using primes.
-		double array[26];
-		double min[26];  //The bottom of the range for each variable
-		double max[26];  //The top of the range for each variable
-		double step[26]; //The step length for each variable
+		int64_t  array[26];
+		int64_t  min[26];  //The bottom of the range for each variable
+		int64_t  max[26];  //The top of the range for each variable
+		int64_t  step[26]; //The step length for each variable
 
 	private:
 };

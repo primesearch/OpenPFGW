@@ -897,7 +897,7 @@ PFBoolean T_Morrison::CallFunction(PFSymbolTable *pContext)
 
          // an unusual curio. For the N+1 test the discriminant _D and a non-residue
          // _B+sqrt(D) get set
-         uint32 d=pSampler->ask(*pN);
+         uint32_t d=pSampler->ask(*pN);
          do
          {
             d=pSampler->askagain();
@@ -1374,7 +1374,7 @@ PFBoolean T_Combined::CallFunction(PFSymbolTable *pContext)
 
             // an unusual curio. For the N+1 test the discriminant _D and a non-residue
             // _B+sqrt(D) get set
-            uint32 d=pSampler->ask(*pN);
+            uint32_t d=pSampler->ask(*pN);
             do
             {
                d=pSampler->askagain();

@@ -25,8 +25,8 @@ class TreeFactorize;
 
 struct FoundFactor
 {
-	uint64 Factor;
-	uint32 exponent;
+	uint64_t Factor;
+	uint32_t exponent;
 };
 
 class NodeFactorize
@@ -42,7 +42,7 @@ class NodeFactorize
 		void LoadPrimesIntoTree();
 		void LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2);
 		void ComputeTreeResidues(mpz_t Candi);
-		void FillFactorFoundTable(unsigned which, bool bDeep);
+		void FillFactorFoundTable(uint64_t which, bool bDeep);
 
 		mpz_t m_mpzData;
 		mpz_t m_mpzResidue;
@@ -77,15 +77,15 @@ class TreeFactorize : public NodeFactorize
 		// something "changes".  Rebuilding is memory "clean". A single construction
 		// of a TreeFactorize can be used over and over again, without mem loss.
 		// Also multiple factor tree's can be working at any given time.
-		bool BuildTree(mpz_t Candi, int64 MaxPR, const char *Tree_Group=NULL);
+		bool BuildTree(mpz_t Candi, int64_t MaxPR, const char *Tree_Group=NULL);
 
 		// Call this to load factor primes into the tree (using primegen). 
 		// Returns the "ending" prime.  NOTE that StartingPrime is NOT set
 		// The caller must initialize the primegen before starting the factoring,
 		// but after that, it just "works"
-		uint64 LoadPrimesIntoTree();
+		uint64_t LoadPrimesIntoTree();
 		// This function used for "modular" sieve
-		uint64 LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2);
+		uint64_t LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2);
 
 		// This will compute the full set of "residues" for the whole tree
 		// If also sets m_bFound false, and clears the FoundFactor array.
@@ -103,7 +103,7 @@ class TreeFactorize : public NodeFactorize
 		unsigned GetNumLeaves() { return m_nLeaves; }
 		bool HasGroupChanged() { return m_bNewTreeShape; }
 
-		uint64 MaxPrimeInTree() { return m_nCurPr; }
+		uint64_t MaxPrimeInTree() { return m_nCurPr; }
 
 		void ResetToNoFactors() { m_nNumFoundFactors = 0; }
 
@@ -119,7 +119,7 @@ class TreeFactorize : public NodeFactorize
 
 		void AddFactor(const FoundFactor *f);
 
-		uint64 m_nCurPr;
+		uint64_t m_nCurPr;
 		double m_dPrBits;
 
 		unsigned m_nNodes;

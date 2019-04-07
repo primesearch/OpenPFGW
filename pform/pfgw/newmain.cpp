@@ -18,8 +18,6 @@
 
 extern unsigned long clocks_per_sec;
 
-PrimeServer *primeserver;
-
 #if defined (_MSC_VER)
 int newmain(int argc, char *argv[])
 #else
@@ -84,9 +82,7 @@ int main(int argc, char *argv[])
 #endif
 
    memAlloc();
-
-   primeserver = new PrimeServer();
-
+   
    // Setup the global ini object to the PFGW.INI file.  NOTE that any program written which will be
    // calling pfgw_main() will need to open the "correct" ini file.  PFGW.EXE opens PFGW.ini.  WinPFGW.exe
    // may open something different and foobars_speed_siever.exe may open up something altogether different.
@@ -101,8 +97,6 @@ int main(int argc, char *argv[])
 
    delete pOutputObj;
    delete g_pIni;
-
-   delete primeserver;
 
    memFree();
 

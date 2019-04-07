@@ -1,12 +1,12 @@
-#include "pfiopch.h"
+#include <stdio.h>
 #include <string.h>
-#include "stdtypes.h"
+#include "pfiopch.h"
 #include "pfprzfile.h"
 
 extern bool g_bVerbose;
 extern bool g_bTerseOutput;
 
-extern bool DeCompress_bits_From_PrZ_setup(uint32 BitLevel, uint32 _EscapeLevel, uint64 _OffsetK, uint32 _Base, uint32 _nvalsleft, char *cpp, bool _bSkipEvens, bool _bNewPGenFile);
+extern bool DeCompress_bits_From_PrZ_setup(uint32_t BitLevel, uint32_t _EscapeLevel, uint64_t _OffsetK, uint32_t _Base, uint32_t _nvalsleft, char *cpp, bool _bSkipEvens, bool _bNewPGenFile);
 extern bool DeCompress_bits_From_PrZ(FILE *fpIn, char *cpp, bool bIgnoreOutput);
 
 
@@ -68,18 +68,18 @@ void PFPrZFile::LoadFirstLine()
    PrZ_File_Header PrZHead;
    fread(&PrZHead, 1, sizeof(PrZHead), m_fpInputFile);
 
-   PrZ_Section_Header_Base *pFileHead;
+   PrZ_Section_Header_Base *ipFileHead;
    if (PrZHead.PrZ_IsFermFactABCD)
    {
       if (!g_bTerseOutput)
          PFPrintfLog("Recognized ABCZ (Fermfact) Sieve file: \n");
-      pFileHead = new PrZ_FermFact_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
+      ipFileHead = new PrZ_FermFact_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
    }
    else if (PrZHead.PrZ_IsAPSieveABCD)
    {
       if (!g_bTerseOutput)
          PFPrintfLog("Recognized ABCZ (APSieve) Sieve file: \n");
-      pFileHead = new PrZ_APSieve_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
+      ipFileHead = new PrZ_APSieve_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
    }
    else if (PrZHead.PrZ_IsNewPGen)
    {
@@ -91,17 +91,17 @@ void PFPrZFile::LoadFirstLine()
    {
       if (!g_bTerseOutput)
          PFPrintfLog("Recognized ABCZ (Generic ABCD) Sieve file: \n");
-      pFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
+      ipFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
    }
 
-   uint64 xx;
-   if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
+   uint64_t xx;
+   if (!ipFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
    {
       m_MaxNum = LLONG_MAX;
-      m_MinNum = pFileHead->KOffset();
+      m_MinNum = ipFileHead->KOffset();
    }
 
-   sprintf(m_Line1, "%s", pFileHead->PrZ_GetFirstLine());
+   sprintf(m_Line1, "%s", ipFileHead->PrZ_GetFirstLine());
    CutOutFirstLine();
 
    // do count this "first" line, we have to "reset" to line 0 numbering.
@@ -115,8 +115,8 @@ void PFPrZFile::LoadFirstLine()
    m_nCurrentLineNum = 1;
 
    char *cpp = new char[ABCLINELEN];
-   DeCompress_bits_From_PrZ_setup(PrZHead.PrZ_Bits+3, PrZHead.Prz_ESCs, pFileHead->KOffset(), pFileHead->getPrZ_Base(), (uint32)prz_nvalsleft, cpp, PrZHead.PrZ_SkipEvens, PrZHead.PrZ_IsNewPGen);
-   delete pFileHead;
+   DeCompress_bits_From_PrZ_setup(PrZHead.PrZ_Bits+3, PrZHead.Prz_ESCs, ipFileHead->KOffset(), ipFileHead->getPrZ_Base(), (uint32_t)prz_nvalsleft, cpp, PrZHead.PrZ_SkipEvens, PrZHead.PrZ_IsNewPGen);
+   delete ipFileHead;
    delete [] cpp;
 }
 
@@ -161,33 +161,33 @@ int PFPrZFile::SeekToLine(int LineNumber)
    if (m_pIni)
       m_pIni->SetFileProcessing(true);
    m_bEOF = false;
-   PrZ_Section_Header_Base *pFileHead=0;
+   PrZ_Section_Header_Base *ipFileHead=0;
    try
    {
       PrZ_File_Header PrZHead;
       fread(&PrZHead, 1, sizeof(PrZHead), m_fpInputFile);
       if (PrZHead.PrZ_IsFermFactABCD)
-         pFileHead = new PrZ_FermFact_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
+         ipFileHead = new PrZ_FermFact_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
       else if (PrZHead.PrZ_IsAPSieveABCD)
-         pFileHead = new PrZ_APSieve_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
+         ipFileHead = new PrZ_APSieve_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
       else if (PrZHead.PrZ_IsNewPGen)
          throw "Error, wrong constructor was called!\n";
       else
-         pFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
-      uint64 xx;
-      if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
+         ipFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
+      uint64_t xx;
+      if (!ipFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
       {
          m_MaxNum = LLONG_MAX;
-         m_MinNum = pFileHead->KOffset();
+         m_MinNum = ipFileHead->KOffset();
       }
-      sprintf(m_Line1, "%s", pFileHead->PrZ_GetFirstLine());
+      sprintf(m_Line1, "%s", ipFileHead->PrZ_GetFirstLine());
       CutOutFirstLine();
       m_nCurrentLineNum = 0;
       m_nCurrentPhysicalLineNum = 0;
       PFABCFile::ProcessFirstLine(m_Line1);
       
       char *cpp = new char[ABCLINELEN];
-      DeCompress_bits_From_PrZ_setup(PrZHead.PrZ_Bits+3, PrZHead.Prz_ESCs, pFileHead->KOffset(), pFileHead->getPrZ_Base(), (uint32)prz_nvalsleft, cpp, PrZHead.PrZ_SkipEvens, PrZHead.PrZ_IsNewPGen);
+      DeCompress_bits_From_PrZ_setup(PrZHead.PrZ_Bits+3, PrZHead.Prz_ESCs, ipFileHead->KOffset(), ipFileHead->getPrZ_Base(), (uint32_t)prz_nvalsleft, cpp, PrZHead.PrZ_SkipEvens, PrZHead.PrZ_IsNewPGen);
       delete [] cpp;
    }
    catch(char *s)
@@ -199,7 +199,7 @@ int PFPrZFile::SeekToLine(int LineNumber)
       }
       m_bEOF = true;
       m_bIgnoreOutput = false;
-      delete pFileHead;
+      delete ipFileHead;
       return e_eof;
    }
 #if defined (_DEBUG)
@@ -219,7 +219,7 @@ int PFPrZFile::SeekToLine(int LineNumber)
       m_pIni->SetFileLineNum(m_nCurrentLineNum);
 
    m_bIgnoreOutput = false;
-   delete pFileHead;
+   delete ipFileHead;
    return e_ok;
 }
 
@@ -252,7 +252,7 @@ void PFPrZ_newpgen_File::LoadFirstLine()
    else
       throw "Error, wrong constructor was called!\n";
 
-   uint64 xx;
+   uint64_t xx;
    if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
    {
       m_MaxNum = LLONG_MAX;
@@ -271,7 +271,7 @@ void PFPrZ_newpgen_File::LoadFirstLine()
    // don't count this "first" line, we have to "reset" to line 0 numbering.
    m_nCurrentLineNum = 1;
 
-   DeCompress_bits_From_PrZ_setup(PrZHead.PrZ_Bits+3, PrZHead.Prz_ESCs, pFileHead->KOffset(), pFileHead->getPrZ_Base(), (uint32)prz_nvalsleft, m_NPGLookingLine, PrZHead.PrZ_SkipEvens, PrZHead.PrZ_IsNewPGen);
+   DeCompress_bits_From_PrZ_setup(PrZHead.PrZ_Bits+3, PrZHead.Prz_ESCs, pFileHead->KOffset(), pFileHead->getPrZ_Base(), (uint32_t)prz_nvalsleft, m_NPGLookingLine, PrZHead.PrZ_SkipEvens, PrZHead.PrZ_IsNewPGen);
    delete pFileHead;
 }
 
@@ -326,7 +326,7 @@ int PFPrZ_newpgen_File::SeekToLine(int LineNumber)
          throw "Error, wrong constructor was called!\n";
       else
          pFileHead = new PrZ_Generic_Section_Header(m_fpInputFile, PrZHead.PrZ_nvalsleft);
-      uint64 xx;
+      uint64_t xx;
       if (!pFileHead->GetValues(m_MinNum, m_MaxNum, prz_nvalsleft, xx))
       {
          m_MaxNum = LLONG_MAX;

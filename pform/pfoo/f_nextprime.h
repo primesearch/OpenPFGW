@@ -2,7 +2,6 @@
 #define F_NEXTPRIME_H
 
 #include "pffunctionsymbol.h"
-#include "primeserver.h"
 
 class F_NextPrime : public PFFunctionSymbol
 {
@@ -17,6 +16,5 @@ public:
 	PFBoolean CallFunction(PFSymbolTable *pContext);
 
 private:
-   PrimeServer    *m_pPrimeServer;
 };
 #endif

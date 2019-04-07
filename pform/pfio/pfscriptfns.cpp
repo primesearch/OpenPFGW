@@ -1,7 +1,7 @@
-
-#include "pfiopch.h"
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "pfiopch.h"
 #include "pfscriptfile.h"
 #if defined (_MSC_VER)
 #include <process.h>
@@ -18,7 +18,7 @@ Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
 #endif
 
 // these are used by SCRIPTFile's since they do not have access to the "global" 
-uint64 g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
+uint64_t g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
 
 char *PFScriptFile::FindVarName(char *varname)
 {
@@ -27,8 +27,8 @@ char *PFScriptFile::FindVarName(char *varname)
       PFPrintfStderr("Script-Error: Invalid variable name on line %d\n",m_nInstrPtr+1);
       return NULL;
    }
-   uint32 max = (uint32) strlen(varname);
-   for (uint32 i=1;i<max;i++) {
+   uint32_t max = (uint32_t) strlen(varname);
+   for (uint32_t i=1;i<max;i++) {
       if (!isalnum(varname[i]) && varname[i] != '_')
          varname[i]=0;
    }
@@ -46,7 +46,7 @@ bool PFScriptFile::doCommand(char *cmd,char *args)
 {
    bool end=false;
    int  i;
-   uint32 oldIterCnt = g_nIterationCnt;
+   uint32_t oldIterCnt = g_nIterationCnt;
 
    g_nIterationCnt = 0;
 
@@ -735,12 +735,12 @@ void PFScriptFile::GWPowMod(Integer *result, Integer b, Integer e, Integer n, ch
       if (s < 30 || i < 30)
       {
          gwsetnormroutine(&gwdata, 0, 1, 0);
-         gwsquare_carefully(gwX);
+         gwsquare2_carefully(gwX);
       }
       else
       {
          gwsetnormroutine(&gwdata, 0, 0, 0);
-         gwsquare(gwX);
+         gwsquare2(gwX);
       }
 
       i++;

@@ -2,7 +2,6 @@
 #define F_TRIVIAL_H
 
 #include "pffunctionsymbol.h"
-#include "primeserver.h"
 
 class F_Trivial : public PFFunctionSymbol
 {
@@ -17,7 +16,6 @@ public:
 	PFBoolean CallFunction(PFSymbolTable *pContext);
 
 private:
-   PrimeServer *m_pPrimeServer;
 };
 
 // The values in the _result for F_Trivial are enumerated below

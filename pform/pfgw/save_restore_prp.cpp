@@ -25,7 +25,7 @@ void CreateRestoreName(Integer *N, char RestoreName[13])
    // Restore Name is lower 40 bits of the number (in base-36).  This fits perfectly into 8 of an 8.3 file name.
    // The extension will become .frp  for PfgwSaveFile, but reversed.
 
-   uint32 uRes = (*N) % 2147483629;  // 2^31-19 which is prime.  This give a pretty good 2^31 bit mix of file names
+   uint32_t uRes = (*N) % 2147483629;  // 2^31-19 which is prime.  This give a pretty good 2^31 bit mix of file names
    uRes += (1u << 31);  // make sure that number is larger than 36^6 so that we get 7 characters
 
    // Now convert to a "string" in base 36
@@ -48,21 +48,21 @@ void CreateRestoreName(Integer *N, char RestoreName[13])
 bool CrcInit = false;
 #define CRC_32 0xedb88320L    // CRC-32 polynomial
 #define TABSIZE 256
-uint32 crctab[TABSIZE];
-inline uint32 updcrc32 (uint32 crc_val, unsigned char c)
+uint32_t crctab[TABSIZE];
+inline uint32_t updcrc32 (uint32_t crc_val, unsigned char c)
 {
    return crctab[(int)((crc_val)^(c))&0xff] ^ ((crc_val) >> 8);
 }
-inline void  updatecrcbuf (uint32 &crc_val, void *buf, int size)
+inline void  updatecrcbuf (uint32_t &crc_val, void *buf, int size)
 {
    unsigned char *bp = (unsigned char*)buf;
    for (int i = 0; i < size; i++)
       crc_val = updcrc32 (crc_val, bp[i]);
 }
 
-static uint32 onecrc (int item)               // calculates CRC of one item
+static uint32_t onecrc (int item)               // calculates CRC of one item
 {
-    uint32 accum = 0;
+    uint32_t accum = 0;
     item <<= 1;
     for (int i = 8; i > 0; i--)
     {
@@ -81,7 +81,7 @@ static void mkcrctab (void)                 // Generates CRC table, calling onec
         crctab[i] = onecrc (i);
 }
 
-void initCrc(uint32 &crc_val)
+void initCrc(uint32_t &crc_val)
 {
    if (!CrcInit)
    {
@@ -91,15 +91,15 @@ void initCrc(uint32 &crc_val)
    crc_val = 0xffffffff;
 }
 
-bool RestoreState(ePRPType ePRP, char *RestoreName, uint32 *iDone, GWInteger *gwX, uint32 _iBase, eContextType eCType)
+bool RestoreState(ePRPType ePRP, char *RestoreName, uint32_t *iDone, GWInteger *gwX, uint32_t _iBase, eContextType eCType)
 {
    bool Ret = false;
-   uint32 t_iDone;
-   uint32 n;
+   uint32_t t_iDone;
+   uint32_t n;
    unsigned char c;
    unsigned char Buffer[256], *cp=Buffer;
    Integer N;
-   uint32   bytelen;
+   uint32_t   bytelen;
 
    FILE *in = fopen(RestoreName, "rb");
    if (!in)
@@ -111,7 +111,7 @@ bool RestoreState(ePRPType ePRP, char *RestoreName, uint32 *iDone, GWInteger *gw
 
    // Try to do a few things to distinguish what type of CPU wrote the file.
    fread(&c, 1, 1, in);
-   if (c != sizeof(uint32)) goto BailOut;
+   if (c != sizeof(uint32_t)) goto BailOut;
 
    // little endian or big endian marker.  Currently there is no code to handle conversion, and most likely
    // if this is run on a big endian, then the FFT will certainly be different, so it does not matter any way.
@@ -119,7 +119,7 @@ bool RestoreState(ePRPType ePRP, char *RestoreName, uint32 *iDone, GWInteger *gw
    if (n != 0x12345678) goto BailOut;
 
    // Read the the saved checksum
-   uint32 crc_val, crc_stored;
+   uint32_t crc_val, crc_stored;
    initCrc(crc_val);
    fread (&crc_stored, 1, sizeof(crc_stored), in);
 
@@ -133,19 +133,19 @@ bool RestoreState(ePRPType ePRP, char *RestoreName, uint32 *iDone, GWInteger *gw
    updatecrcbuf(crc_val, Buffer, n);
 
    // now read the file data
-   fread(Buffer, 1, 4 + 2*sizeof(uint32) +10*sizeof(uint32), in);
+   fread(Buffer, 1, 4 + 2*sizeof(uint32_t) +10*sizeof(uint32_t), in);
 
    if (*cp++ != ePRP) goto BailOut;
    if (*cp++ != eCType) goto BailOut;
    // skip the 2 reseved bytes
    cp+=2;
-   t_iDone = *(uint32*)cp;
+   t_iDone = *(uint32_t*)cp;
    cp += sizeof(t_iDone);
-   if (*(uint32*)cp != _iBase) goto BailOut; // different base is a CRITICAL error
+   if (*(uint32_t*)cp != _iBase) goto BailOut; // different base is a CRITICAL error
    cp += sizeof(_iBase);
 
    // Skip any reserved space.
-   cp += 10*sizeof(uint32);
+   cp += 10*sizeof(uint32_t);
 
    updatecrcbuf(crc_val, Buffer, (int) (cp-Buffer));
 
@@ -174,7 +174,7 @@ BailOut:;
    return Ret;
 }
 
-bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, uint32 _iBase, eContextType eCType, Integer * /*N*/, bool bForce)
+bool SaveState(ePRPType ePRP, char *RestoreName, uint32_t iDone, GWInteger *gwX, uint32_t _iBase, eContextType eCType, Integer * /*N*/, bool bForce)
 {
    if (clock() < NextSave && !bForce)
       return false;
@@ -182,7 +182,7 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, u
    // Set the NextSave time
    NextSave = clock() + SAVE_TIMEOUT_MINUTES * 60 * clocks_per_sec;
 
-   uint32 str_len;
+   uint32_t str_len;
    unsigned char Buffer[16388], *cp=Buffer;
    FILE *out = fopen(RestoreName, "wb");
    if (!out)
@@ -193,21 +193,21 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, u
 
    // Try to do a few things to distinguish what type of CPU wrote the file.
    unsigned char c;
-   c = sizeof(uint32);
+   c = sizeof(uint32_t);
    fwrite(&c, 1, 1, out);
    // little endian or big endian marker.  Currently there is no code to handle conversion, and most likely
    // if this is run on a big endian, then the FFT will certainly be different, so it does not matter any way.
-   uint32 n = 0x12345678;
+   uint32_t n = 0x12345678;
    fwrite(&n, 1, sizeof(n), out);
 
    // Store a placeholder for the checksum
-   uint32 crc_val;
+   uint32_t crc_val;
    initCrc(crc_val);
    long loc = ftell(out);
    fwrite (&crc_val, 1, sizeof(crc_val), out);
 
    // Write the length of the prime string, and the string.  The string will NOT be null terminated.
-   str_len = (uint32) strlen(g_cpTestString);
+   str_len = (uint32_t) strlen(g_cpTestString);
    fwrite (&str_len, 1, sizeof(str_len), out);
    if (str_len > 256)
       str_len = 256;
@@ -216,19 +216,19 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, u
    updatecrcbuf(crc_val, g_cpTestString, str_len);
 
    // now write the file data
-   *cp++ = (uint8)ePRP;
-   *cp++ = (uint8)eCType;
+   *cp++ = (uint8_t)ePRP;
+   *cp++ = (uint8_t)eCType;
    // 2 reserved bytes (re alignes us to 4 bytes again)
    *cp++ = 0;
    *cp++ = 0;
-   *(uint32*)cp = iDone;
+   *(uint32_t*)cp = iDone;
    cp += sizeof(iDone);
-   *(uint32*)cp = _iBase;
+   *(uint32_t*)cp = _iBase;
    cp += sizeof(_iBase);
 
    // Resserved space, 10 DWORDS
    memset(cp, 0, 4*10);
-   cp += sizeof(uint32)*10;
+   cp += sizeof(uint32_t)*10;
 
    updatecrcbuf(crc_val, Buffer, (int) (cp-Buffer));
    fwrite(Buffer, 1, cp-Buffer, out);
@@ -236,7 +236,7 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32 iDone, GWInteger *gwX, u
    // Now write out the GWInteger
 
    Integer N;
-   uint32   bytelen;
+   uint32_t   bytelen;
 
    N = *gwX;
    bytelen = N.gmp()->_mp_size * sizeof (mp_limb_t);

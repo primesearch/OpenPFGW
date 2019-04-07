@@ -1,6 +1,9 @@
-#include "pfiopch.h"
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <vector>
+#include <primesieve.hpp>
+#include "pfiopch.h"
 #include "pfabc2file.h"
 
 PFABC2File::PFABC2File(const char* FileName)
@@ -29,7 +32,7 @@ void PFABC2File::LoadFirstLine()
 {
    PFABCFile::LoadFirstLine();
 
-   int i,j,k,temp;
+   int  i,j,k,temp;
    char Letter[10];
    char *HoldSet[1000];
    char *tempPtr;
@@ -53,22 +56,22 @@ void PFABC2File::LoadFirstLine()
       {
          // NOTE min and max are "reversed" due to min being larger than max.  Also, step MUST be negative.
          m_eRangeType[i]=e_NormDown;
-         temp=sscanf(tempLine, "%1s: from %lf downto %lf step %lf", Letter, &min[i], &max[i], &step[i]);
+         temp=sscanf(tempLine, "%1s: from %llu downto %lld step %lld", Letter, &min[i], &max[i], &step[i]);
          if (temp==3)
-            step[i]=-1;
+            step[i] = -1L;
          if (temp < 3)
             temp = 0;
       }
       if (temp == 0)
       {
-         temp=sscanf(tempLine, "%1s: from %lf to %lf step %lf", Letter, &min[i], &max[i], &step[i]);
+         temp=sscanf(tempLine, "%1s: from %lld to %lld step %lld", Letter, &min[i], &max[i], &step[i]);
          m_eRangeType[i]=e_Norm;
          if (temp<4)
             step[i]=1;
       }
       if (temp<3)
       {
-         temp=sscanf(tempLine, "%1s: primes from %lf to %lf", Letter, &min[i], &max[i]);
+         temp=sscanf(tempLine, "%1s: primes from %lld to %lld", Letter, &min[i], &max[i]);
 
          if (temp<3)
          {
@@ -122,11 +125,9 @@ void PFABC2File::LoadFirstLine()
 
             if (m_nFirstPrime==-1)
                m_nFirstPrime=i;
+               
+            array[i] = primesieve::nth_prime(1, min[i]);
 
-            primeserver->SkipTo((uint64)min[i]-1);
-            uint64 p;
-            p = primeserver->NextPrime();
-            array[i]=(double)p;
             if (i==0 && array[i] > 3)
                array[i]--;
          }
@@ -141,7 +142,7 @@ void PFABC2File::LoadFirstLine()
       }
    }
    delete[] tempLine;
-   array[0]-=step[0];
+   array[0] -= step[0];
    if (m_eRangeType[0]==e_In) {
       m_nSetNum[0]=-1;
    }
@@ -171,31 +172,30 @@ SkipThisLine:;
       m_nCurrentPrimeCount=0;
       do
       {
-         again=false;
+         again = false;
          if (m_eRangeType[i]==e_Prime)
          {
-            primeserver->SkipTo((uint64)array[i]+1);
-            array[i]=(double) primeserver->NextPrime();
-            if (array[i]>max[i])
+            std::vector<uint64_t> vPrimes;
+            
+            array[i] = primesieve::nth_prime(1, array[i]+1);
+
+            if (array[i] > max[i])
             {
-               primeserver->SkipTo((uint64) min[i]);
-               array[i]=(double) primeserver->NextPrime();
+               array[i] = primesieve::nth_prime(1, (uint64_t) min[i]);
                i++;
-               again=true;
+               again = true;
             }
          }
          else if (m_eRangeType[i]==e_In)
          {
             if (m_nSetNum[i]==max[i])
             {
-               //array[i]=m_pSet[i][m_nSetNum[i]=0];
                strcpy(s_array[i],m_pSet[i][m_nSetNum[i]=0]);
                i++;
                again=true;
             }
             else
             {
-               //array[i]=m_pSet[i][++m_nSetNum[i]];
                strcpy(s_array[i],m_pSet[i][++m_nSetNum[i]]);
             }
          }
@@ -245,7 +245,7 @@ SkipThisLine:;
       {
          delete[] s_array[i]; // Fix a memory leak.
          s_array[i] = new char[40];
-         sprintf(s_array[i],"%.0f",array[i]);
+         sprintf(s_array[i],"%" PRId64"",array[i]);
       }
    }
 
@@ -264,10 +264,9 @@ SkipThisLine:;
 
 int PFABC2File::SeekToLine(int LineNumber)
 {
-   double entries[26];
-   int i,j;
+   int64_t entries[26];
+   int i;
    PFString sLine;
-// bool goFast=true;
 
    m_nCurrentLineNum=LineNumber;
    if (m_pIni) {
@@ -287,17 +286,8 @@ int PFABC2File::SeekToLine(int LineNumber)
       array[0]=-1;
    } else if (m_eRangeType[0]==e_Prime)
    {
-      uint64 p;
-      primeserver->SkipTo((uint64)min[0]);
-      j=0;
-      array[0]=-1;
-      p = primeserver->NextPrime();
-      while (p <= (uint64)max[0])
-      {
-         j++;
-         p = primeserver->NextPrime();
-      }
-      entries[0]=j;
+      array[0] = -1;
+      entries[0] = primesieve::count_primes(min[0], max[0]);
    }
 
    for (i=1;i<=m_nLastLetter;i++) {
@@ -311,17 +301,8 @@ int PFABC2File::SeekToLine(int LineNumber)
          entries[i]=max[i]+1;
          array[i]=0;
       } else if (m_eRangeType[i]==e_Prime) {
-         uint64 p;
-         primeserver->SkipTo(uint64(min[i]));
-         j=0;
          array[i]=0;
-         p = primeserver->NextPrime();
-         while (p <= (uint64)max[i])
-         {
-            j++;
-            p = primeserver->NextPrime();
-         }
-         entries[i]=j;
+         entries[i] = primesieve::count_primes(min[i], max[i]);
       }
       entries[i]*=entries[i-1];
    }
@@ -343,7 +324,7 @@ int PFABC2File::SeekToLine(int LineNumber)
          LineNumber=0;
       } else {
          array[i]+=step[i]*int(floor(LineNumber/entries[i-1]));
-         LineNumber%=uint64(entries[i-1]);
+         LineNumber%=uint64_t(entries[i-1]);
       }
       i--;
    }
@@ -354,17 +335,15 @@ int PFABC2File::SeekToLine(int LineNumber)
          strcpy(s_array[i],m_pSet[i][int(array[i])]);
       }
       else if (m_eRangeType[i]==e_Prime) {
-         uint64 p;
+         uint64_t p = 2;
 
-         for (j=0; j<array[i]; j++)
-            p = primeserver->ByIndex(j+1);
-         
-         p = primeserver->ByIndex(j+1);
+         if (array[i] > 0)
+            p = primesieve::nth_prime(array[i]);
 
          if (i == 0 && array[i] == -1)
-            array[i]=(double)(p-1);
+            array[i] = p-1;
          else
-            array[i]=(double)(p);
+            array[i] = p;
       }
    }
 

@@ -61,14 +61,15 @@ class PFNewPGenFile : public PFSimpleFile
 		int GetNextLine(PFString &sLine, Integer *i=0, bool *b=0, PFSymbolTable *psymRuntime=0);
 
 		// These virtual functions do something in this class
-		int GetKNB(uint64 &k, uint64 &n, unsigned &b);
+		int GetKNB(uint64_t &k, uint64_t &n, unsigned &b);
       void CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_bMessageStringIsValid=0, PFString *p_MessageString=0);
 
 	protected:
 		// This virtual function does something in this class.
 		void LoadFirstLine();
-		void ProcessFirstLine(char *FirstLine, uint64 k, uint64 n);
+		void ProcessFirstLine(char *FirstLine, uint64_t k, uint64_t n);
 		void Printf_WhoAmIsString() {PFOutput::EnableOneLineForceScreenOutput();PFPrintfStderr("%s\n", (const char*)(m_SigString));}
+      void Primorial(Integer *p, uint32_t pp);
 
 		// Possible "normal" formats.  NOTE that b^n+2k-1 changes the order of the k, b and n vars
 		//k*b^n+1
@@ -134,8 +135,8 @@ class PFNewPGenFile : public PFSimpleFile
 		//k#*2^n-1
 		static char PrimorialFormats[22][21];
 
-		uint64 m_k, m_n;	// current k, n, values.  (Note that SG, CC and others may have these values different than the number being generated).
-		uint64 m_base_n;	// read from the first line.  We check against this when building the Integer, to make sure that the current n value is "still" equal to this.
+		uint64_t m_k, m_n;	// current k, n, values.  (Note that SG, CC and others may have these values different than the number being generated).
+		uint64_t m_base_n;	// read from the first line.  We check against this when building the Integer, to make sure that the current n value is "still" equal to this.
 		bool m_bGoOnToNextMuli;
 		bool m_bPrimorial;
 		bool m_bLuckyPrime;		// has the "bitmap" of a BiTwin, but is not 2 twins.

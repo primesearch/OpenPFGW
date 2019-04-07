@@ -10,16 +10,16 @@ protected:
 	PFSymbolTable *m_pContext;
 	
 protected:
-	DWORD	m_dwStepGranularity;
-	DWORD m_dwStepsDone;
-	DWORD m_dwStepsTotal;
+	uint32_t	m_dwStepGranularity;
+   uint32_t m_dwStepsDone;
+   uint32_t m_dwStepsTotal;
 
 	clock_t m_tStartTime;
 	clock_t m_tLastTimePrompt;
 	clock_t m_tLastTimeSerialized;
 	
 	PFBoolean m_bStopOverride;
-	DWORD m_dwTotalSteps;
+   uint32_t m_dwTotalSteps;
 public:
     // overall result
     int testResult;

@@ -1,5 +1,6 @@
-#include "pfiopch.h"
+#include <stdio.h>
 #include <string.h>
+#include "pfiopch.h"
 #include "pfabcfile.h"
 
 #include "../pfoo/symboltypes.h"

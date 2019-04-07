@@ -72,7 +72,7 @@ void dispTiming(double f, int x)
    PFPrintfLog(fmt, buf);
 }
 
-double benchFactor(const char *expr, uint32 fmax, int rep, PFSymbolTable *pContext, double *len)
+double benchFactor(const char *expr, uint32_t fmax, int rep, PFSymbolTable *pContext, double *len)
 {
    PFSymbolTable *pTestContext=new PFSymbolTable(pContext);
 
@@ -89,7 +89,7 @@ double benchFactor(const char *expr, uint32 fmax, int rep, PFSymbolTable *pConte
 
    if (fmax) pTestContext->AddSymbol(new PFIntegerSymbol("_PMAX",new Integer(fmax)));
 
-   uint32 oldICount = g_nIterationCnt;
+   uint32_t oldICount = g_nIterationCnt;
    g_nIterationCnt=0;
 
 #if defined (NEW_TIMER)
@@ -131,7 +131,7 @@ bool getFFTInfo(const char *expr, PFSymbolTable *pContext, char *fftInfo)
    return true;
 }
 
-double benchPRP(const char *expr, uint32 rep, uint32 iterations, PFSymbolTable *pContext, double *len)
+double benchPRP(const char *expr, uint32_t rep, uint32_t iterations, PFSymbolTable *pContext, double *len)
 {
    PFSymbolTable *pTestContext=new PFSymbolTable(pContext);
 
@@ -146,7 +146,7 @@ double benchPRP(const char *expr, uint32 rep, uint32 iterations, PFSymbolTable *
    double totaltime=0;
    *len=numbits(*pResult);
 
-   for (uint32 dwP=0; dwP<rep; dwP++)
+   for (uint32_t dwP=0; dwP<rep; dwP++)
    {
       if (g_bExitNow) break;
 
@@ -182,7 +182,7 @@ double benchPRP(const char *expr, uint32 rep, uint32 iterations, PFSymbolTable *
 
 void benchmarkFactor(PFSymbolTable *pContext)
 {
-   uint32 i,k;
+   uint32_t i,k;
    double sum, total;
    double len;
 
@@ -241,13 +241,13 @@ void benchmarkFactor(PFSymbolTable *pContext)
    }
 }
 
-void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32 minF, int32 maxF, bool allFFT)
+void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32_t minF, int32_t maxF, bool allFFT)
 {
    char   last_fftlen[200], next_fftlen[200];
    double tpb, tpe, bits;
-   int32  f;
-   int32  dwPRPRepeat;
-   int32  dwPRPIterations;
+   int32_t  f;
+   int32_t  dwPRPRepeat;
+   int32_t  dwPRPIterations;
    
    PFPrintfLog("\nBenchmarking generic modular reduction for %s!\n", expression);
 
@@ -287,7 +287,7 @@ void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32 minF, int
 
          tpe = tpb * bits;
 
-         PFPrintfLog("%10ld   ", (int64) bits);
+         PFPrintfLog("%10ld   ", (int64_t) bits);
 
          dispTiming(tpb, 11);
          dispTiming(tpe, 12);
@@ -329,13 +329,13 @@ void benchmarkGeneric(PFSymbolTable *pContext, char *expression, int32 minF, int
    PFfflush(stdout);
 }
 
-void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int32 maxN, double k, uint32 b, int32 c, bool allFFT)
+void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32_t minN, int32_t maxN, double k, uint32_t b, int32_t c, bool allFFT)
 {
    char   last_fftlen[200], next_fftlen[200];
    double tpb, tpe, bits;
-   int32  n;
-   int32  dwPRPRepeat;
-   int32  dwPRPIterations;
+   int32_t  n;
+   int32_t  dwPRPRepeat;
+   int32_t  dwPRPIterations;
 
    PFPrintfLog("\nBenchmarking special modular reduction for %s!\n", expression);
 
@@ -353,7 +353,7 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int
    else if (n > 1000) n = n - (n % 1000);
    else if (n > 100) n = n - (n % 100);
 
-   gwmap_to_fft_info(&gwdata, k, b, 90, c);
+   gwmap_to_fftlen(k, b, 90, c);
 
    gwfft_description (&gwdata, last_fftlen);
 
@@ -361,7 +361,7 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int
    {
       if (g_bExitNow) break;
 
-      if (gwmap_to_fft_info(&gwdata, k, b, n, c) > 1) break;
+      if (gwmap_to_fftlen(k, b, n, c) == 0) break;
 
       gwfft_description (&gwdata, next_fftlen);
 
@@ -375,7 +375,7 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32 minN, int
 
          tpe = tpb * bits;
          
-         PFPrintfLog("%10ld   ", (int64) bits);
+         PFPrintfLog("%10ld   ", (int64_t) bits);
 
          dispTiming(tpb, 11);
          dispTiming(tpe, 12);
@@ -423,10 +423,10 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
    char *cPtr;
    int error_code;
    double  k;
-   uint32 b;
-   int32 c, d;
-   int32 minN = 100, maxN = 10000000;
-   int32 minF = 100, maxF = 1000000;
+   uint32_t b;
+   int32_t c, d;
+   int32_t minN = 100, maxN = 10000000;
+   int32_t minF = 100, maxF = 1000000;
    bool allFFT = false, haveGenericExp = false, haveSpecialExp = false;
    bool doGeneric = false, doSpecial  = false, doFactor = false;
  

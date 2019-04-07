@@ -1,8 +1,9 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_binomial.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 F_Binomial::F_Binomial()
    : PFFunctionSymbol("C")
@@ -73,12 +74,11 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
    // The cut off for this type of functionality would probably be $a > 1000000 and $a / $b > 1000
    // I know that C(2000000000,20) took a long time to create, but (2000000000*1999999999*...)/20! was built
    // almost instantly.
-   //
 
    long n = (*N & INT_MAX);
    long k = (*K & INT_MAX);
 
-    Integer *r = new Integer(1);
+   Integer *r = new Integer(1);
 
 // printf ("mpz_bin_uiui\n");
 // mpz_bin_uiui(*(r->gmp()), n, k);
@@ -87,7 +87,6 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
 
    Integer r1;
 
-   int32 Pr;
    // all primes p no greater than n
 
    // This lists what the "max" int is which can be raised to this power and still not overflow a 31 bit integer.
@@ -103,22 +102,33 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
         3,   3,   3,   3,   2,   2,   2,   2
    };
 
-   int32 p;
-   for(Pr = (int32) primeserver->NextPrime(),p=Pr; p <= n; Pr = (int32) primeserver->NextPrime(),p=Pr)
+   std::vector<int32_t> vPrimes;
+   std::vector<int32_t>::iterator it;
+   int32_t p;
+
+   vPrimes.clear();
+
+   primesieve::generate_primes(1, n, &vPrimes);
+   
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
    {
-      register long i1 = n, i2 = n - k, i3 = k;
-      int expo=0;
-      while(i1>=p)
+      int64_t i1 = n, i2 = n - k, i3 = k;
+      int32_t expo=0;
+
+      p = *it;
+      while (i1 >= p)
       {
-         i1/=p;
-         i2/=p;
-         i3/=p;
-         expo+=(i1-i2-i3);
+         i1 /= p;
+         i2 /= p;
+         i3 /= p;
+         expo += (int32_t) (i1-i2-i3);
       }
+
       if (expo)
       {
          if (expo == 1)
-            *r *= (int32)p;
+            *r *= (int32_t) p;
          else if (expo>31 || p>powertable[expo])
          {
             // p^expo would overflow a 31 bit int.  Use GMP to handle it.  This code is RARELY if ever called.
@@ -131,12 +141,14 @@ PFBoolean F_Binomial::CallFunction(PFSymbolTable *pContext)
          else
          {
             // This silly loop is actually a very fast way to perform the exponentiation for these numbers.
-            int32 _r1 = p;
+            int32_t _r1 = p;
             while (--expo)
                _r1 *= p;
             *r *= _r1;
          }
       }
+
+      it++;
    }
 
    pContext->AddSymbol(new PFIntegerSymbol("_result",r));

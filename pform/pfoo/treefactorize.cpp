@@ -1,11 +1,12 @@
-#include <math.h>
 #include "pfoopch.h"
+#include <math.h>
+#include <vector>
+#include <primesieve.hpp>
 #include "treefactorize.h"
 #include "../pflib/erat_mod.h"
-#include "primeserver.h"
 
 #ifndef _64BIT
-extern "C" int32 Imod2(uint32 * const a,const int32 n1,const int32 n2,const int32 len, int32 *p1,int32 *p2);
+extern "C" int32_t Imod2(uint32_t * const a,const int32_t n1,const int32_t n2,const int32_t len, int32_t *p1,int32_t *p2);
 #endif
 
 ///////////////////////////////////////////////////////////////
@@ -44,7 +45,7 @@ TreeFactorize::TreeFactorize(int MaxFoundFactors) : NodeFactorize()
 	m_nMaxFoundFactors = MaxFoundFactors;
 	m_ffFoundFactors = new FoundFactor[m_nMaxFoundFactors];
 
-	// In the "real" PFGW, we probably also want some uint64 FoundFactor data arrays,
+	// In the "real" PFGW, we probably also want some uint64_t FoundFactor data arrays,
 	// and probably also some Integer FoundFactor data arrays.  We would certainly
 	// need a lot less of these arrays.
 
@@ -63,7 +64,7 @@ TreeFactorize::~TreeFactorize()
 
 // Call build tree only one time (or whenever the size of the number
 // to factor significantly changes.
-bool TreeFactorize::BuildTree(mpz_t Candi, int64 MaxPr, const char *UserDefinedTree)
+bool TreeFactorize::BuildTree(mpz_t Candi, int64_t MaxPr, const char *UserDefinedTree)
 {
 	mpz_set(m_mpzCandi, Candi);
 	m_dPrBits = log((double)MaxPr)/log(2.0);
@@ -71,7 +72,7 @@ bool TreeFactorize::BuildTree(mpz_t Candi, int64 MaxPr, const char *UserDefinedT
 	m_nNumFoundFactors = 0;
 
 	m_bNewTreeShape = false;  // assume the tree maintains the same "shape"
-	unsigned int CandiBits = (uint32) mpz_sizeinbase(Candi, 2);
+	unsigned int CandiBits = (uint32_t) mpz_sizeinbase(Candi, 2);
 	if ( (m_nCandiBitsInitTree!=0) && (abs((int) (CandiBits-m_nCandiBitsInitTree)) < 1000))
 		return false;
 
@@ -216,13 +217,13 @@ bool TreeFactorize::BuildTree(mpz_t Candi, int64 MaxPr, const char *UserDefinedT
 // first prime used, but the prime just after StartingPrime is.  So
 // to "really" start the whole process, start using 0, and then call
 // LoadPrimesIntoTree() with the last return value + 1.
-uint64 TreeFactorize::LoadPrimesIntoTree()
+uint64_t TreeFactorize::LoadPrimesIntoTree()
 {
 	NodeFactorize::LoadPrimesIntoTree();
 	return m_nCurPr;
 }
 
-uint64 TreeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
+uint64_t TreeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
 {
 	NodeFactorize::LoadPrimesIntoTree(pEratMod, pEratMod2);
 	return m_nCurPr;
@@ -361,7 +362,7 @@ void NodeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
 		return;
 	}
 	// We are a leaf, so load up our factors, into the m_mpzData structure.
-	uint32 i;
+	uint32_t i;
 	m_nNumUsedFactors = m_nMaxLeafFactors;
 	if (!pEratMod2)
 	{
@@ -388,9 +389,9 @@ void NodeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
 	}
 	if (m_ffFactors[m_nMaxLeafFactors-1].Factor < 0xFFFFFFFF)
 	{
-		mpz_set_ui(m_mpzData, (uint32)(m_ffFactors[0].Factor));
+		mpz_set_ui(m_mpzData, (uint32_t)(m_ffFactors[0].Factor));
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
-			mpz_mul_ui(m_mpzData, m_mpzData, (uint32)(m_ffFactors[i].Factor));
+			mpz_mul_ui(m_mpzData, m_mpzData, (uint32_t)(m_ffFactors[i].Factor));
 	}
 #if defined (_MSC_VER)
 	else if (m_ffFactors[0].Factor > 0xFFFFFFFF)
@@ -399,29 +400,29 @@ void NodeFactorize::LoadPrimesIntoTree(Erat_Mod *pEratMod, Erat_Mod *pEratMod2)
 		// any GMP other than the VC version.  VC I KNOW works correctly.  However, I 
 		// imagine that this "non-portable" method would work for ALL platforms PFGW
 		// targets.
-		*((uint64*)(&(m_mpzData->_mp_d[0]))) = m_ffFactors[0].Factor;
+		*((uint64_t*)(&(m_mpzData->_mp_d[0]))) = m_ffFactors[0].Factor;
 		m_mpzData->_mp_size = 2;
 		m_ftreeRoot->m_mpzScratch->_mp_size = 2;
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
 		{
-			*((uint64*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
+			*((uint64_t*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
 			mpz_mul(m_mpzData, m_mpzData, m_ftreeRoot->m_mpzScratch);
 		}
 	}
 #endif
 	else  // handle the "transition", where some are over and some are under 32 bits.  For non-VC builds all above 32 bits are handled here
 	{
-		uint32 n32 = uint32((m_ffFactors[0].Factor)>>32);
+		uint32_t n32 = uint32_t((m_ffFactors[0].Factor)>>32);
 		mpz_set_ui(m_mpzData,n32);
 		mpz_mul_2exp(m_mpzData, m_mpzData, 32);
-		mpz_add_ui(m_mpzData,m_mpzData,(uint32)((m_ffFactors[0].Factor)&0xFFFFFFFF));
+		mpz_add_ui(m_mpzData,m_mpzData,(uint32_t)((m_ffFactors[0].Factor)&0xFFFFFFFF));
 
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
 		{
-			n32 = uint32((m_ffFactors[i].Factor)>>32);
+			n32 = uint32_t((m_ffFactors[i].Factor)>>32);
 			mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 			mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
-			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
+			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32_t)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 			mpz_mul(m_mpzData, m_mpzData, m_ftreeRoot->m_mpzScratch);
 		}
 	}
@@ -452,15 +453,29 @@ void NodeFactorize::LoadPrimesIntoTree()
 		return;
 	}
 	// We are a leaf, so load up our factors, into the m_mpzData structure.
-	uint32 i;
-	m_nNumUsedFactors = m_nMaxLeafFactors;
-	for (i = 0; i < m_nMaxLeafFactors; ++i)
-		m_ffFactors[i].Factor = primeserver->NextPrime();
+	uint32_t i = 0;
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+
+   primesieve::generate_n_primes(m_nMaxLeafFactors, 2, &vPrimes);
+
+   it = vPrimes.begin();
+
+   // Hacked & slashed code from CPAPSieve project (much has been changed to fit into this project)
+   while (it != vPrimes.end())
+   {
+		m_ffFactors[i].Factor = *it;
+      i++;
+      it++;
+   }
+   
+   m_nNumUsedFactors = m_nMaxLeafFactors;
+
 	if (m_ffFactors[m_nMaxLeafFactors-1].Factor < 0xFFFFFFFF)
 	{
-		mpz_set_ui(m_mpzData, (uint32)(m_ffFactors[0].Factor));
+		mpz_set_ui(m_mpzData, (uint32_t)(m_ffFactors[0].Factor));
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
-			mpz_mul_ui(m_mpzData, m_mpzData, (uint32)(m_ffFactors[i].Factor));
+			mpz_mul_ui(m_mpzData, m_mpzData, (uint32_t)(m_ffFactors[i].Factor));
 	}
 #if defined (_MSC_VER)
 	else if (m_ffFactors[0].Factor > 0xFFFFFFFF)
@@ -469,35 +484,35 @@ void NodeFactorize::LoadPrimesIntoTree()
 		// any GMP other than the VC version.  VC I KNOW works correctly.  However, I 
 		// imagine that this "non-portable" method would work for ALL platforms PFGW
 		// targets.
-		*((uint64*)(&(m_mpzData->_mp_d[0]))) = m_ffFactors[0].Factor;
+		*((uint64_t*)(&(m_mpzData->_mp_d[0]))) = m_ffFactors[0].Factor;
 		m_mpzData->_mp_size = 2;
 		m_ftreeRoot->m_mpzScratch->_mp_size = 2;
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
 		{
-			*((uint64*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
+			*((uint64_t*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
 			mpz_mul(m_mpzData, m_mpzData, m_ftreeRoot->m_mpzScratch);
 		}
 	}
 #endif
 	else  // handle the "transition", where some are over and some are under 32 bits.
 	{
-		uint32 n32 = uint32((m_ffFactors[0].Factor)>>32);
+		uint32_t n32 = uint32_t((m_ffFactors[0].Factor)>>32);
 		mpz_set_ui(m_mpzData,n32);
 		mpz_mul_2exp(m_mpzData, m_mpzData, 32);
-		mpz_add_ui(m_mpzData,m_mpzData,(uint32)((m_ffFactors[0].Factor)&0xFFFFFFFF));
+		mpz_add_ui(m_mpzData,m_mpzData,(uint32_t)((m_ffFactors[0].Factor)&0xFFFFFFFF));
 		for (i = 1; i < m_nMaxLeafFactors; ++i)
 		{
-			n32 = uint32((m_ffFactors[i].Factor)>>32);
+			n32 = uint32_t((m_ffFactors[i].Factor)>>32);
 			mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 			mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
-			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
+			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32_t)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 			mpz_mul(m_mpzData, m_mpzData, m_ftreeRoot->m_mpzScratch);
 		}
 	}
 	m_ftreeRoot->m_nCurPr = m_ffFactors[m_nMaxLeafFactors-1].Factor;
 }
 
-void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
+void NodeFactorize::FillFactorFoundTable(uint64_t which, bool bDeep)
 {
 	unsigned i;
 	if (m_nNumBranches)
@@ -524,35 +539,35 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 				// trees have an even (rounded up) number of factors in the leaves.
 				unsigned til = m_nNumUsedFactors>>1;
 
-				int32  r1, r2;
-				uint32 p1, p2;
+				int32_t  r1, r2;
+				uint32_t p1, p2;
 
 				// Note if the FP stack is not PERFECTLY clear before calling this function, then
 				// there it will have problems and not work right (this was found inside of APSieve).
 				// I think this bug may ALSO be in pfgw in some instances during factoring.
 				for (i = 0; i < til; ++i)
 				{
-					p1 = (uint32)(uint32)(m_ffFactors[i<<1].Factor);
-					p2 = (uint32)(uint32)(m_ffFactors[(i<<1)+1].Factor);
+					p1 = (uint32_t)(uint32_t)(m_ffFactors[i<<1].Factor);
+					p2 = (uint32_t)(uint32_t)(m_ffFactors[(i<<1)+1].Factor);
 
 #if defined(_64BIT)
                // This only works if p1 and p2 < 32 bits due to Windows-isms.  See integer.inl for more info.
-               r1 = (int32) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p1);
-	            r2 = (int32) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p2);
+               r1 = (int32_t) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p1);
+	            r2 = (int32_t) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p2);
 #else
-					Imod2((uint32*)(m_mpzResidue->_mp_d),(int32)p1,(int32)p2,m_mpzResidue->_mp_size,&r1,&r2);
+					Imod2((uint32_t*)(m_mpzResidue->_mp_d),(int32_t)p1,(int32_t)p2,m_mpzResidue->_mp_size,&r1,&r2);
 #endif
 
 					// We don't care if R1 or R2 is less than 0.  If so, then the value will NEVER
 					// be 0 or 1 (the 2 values we care about here.)
 
-					if (((uint32)r1) == which)
+					if (((uint32_t)r1) == which)
 					{
 						m_ftreeRoot->AddFactor(&m_ffFactors[i<<1]);
 						if (!bDeep)
 							return;
 					}
-					if (((uint32)r2) == which)
+					if (((uint32_t)r2) == which)
 					{
 						m_ftreeRoot->AddFactor(&m_ffFactors[(i<<1)+1]);
 						if (!bDeep)
@@ -564,7 +579,7 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 			{
 				for (i = 0; i < m_nNumUsedFactors; ++i)
 				{
-					unsigned res = mpz_tdiv_ui(m_mpzResidue, (uint32)(m_ffFactors[i].Factor));
+					uint64_t res = mpz_tdiv_ui(m_mpzResidue, (uint32_t)(m_ffFactors[i].Factor));
 					if (res == which)
 					{
 						m_ftreeRoot->AddFactor(&m_ffFactors[i]);
@@ -579,7 +594,7 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 		{
 			for (i = 0; i < m_nNumUsedFactors; ++i)
 			{
-				*((uint64*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
+				*((uint64_t*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
 				m_ftreeRoot->m_mpzScratch->_mp_size = 2;
 
 				mpz_tdiv_r(m_ftreeRoot->m_mpzScratch, m_mpzResidue, m_ftreeRoot->m_mpzScratch);
@@ -599,10 +614,10 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 			{
 				// For VC, we only use this code for the "transition" from 32 to 64 bit.  Once we are
 				// fully into 64 bit land (i.e. 2 limbs for a GMP), we use the code in the #if above
-				uint32 n32 = uint32((m_ffFactors[i].Factor)>>32);
+				uint32_t n32 = uint32_t((m_ffFactors[i].Factor)>>32);
 				mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 				mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
-				mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
+				mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32_t)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 
 				mpz_tdiv_r(m_ftreeRoot->m_mpzScratch, m_mpzResidue, m_ftreeRoot->m_mpzScratch);
 				if (mpz_cmp_ui(m_ftreeRoot->m_mpzScratch, which) == 0)
@@ -626,23 +641,23 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 			// trees have an even (rounded up) number of factors in the leaves.
 			unsigned til = m_nNumUsedFactors>>1;
 
-			int32  r1, r2;
-			uint32 p1, p2;
+			int32_t  r1, r2;
+			uint32_t p1, p2;
 
 			// Note if the FP stack is not PERFECTLY clear before calling this function, then
 			// there it will have problems and not work right (this was found inside of APSieve).
 			// I think this bug may ALSO be in pfgw in some instances during factoring.
 			for (i = 0; i < til; ++i)
 			{
-				p1 = (uint32)(m_ffFactors[i<<1].Factor);
-				p2 = (uint32)(m_ffFactors[(i<<1)+1].Factor);
+				p1 = (uint32_t)(m_ffFactors[i<<1].Factor);
+				p2 = (uint32_t)(m_ffFactors[(i<<1)+1].Factor);
 
 #if defined(_64BIT)
                // This only works if p1 and p2 < 32 bits due to Windows-isms.  See integer.inl for more info.
-               r1 = (int32) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p1);
-	            r2 = (int32) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p2);
+               r1 = (int32_t) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p1);
+	            r2 = (int32_t) mpz_mod_ui(*(mpz_t*)(&m_scrap),m_mpzResidue,p2);
 #else
-				Imod2((uint32*)(m_mpzResidue->_mp_d),(int32)p1,(int32)p2,m_mpzResidue->_mp_size,&r1,&r2);
+				Imod2((uint32_t*)(m_mpzResidue->_mp_d),(int32_t)p1,(int32_t)p2,m_mpzResidue->_mp_size,&r1,&r2);
 #endif
 
 				// This is the only way I can find to handle 2.  the value returned for 2 is 1.  However,
@@ -673,7 +688,7 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 		{
 			for (i = 0; i < m_nNumUsedFactors; ++i)
 			{
-				unsigned res = mpz_tdiv_ui(m_mpzResidue, (uint32)(m_ffFactors[i].Factor));
+				uint64_t res = mpz_tdiv_ui(m_mpzResidue, (uint32_t)(m_ffFactors[i].Factor));
 				if (res == m_ffFactors[i].Factor-1)
 				{
 					m_ftreeRoot->AddFactor(&m_ffFactors[i]);
@@ -688,7 +703,7 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 	{
 		for (i = 0; i < m_nNumUsedFactors; ++i)
 		{
-			*((uint64*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
+			*((uint64_t*)(&(m_ftreeRoot->m_mpzScratch->_mp_d[0]))) = m_ffFactors[i].Factor;
 			m_ftreeRoot->m_mpzScratch->_mp_size = 2;
 
 			mpz_tdiv_r(m_ftreeRoot->m_mpzScratch2, m_mpzResidue, m_ftreeRoot->m_mpzScratch);
@@ -706,10 +721,10 @@ void NodeFactorize::FillFactorFoundTable(unsigned which, bool bDeep)
 	{
 		for (i = 0; i < m_nNumUsedFactors; ++i)
 		{
-			uint32 n32 = uint32((m_ffFactors[i].Factor)>>32);
+			uint32_t n32 = uint32_t((m_ffFactors[i].Factor)>>32);
 			mpz_set_ui(m_ftreeRoot->m_mpzScratch,n32);
 			mpz_mul_2exp(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 32);
-			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32)((m_ffFactors[i].Factor)&0xFFFFFFFF));
+			mpz_add_ui(m_ftreeRoot->m_mpzScratch,m_ftreeRoot->m_mpzScratch,(uint32_t)((m_ffFactors[i].Factor)&0xFFFFFFFF));
 
 			mpz_tdiv_r(m_ftreeRoot->m_mpzScratch2, m_mpzResidue, m_ftreeRoot->m_mpzScratch);
 			mpz_sub_ui(m_ftreeRoot->m_mpzScratch, m_ftreeRoot->m_mpzScratch, 1);

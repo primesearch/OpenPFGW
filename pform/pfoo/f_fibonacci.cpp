@@ -2,7 +2,6 @@
 #include "f_fibonacci.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 #include "h_helpers.h"
 

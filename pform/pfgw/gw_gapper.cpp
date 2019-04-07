@@ -10,18 +10,18 @@
 
 static int  base=2;
 static bool bOddBase=false;
-static uint64 MaxNum;      // The maximum k read in from the file
-static uint64 MinNum;      // The minimum k read in from the file
-static uint32 nvals;    // The number of values read in from the file
-static uint64 nvalsleft;   // The number remaining after we remove entries
-static uint32 nvalue;      // Value of n (for k.2^n+/-1) read in from the file
-static uint32 *_pMap, *pMap;
+static uint64_t MaxNum;      // The maximum k read in from the file
+static uint64_t MinNum;      // The minimum k read in from the file
+static uint32_t nvals;    // The number of values read in from the file
+static uint64_t nvalsleft;   // The number remaining after we remove entries
+static uint32_t nvalue;      // Value of n (for k.2^n+/-1) read in from the file
+static uint32_t *_pMap, *pMap;
 static int NumPrimes;
 static unsigned Count = 0, Cnt1=0, Cnt2=0;
 static clock_t start;
-static uint64 mid_gap, Low_end, Hi_end;
+static uint64_t mid_gap, Low_end, Hi_end;
 #if defined (_MSC_VER)
-static uint32 WaitTil;
+static uint32_t WaitTil;
 #endif
 
 extern bool g_bTerseOutput;
@@ -34,8 +34,8 @@ extern bool g_bTerseOutput;
 #include "../../pform/pflib/bmap.cxx"
 
 static bool LoadFile(const char *Fname);
-static uint64 FindPriorPrime(uint64 i);
-static uint64 FindNextPrime(uint64 i);
+static uint64_t FindPriorPrime(uint64_t i);
+static uint64_t FindNextPrime(uint64_t i);
 
 // Stripped down gwPrp WITHOUT any screen output.  (also without any error checking, or WIP saving.
 bool IsPrp(Integer *N)
@@ -44,7 +44,7 @@ bool IsPrp(Integer *N)
    Integer X = (*N);
    --X;           // X is the exponent, we are to calculate 3^X mod N
 
-   uint32 iTotal=numbits(X);
+   uint32_t iTotal=numbits(X);
 
    // if iTotal is less than 1000, then use GMP to do exponentaion (we need to work out the exact cutoff's, and
    // different reduction methods will also "change" this"
@@ -93,7 +93,7 @@ bool IsPrp(Integer *N)
       for(;iTotal--;)
       {
          gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,bit(X,iTotal));
-         gwsquare(gwX);
+         gwsquare2(gwX);
       }
       Integer XX;
       XX = gwX;
@@ -105,7 +105,7 @@ bool IsPrp(Integer *N)
    return bRetval;
 }
 
-void gw_gapper(const char *FName, int gap, uint64 i)
+void gw_gapper(const char *FName, int gap, uint64_t i)
 {
    if (!gap)
    {
@@ -121,7 +121,7 @@ void gw_gapper(const char *FName, int gap, uint64 i)
    if (i >= MaxNum)
    {
       PFOutput::EnableOneLineForceScreenOutput();
-      PFPrintfStderr("Sorry, no data above "ULL_FORMAT", so I am exiting now.\n", i);
+      PFPrintfStderr("Sorry, no data above %" PRIu64", so I am exiting now.\n", i);
       return;
    }
 
@@ -145,7 +145,7 @@ void gw_gapper(const char *FName, int gap, uint64 i)
       // Ok now we have found the "possible" number.  Check to see if it is prp-3
       // Assign original "base" N value to Temp
       char Format[120];
-      sprintf(Format, "%d^%d+"ULL_FORMAT"", base, nvalue, Low_end);
+      sprintf(Format, "%d^%d+%" PRIu64"", base, nvalue, Low_end);
       Integer n;
       n.Ipow(base, nvalue);
       n += Low_end;
@@ -176,7 +176,7 @@ void gw_gapper(const char *FName, int gap, uint64 i)
             if (gap > 50000)
             {
                double duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-               PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L="ULL_FORMAT" C="ULL_FORMAT" H="ULL_FORMAT" %0.3f/s\n", Cnt1, Cnt2, Count, Low_end, mid_gap, Hi_end, Cnt1/duration);
+               PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L=%" PRIu64" C=%" PRIu64" H=%" PRIu64" %0.3f/s\n", Cnt1, Cnt2, Count, Low_end, mid_gap, Hi_end, Cnt1/duration);
             }
 
             // Found a BIG gap.
@@ -185,10 +185,10 @@ void gw_gapper(const char *FName, int gap, uint64 i)
             {
                // We are done processing the full file.
                Low_end = MaxNum;
-               PFPrintfLog("%70.70s\r** Found gap of at least "ULL_FORMAT" at %d^%d+"ULL_FORMAT" to %d^%d+"ULL_FORMAT". but ran out of file\n", " ", MaxNum-Low_end-2, base, nvalue, Low_end, base, nvalue, MaxNum-2);
+               PFPrintfLog("%70.70s\r** Found gap of at least %" PRIu64" at %d^%d+%" PRIu64" to %d^%d+%" PRIu64". but ran out of file\n", " ", MaxNum-Low_end-2, base, nvalue, Low_end, base, nvalue, MaxNum-2);
                break;
             }
-            PFPrintfLog("%70.70s\r** Found gap of "ULL_FORMAT" at %d^%d+"ULL_FORMAT" to %d^%d+"ULL_FORMAT"\n", " ", mid_gap-Low_end, base, nvalue, Low_end, base, nvalue, mid_gap);
+            PFPrintfLog("%70.70s\r** Found gap of %" PRIu64" at %d^%d+%" PRIu64" to %d^%d+%" PRIu64"\n", " ", mid_gap-Low_end, base, nvalue, Low_end, base, nvalue, mid_gap);
          }
          Low_end = mid_gap;
 
@@ -197,7 +197,7 @@ void gw_gapper(const char *FName, int gap, uint64 i)
 #endif
          {
             double duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-            PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L="ULL_FORMAT" C="ULL_FORMAT" H="ULL_FORMAT" %0.3f/s\r", Cnt1, Cnt2, Count, Low_end, mid_gap, Hi_end, Cnt1/duration);
+            PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L=%" PRIu64" C=%" PRIu64" H=%" PRIu64" %0.3f/s\r", Cnt1, Cnt2, Count, Low_end, mid_gap, Hi_end, Cnt1/duration);
 #if defined (_MSC_VER)
             WaitTil = GetTickCount() + 10000;
 #endif
@@ -206,7 +206,7 @@ void gw_gapper(const char *FName, int gap, uint64 i)
    }
 }
 
-uint64 FindNextPrime(uint64 i)
+uint64_t FindNextPrime(uint64_t i)
 {
    Integer n;
    n.Ipow(base, nvalue);
@@ -235,7 +235,7 @@ uint64 FindNextPrime(uint64 i)
       {
 #endif
          double duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-         PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L="ULL_FORMAT" C="ULL_FORMAT"** H="ULL_FORMAT" %0.3f/s\r", Cnt1, Cnt2, Count, Low_end, i, Hi_end, Cnt1/duration);
+         PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L=%" PRIu64" C=%" PRIu64"** H=%" PRIu64" %0.3f/s\r", Cnt1, Cnt2, Count, Low_end, i, Hi_end, Cnt1/duration);
 #if defined (_MSC_VER)
          WaitTil = GetTickCount() + 10000;
       }
@@ -245,7 +245,7 @@ uint64 FindNextPrime(uint64 i)
    return 0;
 }
 
-uint64 FindPriorPrime(uint64 i)
+uint64_t FindPriorPrime(uint64_t i)
 {
    Cnt2 = 0;
    // Note there MUST be a prime before the passed in i  (and there will always be a prime before)
@@ -272,7 +272,7 @@ uint64 FindPriorPrime(uint64 i)
       {
 #endif
          double duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-         PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L="ULL_FORMAT" C="ULL_FORMAT" H="ULL_FORMAT" %0.3f/s\r", Cnt1, Cnt2, Count, Low_end, i, Hi_end, Cnt1/duration);
+         PFPrintfStderr("\rT#/C#/Gaps %u/%u/%u L=%" PRIu64" C=%" PRIu64" H=%" PRIu64" %0.3f/s\r", Cnt1, Cnt2, Count, Low_end, i, Hi_end, Cnt1/duration);
 #if defined (_MSC_VER)
          WaitTil = GetTickCount() + 10000;
       }
@@ -287,19 +287,19 @@ uint64 FindPriorPrime(uint64 i)
 // and creation of the JFCPAP files is not part of this source release.
 
 // Work buffer, so we don't have to write/read from the disk too frequently
-uint8 RLE_Buf[0xF000];
+uint8_t RLE_Buf[0xF000];
 // Counters to tell us where in the buffer the reads/writes are taking place.
-uint32  RLE_BufCnt, RLE_BufInCnt;
+uint32_t  RLE_BufCnt, RLE_BufInCnt;
 
 static int _5Cnt;
-static uint8 _5Byte[5];
+static uint8_t _5Byte[5];
 
 // Buffered read of a byte.
-inline uint32 Comp_GetByte_(FILE *fp)
+inline uint32_t Comp_GetByte_(FILE *fp)
 {
    if (RLE_BufCnt == RLE_BufInCnt)
    {
-      RLE_BufCnt = (uint32) fread(RLE_Buf, 1, sizeof(RLE_Buf), fp);
+      RLE_BufCnt = (uint32_t) fread(RLE_Buf, 1, sizeof(RLE_Buf), fp);
       RLE_BufInCnt = 0;
       if (!RLE_BufCnt && feof(fp))
          return 0;
@@ -312,7 +312,7 @@ inline void Reset_Comp_GetByte()
    RLE_BufCnt = RLE_BufInCnt = 0;
 }
 
-inline uint32 Comp_Get5Bits(FILE *fp)
+inline uint32_t Comp_Get5Bits(FILE *fp)
 {
    static int _5CntI;
 
@@ -320,11 +320,11 @@ inline uint32 Comp_Get5Bits(FILE *fp)
    {
       case 0:
          // our buffer is empty, so load the next 5 byte block of 8 5-bit chunks.
-         _5Byte[0] = (uint8)Comp_GetByte_(fp);
-         _5Byte[1] = (uint8)Comp_GetByte_(fp);
-         _5Byte[2] = (uint8)Comp_GetByte_(fp);
-         _5Byte[3] = (uint8)Comp_GetByte_(fp);
-         _5Byte[4] = (uint8)Comp_GetByte_(fp);
+         _5Byte[0] = (uint8_t)Comp_GetByte_(fp);
+         _5Byte[1] = (uint8_t)Comp_GetByte_(fp);
+         _5Byte[2] = (uint8_t)Comp_GetByte_(fp);
+         _5Byte[3] = (uint8_t)Comp_GetByte_(fp);
+         _5Byte[4] = (uint8_t)Comp_GetByte_(fp);
 
          return (_5Byte[0]&0x1F);
       case 1:
@@ -351,18 +351,18 @@ bool DeCompress_5bits_skip_evens(FILE *fp)
 {
    RLE_BufCnt = RLE_BufInCnt = 0;
    int BitCarry=0;
-   uint32 Bit = 0;
-   uint32 NumBytes = (uint32)((MaxNum-MinNum+7)/8)+1;
-   uint32 *pMap = &_pMap[5];
+   uint32_t Bit = 0;
+   uint32_t NumBytes = (uint32_t)((MaxNum-MinNum+7)/8)+1;
+   uint32_t *pMapPtr = &_pMap[5];
 
    if (!(MinNum & 1))
       Bit++;
 
-   memset(&pMap[-2], 0, (NumBytes>>1)+16);
+   memset(&pMapPtr[-2], 0, (NumBytes>>1)+16);
 
-   for (uint32 i = 0; i < NumBytes;)
+   for (uint32_t i = 0; i < NumBytes;)
    {
-      uint32 Zeros = Comp_Get5Bits(fp);
+      uint32_t Zeros = Comp_Get5Bits(fp);
       while (Zeros == 0x1F)
       {
          Bit += (0x1F<<1);
@@ -374,7 +374,7 @@ bool DeCompress_5bits_skip_evens(FILE *fp)
       }
       Zeros <<= 1;
       Bit += Zeros + 1;
-      SetBit(pMap, Bit);
+      SetBit(pMapPtr, Bit);
       Bit++;
       i += ( (2+Zeros+BitCarry)/8);
       BitCarry = (2+Zeros+BitCarry) % 8;
@@ -397,7 +397,7 @@ bool IsValid_CPAP_SIG(const char *Line, bool &bIsOld32bitCPAPFileFormat)
    return true;
 }
 
-bool Read_JFCPap_File(const char *FName, uint64 *p)
+bool Read_JFCPap_File(const char *FName, uint64_t *p)
 {
    // Got a CPAP file, read it as such.
    FILE *in = fopen(FName, "rb");
@@ -419,21 +419,21 @@ bool Read_JFCPap_File(const char *FName, uint64 *p)
    if (bIsOld32bitCPAPFileFormat)
    {
       fseek(in, -8, SEEK_CUR);   // the header was only the first 36 bytes, so move the pointer back.
-      nvalue = *(uint32*)&Line[8];
-      nvalsleft = *(uint32*)&Line[12];
-      MinNum = (uint64)(*(uint32*)&Line[16]);   // buggy older format.  Only allowed min-max k's to store to 2^32, even though the program worked higher.
-      MaxNum = (uint64)(*(uint32*)&Line[20]);
-      base   = *(uint32*)&Line[24];
-      *p     = *(uint64*)&Line[28];
+      nvalue = *(uint32_t*)&Line[8];
+      nvalsleft = *(uint32_t*)&Line[12];
+      MinNum = (uint64_t)(*(uint32_t*)&Line[16]);   // buggy older format.  Only allowed min-max k's to store to 2^32, even though the program worked higher.
+      MaxNum = (uint64_t)(*(uint32_t*)&Line[20]);
+      base   = *(uint32_t*)&Line[24];
+      *p     = *(uint64_t*)&Line[28];
    }
    else
    {
-      nvalsleft = *(uint32*)&Line[8];
-      base   = *(uint32*)&Line[12];
-      nvalue = *(uint32*)&Line[16];
-      MinNum = *(uint64*)&Line[20];
-      MaxNum = *(uint64*)&Line[28];
-      *p     = *(uint64*)&Line[36];
+      nvalsleft = *(uint32_t*)&Line[8];
+      base   = *(uint32_t*)&Line[12];
+      nvalue = *(uint32_t*)&Line[16];
+      MinNum = *(uint64_t*)&Line[20];
+      MaxNum = *(uint64_t*)&Line[28];
+      *p     = *(uint64_t*)&Line[36];
    }
    Init_pMap(MinNum, MaxNum, &_pMap, &pMap);
    DeCompress_5bits_skip_evens(in);    // bit compressed (bit map skips even numbers)
@@ -463,7 +463,7 @@ bool LoadFile(const char *Fname)
    bool bIsOld32bitCPAPFileFormat;
    if (IsValid_CPAP_SIG(Line, bIsOld32bitCPAPFileFormat))
    {
-      uint64 p;
+      uint64_t p;
       fprintf (stderr, "\n");
       if (!Read_JFCPap_File(Fname, &p))
       {
@@ -518,7 +518,7 @@ bool LoadFile(const char *Fname)
             PFPrZ_newpgen_File *pFile = (PFPrZ_newpgen_File *)pf;
 
             nvalsleft = pFile->nValsLeft();
-            nvalue = *(uint32*)&Line[16];
+            nvalue = *(uint32_t*)&Line[16];
             MinNum = pFile->MinNum();
             MaxNum = pFile->MaxNum();
             MinNum = MinNum * 2 -1;
@@ -527,7 +527,7 @@ bool LoadFile(const char *Fname)
 
             Init_pMap(MinNum, MaxNum, &_pMap, &pMap);
 
-            uint32 NumBytes = (uint32)((MaxNum-MinNum+7)/8)+1;
+            uint32_t NumBytes = (uint32_t)((MaxNum-MinNum+7)/8)+1;
             memset(&pMap[-2], 0, (NumBytes>>1)+16);
 
             PFString s;

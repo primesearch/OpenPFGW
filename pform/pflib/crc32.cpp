@@ -75,7 +75,7 @@ void crc_init()
     }
 }
 
-uint32 crc_byte(unsigned char c,uint32 crc)
+uint32_t crc_byte(unsigned char c,uint32_t crc)
 {
     crc=(crc<<8)^((c)&(0x000000FFUL))^crcXOR32[(crc>>24)];
     return crc;

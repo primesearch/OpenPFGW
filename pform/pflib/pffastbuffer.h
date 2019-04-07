@@ -10,6 +10,11 @@
 
 #include "pfbuffer.h"
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4505)
+#endif
+
 template<class T>
 class PFFastBuffer : public PFBuffer<T>
 {
@@ -119,5 +124,9 @@ DWORD PFFastBuffer<T>::Find(const T* pData,DWORD dwLength,DWORD dwMax) const
    }
    return dwFindPosition;
 }
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #endif

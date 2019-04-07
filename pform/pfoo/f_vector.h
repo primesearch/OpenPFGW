@@ -10,9 +10,9 @@ class F_Vector : public PFIterativeSymbol
 {
 	Integer	*pN;
 
-	uint32 pmin;
-	uint32 pmax;
-	uint32 p;
+	uint32_t pmin;
+	uint32_t pmax;
+	uint32_t p;
 	
 	double estimatePrimes(double l);
 	double estimatePrimes(double l1,double l2);

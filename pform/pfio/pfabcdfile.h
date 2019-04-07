@@ -21,8 +21,8 @@ class PFABCDFile : public PFABCFile
 		void CutOutFirstLine();
 		int  ReadLine(char *Line, int sizeofLine);
 
-		int64 	m_i64Accum[26];
-		uint32	m_nAccum;
+		int64_t 	m_i64Accum[26];
+		uint32_t	m_nAccum;
 		bool  	m_bReadNextLineFromFile;
 		bool  	m_bIgnoreOutput;
 		char    *m_ABCLookingLine;

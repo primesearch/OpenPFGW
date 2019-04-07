@@ -29,8 +29,8 @@ typedef const TCHAR *LPCTSTR;
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <inttypes.h>
 
-#include "stdtypes.h"
 #include "pflib.h"
 #include "pfmath.h"
 #include "pfgwlib.h"

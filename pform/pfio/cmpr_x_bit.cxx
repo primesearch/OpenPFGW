@@ -11,15 +11,15 @@
 // Buffering file IO functions
 //************************************************************
 // Work buffer, so we don't have to write/read from the disk too frequently
-static uint8 RLE_Buf[0xF000];
+static uint8_t RLE_Buf[0xF000];
 // Counters to tell us where in the buffer the reads/writes are taking place.
-static uint32  RLE_BufCnt, RLE_BufInCnt;
+static uint32_t  RLE_BufCnt, RLE_BufInCnt;
 // Buffered read of a byte.
-inline uint32 Comp_GetByte(FILE *fp)
+inline uint32_t Comp_GetByte(FILE *fp)
 {
 	if (RLE_BufCnt == RLE_BufInCnt)
 	{
-		RLE_BufCnt = (uint32) fread(RLE_Buf, 1, sizeof(RLE_Buf), fp);
+		RLE_BufCnt = (uint32_t) fread(RLE_Buf, 1, sizeof(RLE_Buf), fp);
 		RLE_BufInCnt = 0;
 		if (!RLE_BufCnt && feof(fp))
 			return 0xFFFFFFFF;
@@ -29,23 +29,23 @@ inline uint32 Comp_GetByte(FILE *fp)
 
 // Here is a WORKING bit de-compression. (code taken from ABCZ project)
 
-static uint32 cmp_Bits;
-static uint32 cmp_Accum;
-static uint32 cmp_nAccum;
-static uint32 cmp_MAX_ESC;
-static uint32 bits_set;
-static uint32 cmp_MAX_ESCs[40], cmp_MAX_ESC2[40], cmp_ESC_min;
-static uint64 OffsetK;
-static uint32 cmpr_nvalsleft;
-static uint32 Base;
-static uint32 EscapeLevel;
+static uint32_t cmp_Bits;
+static uint32_t cmp_Accum;
+static uint32_t cmp_nAccum;
+static uint32_t cmp_MAX_ESC;
+static uint32_t bits_set;
+static uint32_t cmp_MAX_ESCs[40], cmp_MAX_ESC2[40], cmp_ESC_min;
+static uint64_t OffsetK;
+static uint32_t cmpr_nvalsleft;
+static uint32_t Base;
+static uint32_t EscapeLevel;
 static bool   bSkipEvens, bNewPGenFile;
 
-inline uint32 Comp_GetBitsX(FILE *fp)
+inline uint32_t Comp_GetBitsX(FILE *fp)
 {
-	uint32 RetVal=0;
-	uint32 BitsNeeded=cmp_Bits;
-	uint32 BitsAccum=0;
+	uint32_t RetVal=0;
+	uint32_t BitsNeeded=cmp_Bits;
+	uint32_t BitsAccum=0;
 	while (BitsNeeded > cmp_nAccum)
 	{
 		RetVal |= (cmp_Accum<<BitsAccum);
@@ -71,7 +71,7 @@ inline uint32 Comp_GetBitsX(FILE *fp)
 	return (RetVal & cmp_MAX_ESC);
 }
 
-bool DeCompress_bits_From_PrZ_setup(uint32 BitLevel, uint32 _EscapeLevel, uint64 _OffsetK, uint32 _Base, uint32 _nvalsleft, char *cpp, bool _bSkipEvens, bool _bNewPGenFile)
+bool DeCompress_bits_From_PrZ_setup(uint32_t BitLevel, uint32_t _EscapeLevel, uint64_t _OffsetK, uint32_t _Base, uint32_t _nvalsleft, char *cpp, bool _bSkipEvens, bool _bNewPGenFile)
 {
 	RLE_BufCnt = RLE_BufInCnt = 0;
 	bits_set=1;
@@ -88,7 +88,7 @@ bool DeCompress_bits_From_PrZ_setup(uint32 BitLevel, uint32 _EscapeLevel, uint64
 	// Handles multiple escapes.
 	EscapeLevel = _EscapeLevel;
 	cmp_ESC_min = cmp_MAX_ESC - EscapeLevel;
-	for (uint32 i = 0; i <= EscapeLevel; ++i)
+	for (uint32_t i = 0; i <= EscapeLevel; ++i)
 	{
 		cmp_MAX_ESCs[i] = cmp_MAX_ESC - (EscapeLevel-i);
 		cmp_MAX_ESC2[i] = cmp_ESC_min * (EscapeLevel-i+1);
@@ -102,7 +102,7 @@ bool DeCompress_bits_From_PrZ_setup(uint32 BitLevel, uint32 _EscapeLevel, uint64
 	cmpr_nvalsleft = _nvalsleft;
 	if (bNewPGenFile)
 	{
-		sprintf (cpp, ULL_FORMAT" %u", OffsetK, Base);
+		sprintf (cpp, "%" PRIu64" %u", OffsetK, Base);
 		return true;
 	}
 	return false;
@@ -110,11 +110,11 @@ bool DeCompress_bits_From_PrZ_setup(uint32 BitLevel, uint32 _EscapeLevel, uint64
 
 bool DeCompress_bits_From_PrZ(FILE *fpIn, char *cpp, bool bDontOutput)
 {
-	uint32 Zeros = Comp_GetBitsX(fpIn);
+	uint32_t Zeros = Comp_GetBitsX(fpIn);
 	if (Zeros == 0xFFFFFFFF || bits_set == cmpr_nvalsleft)
 		return false;
 
-	uint32 i, Bit = 0;
+	uint32_t i, Bit = 0;
 	while (Zeros >= cmp_ESC_min)
 	{
 		for (i = 0; i < EscapeLevel; ++i)
@@ -130,9 +130,9 @@ bool DeCompress_bits_From_PrZ(FILE *fpIn, char *cpp, bool bDontOutput)
 	if (!bDontOutput)
 	{
 		if (bNewPGenFile)
-			sprintf (cpp, ULL_FORMAT" %u", OffsetK, Base);
+			sprintf (cpp, "%" PRIu64" %u", OffsetK, Base);
 		else
-			sprintf (cpp, ULL_FORMAT, OffsetK);
+			sprintf (cpp, "%" PRIu64"", OffsetK);
 	}
 	++bits_set;
 	return true;

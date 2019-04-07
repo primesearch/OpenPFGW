@@ -1,25 +1,30 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "symboltypes.h"
 #include "pfsamplersymbol.h"
-#include "primeserver.h"
 
 PFSamplerSymbol::PFSamplerSymbol()
    :  IPFSymbol("_SAMPLER"), m_dwLastCRC(0), m_dwLargePrime(255),
       m_dwSmallIndex(0), m_dwAcceptIndex(0), m_dwSmallCount(0)
-{
-   uint32 p;
+{   
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+
+   vPrimes.clear();
+
+   primesieve::generate_primes(1, 256, &vPrimes);
 
    // the sampler works in a simple way. You 'ask' for a prime, if
    // you use it, you 'accept' it. When you ask, tables are reset.
    // When you accept small primes (<256) they are moved to the end
    // of the small primes queue
 
-   for (int32 i=0; ; i++ )
-   {
-      p = (uint32) primeserver->ByIndex(i);
-      if (p > 256) break;
-      m_dwSmallPrimes[m_dwSmallCount++] = p;
-   };
+   it = vPrimes.begin();
+   while (it != vPrimes.end()) {
+      m_dwSmallPrimes[m_dwSmallCount++] = (uint32_t)*it;
+      it++;
+   }
 }
 
 PFSamplerSymbol::~PFSamplerSymbol()
@@ -37,11 +42,11 @@ PFString PFSamplerSymbol::GetStringValue()
 }
 
 // ask for a prime
-uint32 PFSamplerSymbol::ask(const Integer &N)
+uint32_t PFSamplerSymbol::ask(const Integer &N)
 {
-   uint32 newcrc=crc32(N);
+   uint32_t newcrc=crc32(N);
 
-   if(newcrc!=m_dwLastCRC)
+   if (newcrc != m_dwLastCRC)
    {
       rearrange();
       m_dwSmallIndex=0;
@@ -53,27 +58,27 @@ uint32 PFSamplerSymbol::ask(const Integer &N)
 }
 
 // ask for another prime
-uint32 PFSamplerSymbol::askagain()
+uint32_t PFSamplerSymbol::askagain()
 {
-   uint32 r;
+   uint32_t r;
 
-   if(m_dwSmallIndex<m_dwSmallCount)
+   if (m_dwSmallIndex < m_dwSmallCount)
    {
-      r=m_dwSmallPrimes[m_dwSmallIndex++];
+      r = m_dwSmallPrimes[m_dwSmallIndex++];
    }
    else
    {
       // ran out of little ones, so get a big one
-      if (m_dwLargePrime<256)
-         primeserver->SkipTo(m_dwLargePrime+1);
-      m_dwLargePrime = (uint32) primeserver->NextPrime();
-      r=m_dwLargePrime;
+      m_dwLargePrime = (uint32_t) primesieve::nth_prime(1, m_dwLargePrime);
+
+      r = m_dwLargePrime;
    }
+
    return r;
 }
 
 // accept the current prime
-void PFSamplerSymbol::accept(uint32 p)
+void PFSamplerSymbol::accept(uint32_t p)
 {
    if(p<256)
    {
@@ -84,12 +89,12 @@ void PFSamplerSymbol::accept(uint32 p)
 // rearrange so accepted primes are deferred for later
 void PFSamplerSymbol::rearrange()
 {
-   uint32 iCopyTo=0;
-   uint32 i,j;
+   uint32_t iCopyTo=0;
+   uint32_t i,j;
 
    for(i=0;i<m_dwSmallCount;i++)
    {
-      uint32 p=m_dwSmallPrimes[i];
+      uint32_t p=m_dwSmallPrimes[i];
       // find out if p is accepted
       for(j=0;j<m_dwAcceptIndex;j++)
       {

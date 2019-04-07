@@ -2,7 +2,6 @@
 #include "f_repunit.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 F_Repunit::F_Repunit()
    : PFFunctionSymbol("R")

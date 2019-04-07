@@ -1,6 +1,7 @@
 #ifndef F_FACTOR_H
 #define F_FACTOR_H
 
+#include <primesieve.hpp>
 #include "pfiterativesymbol.h"
 
 class Integer;
@@ -25,11 +26,12 @@ class F_Factor : public PFIterativeSymbol
 	PFString m_sHelperFile;	// the name helper file
 	static PFSimpleFile *pFactorHelperFile;	// the actual helper file object
 	
-	uint64 pmin;
-	uint64 pmax;
+	uint64_t pmin;
+	uint64_t pmax;
+   uint64_t maxpTested;
 	PFBoolean bFactorAtAll;
 	PFBoolean bDeep;
-	uint64 p;   // Phil - factor to 64 bit primes (48 actually)
+   primesieve::iterator psIterator;
 	int m_nPercentMultiplier;
 
 	bool m_bModFactor;
@@ -42,10 +44,9 @@ class F_Factor : public PFIterativeSymbol
 	PFFactorizationSymbol *m_pffN;
 	PFFactorizationSymbol *m_pffNplus1;
 	
-	double estimatePrimes(double l);
-	double estimatePrimes(double l1,double l2);
 	double estimateLimit(double x);
 	
+   bool checkForFactor(uint64_t p, uint64_t rem);
 	void checkBiggest(PFFactorizationSymbol *,Integer *);
 	void pmaxadjust(Integer *pChanged);
 	

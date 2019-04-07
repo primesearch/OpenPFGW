@@ -2,9 +2,9 @@
 //
 // implements the INI type processing for PFGW
 
-#include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
+#include "pfiopch.h"
 
 int _pfini_stricmp(const char *s1,const char *s2)
 {
@@ -756,11 +756,11 @@ bool PFIni::GetFileProcessing()
 
 // I know there is crc stuff in pflib, but I have placed this CCITT crc32 function here
 #define CRC_32 0xedb88320L    // CRC-32 polynomial
-static uint32 crctab[256];
+static uint32_t crctab[256];
 static bool   bcrcInit;
-static uint32 onecrc (int item)
+static uint32_t onecrc (int item)
 {
-    uint32 accum = 0;
+    uint32_t accum = 0;
     for (int i = 8; i > 0; i--)
     {
         if ((item ^ accum) & 0x0001)
@@ -780,16 +780,16 @@ static void mkcrctab (void)
    bcrcInit=true;
 }
 
-inline uint32 updcrc32 (uint32 crc_val, unsigned char c)
+inline uint32_t updcrc32 (uint32_t crc_val, unsigned char c)
 {
    return crctab[(int)((crc_val)^(c))&0xff] ^ ((crc_val) >> 8);
 }
 
-uint32 Crc32buf (const char *buf, int size)
+uint32_t Crc32buf (const char *buf, int size)
 {
    if (!bcrcInit)
       mkcrctab();
-   uint32 Crc32 = 0xFFFFFFFFL;
+   uint32_t Crc32 = 0xFFFFFFFFL;
     for (int i = 0; i < size; i++)
         Crc32 = updcrc32 (Crc32, *buf++);
    return ~Crc32;
@@ -808,7 +808,7 @@ void PFIni::SetExprChecksum(PFString *pCurrentExpression)
 void PFIni::_SetExprChecksum(PFString *pCurrentExpression)
 {
    // Ok create the ckecksum
-   uint32 Crc=0;
+   uint32_t Crc=0;
    PFString sCheckSum;
    if (pCurrentExpression && *pCurrentExpression != "")
    {
@@ -838,7 +838,7 @@ bool PFIni::CompareExprChecksum(PFString *pCurrentExpression, PFString *pStoredE
    if (!m_bValid)
       return false;
    PFString sCheckSum, sCheckSumWanted;
-   uint32 Crc;
+   uint32_t Crc;
    PFString s, s1("CurLineExpr");
    CS_Lock();
    _GetCurrentSection(s);
@@ -847,7 +847,7 @@ bool PFIni::CompareExprChecksum(PFString *pCurrentExpression, PFString *pStoredE
    s1="CurLineChecksum";
    int nCrc;
    _GetIniInt(&nCrc, &s1);
-   Crc = (uint32)nCrc;
+   Crc = (uint32_t)nCrc;
    _SetCurrentSection(s);
    CS_Release();
 

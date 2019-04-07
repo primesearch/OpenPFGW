@@ -1,8 +1,9 @@
 #include "pfoopch.h"
+#include <primesieve.hpp>
+#include "f_smarandache-wellin.h"
 #include "f_copeland-erdos.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 #include "f_trivial.h"
 #include "pffactorizationsymbol.h"
@@ -47,18 +48,27 @@ PFBoolean F_CopelandErdos::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   uint32 n = ((*C) & INT_MAX);
-   uint32 length = 0;
+   uint32_t n = ((*C) & INT_MAX);
+   uint64_t length = 0, lastPrime;
    char   buf[10], *ptr;
 
    Integer mm;
    mm=0;
-   uint32 q = 0;
-   primeserver->SkipTo(1);
 
-   while ((q = (uint32) primeserver->NextPrime()) != 0)
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+
+   vPrimes.clear();
+
+   primesieve::generate_n_primes(1000000, &vPrimes);
+   
+   it = vPrimes.begin();
+
+   while (it != vPrimes.end())
    {
-      sprintf(buf, "%d", q);
+      lastPrime = (uint32_t) *it;
+
+      sprintf(buf, "%" PRIu64"", lastPrime);
       ptr = buf;
 
       while (length < n && *ptr)
@@ -71,6 +81,19 @@ PFBoolean F_CopelandErdos::CallFunction(PFSymbolTable *pContext)
 
       if (length == n)
          break;
+
+      it++;
+
+      // If we have reached the end, but our string isn't long enough,
+      // so get the next group of primes
+      if (it == vPrimes.end())
+      {
+         vPrimes.clear();
+
+         primesieve::generate_n_primes(1000000, lastPrime + 1, &vPrimes);
+   
+         it = vPrimes.begin();
+      }
    }
   
    Integer *r = new Integer(mm);

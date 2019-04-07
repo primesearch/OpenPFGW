@@ -16,7 +16,7 @@ class PFCheckFile : public PFSimpleFile
 		void Printf_WhoAmIsString() {PFOutput::EnableOneLineForceScreenOutput();PFPrintfStderr("Check File\n");}	// you may want to un-inline this
 
 	private:
-		uint64 m_nResidue;
+		uint64_t m_nResidue;
 		bool m_bPrime;
 };
 

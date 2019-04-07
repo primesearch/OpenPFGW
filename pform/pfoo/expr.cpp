@@ -3,12 +3,13 @@
 //==============================================================
 
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "expr.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
 #include "pffunctionsymbol.h"
 #include "pfstringsymbol.h"
-#include "primeserver.h"
 
 //extern volatile unsigned long g_base, g_k, g_n, g_nMin, g_nMax, g_kMin, g_kMax, g_kStep;
 //extern bool g_recur;
@@ -752,13 +753,13 @@ void FactorialHelper(Integer *p, long nMultStep, int m)
 
       for (; q <= nStop; q+=nMultStep)
       {
-         uint64 ui64Tmp=q;
+         uint64_t ui64Tmp=q;
          for (; ui64Tmp*(q+nMultStep) < INT_MAX && q < nStop;)
          {
             q += nMultStep;
             ui64Tmp *= q;
          }
-         mm2[which%4] *= (int32)ui64Tmp;
+         mm2[which%4] *= (int32_t)ui64Tmp;
          if (m)
             mm2[which%4] %= m;
          which++;
@@ -766,7 +767,7 @@ void FactorialHelper(Integer *p, long nMultStep, int m)
    }
    else
    {
-      int32 nTmp=1;
+      int32_t nTmp=1;
 
       // Get the singlton runs of 11 out of the way.  After this, all runs will reduce themselves by 1 at
       // the break points.  There is a single run of 7, three runs of 6, 36 runs of 4, lots of runs of 3 (up to
@@ -774,7 +775,7 @@ void FactorialHelper(Integer *p, long nMultStep, int m)
       // one number into a 31 bit long.
 
       // 12! fits in a long (31 bits)
-      int32 q = 2;
+      int32_t q = 2;
       for (; q <= nStop && q < 13; q++)
          nTmp *= q;
 
@@ -888,32 +889,50 @@ ExprOperator *MS_PRIM::Mutant() const
 }
 
 
-PFBoolean PrimorialHelper(Integer *p, uint32 pp)
+PFBoolean PrimorialHelper(Integer *p, uint32_t pp)
 {
-   uint64 q;
    Integer mm;
-   mm=1;
+   mm = 1;
 
-   primeserver->SkipTo(1);
-   for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
-     mm *= q;
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+   
+   vPrimes.clear();
 
-   *p=mm;
+   primesieve::generate_primes(1, pp, &vPrimes);
+   
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
+   {
+      mm *= *it;
+      it++;
+   }
+
+   *p = mm;
 
    return(PFBoolean::b_true);
 }
 
-PFBoolean PrimorialHelper2(Integer *p, uint32 pp, uint32 m)
+PFBoolean PrimorialHelper2(Integer *p, uint32_t pp, uint32_t m)
 {
-   uint64 q;
    Integer mm;
-   mm=1;
+   mm = 1;
    
-   primeserver->SkipTo(m);
-   for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
-     mm *= q;
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+   
+   vPrimes.clear();
 
-   *p=mm;
+   primesieve::generate_primes(m, pp, &vPrimes);
+   
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
+   {
+      mm *= *it;
+      it++;
+   }
+
+   *p = mm;
 
    return(PFBoolean::b_true);
 }
@@ -942,7 +961,7 @@ PFBoolean MS_PRIM::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> & /*o*/,in
     // if p is too large, forget it.
     if((*p)>100000000) return(PFBoolean::b_false);
 
-    uint32 pp= ((*p) & INT_MAX);
+    uint32_t pp= ((*p) & INT_MAX);
 
    if (m == 0)
       return PrimorialHelper(p,pp);
@@ -951,15 +970,23 @@ PFBoolean MS_PRIM::evaluate(PFStack<Integer> &s,PFStack<ExprOperator> & /*o*/,in
 
 
    Integer mm;
-   mm=1;
+   mm = 1;
 
-   uint64 q;
-   for (q = primeserver->NextPrime(); q <= pp; q = primeserver->NextPrime())
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+   
+   vPrimes.clear();
+
+   primesieve::generate_primes(1, pp, &vPrimes);
+   
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
    {
-      mm*=(q%m);
-      mm%=m;
+      mm *= (*it % m);
+      it++;
    }
-   *p=mm;
+
+   *p = mm;
 
    return(PFBoolean::b_true);
 }
@@ -976,7 +1003,7 @@ Integer *ex_parseInteger(PFString &w)
    PFBoolean seen=PFBoolean::b_false;
    char c;
    DWORD dwIndex;
-   uint32 Accum = 0;
+   uint32_t Accum = 0;
    DWORD ADigits=0;
 
    for(dwIndex=0;dwIndex<w.GetLength();dwIndex++)

@@ -1,8 +1,9 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_vector.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 F_Vector::F_Vector()
    :  PFIterativeSymbol("@vector"), pN(NULL),
@@ -126,40 +127,49 @@ PFBoolean F_Vector::OnInitialize()
    m_dwStepsTotal=((DWORD)estimatePrimes(pmin,pmax))>>1;
    m_dwStepGranularity=2048;
    m_bStopOverride=PFBoolean::b_true;
+   
+   std::vector<uint64_t> vPrimes;
+   
+   vPrimes.clear();
 
-   primeserver->SkipTo(pmin);
-   p = (uint32) primeserver->NextPrime();
+   primesieve::generate_primes(1, pmin, &vPrimes);
+
+   p = (uint32_t) vPrimes.at(0);
 
    return PFBoolean::b_true;
 }
 
 void F_Vector::OnPrompt()
 {
-// provided estimate primes is an overestimate, this will work
+   // provided estimate primes is an overestimate, this will work
    m_dwStepsTotal=m_dwStepsDone+(DWORD)estimatePrimes(p,pmax);
 }
 
 PFBoolean F_Vector::Iterate()
 {
-   if(p>pmax)
-   {
-      return(PFBoolean::b_true);       // end the test
-   }
-   uint32 p2;
-   p2 = (uint32) primeserver->NextPrime();
+   if (p > pmax)
+      return (PFBoolean::b_true);       // end the test
+   
+   std::vector<uint64_t> vPrimes;
+   uint32_t p2;
    int i1,i2;
+   
+   primesieve::generate_primes(2, p+1, &vPrimes);
+
+   p2 = (uint32_t) vPrimes.at(0);
 
    pN->m_mod2(p,p2,&i1,&i2);
-   if(i1<0) i1+=p;
-   if(i2<0) i2+=p2;
+
+   if (i1 < 0) i1 += p;
+   if (i2 < 0) i2 += p2;
 
    PFPrintfLog("%u: %d\n",p,i1);
-   if(p2<=pmax)
-   {
+
+   if (p2 <= pmax)
       PFPrintfLog("%u: %d\n",p2,i2);
-   }
    
-   p = (uint32) primeserver->NextPrime(); // ready for the next iteration
+   p = (uint32_t) vPrimes.at(1);            // ready for the next iteration
+
    return(PFBoolean::b_false);            // and its not quitting time yet
 }
 

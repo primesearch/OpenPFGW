@@ -7,17 +7,10 @@
 #if !defined (__PFOutput_H__)
 #define __PFOutput_H__
 
+#include <stdarg.h>
 #include <stdio.h>
 
-#define ANSI            /* Comment out for versions without stdarg.h  */
-
-#ifdef ANSI             /* ANSI compatible version          */
-#include <stdarg.h>
-#else                   /* UNIX compatible version          */
-#include <varargs.h>
-#endif
-
-#if _MSC_VER
+#ifdef _MSC_VER
 #define access _access
 #endif
 
@@ -70,13 +63,8 @@ class PFOutput
 
       static void PFWriteErrorToLog(const char *expr, const char *msg1, const char *msg2, const char *msg3, const char *msg4);
 
-#ifdef ANSI             /* ANSI compatible version          */
 		virtual int PFPrintfStderr(const char *Fmt, va_list &va)=0;
 		virtual int PFPrintf      (const char *Fmt, va_list &va)=0;
-#else
-		virtual int PFPrintfStderr( va_list )=0;
-		virtual int PFPrintf      ( va_list )=0;
-#endif
 
 	protected:
 		static bool m_bForcePrint;
@@ -101,19 +89,14 @@ class PFConsoleOutput : public PFOutput
 
 		void PFPrintfClearCurLine(int line_len);
 		int PFfflush(FILE *);
-#ifdef ANSI             /* ANSI compatible version          */
 		int PFPrintfStderr(const char *Fmt, va_list &va);
 		int PFPrintf      (const char *Fmt, va_list &va);
-#else
-		int PFPrintfStderr( va_list );
-		int PFPrintf      ( va_list );
-#endif
 };
 
 class PFWin32GUIOutput : public PFOutput
 {
 	public:
-		PFWin32GUIOutput(int hWnd);
+		PFWin32GUIOutput(long long hWnd);
 		~PFWin32GUIOutput();
 
 		void PFPrintfClearCurLine(int line_len);
@@ -122,7 +105,7 @@ class PFWin32GUIOutput : public PFOutput
 		int PFPrintf      (const char *Fmt, va_list &va);
 
 	private:
-		int m_hWnd;	// actually an HWND, but I want this to "compile" easily :)
+      long long m_hWnd;	// actually an HWND, but I want this to "compile" easily :)
 };
 
 

@@ -4,9 +4,9 @@
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
-#include "pfiopch.h"
 #include <stdio.h>
 #include <string.h>
+#include "pfiopch.h"
 
 extern eOutputMode g_eConsoleMode;
 extern bool GF_b_DoGFFactors;

@@ -1,8 +1,9 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_smarandache-wellin.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 #include "f_trivial.h"
 #include "pffactorizationsymbol.h"
@@ -52,15 +53,24 @@ PFBoolean F_SmarandacheWellin::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   uint32 p = ((*C) & INT_MAX);
+   uint32_t p = ((*C) & INT_MAX);
 
    Integer mm;
    mm=0;
-   uint32 q = 0;
-   primeserver->SkipTo(1);
+   uint32_t q = 0;
+   
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+   
+   vPrimes.clear();
 
-   while ((q = (uint32) primeserver->NextPrime()) <= p)
+   primesieve::generate_primes(1, p, &vPrimes);
+   
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
    {
+      q = (uint32_t) *it;
+
       if (q < 10) mm *= 10;
       else if (q < 100) mm *= 100;
       else if (q < 1000) mm *= 1000;
@@ -69,9 +79,11 @@ PFBoolean F_SmarandacheWellin::CallFunction(PFSymbolTable *pContext)
       else if (q < 1000000) mm *= 1000000;
       else if (q < 10000000) mm *= 10000000;
       else if (q < 100000000) mm *= 100000000;
+      else if (q < 1000000000) mm *= 1000000000;
       else return PFBoolean::b_false;
 
       mm += q;
+      it++;
    }
   
    Integer *r = new Integer(mm);
@@ -91,15 +103,23 @@ PFBoolean F_SmarandacheWellinPrime::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   uint32 index = ((*C) & INT_MAX);
+   uint32_t index = ((*C) & INT_MAX);
 
    Integer mm;
    mm=0;
-   uint32 i, q = 0;
+   uint32_t q = 0;
+   
+   std::vector<uint64_t> vPrimes;
+   std::vector<uint64_t>::iterator it;
+   
+   vPrimes.clear();
 
-   for (i=1; i<=index; i++)
+   primesieve::generate_n_primes(index, 1, &vPrimes);
+
+   it = vPrimes.begin();
+   while (it != vPrimes.end())
    {
-      q = (uint32) primeserver->ByIndex(i);
+      q = (uint32_t) *it;
 
       if (q < 10) mm *= 10;
       else if (q < 100) mm *= 100;
@@ -109,8 +129,10 @@ PFBoolean F_SmarandacheWellinPrime::CallFunction(PFSymbolTable *pContext)
       else if (q < 1000000) mm *= 1000000;
       else if (q < 10000000) mm *= 10000000;
       else if (q < 100000000) mm *= 100000000;
+      else if (q < 1000000000) mm *= 1000000000;
       else return PFBoolean::b_false;
-
+      
+      it++;
       mm += q;
    }
   

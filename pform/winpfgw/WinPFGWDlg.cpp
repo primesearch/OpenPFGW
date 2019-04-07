@@ -204,7 +204,7 @@ BOOL CWinPFGWDlg::OnInitDialog()
    CDialog::OnInitDialog();
 
    // Create a non-console Win32GUI output object.
-   pOutputObj = new PFWin32GUIOutput((int)m_hWnd);
+   pOutputObj = new PFWin32GUIOutput((long long) m_hWnd);
 
    g_pIni = new PFIni("pfgw.ini");
    m_ScreenMode = eNormal;
@@ -887,11 +887,9 @@ void CWinPFGWDlg::ThreadProc(void *m_ThisPointer)
    delete[] cp;
    // Run the damn thing.
 
-   primeserver = new PrimeServer();
-
    // Ok, now make the "magic" command line param.
    argv[argc] = new char [120];
-   sprintf(argv[argc++], "-$HWND=%X -Verbose=%d", This->m_hWnd, This->m_ScreenMode == eVerbose);
+   sprintf(argv[argc++], "-$HWND=%" PRIu64" -Verbose=%d", (long long) This->m_hWnd, This->m_ScreenMode == eVerbose);
 
    This->PostMessage(WinPFGW_MSG, M_SAVEOPTS, 0);
 
@@ -906,8 +904,6 @@ void CWinPFGWDlg::ThreadProc(void *m_ThisPointer)
    Sleep(100);
    This->PostMessage(WinPFGW_MSG, M_THREAD_EXITING, 0);
    Sleep(100);
-
-   delete primeserver;
 }
 
 

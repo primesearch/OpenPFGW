@@ -1,7 +1,7 @@
-#include "pfiopch.h"
+#include <stdio.h>
 #include <string.h>
+#include "pfiopch.h"
 #include "pfabcdfile.h"
-#include "stdtypes.h"
 
 extern bool g_bVerbose;
 extern bool g_bTerseOutput;
@@ -9,7 +9,7 @@ extern bool g_bTerseOutput;
 PFABCDFile::PFABCDFile(const char* FileName)
    : PFABCFile(FileName), m_Line1(0), m_TempLine(0)
 {
-   for (uint32 i = 0; i < 26; i++)
+   for (uint32_t i = 0; i < 26; i++)
       m_i64Accum[i] = 0;
    m_nAccum = 0;
    m_bReadNextLineFromFile = false;
@@ -166,7 +166,7 @@ ReadLineAgain:;
       goto ReadLineAgain_0;
    }
 
-   int64 Val = _atoi64(cp);
+   int64_t Val = _atoi64(cp);
    if (!Val && *cp != '0')
    {
       if (g_bVerbose)
@@ -185,12 +185,12 @@ ReadLineAgain:;
    if (1 == m_nAccum)
    {
       if (!m_bIgnoreOutput)
-         sprintf (_Line, ULL_FORMAT"\n", m_i64Accum[0]);
+         sprintf (_Line, "%" PRIu64"\n", m_i64Accum[0]);
    }
    else
    {
       cp = strchr(cp, ' ');
-      uint32 nArgs = 1;
+      uint32_t nArgs = 1;
 
       while (cp)
       {
@@ -258,9 +258,9 @@ ReadLineAgain:;
       if (!m_bIgnoreOutput)
       {
          cp = m_ABCLookingLine;
-         cp += sprintf (cp, ULL_FORMAT, m_i64Accum[0]);
+         cp += sprintf (cp, "%" PRIu64"", m_i64Accum[0]);
          for (nArgs = 1; nArgs < m_nAccum; ++nArgs)
-            cp += sprintf (cp, " "ULL_FORMAT, m_i64Accum[nArgs]);
+            cp += sprintf (cp, " %" PRIu64"", m_i64Accum[nArgs]);
 
          // Not sure the \n is needed, but it does not hurt
          sprintf (cp, "\n");

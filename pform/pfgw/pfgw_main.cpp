@@ -24,7 +24,7 @@
 // the loop exits.
 bool volatile g_bExitNow;
 bool volatile g_bExited;
-uint64 g_u64ResidueVal;
+uint64_t g_u64ResidueVal;
 
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e);
 Integer *ex_evaluate(PFSymbolTable *pContext,const PFString &e,int m);
@@ -49,6 +49,7 @@ int g_CompositeAthenticationLevel = 0;   // valid values are 0, 1, 2, 3, 4, 5
 int g_ExtraSQFree = 100;
 int g_Cert_Type = -1;
 int g_Cert_Delete = -1;
+int g_Threads = 1;
 bool g_ShowTestResult = false;
 bool g_bVerbose = false;
 bool g_bWinPFGW_Verbose = false;
@@ -65,7 +66,7 @@ bool g_bGMPMode=false;
 unsigned long clocks_per_sec;         // Machine dependent
 
 // these are used by SCRIPTFile's since they do not have access to the "global"
-extern uint64 g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
+extern uint64_t g_MinStartingPrimeToFactor, g_MaxStoppingPrimeToFactor;
 
 extern bool g_bHideNoFactor;          // in f_factor.cpp
 extern bool g_bReLoadFactorFile;      // in f_factor.cpp
@@ -223,7 +224,7 @@ CLOptionElement clList[]=
    {cl_illegal,   false,   ""},                 // Q
    {cl_illegal,   false,   ""},                 // R
    {cl_illegal,   false,   ""},                 // S
-   {cl_illegal,   false,   ""},                 // T
+   {cl_integer,   false,   "_THREADS"},         // T
    {cl_illegal,   false,   ""},                 // U
    {cl_boolean,   false,   "_VERBOSE"},         // V
    {cl_illegal,   false,   ""},                 // W
@@ -418,14 +419,12 @@ void ParseWinPFGWStuff(const char *Cmd)
       if (strncmp(Cmd, "HWND=", 5))
       {
          Cmd += 8;
-         // nanana I can use strtol here Chris ;)
-         g_hWnd_Dialog = (HWND)strtol(Cmd,0,16);
+         g_hWnd_Dialog = (HWND)strtoll(Cmd,0,16);
       }
       else if (strncmp(Cmd, "Verbose=", 8))
       {
          Cmd += 8;
-         // nanana I can use atoi here Chris ;)
-         g_bWinPFGW_Verbose = !!atoi(Cmd);
+         g_bWinPFGW_Verbose = atoi(Cmd);
       }
       else
       {
@@ -460,7 +459,7 @@ ProcessAgain:;
          TCHAR c=((LPCTSTR)s)[1];
          TCHAR cParameter=((LPCTSTR)s)[2];
          int iIndex=-1;
-         uint64 u64Value;
+         uint64_t u64Value;
          int    i32Value;
 
          if (cParameter == ' ') cParameter = 0;
@@ -519,7 +518,7 @@ ProcessAgain:;
                   return false;
                };
 
-               u64Value = _atou64(s.Mid(2));
+               sscanf(s.Mid(2), "%" SCNu64"", &u64Value);
                pTable->AddSymbol(new PFIntegerSymbol(clList[iIndex].sSymbol,new Integer(u64Value)));
                break;
             case cl_integer:
@@ -786,6 +785,21 @@ int pfgw_main(int argc,char *argv[])
          g_CompositeAthenticationLevel = 5;
    }
 
+   pSymbol=psymRuntime->LookupSymbol("_THREADS");
+   if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
+   {
+      Integer IAuth=*(((PFIntegerSymbol*)pSymbol)->GetValue());
+      char *cp = IAuth.Itoa();
+      g_Threads = atoi(cp);
+      delete[] cp;
+
+      if (g_Threads < 1)
+      {
+         g_Threads = 1;
+         PFPrintfStderr("ERROR.  The number of threads must be at least 1.  Changing to 1.\n");
+      }
+   }
+
    // Communicate these values to any SCRIPT so that it knows what the
    // "defaults" for factorizing are.
    g_MinStartingPrimeToFactor=g_MaxStoppingPrimeToFactor=0;
@@ -793,14 +807,14 @@ int pfgw_main(int argc,char *argv[])
    if (pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
    {
       Integer I = *((PFIntegerSymbol*)pSymbol)->GetValue();
-      uint64 n=1;
+      uint64_t n=1;
       I.m_mod(n<<62, &g_MinStartingPrimeToFactor);
    }
    pSymbol=psymRuntime->LookupSymbol("_PMAX");
    if (pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
    {
       Integer I = *((PFIntegerSymbol*)pSymbol)->GetValue();
-      uint64 n=1;
+      uint64_t n=1;
       I.m_mod(n<<62, &g_MaxStoppingPrimeToFactor);
    }
 
@@ -955,12 +969,12 @@ int pfgw_main(int argc,char *argv[])
       {
          int gap;
          sscanf(s, "ap=%d", &gap);
-         uint64 restart = 0;
+         uint64_t restart = 0;
          if (strchr(s, ','))
          {
             char *cp = strchr(s, ',');
             cp++;
-            sscanf(cp, ULL_FORMAT, &restart);
+            sscanf(cp, "%" SCNu64"", &restart);
          }
 #if (0)
          printf ("gap=%d restart=%I64u\n", gap, restart);
@@ -1527,9 +1541,9 @@ int pfgw_main(int argc,char *argv[])
                   if (!Retval)
                   {
                      PFPrintf("%s is composite: RES64: [%08X%08X] (%0.4fs+%0.4fs)\n",
-                                 LPCTSTR(g_cpTestString), (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
+                                 LPCTSTR(g_cpTestString), (uint32_t)(g_u64ResidueVal>>32), (uint32_t)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
                      PFPrintfLogOnly("%s is composite: RES64: [%08X%08X] (%0.4fs+%0.4fs)\n",
-                                 LPCTSTR(sNumber), (uint32)(g_u64ResidueVal>>32), (uint32)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
+                                 LPCTSTR(sNumber), (uint32_t)(g_u64ResidueVal>>32), (uint32_t)(g_u64ResidueVal&0xFFFFFFFF), t, t2-t);
                   }
                   else
                      PFPrintfLog("%s ERROR DURING PROCESSING! (%0.4fs+%0.4fs)\n",LPCTSTR(sNumber),t, t2-t);

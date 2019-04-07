@@ -1,6 +1,7 @@
-#include "pfiopch.h"
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "pfiopch.h"
 #include "pfscriptfile.h"
 
 extern bool volatile g_bExitNow;

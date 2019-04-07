@@ -1,8 +1,9 @@
 #include "pfoopch.h"
+#include <vector>
+#include <primesieve.hpp>
 #include "f_issquare.h"
 #include "symboltypes.h"
 #include "pfintegersymbol.h"
-#include "primeserver.h"
 
 F_IsSquare::F_IsSquare()
    : PFFunctionSymbol("@issquare")
@@ -79,17 +80,20 @@ PFBoolean F_IsSquare::CallFunction(PFSymbolTable *pContext)
                }
                else if(!bConclusive)
                {
-                  uint64 p;
+                  uint64_t p = 2;
+
+                  int iKro;
                   // we don't know yet, so do some more tests
                   // using the kronecker symbol
                   int iTests=numbits(QQ)+1;    // for this many bits
-                  p = primeserver->NextPrime();         // forget mod 2
 
                   while(!bConclusive && iTests--)
                   {
-                     p = primeserver->NextPrime();
-                     int iKro=kro(QQ,p);
-                     if(iKro==-1)
+                     p = primesieve::nth_prime(1, p);
+
+                     iKro = kro(QQ,p);
+
+                     if (iKro==-1)
                      {
                         bConclusive=PFBoolean::b_true;
                         bIsSquare=PFBoolean::b_false;

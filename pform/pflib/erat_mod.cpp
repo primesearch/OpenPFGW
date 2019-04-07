@@ -48,7 +48,7 @@
 // 3.  Trim as much as possible off setup (initilization) times.
 // 4.  Keep a "state" version, where the first generation data is stored for a modulus.
 // 5.  Done
-// 6.  Create an array of uint32's needed for the FillSmallPrimes function for each nsp level.
+// 6.  Create an array of uint32_t's needed for the FillSmallPrimes function for each nsp level.
 // 7.  Add "exceptions" to the modular sieve.  These will be in the "conditions" set.  Allowable
 //     exceptions are:  {f,#} which is all of the prime factors of # and {p,#} which are all
 //     primes less equal to than #.
@@ -80,8 +80,8 @@
 // 3.  forgot to set maxSmallPrime to the max in FillSmallPrimes.  This was not a "bug", but certainly
 //     caused this function to work much more often that it needed to.
 //
-uint32 *Erat_Mod::primetable;
-uint32  Erat_Mod::maxSmallPrime;
+uint32_t *Erat_Mod::primetable;
+uint32_t  Erat_Mod::maxSmallPrime;
 
 // Timings on my PII-400    2^16384+1 to 8^16384+1 from 0 to 42 bits
 // SIEVE_BIT_SIZE 18    81.260s
@@ -102,7 +102,7 @@ struct SmallPrimeSieveTable
 {
    enum {nMax=10};
    int nsp[nMax];
-   uint64 u64Pure[nMax];   // this is MaxPrime^2
+   uint64_t u64Pure[nMax];   // this is MaxPrime^2
    double dBits[nMax];
 } static spTab = {
    {5000,           10000,          25000,          50000,           100000,           200000,           400000,            600000,            1000000,            1500000         },
@@ -138,7 +138,7 @@ SmallPrimeSieveTable *spTab =
 #endif
 
 // egcd
-uint32 Erat_Mod::modInv(const uint32 x, const uint32 m)
+uint32_t Erat_Mod::modInv(const uint32_t x, const uint32_t m)
 {
 #if !defined(_MSC_VER) || defined(_64BIT)
    // C version takes about 3089 clock cycles for modInv(21314, 158617)
@@ -239,10 +239,10 @@ bool Erat_Mod::isValid()
    return m_bvalid;
 }
 
-void Erat_Mod::FillSmallPrimes(uint32 _nsp)
+void Erat_Mod::FillSmallPrimes(uint32_t _nsp)
 {
    ENTER("FillSmallPrimes");
-   uint32 Nsp, p;
+   uint32_t Nsp, p;
    if (maxSmallPrime >= _nsp)
       return;
    delete[] primetable;
@@ -252,10 +252,10 @@ void Erat_Mod::FillSmallPrimes(uint32 _nsp)
    // This will allow the program not to crash here, if we get to prime density
    // average less than 1 prime per every 20 numbers.  In a debug testing mode,
    // this code will printf if that happens (it never does).  We could probably
-   // trim this down considerably, or even create a table of how many uint32's
+   // trim this down considerably, or even create a table of how many uint32_t's
    // are needed for each "nsp" we deal with.  I will add that as a todo
-   uint32 *sv = new uint32[Stop+2000];
-   primetable = new uint32[_nsp];
+   uint32_t *sv = new uint32_t[Stop+2000];
+   primetable = new uint32_t[_nsp];
 
    primetable[0] = 2;
 
@@ -265,12 +265,12 @@ void Erat_Mod::FillSmallPrimes(uint32 _nsp)
    Nsp = 1;
    p = 0;
 
-   uint32 Prime;
+   uint32_t Prime;
    for (; Nsp < _nsp; Nsp++)
    {
       Prime = p*2+3;
       primetable[Nsp] = Prime;
-      uint32 Cur = p+Prime;
+      uint32_t Cur = p+Prime;
       while(Cur < _nsp*20)
       {
          if (IsBitSet2(sv, Cur))
@@ -301,10 +301,10 @@ void Erat_Mod::FillSmall_ixt()
 {
    ENTER("FillSmall_ixt");
    // This calculated size is safe.  At 100k small primes, we only need 1299721 bytes, but the extra does not hurt much
-   uint32 _nsp = spTab.nsp[m_n_spTabnCur];
-   uint32 p, X, b;
+   uint32_t _nsp = spTab.nsp[m_n_spTabnCur];
+   uint32_t p, X, b;
    delete[] m_ixt;
-   m_ixt = new uint64[_nsp];
+   m_ixt = new uint64_t[_nsp];
    FillSmallPrimes(_nsp);
 
    // This code fills in EVERYTHING.  Both the primetable[] and the ixt[] arrays.  primetable[] is an array
@@ -313,7 +313,7 @@ void Erat_Mod::FillSmall_ixt()
 
    for (p = 0;  p < _nsp; p++)
    {
-      uint32 Prime = primetable[p];
+      uint32_t Prime = primetable[p];
       // Now find the starting 'b' value for this Mod sieve.
       X = m_nModBase%Prime;
       if (!X)
@@ -338,7 +338,7 @@ void Erat_Mod::FillSmall_ixt()
 
 
 
-Erat_Mod::Erat_Mod(uint32 ModBase, bool bIsModPlus1, uint32 nSieveBitSize, uint32 Continuing_SIEVE_BIT_SIZE)
+Erat_Mod::Erat_Mod(uint32_t ModBase, bool bIsModPlus1, uint32_t nSieveBitSize, uint32_t Continuing_SIEVE_BIT_SIZE)
 : m_ModConditions(NULL), m_nModConditions(0), m_SModpMap(NULL), m_SMod_pMap(NULL), m_nModBase(ModBase),
   m_bIsModPlus1(bIsModPlus1), m_bvalid(false), m_bAdjusted(false), m_n_spTabnCur(0),
   m_SIEVE_BIT_SIZE(nSieveBitSize), m_ContinuingSIEVE_BIT_SIZE(Continuing_SIEVE_BIT_SIZE),
@@ -351,7 +351,7 @@ Erat_Mod::Erat_Mod(uint32 ModBase, bool bIsModPlus1, uint32 nSieveBitSize, uint3
    EXIT("constructor");
 }
 
-void Erat_Mod::Erat_Mod_init(uint32 ModBase, bool bIsModPlus1, uint32 nSieveBitSize, uint32 Continuing_SIEVE_BIT_SIZE)
+void Erat_Mod::Erat_Mod_init(uint32_t ModBase, bool bIsModPlus1, uint32_t nSieveBitSize, uint32_t Continuing_SIEVE_BIT_SIZE)
 {
    ENTER("Erat_mod_init");
    m_SModpMap = NULL;
@@ -395,7 +395,7 @@ Erat_Mod::Erat_Mod(const char* StartupString)
    // Ok, the format is {mod[,-1]}[{cond_mod,cond_val}...]
 // PFPrintf ("Modular sieve based on %s\n", StartupString);
    int n;
-   uint32 mod;
+   uint32_t mod;
    int Plus;
    bool b_Plus1 = true;
    n = sscanf(StartupString, "{%d,%d}", &mod, &Plus);
@@ -417,7 +417,7 @@ Erat_Mod::Erat_Mod(const char* StartupString)
       if (cp)
       {
          cp++;
-         uint32 val;
+         uint32_t val;
          char YN;
          n = sscanf(cp, "{%c,%d,%d}", &YN, &mod, &val);
          if (n != 3)
@@ -444,7 +444,7 @@ Erat_Mod::Erat_Mod(const char* StartupString)
    EXIT("constructor s");
 }
 
-void Erat_Mod::SetSieveBitMapSize(uint32 s)
+void Erat_Mod::SetSieveBitMapSize(uint32_t s)
 {
    ENTER("SetSieveBitMapSize");
    m_SIEVE_BIT_SIZE = m_ContinuingSIEVE_BIT_SIZE = s;
@@ -486,14 +486,14 @@ void Erat_Mod::SModLoadNextSieveChunk()
    if (AdjustDepth())
       FillSmall_ixt();
 
-   uint32 nvalsleft;
+   uint32_t nvalsleft;
 
    m_uiLast = m_SModMaxNum;
 
    Init_pMap2(m_uiNext, m_SModMaxNum, &m_SMod_pMap, &m_SModpMap);
    Set_All_bits_true2(m_uiNext, m_SModMaxNum, nvalsleft, m_SModpMap);
 
-   uint32 _nsp = spTab.nsp[m_n_spTabnCur];
+   uint32_t _nsp = spTab.nsp[m_n_spTabnCur];
 
    if (!m_bSModLoadNextSieveChunk_Adjusted)
    {
@@ -502,7 +502,7 @@ void Erat_Mod::SModLoadNextSieveChunk()
 
       if (m_uiNext != 0)
       {
-         for (uint32 i = 0; i < _nsp; i++)
+         for (uint32_t i = 0; i < _nsp; i++)
          {
             if (m_uiNext > m_ixt[i])
                m_ixt[i] += ((m_uiNext-m_ixt[i])/primetable[i])*primetable[i];
@@ -514,9 +514,9 @@ void Erat_Mod::SModLoadNextSieveChunk()
       else
       {
          // For sieves starting at 0, we MUST be very careful with correct modular primes less than max number in primetable.
-         for (uint32 i = 0; i < _nsp; i++)
+         for (uint32_t i = 0; i < _nsp; i++)
          {
-            uint64 j = m_ixt[i];
+            uint64_t j = m_ixt[i];
 #ifdef _MSC_VER
             if (j == 0xFFFFFFFFFFFFFFFF)
 #else
@@ -552,9 +552,9 @@ void Erat_Mod::SModLoadNextSieveChunk()
       }
    }
 
-   for (uint32 i = 0; i < _nsp; i++)
+   for (uint32_t i = 0; i < _nsp; i++)
    {
-      uint64 j = m_ixt[i];
+      uint64_t j = m_ixt[i];
       for (; j <= m_SModMaxNum; j += primetable[i])
       {
          if (IsBitSet2(m_SModpMap, j))
@@ -573,9 +573,9 @@ void Erat_Mod::SModLoadNextSieveChunk()
    EXIT("SModLoadNextSieveChunk");
 }
 
-uint64 Erat_Mod::next()
+uint64_t Erat_Mod::next()
 {
-   uint64 Ret;
+   uint64_t Ret;
 
    if (m_nCurException < m_nNumExceptions)
       return m_Exceptions[m_nCurException++];
@@ -591,14 +591,6 @@ uint64 Erat_Mod::next()
 
    for(;;)
    {
-#if 0
-      // this loop appears to produce a code generation bug in gcc version 2.9-beos-991026
-      // with the current level of optimization for the project (it does not when the
-      // optimization is not enabled). TODO: research more into possible gcc/x86 versions.
-      // Register allocation for the 64-bit m_uiNext gets stomped in the following code.
-      while (!IsBitSet2(m_SModpMap, m_uiNext))
-         ++m_uiNext;
-#else
       // The workaround attempted here is to make the bit test
       // relative to the previous search position. This doesn't
       // break the addressing offset that's already in effect.
@@ -610,14 +602,13 @@ uint64 Erat_Mod::next()
       // anyway.
 
       // This does however break transparency somewhat of the m_uiNext
-      // cursor (tthis code assumes its a uint64).
-      uint32 *pSieveBase=&m_SModpMap[m_uiNext>>5];
-      uint32 uiIndex=((uint32)m_uiNext)&0x1F;
+      // cursor (tthis code assumes its a uint64_t).
+      uint32_t *pSieveBase=&m_SModpMap[m_uiNext>>5];
+      uint32_t uiIndex=((uint32_t)m_uiNext)&0x1F;
       m_uiNext^=uiIndex;
       while(!IsBitSet2(pSieveBase,uiIndex))
          ++uiIndex;
       m_uiNext+=uiIndex;
-#endif
 
       // Check for end of buffer condition.  NOTE that a guard bit was added to the end of the bit array, so
       // we only have to check for end of buffer once a bit has been found.  This guard bit allows us to avoid
@@ -632,18 +623,18 @@ uint64 Erat_Mod::next()
       }
       m_uiNext++;
       if (m_bIsModPlus1)
-         Ret=((uint64)m_uiNext)*m_nModBase+1;
+         Ret=((uint64_t)m_uiNext)*m_nModBase+1;
       else
-         Ret=((uint64)m_uiNext)*m_nModBase-1;
+         Ret=((uint64_t)m_uiNext)*m_nModBase-1;
 
       if (m_nModConditions)
       {
          // Checking for conditions will be done as a set of OR's.  As soon as a condition is met,
          // then the resultant number is returned.   We may need to add additional logic to
          // allow or'ing and and'ing syntax, but for this first cut, OR'ing is all that is done.
-         for (uint32 i = 0; i < m_nModConditions; i++)
+         for (uint32_t i = 0; i < m_nModConditions; i++)
          {
-            bool bYes = ((int64)Ret%m_ModConditions[i].Mod) == m_ModConditions[i].Val;
+            bool bYes = ((int64_t)Ret%m_ModConditions[i].Mod) == m_ModConditions[i].Val;
             if (bYes && m_ModConditions[i].bOnlyAcceptIfTrue)
                return Ret;
             if (!bYes && !m_ModConditions[i].bOnlyAcceptIfTrue)
@@ -657,11 +648,11 @@ uint64 Erat_Mod::next()
    return Ret;
 }
 
-void  Erat_Mod::AddSmallPrimesExceptions(uint32 nMaxSmallPrimeWanted)
+void  Erat_Mod::AddSmallPrimesExceptions(uint32_t nMaxSmallPrimeWanted)
 {
    if (nMaxSmallPrimeWanted < 2)
       return;
-   uint32 nNumSmallPr, i, j;
+   uint32_t nNumSmallPr, i, j;
 
    if (!maxSmallPrime || primetable[maxSmallPrime] <= nMaxSmallPrimeWanted)
       FillSmallPrimes(nMaxSmallPrimeWanted/20+2000);
@@ -671,7 +662,7 @@ void  Erat_Mod::AddSmallPrimesExceptions(uint32 nMaxSmallPrimeWanted)
 
    for (nNumSmallPr = 0; primetable[nNumSmallPr] <= nMaxSmallPrimeWanted; nNumSmallPr++)
       ;
-   uint64 *nTmp = new uint64 [nNumSmallPr + m_nNumExceptions];
+   uint64_t *nTmp = new uint64_t [nNumSmallPr + m_nNumExceptions];
    for (i = 0; i < m_nNumExceptions; i++)
       nTmp[i] = m_Exceptions[i];
    for (j = 0; j < nNumSmallPr; j++)
@@ -682,13 +673,13 @@ void  Erat_Mod::AddSmallPrimesExceptions(uint32 nMaxSmallPrimeWanted)
    m_nCurException = 0;
 }
 
-void  Erat_Mod::AddFactorsExceptions(uint64 nNum)
+void  Erat_Mod::AddFactorsExceptions(uint64_t nNum)
 {
    if (nNum < 2)
       return;
-   uint64 nFacts[16];      // since 53# is greater than 2^64, the most uniq factors of ANY number under 2^64 is 15
+   uint64_t nFacts[16];      // since 53# is greater than 2^64, the most uniq factors of ANY number under 2^64 is 15
    FillSmallPrimes(5000);
-   uint32 i, j, n;
+   uint32_t i, j, n;
    for (i = 0, n = 0; i < 5000 && nNum != 1; i++)
    {
       if (nNum%primetable[i] == 0)
@@ -698,7 +689,7 @@ void  Erat_Mod::AddFactorsExceptions(uint64 nNum)
          nFacts[n++] = primetable[i];
       }
    }
-   uint64 *nTmp = new uint64 [n + m_nNumExceptions];
+   uint64_t *nTmp = new uint64_t [n + m_nNumExceptions];
    for (i = 0; i < m_nNumExceptions; i++)
       nTmp[i] = m_Exceptions[i];
    for (j = 0; j < n; j++)
@@ -715,7 +706,7 @@ void  Erat_Mod::AddModCondition(int Mod, int Val, bool bOnlyAcceptIfTrue)
    ModCondition *p = new ModCondition[m_nModConditions+1];
    if (m_nModConditions)
    {
-      for (uint32 i = 0; i < m_nModConditions; i++)
+      for (uint32_t i = 0; i < m_nModConditions; i++)
          p[i] = m_ModConditions[i];
    }
    p[m_nModConditions].bOnlyAcceptIfTrue = bOnlyAcceptIfTrue;
@@ -727,7 +718,7 @@ void  Erat_Mod::AddModCondition(int Mod, int Val, bool bOnlyAcceptIfTrue)
    EXIT("AddModCondition");
 }
 
-void Erat_Mod::skipto(uint64 SkipTo)
+void Erat_Mod::skipto(uint64_t SkipTo)
 {
    ENTER("skipto");
    m_uiNext = (SkipTo/m_nModBase);
@@ -802,24 +793,24 @@ Erat_Mod::~Erat_Mod()
 #endif
 
 // Note that testing is "limited" to only 2^42 by this function.
-uint64 mulmodp (const uint64 a, const uint64 b, const uint64 p)
+uint64_t mulmodp (const uint64_t a, const uint64_t b, const uint64_t p)
 {
-   static uint64 r;
-   uint64 a0  = a & 0x1FFFFF;
-   uint64 a20 = (a >> 21) & 0x1FFFFF;
-   uint64 b0  = b & 0x1FFFFF;
-   uint64 b20 = (b >> 21) & 0x1FFFFF;
+   static uint64_t r;
+   uint64_t a0  = a & 0x1FFFFF;
+   uint64_t a20 = (a >> 21) & 0x1FFFFF;
+   uint64_t b0  = b & 0x1FFFFF;
+   uint64_t b20 = (b >> 21) & 0x1FFFFF;
    r = (a20*b20) % p;
    r = ((r<<21) + a0*b20 + a20*b0) % p;
    r = ((r<<21) + a0*b0) % p;
    return r;
 }
 
-bool prp (const uint64 p, int b)
+bool prp (const uint64_t p, int b)
 {
-   static uint64 x, r;
+   static uint64_t x, r;
     r=1, x=b;
-    uint64 n = p-1;
+    uint64_t n = p-1;
 
     for (;n!=1;n>>=1)
     {
@@ -832,9 +823,9 @@ bool prp (const uint64 p, int b)
     return r==1;
 }
 
-uint64 powmod (uint64 p, uint64 e, const uint64 n)
+uint64_t powmod (uint64_t p, uint64_t e, const uint64_t n)
 {
-   uint64 y=1;
+   uint64_t y=1;
     for (;;)
     {
         if (e & 1)
@@ -846,19 +837,19 @@ uint64 powmod (uint64 p, uint64 e, const uint64 n)
     }
 }
 
-bool MillerTest(const uint64 n, uint32 x)
+bool MillerTest(const uint64_t n, uint32_t x)
 {
-   uint64 t = n-1;
-   uint64 q = t>>1;
-   uint32 k = 1;
+   uint64_t t = n-1;
+   uint64_t q = t>>1;
+   uint32_t k = 1;
    while ( (q & 1) == 0)
    {
       k++;
       q >>= 1;
    }
 
-   uint32 j = 0;
-   uint64 y = powmod(x, q, n);
+   uint32_t j = 0;
+   uint64_t y = powmod(x, q, n);
    for (;;)
    {
       if ( (j == 0 && y == 1) || y == n-1)
@@ -892,15 +883,6 @@ int Usage()
 // output, and a re-syncing is attempted.  So far, with the Miller tests added, there have been
 // no false alarms.
 
-#ifndef _MSC_VER
-int64 _atoi64(const char *s)
-{
-   int64 x;
-   sscanf(s, "%lld", &x);
-   return x;
-}
-#endif
-
 int main(int argc, char **argv)
 {
    int Mod;
@@ -914,7 +896,7 @@ int main(int argc, char **argv)
       b_isPos = false;
    bool bSpeedTest = false;
    bool bModGen = false;
-   uint64 MaxVal = 1;
+   uint64_t MaxVal = 1;
    MaxVal <<= 62;
 
    Erat_Mod Sieve(Mod, b_isPos);
@@ -945,8 +927,8 @@ int main(int argc, char **argv)
    }
    Sieve.init();
    fprintf(stderr, "\nTesting Erat_Mod(%d), hit ^C to break\n", Mod);
-   uint32 Cnt=0;
-   uint64 s = 0;
+   uint32_t Cnt=0;
+   uint64_t s = 0;
    char u64Buf1[20], u64Buf2[20];
    bool skipme = false;
 
@@ -956,57 +938,57 @@ int main(int argc, char **argv)
 #if defined (_MSC_VER)
       bIsTTY = !!isatty(fileno(stdout));
 #endif
-      for (uint64 j = 1; ; j++)
+      for (uint64_t j = 1; ; j++)
       {
          if (!bIsTTY)
          {
             s = Sieve.next();
             if (MaxVal < s)
             {
-               fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\r", Cnt, s);
+               fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\r", Cnt, s);
                break;
             }
-            printf (""ULL_FORMAT"\n", s);
+            printf ("%" PRIu64"\n", s);
             ++Cnt;
             if ((Cnt%10000) == 1)
-               fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\r", Cnt, s);
+               fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\r", Cnt, s);
          }
          else
          {
             s = Sieve.next();
             if (MaxVal < s)
                break;
-            printf (""ULL_FORMAT"\n", s);
+            printf ("%" PRIu64"\n", s);
          }
       }
    }
    else if (bSpeedTest)
    {
-      for (uint64 j = 1; j; j++)
+      for (uint64_t j = 1; j; j++)
       {
          s = Sieve.next();
          if (MaxVal < s)
             break;
          ++Cnt;
          if ((Cnt%10000) == 1)
-            fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\r", Cnt, s);
+            fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\r", Cnt, s);
       }
-      fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\r", Cnt, s);
+      fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\r", Cnt, s);
    }
    else
    {
       // validity test (slow, but pretty good)
-      for (uint64 i = 1; i; i++)
+      for (uint64_t i = 1; i; i++)
       {
          Continue:;
-         uint64 t = i;
+         uint64_t t = i;
          t *= Mod;
          if (b_isPos)
             t++;
          else
             t--;
 
-         uint32 m = (uint32)(t%(3*5*7*11*13*17*19*23*29U));
+         uint32_t m = (uint32_t)(t%(3*5*7*11*13*17*19*23*29U));
          if (m%3==0||m%5==0||m%7==0||m%11==0||m%13==0||m%17==0||m%19==0||m%23==0||m%29==0)
             continue;
 
@@ -1066,15 +1048,15 @@ int main(int argc, char **argv)
 
             // NOTE that because of the C version of mulmod, we are limited to testing only the first
             // 42 bits.  So if we get an error, make SURE that we have not exceeded that threashold.
-            uint64 max = 1;
+            uint64_t max = 1;
             if (s > max<<42)
             {
                Erat_Mod::FreeAllMemory();
-               fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\n\n", Cnt, s);
+               fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\n\n", Cnt, s);
                return printf ("NOTE that testing is ONLY valid to 42 bits, and we have reached that point\n");
             }
 
-            printf ("\rError sieve="ULL_FORMAT"  Calc = "ULL_FORMAT"\n", s, t);
+            printf ("\rError sieve=%" PRIu64"  Calc = %" PRIu64"\n", s, t);
             DoAgain:;
             while (s < t)
             {
@@ -1091,7 +1073,7 @@ int main(int argc, char **argv)
                   t = i;
                   t *= Mod;
                   t++;
-                  m = (uint32)(t%(3*5*7*11*13*17*19*23*29U));
+                  m = (uint32_t)(t%(3*5*7*11*13*17*19*23*29U));
                }
                while (m%3==0||m%5==0||m%7==0||m%11==0||m%13==0||m%17==0||m%19==0||m%23==0||m%29==0||!prp(t,3)||!prp(t,2));
                goto DoAgain;
@@ -1099,9 +1081,9 @@ int main(int argc, char **argv)
          }
          ++Cnt;
          if ((Cnt%1000) == 1)
-            fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\r", Cnt, s);
+            fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\r", Cnt, s);
       }
-      fprintf (stderr, "\rWorking at prime # %d  pr="ULL_FORMAT"\r", Cnt, s);
+      fprintf (stderr, "\rWorking at prime # %d  pr=%" PRIu64"\r", Cnt, s);
    }
 
    Erat_Mod::FreeAllMemory();
