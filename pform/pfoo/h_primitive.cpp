@@ -31,6 +31,10 @@ PFBoolean H_Primitive::Evaluate(PFSymbolTable *pTable,EVALUATOR fEval,Integer &N
                PFSymbolTable *pSubContext=new PFSymbolTable(pTable);
                int iTrivial=PFFunctionSymbol::CallSubroutine("@trivial",pSubContext);
 
+               // When called via a pfgw script, the @trivial function isn't in the pSubContext
+               if (iTrivial == -1)
+                  return bRetval;
+
                IPFSymbol *pFactor=pSubContext->LookupSymbol("_TRIVIALFACTOR");
 
                // Use the Mobius inversion formula.
