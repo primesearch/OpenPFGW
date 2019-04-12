@@ -123,6 +123,7 @@ void PFFunctionSymbol::LoadExprFunctions(PFSymbolTable *psymRuntime)
    psymRuntime->AddSymbol(new F_SmarandacheWellinPrime);
    psymRuntime->AddSymbol(new F_CopelandErdos);
    psymRuntime->AddSymbol(new F_Sequence);
+   psymRuntime->AddSymbol(new F_Trivial);
    psymRuntime->AddSymbol(new F_LucasV);
    psymRuntime->AddSymbol(new F_LucasU);
    psymRuntime->AddSymbol(new F_PrimV);
