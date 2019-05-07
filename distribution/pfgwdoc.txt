@@ -415,10 +415,6 @@ B.3. The options.
        or are used to double check a list of supposed PRPs and it is better to see the output
        for each test.
   
-   -S  Suffix
-       This appends a suffix to the temporary files created by PFGW.  It allows multiple
-       copies of PFGW to be run from the same directory.
-  
    -T  Threads
        This specifies the number of threads that the gwnum library should use in the
        multiply routines.
