@@ -4,6 +4,7 @@
 //
 //   Also will contain a "class" which will help go between all GUI/console apps.
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "pfiopch.h"

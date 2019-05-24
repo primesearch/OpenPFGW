@@ -49,7 +49,7 @@ void PFABCDFile::CutOutFirstLine()
 
    strcpy(m_ABCLookingLine, cp);
 
-   m_i64Accum[0] = _atoi64(cp);
+   sscanf(cp, "%" SCNu64"", &m_i64Accum[0]);
 
    if (m_i64Accum[0] == 0 && *cp != '0')
       throw("Error, Not a valid ABCD Sieve file, argument 1 in [] format not valid");
@@ -59,7 +59,7 @@ void PFABCDFile::CutOutFirstLine()
    while (cp)
    {
       ++cp;
-      m_i64Accum[m_nAccum] = _atoi64(cp);
+      sscanf(cp, "%" SCNu64"", &m_i64Accum[m_nAccum]);
       if (!m_i64Accum[m_nAccum]  && *cp != '0')
       {
          char Msg[120];
@@ -166,7 +166,9 @@ ReadLineAgain:;
       goto ReadLineAgain_0;
    }
 
-   int64_t Val = _atoi64(cp);
+   int64_t Val;
+   sscanf(cp, "%" SCNu64"", &Val);
+   
    if (!Val && *cp != '0')
    {
       if (g_bVerbose)
@@ -195,7 +197,8 @@ ReadLineAgain:;
       while (cp)
       {
          ++cp;
-         Val = _atoi64(cp);
+         sscanf(cp, "%" SCNu64"", &Val);
+
          if (!Val  && *cp != '0')
          {
             if (g_bVerbose)
@@ -210,13 +213,13 @@ ReadLineAgain:;
             while (*cp == ' ' || *cp == '\t')
                ++cp;
 
-            m_i64Accum[0] -= _atoi64(cp);
+            sscanf(cp, "%" SCNu64"", &m_i64Accum[0]);
             nArgs = 1;
             cp = strchr(cp, ' ');
             while (cp)
             {
                ++cp;
-               Val = _atoi64(cp);
+               sscanf(cp, "%" SCNu64"", &Val);
                if (!Val  && *cp != '0')
                   goto ReadLineAgain;
                m_i64Accum[nArgs] -= Val;
@@ -242,13 +245,13 @@ ReadLineAgain:;
          cp = m_TempLine;
          while (*cp == ' ' || *cp == '\t')
             ++cp;
-         m_i64Accum[0] -= _atoi64(cp);
+         sscanf(cp, "%" SCNu64"", &m_i64Accum[0]);
          nArgs = 1;
          cp = strchr(cp, ' ');
          while (cp && nArgs < m_nAccum)
          {
             ++cp;
-            Val = _atoi64(cp);
+            sscanf(cp, "%" SCNu64"", &Val);
             m_i64Accum[nArgs] -= Val;
             ++nArgs;
             cp = strchr(cp, ' ');

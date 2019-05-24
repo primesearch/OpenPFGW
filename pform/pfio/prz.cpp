@@ -41,7 +41,7 @@ PrZ_Section_Header_Base::PrZ_Section_Header_Base(const char *pLine1, int /*nLine
       const char *cp = strchr(pLine1, '[');
       if (!cp)
          throw "Error, can't find the '[' char of the ABCD file\n";
-      PrZ_OffsetK = _atoi64(&cp[1]);
+      sscanf(&cp[1], "%" SCNu64"", &PrZ_OffsetK);
    }
    else
       PrZ_OffsetK = 0;
@@ -234,12 +234,14 @@ PrZ_NewPGen_Section_Header::PrZ_NewPGen_Section_Header(const char *pLine1, int n
 
    // unknown at this time.
    PrZ_nvalsleft = 0;
-   bool bOdd = !!(PrZ_OffsetK & 1);
+   bool bOdd = (PrZ_OffsetK & 1);
    _bSkipEvens = true;
    for (int j = 0; !feof(in) && j < 150 && _bSkipEvens; ++j)
    {
       fgets(Buf, sizeof(Buf), in);
-      bool bodd = !!(_atoi64(Buf) & 1);
+      uint64_t temp;
+      sscanf(Buf, "%" SCNu64"", &temp);
+      bool bodd = (temp & 1);
       if (bodd && !bOdd)
          _bSkipEvens = false;
       if (!bodd && bOdd)
@@ -315,13 +317,15 @@ PrZ_Generic_Section_Header::PrZ_Generic_Section_Header(const char *pLine1, int n
    char Buf[500];
    fgets(Buf, sizeof(Buf), in);
    PrZ_nvalsleft = 0;
-
-   bool bOdd = !!(_atoi64(Buf) & 1);
+   uint64_t temp;
+   sscanf(Buf, "%" SCNu64"", &temp);
+   bool bOdd = (temp & 1);
    _bSkipEvens = true;
    for (int j = 0; !feof(in) && j < 150 && _bSkipEvens; ++j)
    {
       fgets(Buf, sizeof(Buf), in);
-      bool bodd = !!(_atoi64(Buf) & 1);
+      sscanf(Buf, "%" SCNu64"", &temp);
+      bool bodd = (temp & 1);
       if (bodd && !bOdd)
          _bSkipEvens = false;
       if (!bodd && bOdd)

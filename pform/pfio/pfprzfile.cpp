@@ -52,7 +52,7 @@ void PFPrZFile::CutOutFirstLine()
 
    strcpy(m_ABCLookingLine, cp);
 
-   m_i64Accum = _atoi64(cp);  // I know this is non-portable,  I am simply getting the logic done now, and not concerned about it.
+   sscanf(cp, "%" SCNu64"", &m_i64Accum);
 
    if (m_i64Accum == 0 && *cp != '0')
       throw("Error, Not a valid PrZ_ABCD Sieve file, argument 1 in [] format not valid");

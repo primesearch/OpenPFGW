@@ -1,4 +1,5 @@
 //  PFFile class for file handling
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "pfiopch.h"

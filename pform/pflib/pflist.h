@@ -39,7 +39,7 @@ PFList<T>::PFList(const PFBoolean& bOwns)
 	m_pHead=(ListNode*)&m_pTail;
 	m_pTail=NULL;
 	m_pTailpred=(ListNode*)&m_pHead;
-};
+}
 
 template<class T>
 PFList<T>::~PFList()

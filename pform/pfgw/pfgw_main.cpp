@@ -672,7 +672,7 @@ int pfgw_main(int argc,char *argv[])
 
    PFOutput::EnableOneLineForceScreenOutput();
    pTerseOutput = psymRuntime->LookupSymbol("_TERSE_OUTPUT");
-   g_bTerseOutput = (pTerseOutput > 0);
+   g_bTerseOutput = (pTerseOutput != 0);
    if (!g_bTerseOutput)
        PFPrintfStderr ("PFGW Version %s [GWNUM %s]\n\n", VERSION_STRING, GWNUM_VERSION);
 

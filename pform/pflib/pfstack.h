@@ -27,7 +27,7 @@ template<class T>
 PFStack<T>::PFStack(const PFBoolean& bOwns)
 	: PFList<T>(bOwns)
 {
-};
+}
 
 template<class T>
 PFStack<T>::~PFStack()

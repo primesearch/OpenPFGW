@@ -8,6 +8,7 @@
 #if !defined (__PF_INI_H_)
 #define __PF_INI_H_
 
+#include <stdint.h>
 #include <time.h>   // for time_t
 #if defined (_MSC_VER)
 #include <windows.h>

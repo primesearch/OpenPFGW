@@ -7,6 +7,7 @@
 #if !defined (__PFOutput_H__)
 #define __PFOutput_H__
 
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -29,7 +30,7 @@ int PFPrintf(const char *Fmt, ...);
 int PFPrintfLog(const char *Fmt, ...);
 int PFPrintfLogOnly(const char *Fmt, ...);
 
-};
+}
 
 class PFOutput
 {
@@ -96,7 +97,7 @@ class PFConsoleOutput : public PFOutput
 class PFWin32GUIOutput : public PFOutput
 {
 	public:
-		PFWin32GUIOutput(long long hWnd);
+		PFWin32GUIOutput(uint64_t hWnd);
 		~PFWin32GUIOutput();
 
 		void PFPrintfClearCurLine(int line_len);
@@ -105,7 +106,7 @@ class PFWin32GUIOutput : public PFOutput
 		int PFPrintf      (const char *Fmt, va_list &va);
 
 	private:
-      long long m_hWnd;	// actually an HWND, but I want this to "compile" easily :)
+      uint64_t m_hWnd;	// actually an HWND, but I want this to "compile" easily :)
 };
 
 

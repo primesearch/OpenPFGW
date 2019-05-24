@@ -3,6 +3,7 @@
 #if !defined (__PFFile_H__)
 #define __PFFile_H__
 
+#include <stdint.h>
 #include "pflib.h"
 #include "pfmath.h"
 
