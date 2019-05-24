@@ -4,17 +4,17 @@ srcdir=.
 CXX		=	g++
 include make.inc
 
-pfgw64:	baselib integer fft pfoo io entrypoint
+pfgw64:	baselib integer fft pfoo io entrypoint primesieve
 	${CXX} ${CXXFLAGS}	\
 		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
-		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a \
-		packages/gmp/64bit/libgmp.a packages/gwnum/64bit/gwnum.a  -Wl,-no_pie -lpthread -lstdc++ -o pfgw64
+		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a pform/primesieve/.libs/primesieve.a \
+		packages/gmp/64bit/libgmp.a packages/gwnum/64bit/gwnum.a  -Wl,-no_pie -lpthread -lc++ -o pfgw64
 
 pfgw32:	baselib integer fft pfoo io entrypoint
 	${CXX} ${CXXFLAGS}	\
 		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
 		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a \
-		packages/gmp/32bit/libgmp.a packages/gwnum/32bit/gwnum.a  -Wl,-no_pie -lpthread -lstdc++ -o pfgw32
+		packages/gmp/32bit/libgmp.a packages/gwnum/32bit/gwnum.a  -Wl,-no_pie -lpthread -lc++ -o pfgw32
 
 maintainer-clean:	distclean
 	rm -f configure
@@ -41,6 +41,7 @@ distclean:	clean
 	${MAKE} -C pform/pfoo distclean
 	${MAKE} -C pform/pfio distclean
 	${MAKE} -C pform/pfgw distclean
+	${MAKE} -C pform/primesieve distclean
 	
 clean:
 	rm -f pfgw32 pfgw64
@@ -50,6 +51,7 @@ clean:
 	${MAKE} -C pform/pfoo clean
 	${MAKE} -C pform/pfio clean
 	${MAKE} -C pform/pfgw clean
+	${MAKE} -C pform/primesieve clean
 	
 dependencies:
 	${MAKE} -C pform/pflib dependencies
@@ -58,6 +60,7 @@ dependencies:
 	${MAKE} -C pform/pfoo dependencies
 	${MAKE} -C pform/pfio dependencies
 	${MAKE} -C pform/pfgw dependencies
+	${MAKE} -C pform/primesieve dependencies
 
 baselib:
 	${MAKE} -C pform/pflib
@@ -76,6 +79,9 @@ io:
 
 entrypoint:
 	${MAKE} -C pform/pfgw
+	
+primesieve:
+	${MAKE} -C pform/primesieve
 	
 gmp:
 	${MAKE} -C packages/gmp
