@@ -79,16 +79,16 @@ PFBoolean PFIterativeSymbol::CallFunction(PFSymbolTable *pContext)
                   if (ErrorCheck(m_dwStepsDone, m_dwStepsTotal))
                   {
                      if (*g_cpTestString)
-                        sprintf(Buf,"%s%.50s %lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal, g_dMaxError);
+                        sprintf(Buf,"%s%.50s %u/%u mro=%0.10g\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal, g_dMaxError);
                      else
-                        sprintf(Buf,"%s%lu/%lu mro=%0.10g\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal, g_dMaxError);
+                        sprintf(Buf,"%s%u/%u mro=%0.10g\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal, g_dMaxError);
                   }
                   else
                   {
                      if (*g_cpTestString)
-                        sprintf(Buf,"%s%.50s %lu/%lu\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal);
+                        sprintf(Buf,"%s%.50s %u/%u\r",LPCTSTR(g_sTestMode),g_cpTestString, m_dwStepsDone,m_dwStepsTotal);
                      else
-                        sprintf(Buf,"%s%lu/%lu\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal);
+                        sprintf(Buf,"%s%u/%u\r",LPCTSTR(g_sTestMode),m_dwStepsDone,m_dwStepsTotal);
                   }
                   int thisLineLen = (int) strlen(Buf);
                   if (lastLineLen > thisLineLen)

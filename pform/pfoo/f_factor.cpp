@@ -586,9 +586,9 @@ void F_Factor::OnPrompt()
    {
       char Buf[256];
       if (*g_cpTestString)
-         sprintf(Buf,"F: %.50s %lu/%lu (trial factor to %" PRIu64")\r",g_cpTestString, m_dwStepsDone,m_dwStepsTotal,pmax);
+         sprintf(Buf,"F: %.50s %u/%u (trial factor to %" PRIu64")\r",g_cpTestString, m_dwStepsDone,m_dwStepsTotal,pmax);
       else
-         sprintf(Buf,"F: %lu/%lu (trial factor to %" PRIu64")\r",m_dwStepsDone,m_dwStepsTotal,pmax);
+         sprintf(Buf,"F: %u/%u (trial factor to %" PRIu64")\r",m_dwStepsDone,m_dwStepsTotal,pmax);
       int thisLineLen = (int) strlen(Buf);
       if (lastLineLen > thisLineLen)
          // When mixing stdio, stderr and redirection with a \r stderr output,
