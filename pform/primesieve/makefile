@@ -7,7 +7,7 @@ vpath %.asm .
 OSPECIAL =
 OLIB = CpuInfo.o Erat.o EratBig.o EratMedium.o EratSmall.o IteratorHelper.o \
 	MemoryPool.o ParallelSieve.o PreSieve.o PrimeGenerator.o PrimeSieve.o PrintPrimes.o \
-	SievingPrimes.o Wheel.o api-c.o api.o iterator-c.o nthPrime.o popcount.o
+	SievingPrimes.o Wheel.o api-c.o api.o iterator-c.o iterator.o nthPrime.o popcount.o
 OUTDIR = .libs
 ALIB = $(OUTDIR)/primesieve.a
 
