@@ -133,8 +133,8 @@ inline void Set_All_bits_true(uint64_t iMinNum, uint64_t iMaxNum, uint32_t &inva
 {
     uint64_t max = (iMaxNum>>6) + 5;  // 5 spare longs (just to be safe ;)
     uint64_t min = (iMinNum>>6);
-    register uint32_t *p = &pMapVirtual[min-2];
-    register uint32_t Num = (uint32_t)(max-min)+4;
+    uint32_t *p = &pMapVirtual[min-2];
+    uint32_t Num = (uint32_t)(max-min)+4;
 
 	do
 	{
@@ -149,8 +149,8 @@ inline void Set_All_bits_true2(uint64_t iMinNum, uint64_t iMaxNum, uint32_t &inv
 {
     uint64_t max = (iMaxNum>>5) + 5;  // 5 spare longs (just to be safe ;)
     uint64_t min = (iMinNum>>5);
-    register uint32_t *p = &pMapVirtual[min-2];
-    register uint32_t Num = (uint32_t)(max-min)+4;
+    uint32_t *p = &pMapVirtual[min-2];
+    uint32_t Num = (uint32_t)(max-min)+4;
 
 	do
 	{
@@ -165,8 +165,8 @@ inline void Set_All_bits_false(uint64_t iMinNum, uint64_t iMaxNum, uint32_t &inv
 {
     uint64_t max = (iMaxNum>>6) + 5;  // 5 spare longs (just to be safe ;)
     uint64_t min = (iMinNum>>6);
-    register uint32_t *p = &pMapVirtual[min-2];
-    register uint32_t Num = (uint32_t)(max-min)+4;
+    uint32_t *p = &pMapVirtual[min-2];
+    uint32_t Num = (uint32_t)(max-min)+4;
 
 	do
 	{
@@ -180,8 +180,8 @@ inline void Set_All_bits_false2(uint64_t iMinNum, uint64_t iMaxNum, uint32_t &in
 {
     uint64_t max = (iMaxNum>>5) + 5;  // 5 spare longs (just to be safe ;)
     uint64_t min = (iMinNum>>5);
-    register uint32_t *p = &pMapVirtual[min-2];
-    register uint32_t Num = (uint32_t)(max-min)+4;
+    uint32_t *p = &pMapVirtual[min-2];
+    uint32_t Num = (uint32_t)(max-min)+4;
 
 	do
 	{
