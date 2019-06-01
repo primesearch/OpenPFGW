@@ -1,14 +1,14 @@
-Enhancements to: v4.0.0 Development Release - March 30, 2019
+Enhancements to: v4.0.0 Development Release - May 28, 2019
    - Upgraded solution VS 2017.
-   - Removed 32-bit support as nobody has asked for it in years.
-   - Upgraded to gwnum v29.7.
+   - Removed 32-bit support as nobody has asked for it in nearly 4 years.
+   - Upgraded to gwnum v29.8b3.
    - Upgraded to mpir 3.0.0.
    - Switch to primesieve 7.4 for all prime sieving functions.
    - Accurately count the number of primes to trial factor with.
    - When trial factoring, show the trial factoring limit.
    - Added -T option to support multiple threads.
    - Use inttypes.h on all platforms.
-   - Fix trivial factoring when using a script
+   - Fix trivial factoring when using a script.
 
 Enhancements to: v3.8.3 Development Release - December 3, 2016
    - Increased support of first line in ABC file to 10,000,000 characters.
