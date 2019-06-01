@@ -52,10 +52,6 @@ PFScriptFile::PFScriptFile(const char* FileName)
 
    // When we start a file, we are NOT in a GoSub at that time.
    m_GosubLevel = 0;
-
-#ifdef _DEBUG
-   m_pTable->ListSymbols();
-#endif
 }
 
 PFScriptFile::~PFScriptFile()

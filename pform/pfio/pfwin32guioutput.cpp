@@ -18,7 +18,7 @@
 
 char g_cpTrayMsg[200] = "\0";
 
-PFWin32GUIOutput::PFWin32GUIOutput(long long hWnd) : PFOutput(), m_hWnd(hWnd)
+PFWin32GUIOutput::PFWin32GUIOutput(uint64_t hWnd) : PFOutput(), m_hWnd(hWnd)
 {
 }
 
