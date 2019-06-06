@@ -1,9 +1,11 @@
+UNAME_S := $(shell uname -s)
+
 CXXFLAGS = -m64 -fno-builtin -DX86_64 -D_64BIT -std=c++11 
 
 ifeq ($(DEBUG),yes)
-   CXXFLAGS	=  -g
+   CXXFLAGS +=  -g
 else
-   CXXFLAGS	= -O3
+   CXXFLAGS += -O3
 endif
 
 CXXFLAGS += -I../../packages/gmp/64bit -I../../pfconfig/headers  -I../primesieve
