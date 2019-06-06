@@ -36,28 +36,28 @@ PFString F_Prime::GetArgumentName(DWORD /*dwIndex*/) const
 
 PFBoolean F_Prime::CallFunction(PFSymbolTable *pContext)
 {
-   PFBoolean bRetval=PFBoolean::b_false;
-   IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
+   PFBoolean bRetval = PFBoolean::b_false;
+   IPFSymbol *pSymbol = pContext->LookupSymbol("_N");
 
    if (!pSymbol) return bRetval;
 
-   if (pSymbol->GetSymbolType()!=INTEGER_SYMBOL_TYPE)  return bRetval;
+   if (pSymbol->GetSymbolType() != INTEGER_SYMBOL_TYPE)  return bRetval;
 
-   Integer *q=((PFIntegerSymbol*)pSymbol)->GetValue();
+   Integer *q = ((PFIntegerSymbol*)pSymbol)->GetValue();
 
    if (!q) return bRetval;
 
-   uint64_t idx = ((*q) & ULLONG_MAX); // nothing unusual there
+   uint64_t idx = ((*q) & (uint64_t)ULLONG_MAX); // nothing unusual there
 
-   if ((*q)!=idx)
+   if ((*q) != idx)
       return bRetval;
 
-   bRetval=PFBoolean::b_true;
-   Integer *r=new Integer;
+   bRetval = PFBoolean::b_true;
+   Integer *r = new Integer;
 
    *r = primesieve::nth_prime(idx);
 
-   pContext->AddSymbol(new PFIntegerSymbol("_result",r));
+   pContext->AddSymbol(new PFIntegerSymbol("_result", r));
 
    return bRetval;
 }

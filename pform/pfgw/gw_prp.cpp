@@ -26,8 +26,8 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
    {
       int TmpIBase = iBase;
       if (--iBase == 1)
-         iBase=255;
-      PFPrintfLog ("Error, base %d can't be used to PRP %s, Trying to PRP with base %d\n", TmpIBase, sNumStr, iBase);
+         iBase = 255;
+      PFPrintfLog("Error, base %d can't be used to PRP %s, Trying to PRP with base %d\n", TmpIBase, sNumStr, iBase);
       int Ret = gwPRP(N, sNumStr, p_n64ValidationResidue);
       iBase = TmpIBase;
       return Ret;
@@ -38,7 +38,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate 3^X mod N
 
-   int iTotal=numbits(X);
+   int iTotal = numbits(X);
 
    // if iTotal is less than 1000, then use GMP to do exponentaion (we need to work out the exact cutoff's, and
    // different reduction methods will also "change" this".  However, this code (The current Winbloze build) is
@@ -49,7 +49,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
    // function faster). If "generic" reduction is used instead, then these break over points are TOO
    // low, and GMP should be used much higher.  Unfortunately, I am not sure how to "quickly" determine
    // proth-2 mode quickly at this point
-   if ( (iTotal < 650 && (CPU_FLAGS&CPU_SSE2) == 0) || (iTotal < 800 && (CPU_FLAGS&CPU_SSE2))   )
+   if ((iTotal < 650 && (CPU_FLAGS&CPU_SSE2) == 0) || (iTotal < 800 && (CPU_FLAGS&CPU_SSE2)))
 #else
    if (iTotal < 600)
 #endif
@@ -65,12 +65,12 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
 
       Integer b(iBase);
       // This is the "raw" gmp exponentiator.  It if pretty fast up to about 500 digits or so.
-      X = powm(b,X,*N);
+      X = powm(b, X, *N);
       if (X == 1)
          return 1;
       else
          if (p_n64ValidationResidue)
-            *p_n64ValidationResidue = (X & ULLONG_MAX);
+            *p_n64ValidationResidue = (X & (uint64_t)ULLONG_MAX);
       return 0;
    }
    if (g_bGMPMode)
@@ -87,13 +87,13 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
    {
       fftSize++;
 
-      gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
+      gwinit2(&gwdata, sizeof(gwhandle), (char *)GWNUM_VERSION);
       gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
 
       if (CreateModulus(N, g_cpTestString, true, fftSize)) return -2;
 
       if (!g_FFTSizeOnly)
-	      testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
+         testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
 
       DestroyModulus();
    } while (testResult == -1 && fftSize < 5 && !g_FFTSizeOnly);
@@ -103,7 +103,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
 
 void  bench_gwPRP(Integer *N, uint32_t iterations)
 {
-   int iDone=0, iTotal;
+   int iDone = 0, iTotal;
    Integer testN;
    Integer X = (*N);
 
@@ -111,7 +111,7 @@ void  bench_gwPRP(Integer *N, uint32_t iterations)
    iTotal = numbits(X);
 
    // create a context
-   gwinit2(&gwdata, sizeof(gwhandle), (char *) GWNUM_VERSION);
+   gwinit2(&gwdata, sizeof(gwhandle), (char *)GWNUM_VERSION);
 
    testN = *N;
    gwsetmaxmulbyconst(&gwdata, iBase);   // maximum multiplier
@@ -119,15 +119,15 @@ void  bench_gwPRP(Integer *N, uint32_t iterations)
 
    GWInteger gwX;
 
-   gwX=iBase;               // initialise X to A^1.
+   gwX = iBase;               // initialise X to A^1.
    gwsetmulbyconst(&gwdata, iBase);      // and multiplier
 
-   for(; iterations; iterations--)
+   for (; iterations; iterations--)
    {
       int errchk = ErrorCheck(iDone, iTotal);
 
       gw_clear_maxerr(&gwdata);
-      gwsetnormroutine(&gwdata, 0, errchk, bit(X,iterations));
+      gwsetnormroutine(&gwdata, 0, errchk, bit(X, iterations));
 
       // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
       // error during the last iteration.
@@ -149,7 +149,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
    int   retval;
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate iiBase^X mod N
-   int iTotal=numbits(X);
+   int iTotal = numbits(X);
 
    // Data for the save/restore file.
    char RestoreName[13];   // file name will fit an 8.3
@@ -157,7 +157,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
    if (iTotal > 50000)
       CreateRestoreName(N, RestoreName);
 
-   int ThisLineLen_Final=0;
+   int ThisLineLen_Final = 0;
 
    // everything with a GWInteger has a scope brace, so that
    // GWIntegers are destroyed before the context they live in
@@ -166,20 +166,20 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       GWInteger gwX;
 
       // I think we're ready to go, let's do it.
-      gwX= iiBase;               // initialise X to A^1.
+      gwX = iiBase;               // initialise X to A^1.
       gwsetmulbyconst(&gwdata, iiBase);      // and multiplier
 
-      // keep a simple iteration counter just for rudimentary progress output
-      int iDone=0;
+                                             // keep a simple iteration counter just for rudimentary progress output
+      int iDone = 0;
 
-      bool bFirst=true;
+      bool bFirst = true;
 
       // reduce screen output for tiny numbers.
-      if (iTotal < 2*g_nIterationCnt)
+      if (iTotal < 2 * g_nIterationCnt)
       {
          static time_t last;
          bFirst = false;   // don't print the "PRP:  ...." line on bit#1
-         if (time(0)-last > 4)
+         if (time(0) - last > 4)
          {
             // Every 3 seconds, we DO print the "PRP: ..." line
             bFirst = true;
@@ -188,7 +188,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       }
 
       // i MUST be handled outside of the loop below, since the resume code will have to modify it.
-      int i=iTotal;
+      int i = iTotal;
       // Check for "existance" of a file which matches the hash pattern of this number.
 #ifdef _MSC_VER
       if (*RestoreName && !_access_s(RestoreName, 0))
@@ -202,23 +202,23 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
             // The number not only passes the hash, but EVERY check was successful.  We are working with the right number.
             iDone = DoneBits;
             i -= iDone;
-            PFPrintfLog ("Resuming at bit %d\n", iDone);
+            PFPrintfLog("Resuming at bit %d\n", iDone);
          }
       }
 
-      double MaxSeenDiff=0.;
-      for(;i--;)
+      double MaxSeenDiff = 0.;
+      for (;i--;)
       {
          int errchk = ErrorCheck(iDone, iTotal);
 
          gw_clear_maxerr(&gwdata);
 
-         if (i > 29 && g_nIterationCnt && ((((iDone+1)%g_nIterationCnt)==0) || bFirst || !i))
+         if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
             gwstartnextfft(&gwdata, 1);
          else
             gwstartnextfft(&gwdata, 0);
 
-         gwsetnormroutine(&gwdata, 0, errchk, bit(X,i));
+         gwsetnormroutine(&gwdata, 0, errchk, bit(X, i));
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
          // error during the last iteration.
@@ -228,20 +228,20 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
             gwsquare2(gwX);
 
          iDone++;
-         if (g_nIterationCnt && (((iDone%g_nIterationCnt)==0) || bFirst || !i))
+         if (g_nIterationCnt && (((iDone%g_nIterationCnt) == 0) || bFirst || !i))
          {
             if (*RestoreName)
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N);
             static int lastLineLen;
-            bFirst=false;
+            bFirst = false;
             // 150 bytes will not overflow, since we "force" the max size within the sprintf()
             char Buf[150];
             if (errchk && gwdata.MAXDIFF < 1e10)
                sprintf(Buf, "PRP: %.36s %d/%d mro=%.5g \r",
-                       sNumStr,iDone,iTotal, gw_get_maxerr(&gwdata));
+                  sNumStr, iDone, iTotal, gw_get_maxerr(&gwdata));
             else
-               sprintf(Buf, "PRP: %.36s %d/%d\r", sNumStr,iDone,iTotal);
-            int thisLineLen = (int) strlen(Buf);
+               sprintf(Buf, "PRP: %.36s %d/%d\r", sNumStr, iDone, iTotal);
+            int thisLineLen = (int)strlen(Buf);
             if (iDone == 1 && iTotal > 50000)
                g_pIni->ForceFlush();
             if (lastLineLen > thisLineLen)
@@ -283,12 +283,12 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       X %= *N;
 
       if (p_n64ValidationResidue)
-         *p_n64ValidationResidue = (X & ULLONG_MAX);
+         *p_n64ValidationResidue = (X & (uint64_t)ULLONG_MAX);
 
-      if (X==1)
-         retval=1;
+      if (X == 1)
+         retval = 1;
       else
-         retval=0;
+         retval = 0;
    }
 
    // Nuke any temp file, since we have totally processed the number.
@@ -306,7 +306,7 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
    bool  haveFatalError = false;
 
    // Code "straight" from PRP.
-   if (gw_test_illegal_sumout (&gwdata))
+   if (gw_test_illegal_sumout(&gwdata))
    {
       sprintf(buffer1, "Detected in gw_test_illegal_sumout() in %s", caller);
       sprintf(buffer2, "Iteration: %d/%d ERROR: ILLEGAL SUMOUT", currentIteration, maxIterations);
@@ -314,15 +314,15 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
       haveFatalError = true;
    }
 
-   if (!haveFatalError && gw_test_mismatched_sums (&gwdata))
+   if (!haveFatalError && gw_test_mismatched_sums(&gwdata))
    {
       double suminp, sumout;
-      suminp = gwX->suminp ();
-      sumout = gwX->sumout ();
+      suminp = gwX->suminp();
+      sumout = gwX->sumout();
 
       sprintf(buffer1, "Detected in gw_test_mismatched_sums() in %s", caller);
       sprintf(buffer2, "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
-      sprintf(buffer3, "%.16g != %.16g\n  (Diff=%.0f max allowed=%.0f)", suminp, sumout, fabs(suminp-sumout), gwdata.MAXDIFF);
+      sprintf(buffer3, "%.16g != %.16g\n  (Diff=%.0f max allowed=%.0f)", suminp, sumout, fabs(suminp - sumout), gwdata.MAXDIFF);
       haveFatalError = true;
    }
 
@@ -336,7 +336,7 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
 
    if (haveFatalError)
    {
-      sprintf(buffer4, "PFGW will automatically rerun the test with -a%d", fftSize+1);
+      sprintf(buffer4, "PFGW will automatically rerun the test with -a%d", fftSize + 1);
 
       PFWriteErrorToLog(g_cpTestString, buffer1, buffer2, buffer3, buffer4);
 

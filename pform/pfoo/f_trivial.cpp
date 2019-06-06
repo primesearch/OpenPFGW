@@ -39,29 +39,29 @@ PFString F_Trivial::GetArgumentName(DWORD /*dwIndex*/) const
 
 PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
 {
-   int iResult=TT_COMPLETED;
+   int iResult = TT_COMPLETED;
 
-   PFBoolean bRetval=PFBoolean::b_false;
-   IPFSymbol *pSymbol=pContext->LookupSymbol("_N");
-   if(pSymbol && pSymbol->GetSymbolType()==INTEGER_SYMBOL_TYPE)
+   PFBoolean bRetval = PFBoolean::b_false;
+   IPFSymbol *pSymbol = pContext->LookupSymbol("_N");
+   if (pSymbol && pSymbol->GetSymbolType() == INTEGER_SYMBOL_TYPE)
    {
-      bRetval=PFBoolean::b_true;
-      PFBoolean bNeg=PFBoolean::b_false;
-      PFFactorizationSymbol *pFactorization=new PFFactorizationSymbol("_TRIVIALFACTOR");
+      bRetval = PFBoolean::b_true;
+      PFBoolean bNeg = PFBoolean::b_false;
+      PFFactorizationSymbol *pFactorization = new PFFactorizationSymbol("_TRIVIALFACTOR");
 
-      Integer *pN=((PFIntegerSymbol*)pSymbol)->GetValue();
+      Integer *pN = ((PFIntegerSymbol*)pSymbol)->GetValue();
 
       if ((*pN)<0)
       {
-         bNeg=PFBoolean::b_true;
-         (*pN)*=-1;
-         iResult=TT_NEGATIVE;
+         bNeg = PFBoolean::b_true;
+         (*pN) *= -1;
+         iResult = TT_NEGATIVE;
       }
 
       // now find out if the number is small. Remember numbits() is greatest power of 2 no greater than N
       if ((*pN)<3)
       {
-         pFactorization->AddFactor(new FactorNode((*pN),1));
+         pFactorization->AddFactor(new FactorNode((*pN), 1));
          // Zero, one, two
          iResult = ((*pN) & INT_MAX);
       }
@@ -70,9 +70,9 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
          // If we do NOT dip into this code for numbers less than 2^31, then the
          // V() and Phi() functions start failing!!!  We need to check into this!!!
          uint64_t p, sqrtN;
-         uint64_t rawN = ((*pN) & ULLONG_MAX);
+         uint64_t rawN = ((*pN) & (uint64_t)ULLONG_MAX);
 
-         sqrtN = (uint64_t) sqrt((double) rawN);
+         sqrtN = (uint64_t)sqrt((double)rawN);
          std::vector<uint64_t> vPrimes;
          std::vector<uint64_t>::iterator it;
 
@@ -111,18 +111,18 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
 
             it++;
          }
-         
 
-         iResult=TT_FACTOR;
+
+         iResult = TT_FACTOR;
       }  // endif we have a small number
       else
       {
-         iResult=TT_COMPLETED;
+         iResult = TT_COMPLETED;
       }
 
-      pContext->AddSymbol(new PFIntegerSymbol("_TRIVIALNEG",new Integer(bNeg?1:0)));
+      pContext->AddSymbol(new PFIntegerSymbol("_TRIVIALNEG", new Integer(bNeg ? 1 : 0)));
       pContext->AddSymbol(pFactorization);
-      pContext->AddSymbol(new PFIntegerSymbol("_result",new Integer(iResult)));
+      pContext->AddSymbol(new PFIntegerSymbol("_result", new Integer(iResult)));
    }
    return bRetval;
 }
