@@ -6,7 +6,7 @@ else
    CXXFLAGS	= -O3
 endif
 
-CXXFLAGS = -I../../packages/gmp/64bit -I../../pfconfig/headers  -I../primesieve
+CXXFLAGS += -I../../packages/gmp/64bit -I../../pfconfig/headers  -I../primesieve
 
 ifeq ($(UNAME_S),Darwin)
    CXXFLAGS+=-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
