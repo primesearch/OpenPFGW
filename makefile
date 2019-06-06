@@ -1,32 +1,31 @@
 
 srcdir=.
 
-CXX		=	g++
-include make.inc
+DEBUG    = no
+CXX		= g++
+
+ifeq ($(DEBUG),yes)
+CPPFLAGS	=  -g
+else
+CPPFLAGS	= -O3
+endif
+
+CPPFLAGS += -m64 -fno-builtin -DX86_64 -D_64BIT -std=c++11  -I../../packages/gmp/64bit -I../../pfconfig/headers  -I../primesieve
+
+ifeq ($(UNAME_S),Darwin)
+   CPPFLAGS+=-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
+   LDFLAGS+=-Wl,-no_pie -lpthread -lc++
+else
+   LDFLAGS+=-no-pie -lpthread -ldl -static-libstdc++
+endif
 
 pfgw64:	baselib integer fft pfoo io entrypoint primesieve
-	${CXX} ${CXXFLAGS}	\
+	${CXX} $(CPPFLAGS)	\
 		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
 		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a pform/primesieve/.libs/primesieve.a \
-		packages/gmp/64bit/libgmp.a packages/gwnum/64bit/gwnum.a  -Wl,-no_pie -lpthread -lc++ -o pfgw64
+		packages/gmp/64bit/libgmp.a packages/gwnum/64bit/gwnum.a  $(LDFLAGS) -o pfgw64
 
-pfgw32:	baselib integer fft pfoo io entrypoint
-	${CXX} ${CXXFLAGS}	\
-		pform/pfgw/.libs/pfgw_main.a  pform/pfio/.libs/pfio.a pform/pfoo/.libs/pfoo.a pform/pfgwlib/.libs/pfgwlib.a \
-		pform/pfmath/.libs/pfmath.a pform/pflib/.libs/pflib.a \
-		packages/gmp/32bit/libgmp.a packages/gwnum/32bit/gwnum.a  -Wl,-no_pie -lpthread -lc++ -o pfgw32
-
-maintainer-clean:	distclean
-	rm -f configure
-	autoconf
-	rm -f config.h.in
-	autoheader
-	
 distclean:	clean
-	rm -f config.cache
-	rm -f config.log
-	rm -f config.status
-	rm -f config.status.old
 	rm -f config.h
 	rm -f stdtypes.h
 	rm -f pflib.h
@@ -44,7 +43,7 @@ distclean:	clean
 	${MAKE} -C pform/primesieve distclean
 	
 clean:
-	rm -f pfgw32 pfgw64
+	rm -f pfgw64
 	${MAKE} -C pform/pflib clean
 	${MAKE} -C pform/pfmath clean
 	${MAKE} -C pform/pfgwlib clean
@@ -82,7 +81,4 @@ entrypoint:
 	
 primesieve:
 	${MAKE} -C pform/primesieve
-	
-gmp:
-	${MAKE} -C packages/gmp
 
