@@ -222,7 +222,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
          // error during the last iteration.
-         if (i < 30)
+         if (i < 50)
             gwsquare2_carefully(gwX);
          else
             gwsquare2(gwX);

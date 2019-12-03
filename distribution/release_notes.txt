@@ -1,3 +1,9 @@
+Enhancements to: v4.0.1 Development Release - December 3, 2019
+   - Use gwsquare_carefully() for last 50 iterations as the last 30
+     iterations are not enough to avoid undetectable roundoff errors which occur
+     in the candidate term (10^210731-1)/9.
+   - Upgraded to the latest version of Visual Studio 19 for the Windows build.
+     
 Enhancements to: v4.0.0 Development Release - May 28, 2019
    - Upgraded solution VS 2017.
    - Removed 32-bit support as nobody has asked for it in nearly 4 years.
