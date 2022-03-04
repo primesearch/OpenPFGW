@@ -44,17 +44,17 @@ PFString F_Smarandache::GetArgumentName(DWORD dwIndex) const
    return sRetval;
 }
 
-static int WhatSize_sm(int cnt, int nStart)
+static int WhatSize_sm(int nMin, int nMax)
 {
-   int CharSize = 190;  // this will handle any sm(1) to sm(99)
-   int tmpCnt = cnt;
+   int CharSize = 190;  // this will handle any Sm(1) to Sm(99)
+   int tmpCnt = nMax;
 
    // only handle numbers up to sm(1 million)
-   if (tmpCnt > 10000000)
+   if (nMax > 10000000)
       return -1;
 
    // check validity
-   if (cnt < 1 || cnt < nStart || nStart < 1)
+   if (nMin < 1 || nMin > nMax)
       return -1;
 
    if (tmpCnt > 1000000)
@@ -97,31 +97,27 @@ PFBoolean F_Smarandache::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   int cnt = ((*C) & INT_MAX);
-   int nStart = 1;
+   int nMax = ((*C) & INT_MAX);
+   int nMin = 1;
    if(pStart!=NULL)
    {
       Integer *S = ((PFIntegerSymbol*)pStart)->GetValue();
-      nStart = ((*S) & INT_MAX);
+      nMin = nMax;
+      nMax = ((*S) & INT_MAX);
    }
 
    // calculate how big of a char[] array we need.
-   int CharSize = WhatSize_sm(cnt, nStart);
+   int CharSize = WhatSize_sm(nMin, nMax);
    if (CharSize == -1)
       return bRetval;
 
    char *tmpBuf = new char[CharSize+10];
    char *cp=tmpBuf;
 
-   int i=nStart;
-   while(i <= cnt)
+   int i=nMin;
+   while(i <= nMax)
       cp += sprintf(cp, "%d", i++);
-   if (nStart > 1)
-   {
-      i = 1;
-      while(i < nStart)
-         cp += sprintf(cp, "%d", i++);
-   }
+
    r=new Integer;
    r->atoI(tmpBuf);
    delete[] tmpBuf;
@@ -181,31 +177,26 @@ PFBoolean F_Smarandache_r::CallFunction(PFSymbolTable *pContext)
    IPFSymbol *pCnt=pContext->LookupSymbol("_C");
 
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
-   int cnt = ((*C) & INT_MAX);
-   int nStart = cnt;
+   int nMax = ((*C) & INT_MAX);
+   int nMin = 1;
    if(pStart!=NULL)
    {
       Integer *S = ((PFIntegerSymbol*)pStart)->GetValue();
-      nStart = ((*S) & INT_MAX);
+      nMin = ((*S) & INT_MAX);
    }
 
    // calculate how big of a char[] array we need.
-   int CharSize = WhatSize_sm(cnt, nStart);
+   int CharSize = WhatSize_sm(nMin, nMax);
    if (CharSize == -1)
       return bRetval;
 
    char *tmpBuf = new char[CharSize+10];
    char *cp=tmpBuf;
 
-   int i=nStart;
-   while(i > 0)
+   int i = nMax;
+   while(i >= nMin)
       cp += sprintf(cp, "%d", i--);
-   if (nStart < cnt)
-   {
-      i = cnt;
-      while(i > nStart)
-         cp += sprintf(cp, "%d", i--);
-   }
+
    r=new Integer;
    r->atoI(tmpBuf);
    delete[] tmpBuf;
