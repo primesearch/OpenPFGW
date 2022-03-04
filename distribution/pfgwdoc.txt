@@ -488,9 +488,9 @@ C.1. Expression-parts
       len(x,y) Length of x (base x)        len(12345,2) --> 14
       C(x,y)   Binomials
       Sm(x)    Smarandache                 Sm(13)    --> 12345678910111213
-      Sm(x,y)  Smarandache                 Sm(13,4)  --> 45678910111213123
+      Sm(x,y)  Smarandache                 Sm(4,13)  --> 45678910111213
       Smr(x)   reverse Smarandache         Smr(12)   --> 121110987654321
-      Smr(x,y) reverse Smarandache         Smr(12,6) --> 654321121110987
+      Smr(x,y) reverse Smarandache         Smr(12,6) --> 1211109876
       SmW(x)   Smarandache-Wellin          SmW(13)   --> 23571113 (all primes <= 13)
       SmWp(x)  Smarandache-Wellin          SmWp(13)  --> 2357111317192329313741 (primes by index <= 13)
       CE(x)    Copeland-Erdos              CE(11)    --> 23571113171 (11 digits of concatenation of primes)

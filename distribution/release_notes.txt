@@ -1,3 +1,6 @@
+Enhancements to: v4.0.2 Development Release - March 4, 2022
+   - Changed Sm() and Smr() evaluators.  See pfgwdoc.txt for details.
+
 Enhancements to: v4.0.1 Development Release - December 3, 2019
    - Use gwsquare_carefully() for last 50 iterations as the last 30
      iterations are not enough to avoid undetectable roundoff errors which occur
