@@ -247,6 +247,10 @@ B.3. The options.
   
    -od  Will output decimal expansions
   
+   -A   CPU Affinity
+        This requires an argument that specifies the core that the application should run on.
+        This only works on Windows.
+        
    -B   Benchmark
         This will start to test how fast pfgw works on your computer.  This option
         can take one or more of the following comma delimited parameters:
