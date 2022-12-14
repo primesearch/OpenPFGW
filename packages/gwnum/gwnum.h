@@ -16,7 +16,7 @@
 | threads IF AND ONLY IF each uses a different gwhandle structure
 | initialized by gwinit.
 | 
-|  Copyright 2002-2021 Mersenne Research, Inc.  All rights reserved.
+|  Copyright 2002-2022 Mersenne Research, Inc.  All rights reserved.
 +---------------------------------------------------------------------*/
 
 #ifndef _GWNUM_H
@@ -43,6 +43,9 @@ typedef struct gwhandle_struct gwhandle;
 /* data stored before the doubles.  See the internals section below if you really must know. */
 typedef double *gwnum;
 
+/* An array of gwnums data type.  In practice, there is data stored before the array. */
+typedef gwnum *gwarray;
+
 /*---------------------------------------------------------------------+
 |                     SETUP AND TERMINATION ROUTINES                   |
 +---------------------------------------------------------------------*/
@@ -52,9 +55,9 @@ typedef double *gwnum;
 /* are new prime95 versions without any changes in the gwnum code.  This version number is also embedded in the assembly code and */
 /* gwsetup verifies that the version numbers match.  This prevents bugs from accidentally linking in the wrong gwnum library. */
 
-#define GWNUM_VERSION		"30.8"
+#define GWNUM_VERSION		"30.10"
 #define GWNUM_MAJOR_VERSION	30
-#define GWNUM_MINOR_VERSION	8
+#define GWNUM_MINOR_VERSION	10
 
 /* Error codes returned by the three gwsetup routines */
 
@@ -207,7 +210,22 @@ void gwdone (
 /* to FFT implementations that support the SUM(INPUTS) != SUM(OUTPUTS) error check. */
 /* NOTE:  This error check is not available for k*b^n+c IBDWT FFTs when c is positive.  Setting this option will have no effect. */
 /* NOTE: sum_inputs checking is only available in SSE2 FFTs and earlier.  Thus, using this option is not recommended. */
-#define gwset_sum_inputs_checking(h,b) ((h)->sum_inputs_checking = (char) (b))
+#define gwset_sum_inputs_checking(h,b)	((h)->sum_inputs_checking = (char) (b))
+
+/* By default gwnum uses mutexes rather than spin waits to implement multithreading.  This macro lets you try spin waits to see if they are faster. */
+/* A setting of one tells the main thread to spin wait on helper threads to finish up.  A setting above one tells the main thread to spin wait plus */
+/* n-1 helper threads to spin wait on work to do.  NOTE:  Many, including Linus Torvalds, believe spin waits in user space is evil.  Read up on the */
+/* hazards of spin waits at https://www.realworldtech.com/forum/?threadid=189711&curpostid=189723 and elsewhere.  That said, a system dedicated to */
+/* running a program doing multithreaded gwnum work could see a benefit. */
+#define gwset_use_spin_wait(h,n)	((h)->use_spin_wait = (char) (n))
+
+/* Prior to calling one of the gwsetup routines, you must tell the gwnum library if the polymult library will also be used.  Using polymult can affect */
+/* how much memory is allocated by each gwalloc call. */
+#define gwset_using_polymult(h)		((h)->polymult = TRUE)
+
+/* Prior to calling one of the gwsetup routines, you can tell the gwnum library to do a faster partial setup.  You won't be able to do any math */
+/* operations, but you can call informational routines such as get FFT length, FFT description, gwnum size, etc. */
+#define gwset_information_only(h)	((h)->information_only = TRUE)
 
 /* Prior to calling one of the gwsetup routines, you can tell the library to use a hyperthread for memory prefetching. */
 /* Only implemented for AVX-512 FFTs.  Caller must ensure the compute thread and prefetching hyperthread are set to use */
@@ -234,17 +252,23 @@ void gwfree (
 	gwhandle *gwdata,	/* Handle initialized by gwsetup */
 	gwnum	val);		/* Gwnum to free */
 
+/* Allocate an array and fill it with gwnums.  Uses a little less memory than allocating an array and calling gwalloc many times. */
+gwarray gwalloc_array (		/* Pointer to an array of gwnums */
+	gwhandle *gwdata,	/* Handle initialized by gwsetup */
+	int	n);		/* Size of the array of gwnums */
+
+/* Free a previously allocated array of gwnums */
+void gwfree_array (
+	gwhandle *gwdata,	/* Handle initialized by gwsetup */
+	gwarray	array);		/* Array of gwnums to free */
+
 /* Free all previously allocated gwnums */
 void gwfreeall (
 	gwhandle *gwdata);	/* Handle initialized by gwsetup */
 
-/* Free internal memory that can be safely freed.  Call this prior to using a lot of gwnum memory. */
-/* There may be some internal gwnum memory that can be safely freed. */
-#define gwfree_internal_memory(h) { \
-		gwfree((h), (h)->GW_RANDOM), (h)->GW_RANDOM = NULL; \
-		if ((h)->FFT1_state == 1 && !(h)->FFT1_user_allocated) { gwfree((h), (h)->GW_FFT1), (h)->GW_FFT1 = NULL; (h)->FFT1_state = 0; } \
-		if ((h)->to_radix_gwdata != NULL) gwdone ((h)->to_radix_gwdata), free ((h)->to_radix_gwdata), (h)->to_radix_gwdata = NULL; \
-		if ((h)->from_radix_gwdata != NULL) gwdone ((h)->from_radix_gwdata), free ((h)->from_radix_gwdata), (h)->from_radix_gwdata = NULL; }
+/* Free internal memory that can be safely freed.  Call this prior to using a lot of gwnum memory (this also calls gwfree_cached to further reduce mem used). */
+void gwfree_internal_memory (
+	gwhandle *gwdata);	/* Handle initialized by gwsetup */
 
 /* Empty cache of freed gwnums.  Call this to minimize gwnum library's memory footprint when no more gwallocs are anticipated anytime soon. */
 void gwfree_cached (
@@ -545,7 +569,8 @@ void gw_clear_maxerr (gwhandle *gwdata);
 int gwnear_fft_limit (gwhandle *gwdata, double pct);
 
 /* Returns true if the current FFT length satisfies the given safety margin (such as the value returned by polymult_safety_margin) */
-#define gw_passes_safety_margin(h,safetyval)	((h)->EXTRA_BITS/2.0+(h)->safety_margin > (safetyval))
+/* NOTE: gwdata->safety_margin is already factored into the calculation of EXTRA_BITS */
+#define gw_passes_safety_margin(h,safetyval)	((h)->EXTRA_BITS/2.0 > (safetyval))
 
 /*---------------------------------------------------------------------+
 |                    GWNUM MISC. INFORMATION ROUTINES                  |
@@ -603,7 +628,7 @@ unsigned long gwmemused (gwhandle *);
 
 /* Get the amount of memory required for the gwnum's raw FFT data.  This does not include the GW_HEADER_SIZE bytes for the header */
 /* or any pad bytes that might be allocated for alignment.  I see little need for a program to use this routine. */
-unsigned long gwnum_datasize (gwhandle *);
+#define gwnum_datasize(h)	(h)->datasize
 
 /*-----------------------------------------------------------------+
 |               ADVANCED GWADD_ and GWMUL_ options                 |
@@ -633,7 +658,7 @@ unsigned long gwnum_datasize (gwhandle *);
 #define squaremuladd_safe(h,adds1,adds2,adds3,adds4)	((h)->EXTRA_BITS >= mma5_sqr_penalty+numadds_to_eb(mma5_sqr_pair(adds1)+mma5_mul_pair(adds3,adds4)+2))
 #define mulsquareadd_safe(h,adds1,adds2,adds3,adds4)	squaremuladd_safe(h,adds3,adds4,adds1,adds2)
 #define squaresquareadd_safe(h,adds1,adds2,adds3,adds4)	((h)->EXTRA_BITS >= mma5_sqr_penalty+numadds_to_eb(mma5_sqr_pair(adds1)+mma5_sqr_pair(adds3)+3))
-#define mma5_mul_pair(adds1,adds2)			((adds1) + (adds2) + ((adds1) != 0 && (adds2) != 0) ? 1 : 0)	/* helper macro */
+#define mma5_mul_pair(adds1,adds2)			(((adds1) + (adds2) + ((adds1) != 0 && (adds2) != 0)) ? 1 : 0)	/* helper macro */
 #define mma5_sqr_pair(adds1)				((adds1) * 4)							/* helper macro */
 #define mma5_sqr_penalty				(EB_GWMUL_SAVINGS - EB_FIRST_ADD)
 
@@ -658,8 +683,10 @@ int gwequal (gwhandle *, gwnum, gwnum);
 +---------------------------------------------------------------------*/
 
 /* Experimental routine to clone a gwhandle.  The cloned handle uses less resources than a full gwsetup by sharing many data structures with */
-/* the original handle.  The cloned handle can be used in a limited way in another thread.  Valid operations in the cloned handle are single */
-/* threaded multiplication, addition, subtraction.  Other operations may work as well. */
+/* the original handle.  The cloned handle can be used in a fairly unlimited way in another thread.  Valid operations in the cloned handle are single */
+/* threaded multiplication, addition, subtraction.  Many other operations will work as well. */
+/* NOTE: All memory allocated by gwalloc will be "owned" by the parent gwdata.  These allocated gwnums can be used or freed by the parent gwdata or */
+/* any of the cloned gwdatas. */
 int gwclone (
 	gwhandle *cloned_gwdata,	/* Empty handle to be populated */
 	gwhandle *gwdata);		/* Handle to clone */
@@ -667,7 +694,8 @@ int gwclone (
 /* Merge various stats (MAXERR, fft_count, etc.) back into the parent gwdata.  This routine does not do any locking to make sure the */
 /* parent gwdata is not busy nor are any other cloned gwdatas simultaneously merging stats.  Locking is the caller's responsibility. */
 void gwclone_merge_stats (
-	gwhandle *cloned_gwdata);	/* Handle for a cloned gwdata */
+	gwhandle *dest_gwdata,		/* Handle to a (possibly cloned) gwdata to merge stats into */
+	gwhandle *cloned_gwdata);	/* Handle to a cloned gwdata to merge stats from */
 
 /*---------------------------------------------------------------------+
 |                 ALTERNATIVE INTERFACES USING GIANTS                  |
@@ -970,14 +998,13 @@ struct gwasm_alt_jmptab {	/* Used when pass 1 and pass 2 code is shared among FF
 /* Structure for maintaining groups of blocks for each pass 1 thread to work on. */
 /* Each thread wants to work on contiguous blocks for independent carry propagation. */
 struct pass1_carry_sections {
-	unsigned int start_block;	/* First block in section */
-	unsigned int last_block;	/* Last block in section */
-	unsigned int next_block;	/* First unassigned/unprocessed block */
+	gwatomic change_in_progress;	/* Lock set to TRUE prior to changing start_block, last_block, next_block, section_state, etc. */
 	int	section_state;		/* Various states in processing this section -- see code */
-	int	can_carry_into_next;	/* Flag indicating it is safe to propagate carries out of */
-					/* the last block in this section into the next block */
-	int	dependent_section;	/* Which section's carry out depends on this section finishing */
-					/* processing of its first block to propagate carries into */
+	unsigned int start_block;	/* First block in section */
+	unsigned int next_block;	/* First unassigned/unprocessed block */
+	unsigned int last_block;	/* Last block in section (actually first block after the section) */
+	int	carry_in_blocks_finished; /* Flag indicating it is safe to propagate carries into the first blocks of this section */
+	int	carry_out_section;	/* Which section might receive the carries out of this section (we'll test that section's carry_in_blocks_finished flag) */
 };
 
 /* The FFT types currently implemented in assembly code */
@@ -1005,7 +1032,11 @@ struct gwhandle_struct {
 	char	use_benchmarks;		/* Use benchmark data in gwnum.txt to select fastest FFT implementations */
 	char	will_hyperthread;	/* Set if FFTs will use hyperthreading (affects select of fastest FFT implementation from gwnum.txt) */
 	char	will_error_check;	/* Set if FFTs will error check (affects select of fastest FFT implementation from gwnum.txt) */
-	char	unused_setup_flags[3];
+	char	information_only;	/* Set if doing a faster partial setup */
+	char	use_spin_wait;		/* FALSE = use mutex, TRUE = spin wait.  Linus Torvalds hates spinning, see https://www.realworldtech.com/forum/?threadid=189711&curpostid=189723 */
+					/* GWNUM does use a spin lock, rather it can spin waiting for an atomic counter of active threads to reach zero. */
+					/* There is likely negligible difference between mutex wait and spin wait. */
+	char	unused_setup_flags[1];
 	int	bench_num_cores;	/* Set to expected number of cores that will FFT (affects select fastest FFT implementation) */
 	int	bench_num_workers;	/* Set to expected number of workers that will FFT (affects select fastest FFT implementation) */
 	/* End of variables affecting gwsetup */
@@ -1051,11 +1082,17 @@ struct gwhandle_struct {
 					/* At the FFT limit this will be set to EB_GWMUL_SAVINGS.  That is, this measures extra bits */
 					/* available for multiplications, not squarings. */
 	gwnum	GW_RANDOM;		/* A random number used in gwmul3_carefully. */
-	gwnum	GW_ADDIN;		/* The gwsetaddin value when we need to emulate GWMUL3_ADDINCONST. */
-	gwnum	GW_FFT1;		/* The number 1 FFTed.  Sometimes need by gwmuladd4 and gwmulsub4. */
+	gwnum	GW_RANDOM_SQUARED;	/* Cached square of the random number used in gwmul3_carefully. */
+	gwnum	GW_RANDOM_FFT;		/* Cached FFT of the random number used in gwmul3_carefully. */
+	gwnum	GW_FFT1;		/* The number 1 FFTed.  Sometimes need by gwmuladd4, gwmulsub4, and gwunfft. */
+	gwnum	GW_ADDIN;		/* Cached gwsetaddin value when we need to emulate GWMUL_ADDINCONST. */
+	long	emulate_addin_value;	/* When emulating GWMUL_ADDINCONST, this is a copy of the last value sent to gwsetaddin. */
+	double	asm_addin_value;	/* Value to copy to asm_data->ADDIN_VALUE when GWMUL_ADDINCONST is set. */
 	char	FFT1_state;		/* 0 = FFT(1) needed for FMA but not yet allocated, 1 = FFT(1) needed for FMA and allocated, */
 					/* 2 = FFT(1) is not needed for FMA. */
 	char	FFT1_user_allocated;	/* TRUE if FFT(1) was allocated at user's request */
+	char	polymult;		/* Set this to true if gwnums might be used by polymult library */
+	char	paranoid_mul_careful;	/* Set this to TRUE if gwmul3_carefully can be called with two different source args AND the two values could be the same */
 	char	GWSTRING_REP[60];	/* The gwsetup modulo number as a string. */
 	unsigned long saved_copyz_n;	/* Used to reduce COPYZERO calculations */
 	unsigned int NORMNUM;		/* The post-multiply normalize routine index */
@@ -1070,6 +1107,7 @@ struct gwhandle_struct {
 	void	*dd_data;		/* Memory allocated for gwdbldbl global data */
 	ghandle	gdata;			/* Structure that allows sharing giants and gwnum memory allocations */
 	double	*gwnum_memory;		/* Allocated memory */
+	unsigned long datasize;		/* Data size (including any cache pad lines) of a gwnum.  Does not include header before gwnum. */
 	unsigned long GW_ALIGNMENT;	/* How to align allocated gwnums */
 	unsigned long GW_ALIGNMENT_MOD; /* How to align allocated gwnums */
 	gwnum	*gwnum_alloc;		/* Array of allocated gwnums */
@@ -1078,6 +1116,7 @@ struct gwhandle_struct {
 	gwnum	*gwnum_free;		/* Array of available gwnums */
 	unsigned int gwnum_free_count;	/* Count of available gwnums */
 	unsigned int gwnum_max_free_count; /* Count of free gwnums that should be cached (default is 10) */
+	gwarray	array_list;		/* List of arrays allocated by gwalloc_array */
 	size_t	GW_BIGBUF_SIZE;		/* Size of the optional buffer */
 	char	*GW_BIGBUF;		/* Optional buffer to allocate gwnums in */
 	void	*large_pages_ptr;	/* Pointer to the large pages memory block we allocated. */
@@ -1085,15 +1124,16 @@ struct gwhandle_struct {
 	void	(*thread_callback)(int, int, void *); /* Auxiliary thread callback routine letting */
 					/* the gwnum library user set auxiliary thread priority and affinity */
 	void	*thread_callback_data;	/* User-supplied data to pass to the auxiliary thread callback routine */
-	unsigned int num_active_threads; /* Count of the number of active auxiliary threads */
+	gwmutex alloc_lock;		/* Mutex to allow parent and clones to allocate/free gwnums in a thread-safe manner */
 	gwmutex	thread_lock;		/* This mutex limits one thread at a time in critical sections. */
-	gwevent	thread_work_to_do;	/* This event is set whenever the auxiliary threads have work to do. */
-	gwevent	all_threads_done;	/* This event is set whenever the auxiliary threads are done and the */
-					/* main thread can resume.  That is, it is set if and only if num_active_threads==0 */
-	gwevent can_carry_into;		/* This event signals pass 1 sections that the block they are waiting on to carry */
-					/* into may now be ready. */
-	short	threads_must_exit;	/* Flag set to force all auxiliary threads to terminate */
-	short	catch_straggler_threads;/* Flag set when auxiliary threads have finished their work */
+	gwevent	work_to_do;		/* Event (if not spin waiting) to signal auxiliary threads there is work to do */
+	gwatomic alt_work_to_do;	/* Atomic alternative to work_to_do event when spin waiting */
+	gwevent	all_helpers_done;	/* Event (if not spin waiting) to signal main thread that the auxiliary threads are done */
+	gwatomic num_active_helpers;	/* Number of active helpers (awakened from the work_to_do event).  Is also the alternative to all_helpers_done mutex. */
+	short volatile helpers_must_exit; /* Flag set to force all auxiliary threads to terminate */
+	short volatile all_work_assigned; /* Flag indicating all helper thread work has been assigned (some helpers ma still be active) */
+	gwevent can_carry_into;		/* This event signals pass 1 sections that the block they are waiting on to carry into may now be ready. */
+	gwatomic can_carry_into_counter;/* Atomic counter to limit the resets of gwevent can_carry_into */
 	int	pass1_state;		/* Mainly used to keep track of what we are doing in pass 1 of an FFT.  See */
 					/* pass1_get_next_block for details.  Also, 999 means we are in pass 2 of the FFT. */
 	void	*pass1_var_data;	/* pass1 variable sin/cos/premultiplier/fudge/biglit data */
@@ -1102,12 +1142,13 @@ struct gwhandle_struct {
 	unsigned long biglit_data_offset; /* Offset of the big/lit data in the pass 1 variable data */
 	unsigned long pass1_var_data_size; /* Used to calculate address of pass 1 premultiplier data */
 	unsigned long pass2_premult_block_size; /* Used to calculate address of pass 2 premultiplier data */
-	unsigned long next_block;	/* Next block for threads to process */
+	gwatomic next_block;		/* Next block for threads to process */
 	unsigned long num_pass1_blocks; /* Number of data blocks in pass 1 for threads to process */
 	unsigned long num_pass2_blocks; /* Number of data blocks in pass 2 for threads to process */
 	unsigned long num_postfft_blocks; /* Number of data blocks that must delay forward fft because POSTFFT is set. */
 	gwthread *thread_ids;		/* Array of auxiliary thread ids */
 	struct pass1_carry_sections *pass1_carry_sections; /* Array of pass1 sections for carry propagation */
+	int	pass1_carry_sections_unallocated; /* Count of auxiliary threads that have not yet been assigned block to work on */
 	void	*multithread_op_data;	/* Data shared amongst add/sub/addsub/smallmul compute threads */
 	uint32_t ASM_TIMERS[32];	/* Internal timers used by me to optimize code */
 	int	bench_pick_nth_fft;	/* DO NOT set this variable.  Internal hack to force the FFT selection code to */
@@ -1117,35 +1158,45 @@ struct gwhandle_struct {
 					/* pick the n-th possible implementation instead of the best one.  The prime95 QA */
 					/* code uses this to compare results from one FFT implementation to the (should */
 					/* be identical) results of another FFT implementation. */
-	int	qa_picked_nth_fft;	/* Internal hack returning which FFT was picked */
+	int	qa_picked_nth_fft;	/* Internal hack returning which FFT implementation was selected */
 	int	careful_count;		/* Count of gwsquare and gwmul3 calls to convert into gwmul3_carefully calls */
 	double	ZPAD_COPY7_ADJUST[7];	/* Adjustments for copying the 7 words around the halfway point of a zero pad FFT. */
 	double	ZPAD_0_6_ADJUST[7];	/* Adjustments for ZPAD0_6 in a r4dwpn FFT */
 	unsigned long wpn_count;	/* Count of r4dwpn pass 1 blocks that use the same ttp/ttmp grp multipliers */
-	gwhandle *clone_of;		/* If this is a cloned gwhandle, this points to the handle that was cloned */
+	gwatomic clone_count;		/* How many times this gwhandle has been cloned */
+	gwhandle *clone_of;		/* If this is a cloned gwhandle, this points to the gwhandle that was cloned */
 	gwhandle *to_radix_gwdata;	/* FFTs used in converting to base b from binary in nonbase2_gianttogw */
 	gwhandle *from_radix_gwdata;	/* FFTs used in converting from base b to binary in nonbase2_gwtogiant */
 };
 
 /* A psuedo declaration for our big numbers.  The actual pointers to */
 /* these big numbers are to the data array.  The 96 bytes prior to the data contain: */
-/* data-4:  integer containing number of unnormalized adds that have been */
-/*	    done.  After a certain number of unnormalized adds, the next add */
-/*	    must be normalized to avoid overflow errors during a multiply. */
-/* data-8:  integer containing number of bytes in data area. Used by gwcopy. */
+/* data-4:  float containing number of unnormalized adds that have been done.  After a certain number of unnormalized adds, */
+/*	    the next add must be normalized to avoid overflow errors during a multiply. */
+/* data-8:  Four unused bytes. */
 /* data-16: double containing the product of the two sums of the input FFT values. */
 /* data-24: double containing the sum of the output FFT values.  These two */
 /*	    values can be used as a sanity check when multiplying numbers. */
 /*	    The two values should be "reasonably close" to one another. */
 /* data-28: Flag indicating gwnum value has been partially FFTed. */
-/* data-32: Pointer returned by malloc - used to free memory when done. */
+/* data-32: Allocation flags - used to free memory when done. */
 /* data-88: Seven doubles (input FFT values near the halfway point when doing a zero-padded FFT). */
-/* data-96: Eight unused bytes */
+/* data-192: Thirteen doubles only used by the polymult library for zero-padded FFTs */
 /* typedef struct { */
 /*	char	pad[96];	   Used to track unnormalized add/sub and original address */
 /*	double	data[512];	   The big number broken into chunks.  This array is variably sized. */
 /* } *gwnum; */
-#define GW_HEADER_SIZE	96	/* Number of data bytes before a gwnum ptr */
+#define GW_SMALL_HEADER_SIZE	32	/* Number of data bytes before a gwnum ptr when not using zero-padded FFTs */
+#define GW_ZPAD_HEADER_SIZE	96	/* Number of data bytes before a gwnum ptr when using zero-padded FFTs */
+#define GW_LARGE_HEADER_SIZE	192	/* Number of data bytes before a gwnum ptr when using zero-padded FFTs and polymult */
+#define GW_HEADER_SIZE(h)	(!(h)->ZERO_PADDED_FFT ? GW_SMALL_HEADER_SIZE : !(h)->polymult ? GW_ZPAD_HEADER_SIZE : GW_LARGE_HEADER_SIZE)
+
+/* Define the hidden fields before an allocated gwarray */
+typedef struct {
+	int	flags;		// Flags such as how array was allocated
+	gwarray *prev;		// Prev pointer in doubly linked list
+	gwarray next;		// Next pointer in doubly linked list
+} gwarray_header;
 
 /* Some mis-named #defines that describe the maximum Mersenne number exponent that the gwnum routines can process. */
 #define MAX_PRIME	79300000L	/* Maximum number of x87 bits */
@@ -1183,10 +1234,13 @@ int is_big_word (gwhandle *, unsigned long);
 void bitaddr (gwhandle *, unsigned long, unsigned long *, unsigned long *);
 void specialmodg (gwhandle *, giant);
 #define gw_set_max_allocs(h,n)	if ((h)->gwnum_alloc==NULL) (h)->gwnum_alloc_array_size=n
+void init_FFT1 (gwhandle *);
 
 /* Specialized routines that let the internal giants code share the free memory pool used by gwnums. */
-void gwfree_temporarily (gwhandle *, gwnum);
-void gwrealloc_temporarily (gwhandle *, gwnum);
+// void gwfree_temporarily (gwhandle *, gwnum);		DEPRECATED
+// void gwrealloc_temporarily (gwhandle *, gwnum);	DEPRECATED
+#define gwfree_temporarily(h,g)
+#define gwrealloc_temporarily(h,g)
 
 /* Routines to share the memory of cached free gwnums with giants code. */
 /* Used by prime95 to have the giants GCD code reuse the memory used during P-1 and ECM calculations. */
