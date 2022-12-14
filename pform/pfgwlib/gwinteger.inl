@@ -17,7 +17,7 @@ GW_INLINE void inl_gwfft(const GWInteger &s,GWInteger &d)
 
 GW_INLINE void inl_gwsquare2(GWInteger &s)
 {
-   gwsquare2(&gwdata, s.g, s.g, 0);
+   gwsquare2(&gwdata, s.g, s.g, oldstartnextfft(&gwdata) | oldmulbyconst(&gwdata) | GWMUL_ADDINCONST);
 }
 
 GW_INLINE void inl_gwsquare2_carefully(GWInteger &s)
