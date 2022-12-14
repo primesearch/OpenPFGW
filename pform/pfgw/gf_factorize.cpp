@@ -256,9 +256,9 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
          gwsetnormroutine(&gwdata, 0, errchk, bit(X, ii));
 
          if (ii < 30)
-            gwsquare2_carefully(*gwX);
+            inl_gwsquare2_carefully(*gwX);
          else
-            gwsquare2(*gwX);
+            inl_gwsquare2(*gwX);
 
          if (g_nIterationCnt && (((iDone%g_nIterationCnt)==0) && Timer.GetSecs() > 2/*|| bFirst || !i*/))
          {

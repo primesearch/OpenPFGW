@@ -132,9 +132,9 @@ void  bench_gwPRP(Integer *N, uint32_t iterations)
       // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
       // error during the last iteration.
       if (iterations < 30)
-         gwsquare2_carefully(gwX);
+         inl_gwsquare2_carefully(gwX);
       else
-         gwsquare2(gwX);
+         inl_gwsquare2(gwX);
    }
 
    DestroyModulus();
@@ -213,19 +213,20 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
 
          gw_clear_maxerr(&gwdata);
 
-         if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
-            gwstartnextfft(&gwdata, 1);
-         else
-            gwstartnextfft(&gwdata, 0);
+         int state = 0;
 
+         if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
+            state = 1;
+
+         gwstartnextfft(&gwdata, state);
          gwsetnormroutine(&gwdata, 0, errchk, bit(X, i));
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
          // error during the last iteration.
          if (i < 50)
-            gwsquare2_carefully(gwX);
+            inl_gwsquare2_carefully(gwX);
          else
-            gwsquare2(gwX);
+            inl_gwsquare2(gwX);
 
          iDone++;
          if (g_nIterationCnt && (((iDone%g_nIterationCnt) == 0) || bFirst || !i))

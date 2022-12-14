@@ -93,7 +93,7 @@ bool IsPrp(Integer *N)
       for(;iTotal--;)
       {
          gwsetnormroutine(&gwdata,0,g_bErrorCheckAllTests,bit(X,iTotal));
-         gwsquare2(gwX);
+         inl_gwsquare2(gwX);
       }
       Integer XX;
       XX = gwX;

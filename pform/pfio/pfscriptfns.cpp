@@ -710,12 +710,12 @@ void PFScriptFile::GWPowMod(Integer *result, Integer b, Integer e, Integer n, ch
          if (s < 30 || i < 30)
          {
             gwsetnormroutine(&gwdata, 0, 1, 0);
-            gwmul_carefully(gwX, gwY);
+            inl_gwmul_carefully(gwX, gwY);
          }
          else
          {
             gwsetnormroutine(&gwdata, 0, 0, 0);
-            gwmul(gwX, gwY);
+            inl_gwmul(gwX, gwY);
          }
 
          CheckForFatalError("GWPowMod", &gwX, i, s, 1); 
@@ -735,12 +735,12 @@ void PFScriptFile::GWPowMod(Integer *result, Integer b, Integer e, Integer n, ch
       if (s < 30 || i < 30)
       {
          gwsetnormroutine(&gwdata, 0, 1, 0);
-         gwsquare2_carefully(gwX);
+         inl_gwsquare2_carefully(gwX);
       }
       else
       {
          gwsetnormroutine(&gwdata, 0, 0, 0);
-         gwsquare2(gwX);
+         inl_gwsquare2(gwX);
       }
 
       i++;

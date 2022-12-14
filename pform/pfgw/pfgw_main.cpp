@@ -806,7 +806,7 @@ int pfgw_main(int argc,char *argv[])
       Integer affinity = *((PFIntegerSymbol*)pSymbol)->GetValue();
       int iCpu = affinity & 0x000000FF;
 #ifdef _MSC_VER
-      SetProcessAffinityMask(GetCurrentProcess(), (1 << iCpu));
+      SetProcessAffinityMask(GetCurrentProcess(), (1ULL << iCpu));
 #endif
    }
 
