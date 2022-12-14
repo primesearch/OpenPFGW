@@ -205,7 +205,7 @@ CLOptionElement clList[]=
    {cl_long,      false,   "_EXTRA_SQFREE"},    // x
    {cl_illegal,   false,   ""},                 // y
    {cl_illegal,   false,   ""},                 // z
-   {cl_illegal,   false,   ""},                 // A
+   {cl_integer,   false,   "_AFFINITY"},        // A
    {cl_string,    false,   "_BENCHMARK"},       // B
    {cl_string,    false,   "_CONSOLE_OUTPUT_MODE"},    // C
    {cl_illegal,   false,   ""},                 // D
@@ -243,17 +243,17 @@ LPCTSTR Help_Text1 = "\
 --===COPYRIGHT AND LICENSE===--\n\
 \n\
 PrimeForm/GW - a program to perform a variety of primality tests.\n\
-Copyright (C) 1999-2011, The OpenPFGW project at sourceforge.\n\
+Copyright (C) 1999-2022, The OpenPFGW project at sourceforge.\n\
 \n\
 See the accompanying LICENSE.pfgw for the Terms and Conditions\n\
 regarding the use of this product and third-party libraries therein.\n\
 \n\
-This product uses the gwnum libraries (version 25) by George Woltman.\n\
-Copyright 1995-2009 Mersenne Research, Inc., all rights reserved.\n\
+This product uses the gwnum libraries (version 30) by George Woltman.\n\
+Copyright 1995-2022 Mersenne Research, Inc., all rights reserved.\n\
 See the accomanying LICENSE file, (also see http://www.mersenne.org/prize.htm)\n\
 \n\
-This product uses the GNU Multiple Precision Library (version 5.0.1).\n\
-Copyright (C) 1991-2011 Free Software Foundation, Inc.\n\
+This product uses the GNU Multiple Precision Library (version 6.1.2).\n\
+Copyright (C) 1991-2019 Free Software Foundation, Inc.\n\
 See the accompanying COPYING.LIB for Terms and Conditions.\n\
 \n\
 ";
@@ -798,6 +798,16 @@ int pfgw_main(int argc,char *argv[])
          g_Threads = 1;
          PFPrintfStderr("ERROR.  The number of threads must be at least 1.  Changing to 1.\n");
       }
+   }
+
+   pSymbol = psymRuntime->LookupSymbol("_AFFINITY");
+   if (pSymbol && pSymbol->GetSymbolType() == INTEGER_SYMBOL_TYPE)
+   {
+      Integer affinity = *((PFIntegerSymbol*)pSymbol)->GetValue();
+      int iCpu = affinity & 0x000000FF;
+#ifdef _MSC_VER
+      SetProcessAffinityMask(GetCurrentProcess(), (1 << iCpu));
+#endif
    }
 
    // Communicate these values to any SCRIPT so that it knows what the
