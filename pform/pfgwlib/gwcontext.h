@@ -14,7 +14,7 @@
 void getCpuInfo (void);
 void getCpuDescription (
 			char	*buf,			/* A 512 byte buffer */
-			int	long_desc);		/* True for a very long description */
+			int	bufferSize);		/* True for a very long description */
 
 extern gwhandle gwdata;				   // Global variable to store gwnum state
 extern double g_dMaxError;				// Overall roundoff error during the run

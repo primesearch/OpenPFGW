@@ -139,7 +139,7 @@ int PFCPAPFile::SeekToLine(int LineNumber)
 int PFCPAPFile::GetNextLine(PFString &sLine, Integer *i, bool *b, PFSymbolTable *)
 {
    int n;
-   char TmpBuf[128], *_TmpBuf;  // no worry about buffer overflow.  NewPGen expressions will be short.
+   char TmpBuf[256], *_TmpBuf;  // no worry about buffer overflow.  NewPGen expressions will be short.
    sLine = "";
    if (b)
       *b = false;    // assume failure;
@@ -189,7 +189,7 @@ TryNextLine:;
          }
          // I switched to float, because I was not sure of a "standard" way to do long long's.  Note,
          // that there are issues not only on how to "input" these numbers from the file, and also
-         // on the sprintf output formats.  I do not think that things such as %I64d will work anywhere
+         // on the output formats.  I do not think that things such as %I64d will work anywhere
          // other than in VC.  Using double avoids ALL of these issues.
          m_fBaseInc = atof(Line);
          m_nGap = atoi(&cp[1]);
@@ -200,15 +200,14 @@ TryNextLine:;
             goto TryNextLine;
          m_nCurNumFound = 0;
          m_nCurHi = m_nCurLo = m_nStartingPoint[m_nCPAPFold];
-         //sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc + m_nGap*(m_nCurLo-1));
-         _TmpBuf += sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
+         _TmpBuf += snprintf(TmpBuf, sizeof(TmpBuf), "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
          for (n = 0; n < m_nCurLo-1; n++)
-            _TmpBuf += sprintf(_TmpBuf, "+%d", m_nGap);
+            _TmpBuf += snprintf(_TmpBuf, sizeof(TmpBuf), "+%d", m_nGap);
          sLine = TmpBuf;
          if (bUseInteger)
          {
             // Chris, what is the "quick" way to add these numbers which can be up to 53 bits long?
-            sprintf (TmpBuf, "%.0f", m_fBaseInc + m_nGap*(m_nCurLo-1));
+            snprintf (TmpBuf, sizeof(TmpBuf), "%.0f", m_fBaseInc + m_nGap*(m_nCurLo-1));
             m_TmpInteger.atoI(TmpBuf);
             *i = *m_pBaseInteger + m_TmpInteger;
          }
@@ -218,28 +217,26 @@ TryNextLine:;
       }
 
       case e_lo:
-         //sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc + m_nGap*(m_nCurLo-1));
-         _TmpBuf += sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
+         _TmpBuf += snprintf(TmpBuf, sizeof(TmpBuf), "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
          for (n = 0; n < m_nCurLo-1; n++)
-            _TmpBuf += sprintf(_TmpBuf, "+%d", m_nGap);
+            _TmpBuf += snprintf(_TmpBuf, sizeof(TmpBuf), "+%d", m_nGap);
          sLine = TmpBuf;
          if (bUseInteger)
          {
-            sprintf (TmpBuf, "%.0f", m_fBaseInc + m_nGap*(m_nCurLo-1));
+            snprintf (TmpBuf, sizeof(TmpBuf), "%.0f", m_fBaseInc + m_nGap*(m_nCurLo-1));
             m_TmpInteger.atoI(TmpBuf);
             *i = *m_pBaseInteger + m_TmpInteger;
          }
          return e_ok;
 
       case e_hi:
-         //sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc + m_nGap*(m_nCurHi-1));
-         _TmpBuf += sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
+         _TmpBuf += snprintf(TmpBuf, sizeof(TmpBuf), "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
          for (n = 0; n < m_nCurHi-1; n++)
-            _TmpBuf += sprintf(_TmpBuf, "+%d", m_nGap);
+            _TmpBuf += snprintf(_TmpBuf, sizeof(TmpBuf), "+%d", m_nGap);
          sLine = TmpBuf;
          if (bUseInteger)
          {
-            sprintf (TmpBuf, "%.0f", m_fBaseInc + m_nGap*(m_nCurHi-1));
+            snprintf (TmpBuf, sizeof(TmpBuf), "%.0f", m_fBaseInc + m_nGap*(m_nCurHi-1));
             m_TmpInteger.atoI(TmpBuf);
             *i = *m_pBaseInteger + m_TmpInteger;
          }
@@ -251,11 +248,10 @@ TryNextLine:;
 
          if (m_pnFactors[m_nCurTestIntervalData] == -1)  // one of the AP-primes
             ++m_nCurTestIntervalData;  // skip it.
-         //sprintf(TmpBuf, "%d^%d+%.0f+%d+%.0f", m_nBase, m_nExp, m_fBaseInc, (m_FoundPrimeGaps[0]-1)*m_nGap, m_pdIntervalData[m_nCurTestIntervalData]);
-         _TmpBuf += sprintf(TmpBuf, "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
+         _TmpBuf += snprintf(TmpBuf, sizeof(TmpBuf), "%d^%d+%.0f", m_nBase, m_nExp, m_fBaseInc);
          for (n = 0; n < m_FoundPrimeGaps[0]-1; n++)
-            _TmpBuf += sprintf(_TmpBuf, "+%d", m_nGap);
-         sprintf(_TmpBuf, "+%.0f", m_pdIntervalData[m_nCurTestIntervalData]);
+            _TmpBuf += snprintf(_TmpBuf, sizeof(TmpBuf), "+%d", m_nGap);
+         snprintf(_TmpBuf, sizeof(TmpBuf), "+%.0f", m_pdIntervalData[m_nCurTestIntervalData]);
 
          if ( (m_nCurTestIntervalData+1) != m_nNumIntervalData && m_pnFactors[m_nCurTestIntervalData] != 1)
          {
@@ -267,7 +263,7 @@ TryNextLine:;
          sLine = TmpBuf;
          if (bUseInteger)
          {
-            sprintf (TmpBuf, "%.0f", m_fBaseInc + (m_FoundPrimeGaps[0]-1)*m_nGap + m_pdIntervalData[m_nCurTestIntervalData]);
+            snprintf (TmpBuf, sizeof(TmpBuf), "%.0f", m_fBaseInc + (m_FoundPrimeGaps[0]-1)*m_nGap + m_pdIntervalData[m_nCurTestIntervalData]);
             m_TmpInteger.atoI(TmpBuf);
             *i = *m_pBaseInteger + m_TmpInteger;
          }
@@ -313,7 +309,7 @@ void PFCPAPFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_b
             m_FoundPrimeGaps[m_nCurNumFound] = m_nCurLo;
             if (++m_nCurNumFound > 2 && p_bMessageStringIsValid)
             {
-               sprintf(TmpBuf, " - AP-%d (Gap %d) -\n", m_nCurNumFound, m_nGap);
+               snprintf(TmpBuf, sizeof(TmpBuf), " - AP-%d (Gap %d) -\n", m_nCurNumFound, m_nGap);
                *p_MessageString = TmpBuf;
                *p_bMessageStringIsValid = true;
             }
@@ -335,7 +331,7 @@ void PFCPAPFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_b
             m_FoundPrimeGaps[m_nCurNumFound] = m_nCurHi;
             if (++m_nCurNumFound > 2 && p_bMessageStringIsValid)
             {
-               sprintf(TmpBuf, " - AP-%d (Gap %d) -\n", m_nCurNumFound, m_nGap);
+               snprintf(TmpBuf, sizeof(TmpBuf), " - AP-%d (Gap %d) -\n", m_nCurNumFound, m_nGap);
                *p_MessageString = TmpBuf;
                *p_bMessageStringIsValid = true;
             }
@@ -355,7 +351,7 @@ void PFCPAPFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_b
             if (p_bMessageStringIsValid)
             {
                char *_TmpBuf=TmpBuf;
-               _TmpBuf += sprintf(TmpBuf, " - Last AP is not CPAP-%d -  (Gap was %d)\n", m_nCurNumFound, m_nGap);
+               _TmpBuf += snprintf(TmpBuf, sizeof(TmpBuf), " - Last AP is not CPAP-%d -  (Gap was %d)\n", m_nCurNumFound, m_nGap);
                // check to see if we still have a CPAP-(n-1) of (n-2) .. n > 3
                if (m_nCurNumFound > 3)
                {
@@ -363,7 +359,7 @@ void PFCPAPFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_b
                   while ( (which*m_nGap)/2 < m_nCurTestIntervalData)
                      which++;
                   if (which > 2)
-                     sprintf(_TmpBuf, " !!But it is:\n - !!CPAP-%d!! -  (Gap %d, base=%d^%d+%.0f)\n", which, m_nGap, m_nBase, m_nExp, m_fBaseInc+(m_FoundPrimeGaps[0]-1)*m_nGap);
+                     snprintf(_TmpBuf, sizeof(TmpBuf), " !!But it is:\n - !!CPAP-%d!! -  (Gap %d, base=%d^%d+%.0f)\n", which, m_nGap, m_nBase, m_nExp, m_fBaseInc+(m_FoundPrimeGaps[0]-1)*m_nGap);
 
                }
                *p_MessageString = TmpBuf;
@@ -377,7 +373,7 @@ void PFCPAPFile::CurrentNumberIsPRPOrPrime(bool bIsPRP, bool bIsPrime, bool *p_b
             {
                if (p_bMessageStringIsValid)
                {
-                  sprintf(TmpBuf, " - !!CPAP-%d!! -  (Gap %d, base=%d^%d+%.0f)\n", m_nCurNumFound, m_nGap, m_nBase, m_nExp, m_fBaseInc+(m_FoundPrimeGaps[0]-1)*m_nGap);
+                  snprintf(TmpBuf, sizeof(TmpBuf), " - !!CPAP-%d!! -  (Gap %d, base=%d^%d+%.0f)\n", m_nCurNumFound, m_nGap, m_nBase, m_nExp, m_fBaseInc+(m_FoundPrimeGaps[0]-1)*m_nGap);
                   *p_MessageString = TmpBuf;
                   *p_bMessageStringIsValid = true;
                }

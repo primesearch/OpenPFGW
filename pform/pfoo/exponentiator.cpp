@@ -429,22 +429,22 @@ PFBoolean Exponentiator::CheckForFatalError(const char *caller, int currentItera
    // Code "straight" from PRP.
    if (gw_test_illegal_sumout (&gwdata))
    {
-      sprintf(buffer1, "Detected in gw_test_illegal_sumout() in %s", caller);
-      sprintf(buffer2, "Iteration: %d/%d ERROR: ILLEGAL SUMOUT", currentIteration, maxIterations);
+      snprintf(buffer1, sizeof(buffer1), "Detected in gw_test_illegal_sumout() in %s", caller);
+      snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: ILLEGAL SUMOUT", currentIteration, maxIterations);
       haveFatalError = PFBoolean::b_true;
    }
 
    if (!haveFatalError && gw_test_mismatched_sums (&gwdata))
    {
-      sprintf(buffer1, "Detected in gw_test_mismatched_sums() in %s", caller);
-      sprintf(buffer2, "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
+      snprintf(buffer1, sizeof(buffer1), "Detected in gw_test_mismatched_sums() in %s", caller);
+      snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
       haveFatalError = PFBoolean::b_true;
    }
 
    if (gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
    {
-      sprintf(buffer1, "Detected in MAXERR>%.2f (round off check) in %s", g_dMaxErrorAllowed, caller);
-      sprintf(buffer2, "Iteration: %d/%d ERROR: ROUND OFF %.5g>%.2f", currentIteration, maxIterations, gw_get_maxerr(&gwdata), g_dMaxErrorAllowed);
+      snprintf(buffer1, sizeof(buffer1), "Detected in MAXERR>%.2f (round off check) in %s", g_dMaxErrorAllowed, caller);
+      snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: ROUND OFF %.5g>%.2f", currentIteration, maxIterations, gw_get_maxerr(&gwdata), g_dMaxErrorAllowed);
       haveFatalError = PFBoolean::b_true;
    }
 

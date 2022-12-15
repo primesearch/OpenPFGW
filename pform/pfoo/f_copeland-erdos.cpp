@@ -50,7 +50,7 @@ PFBoolean F_CopelandErdos::CallFunction(PFSymbolTable *pContext)
    Integer *C = ((PFIntegerSymbol*)pCnt)->GetValue();
    uint32_t n = ((*C) & INT_MAX);
    uint64_t length = 0, lastPrime;
-   char   buf[10], *ptr;
+   char   buf[20], *ptr;
 
    Integer mm;
    mm=0;
@@ -68,7 +68,7 @@ PFBoolean F_CopelandErdos::CallFunction(PFSymbolTable *pContext)
    {
       lastPrime = (uint32_t) *it;
 
-      sprintf(buf, "%" PRIu64"", lastPrime);
+      snprintf(buf, sizeof(buf), "%" PRIu64"", lastPrime);
       ptr = buf;
 
       while (length < n && *ptr)

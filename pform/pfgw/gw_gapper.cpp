@@ -145,7 +145,7 @@ void gw_gapper(const char *FName, int gap, uint64_t i)
       // Ok now we have found the "possible" number.  Check to see if it is prp-3
       // Assign original "base" N value to Temp
       char Format[120];
-      sprintf(Format, "%d^%d+%" PRIu64"", base, nvalue, Low_end);
+      snprintf(Format, sizeof(Format), "%d^%d+%" PRIu64"", base, nvalue, Low_end);
       Integer n;
       n.Ipow(base, nvalue);
       n += Low_end;

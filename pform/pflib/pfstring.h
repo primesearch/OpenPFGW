@@ -76,11 +76,11 @@ void PFGenericString<T>::Set(DWORD dwValue,const PFBoolean &bHex)
    char sBuffer[12];
    if(bHex)
    {
-      sprintf(sBuffer,"%08lX",dwValue);
+      snprintf(sBuffer, sizeof(sBuffer), "%08lX", dwValue);
    }
    else
    {
-      sprintf(sBuffer,"%lu",dwValue);
+      snprintf(sBuffer, sizeof(sBuffer), "%lu", dwValue);
    }
 
    GuaranteeBuffer(12);
@@ -97,7 +97,7 @@ template<class T>
 void PFGenericString<T>::Set(long int iValue)
 {
    char sBuffer[12];
-   sprintf(sBuffer,"%ld",iValue);
+   snprintf(sBuffer, sizeof(sBuffer), "%ld",iValue);
 
    GuaranteeBuffer(12);
    T* p=&this->AccessElement(0);

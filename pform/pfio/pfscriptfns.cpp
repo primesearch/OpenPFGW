@@ -404,7 +404,7 @@ bool PFScriptFile::SetS(char *args)
                         }
                      }
                      Hex[19] = 0;
-                     sprintf (optr++, "%c", (char) strtol(Hex, NULL, 16));
+                     snprintf (optr++, 1000000, "%c", (char) strtol(Hex, NULL, 16));
                      iptr -= 2;
                   }
                   else if (isdigit(iptr[1]) && iptr[1] != '8' && iptr[1] != '9' && isdigit(iptr[2]) && iptr[2] != '8' && iptr[2] != '9' && isdigit(iptr[3]) && iptr[3] != '8' && iptr[3] != '9')
@@ -412,7 +412,7 @@ bool PFScriptFile::SetS(char *args)
                      char Oct[4];
                      strncpy(Oct, &iptr[1], 3);
                      Oct[3] = 0;
-                     sprintf (optr++, "%c", (char) strtol(Oct, NULL, 8));
+                     snprintf (optr++, 1000000, "%c", (char) strtol(Oct, NULL, 8));
                      iptr += 2;
                   }
                   else
@@ -817,7 +817,7 @@ bool PFScriptFile::Gosub(char *args) {
    }
 
    char GosubRetLabel[40];
-   sprintf (GosubRetLabel, "_%d_GoSubLabel_#", m_GosubLevel++);
+   snprintf (GosubRetLabel, sizeof(GosubRetLabel), "_%d_GoSubLabel_#", m_GosubLevel++);
    PFIntSymbol *pLabel=new PFIntSymbol(GosubRetLabel,m_nInstrPtr);
    m_pTable->AddSymbol(pLabel);
 
@@ -858,7 +858,7 @@ bool PFScriptFile::Return(char *args) {
 
    char GosubRetLabel[40];
    m_GosubLevel -= RetDepth;
-   sprintf (GosubRetLabel, "_%d_GoSubLabel_#", m_GosubLevel);
+   snprintf (GosubRetLabel, sizeof(GosubRetLabel), "_%d_GoSubLabel_#", m_GosubLevel);
    IPFSymbol *pSymbol=m_pTable->LookupSymbol(GosubRetLabel);
    if (pSymbol==NULL || pSymbol->GetSymbolType()!=INT_SYMBOL_TYPE) {
       PFOutput::EnableOneLineForceScreenOutput();

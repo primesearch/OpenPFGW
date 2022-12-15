@@ -148,7 +148,7 @@ void PFABCFile::ProcessFirstLine(char *FirstLine)
             m_pCompleted = new PFABCTaskCompleted(cp, FirstLine);
 
             char Buf[120];
-            sprintf (Buf, " Processing for at most %d %s\n", m_pCompleted->nHowMany(), m_pCompleted->bProcessingForPrimes()?"Primes":"Composites");
+            snprintf (Buf, sizeof(Buf), " Processing for at most %d %s\n", m_pCompleted->nHowMany(), m_pCompleted->bProcessingForPrimes()?"Primes":"Composites");
             m_SigString += Buf;
          }
          catch(...)
@@ -195,7 +195,7 @@ void PFABCFile::ProcessFirstLine(char *FirstLine)
    }
 
    char TooManyInits_ErrBuf[256];
-   sprintf (TooManyInits_ErrBuf, "\nCritical Error, TOO many initializers in ABC type file. Max is %d\n", ABCMAXEXPR);
+   snprintf (TooManyInits_ErrBuf, sizeof(TooManyInits_ErrBuf), "\nCritical Error, TOO many initializers in ABC type file. Max is %d\n", ABCMAXEXPR);
          // Not the most efficient piece of code in the world,
    while (1) {      // but it will do.
       if ((tempPtr2=strchr(tempPtr,'&'))==NULL)
@@ -331,7 +331,7 @@ void PFABCFile::MakeExpr(PFString &sLine)
       if ((tempPtr2=strchr(tempPtr,'$'))==NULL)
          break;
       tempPtr2[0]=0;
-      bufPtr+=sprintf(bufPtr,"%s%s",tempPtr,s_array[LetterNumber(tempPtr2[1])]);
+      bufPtr+=snprintf(bufPtr, ABCLINELEN<<1, "%s%s",tempPtr,s_array[LetterNumber(tempPtr2[1])]);
       tempPtr=tempPtr2+2;
    }
    strcpy(bufPtr,tempPtr);
@@ -489,7 +489,7 @@ void PFABCFile::RemoveExpressions(char *pMSS, bool bCheckUsingConditionSyntax)
          if (N)
          {
             int n = ((*N) & INT_MAX);
-            sprintf (g_ModularSieveString, "%s%d%s", head, n, tail);
+            snprintf (g_ModularSieveString, sizeof(g_ModularSieveString), "%s%d%s", head, n, tail);
             delete N;
          }
          else
@@ -515,7 +515,7 @@ void PFABCFile::LoadModularFactorString()
       {
          if (*cpIn == '$')
          {
-            cpOut += sprintf (cpOut, "%s", s_array[LetterNumber(cpIn[1])]);
+            cpOut += snprintf (cpOut, sizeof(g_ModularSieveString), "%s", s_array[LetterNumber(cpIn[1])]);
             cpIn += 2;
          }
          else

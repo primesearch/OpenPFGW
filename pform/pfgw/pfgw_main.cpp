@@ -744,7 +744,7 @@ int pfgw_main(int argc,char *argv[])
    if(pSymbol)
    {
       char Buffer[512];
-      getCpuDescription(Buffer, 1);
+      getCpuDescription(Buffer, sizeof(Buffer));
       PFPrintfLog("\nCPU Information (From Woltman v26 library code)\n%s\n", Buffer);
    }
 

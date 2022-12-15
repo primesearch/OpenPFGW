@@ -211,14 +211,14 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             {
                m_pFormat[0] = PrimorialFormats[0];
                m_pFormat[1] = PrimorialFormats[1];
-               sprintf (cpTmpOutput, "Twin k*%" PRIu64"#+-1 ", m_base_n);
+               snprintf (cpTmpOutput, sizeof(cpTmpOutput), "Twin k*%" PRIu64"#+-1 ", m_base_n);
                m_SigString += cpTmpOutput;
             }
             else
             {
                m_pFormat[0] = NormFormats[0];
                m_pFormat[1] = NormFormats[1];
-               sprintf (cpTmpOutput, "Twin k*%d^%" PRIu64"+-1 ", m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin k*%d^%" PRIu64"+-1 ", m_npg_b, m_base_n);
                m_SigString += cpTmpOutput;
             }
          }
@@ -299,7 +299,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_nNumMultiPrime = 2;      // SG
             m_pFormat[0] = NormFormats[0];
             m_pFormat[1] = NormFormats[27];
-            sprintf (cpTmpOutput, "SG k*%d^%" PRIu64"+1 & 2k*%d^%" PRIu64"+3 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "SG k*%d^%" PRIu64"+1 & 2k*%d^%" PRIu64"+3 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             m_SigString += cpTmpOutput;
             break;
          }
@@ -310,15 +310,15 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[0] = NormFormats[0];
 
             if (m_npg_bitmap&MODE_KSIEVE)
-               sprintf (cpTmpOutput, "%" PRIu64"*%d^n+1 ", kvalue, m_npg_b);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "%" PRIu64"*%d^n+1 ", kvalue, m_npg_b);
             else
-               sprintf (cpTmpOutput, "k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n);
             // new 2^n+k (fixed k) mode.  NOTE that n, k (and b) have orders swapped.
             if (m_npg_bitmap&MODE_BASE2FIXEDK)
             {
                m_bBaseIntegerValid = false;
                m_bConsecutive = true;  // triggers the "reversed n/k output format).
-               sprintf (cpTmpOutput, "2^n+%" PRIu64" Fixed_K ", kvalue);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "2^n+%" PRIu64" Fixed_K ", kvalue);
                m_pFormat[0] = NormFormats[28];
             }
             m_SigString += cpTmpOutput;
@@ -328,12 +328,12 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             if (m_npg_bitmap&MODE_KSIEVE)
             {
                m_pFormat[0] = PrimorialFormats[20];
-               sprintf (cpTmpOutput, "%" PRIu64"#*2^n+1 ", kvalue);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "%" PRIu64"#*2^n+1 ", kvalue);
             }
             else
             {
                m_pFormat[0] = PrimorialFormats[0];
-               sprintf (cpTmpOutput, "k*%" PRIu64"#+1 ", m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "k*%" PRIu64"#+1 ", m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -349,15 +349,15 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[0] = NormFormats[1];
 
             if (m_npg_bitmap&MODE_KSIEVE)
-               sprintf (cpTmpOutput, "%" PRIu64"*%d^n-1 ", kvalue, m_npg_b);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "%" PRIu64"*%d^n-1 ", kvalue, m_npg_b);
             else
-               sprintf (cpTmpOutput, "k*%d^%" PRIu64"-1 ", m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "k*%d^%" PRIu64"-1 ", m_npg_b, m_base_n);
             // new 2^n+k (fixed k) mode. NOTE that n, k (and b) have orders swapped.
             if (m_npg_bitmap&MODE_BASE2FIXEDK)
             {
                m_bBaseIntegerValid = false;
                m_bConsecutive = true;  // triggers the "reversed n/k output format).
-               sprintf (cpTmpOutput, "2^n-%" PRIu64" Fixed_K ", kvalue);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "2^n-%" PRIu64" Fixed_K ", kvalue);
                m_pFormat[0] = NormFormats[29];
             }
             m_SigString += cpTmpOutput;
@@ -367,12 +367,12 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             if (m_npg_bitmap&MODE_KSIEVE)
             {
                m_pFormat[0] = PrimorialFormats[21];
-               sprintf (cpTmpOutput, "%" PRIu64"#*2^n-1 ", kvalue);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "%" PRIu64"#*2^n-1 ", kvalue);
             }
             else
             {
                m_pFormat[0] = PrimorialFormats[1];
-               sprintf (cpTmpOutput, "k*%" PRIu64"#-1 ", m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "k*%" PRIu64"#-1 ", m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -390,13 +390,13 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             {
                m_pFormat[0] = NormFormats[1];
                m_pFormat[1] = NormFormats[18];
-               sprintf (cpTmpOutput, "SG k*%d^%" PRIu64"-1 & 2k*%d^%" PRIu64"-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "SG k*%d^%" PRIu64"-1 & 2k*%d^%" PRIu64"-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             else
             {
                m_pFormat[0] = NormFormats[1];
                m_pFormat[1] = NormFormats[3];
-               sprintf (cpTmpOutput, "SG k*%d^%" PRIu64"-1 & k*%d^(%" PRIu64"+1)-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "SG k*%d^%" PRIu64"-1 & k*%d^(%" PRIu64"+1)-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -404,7 +404,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
          {
             m_pFormat[0] = PrimorialFormats[1];
             m_pFormat[1] = PrimorialFormats[3];
-            sprintf (cpTmpOutput, "SG k*%" PRIu64"#-1 & 2k*%" PRIu64"#-1 ", m_base_n, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "SG k*%" PRIu64"#-1 & 2k*%" PRIu64"#-1 ", m_base_n, m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -421,13 +421,13 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             {
                m_pFormat[0] = NormFormats[0];
                m_pFormat[1] = NormFormats[17];
-               sprintf (cpTmpOutput, "CC k*%d^%" PRIu64"+1 & 2k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC k*%d^%" PRIu64"+1 & 2k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             else
             {
                m_pFormat[0] = NormFormats[0];
                m_pFormat[1] = NormFormats[2];
-               sprintf (cpTmpOutput, "CC k*%d^%" PRIu64"+1 & k*%d^(%" PRIu64"+1)+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC k*%d^%" PRIu64"+1 & k*%d^(%" PRIu64"+1)+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -435,7 +435,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
          {
             m_pFormat[0] = PrimorialFormats[0];
             m_pFormat[1] = PrimorialFormats[2];
-            sprintf (cpTmpOutput, "CC k*%" PRIu64"#+1 & 2k*%" PRIu64"#+1 ", m_base_n, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC k*%" PRIu64"#+1 & 2k*%" PRIu64"#+1 ", m_base_n, m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -455,7 +455,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[1] = NormFormats[1];
                m_pFormat[2] = NormFormats[17];
                m_pFormat[3] = NormFormats[18];
-               sprintf (cpTmpOutput, "BiTwin k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "BiTwin k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n);
             }
             else
             {
@@ -463,7 +463,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[1] = NormFormats[1];
                m_pFormat[2] = NormFormats[2];
                m_pFormat[3] = NormFormats[3];
-               sprintf (cpTmpOutput, "BiTwin k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "BiTwin k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -473,7 +473,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[1] = PrimorialFormats[1];
             m_pFormat[2] = PrimorialFormats[2];
             m_pFormat[3] = PrimorialFormats[3];
-            sprintf (cpTmpOutput, "BiTwin k*%" PRIu64"#+1 ", m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "BiTwin k*%" PRIu64"#+1 ", m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -493,7 +493,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[1] = NormFormats[1];
             m_pFormat[2] = NormFormats[4];
             m_pFormat[3] = NormFormats[2];
-            sprintf (cpTmpOutput, "Lucky Plus k*%d^%" PRIu64"+1 & k*b^(n-1)+1 & k*b^(n+1)+1 ", m_npg_b, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Lucky Plus k*%d^%" PRIu64"+1 & k*b^(n-1)+1 & k*b^(n+1)+1 ", m_npg_b, m_base_n);
             m_SigString += cpTmpOutput;
          }
          else
@@ -502,7 +502,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[1] = PrimorialFormats[1];
             m_pFormat[2] = PrimorialFormats[4];
             m_pFormat[3] = PrimorialFormats[2];
-            sprintf (cpTmpOutput, "Lucky Plus k*%" PRIu64"#+1 & (k*n#)/2+1 2kn#+1 ", m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Lucky Plus k*%" PRIu64"#+1 & (k*n#)/2+1 2kn#+1 ", m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -522,7 +522,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[1] = NormFormats[0];
             m_pFormat[2] = NormFormats[5];
             m_pFormat[3] = NormFormats[3];
-            sprintf (cpTmpOutput, "Lucky Minus k*%d^%" PRIu64"+1 & k*b^(n-1)-1 & k*b^(n+1)-1 ", m_npg_b, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Lucky Minus k*%d^%" PRIu64"+1 & k*b^(n-1)-1 & k*b^(n+1)-1 ", m_npg_b, m_base_n);
             m_SigString += cpTmpOutput;
          }
          else
@@ -531,7 +531,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[1] = PrimorialFormats[0];
             m_pFormat[2] = PrimorialFormats[5];
             m_pFormat[3] = PrimorialFormats[3];
-            sprintf (cpTmpOutput, "Lucky Minus k*%" PRIu64"#+1 & (k*n#)/2-1 2kn#-1 ", m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Lucky Minus k*%" PRIu64"#+1 & (k*n#)/2-1 2kn#-1 ", m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -549,14 +549,14 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[0] = NormFormats[1];
                m_pFormat[1] = NormFormats[0];
                m_pFormat[2] = NormFormats[18];
-               sprintf (cpTmpOutput, "Twin SG k*%d^%" PRIu64"+-1 & 2k*%d^%" PRIu64"-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin SG k*%d^%" PRIu64"+-1 & 2k*%d^%" PRIu64"-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             else
             {
                m_pFormat[0] = NormFormats[1];
                m_pFormat[1] = NormFormats[0];
                m_pFormat[2] = NormFormats[3];
-               sprintf (cpTmpOutput, "Twin SG k*%d^%" PRIu64"+-1 & k*%d^(%" PRIu64"+1)-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin SG k*%d^%" PRIu64"+-1 & k*%d^(%" PRIu64"+1)-1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -565,7 +565,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[0] = PrimorialFormats[1];
             m_pFormat[1] = PrimorialFormats[0];
             m_pFormat[2] = PrimorialFormats[3];
-            sprintf (cpTmpOutput, "Twin SG k*%" PRIu64"#+-1 & 2k*%" PRIu64"#-1 ", m_base_n, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin SG k*%" PRIu64"#+-1 & 2k*%" PRIu64"#-1 ", m_base_n, m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -583,14 +583,14 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[0] = NormFormats[0];
                m_pFormat[1] = NormFormats[1];
                m_pFormat[2] = NormFormats[17];
-               sprintf (cpTmpOutput, "Twin CC k*%d^%" PRIu64"+-1 & 2k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin CC k*%d^%" PRIu64"+-1 & 2k*%d^%" PRIu64"+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             else
             {
                m_pFormat[0] = NormFormats[0];
                m_pFormat[1] = NormFormats[1];
                m_pFormat[2] = NormFormats[2];
-               sprintf (cpTmpOutput, "Twin CC k*%d^%" PRIu64"+-1 & k*%d^(%" PRIu64"+1)+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin CC k*%d^%" PRIu64"+-1 & k*%d^(%" PRIu64"+1)+1 ", m_npg_b, m_base_n, m_npg_b, m_base_n);
             }
             m_SigString += cpTmpOutput;
          }
@@ -599,7 +599,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[0] = PrimorialFormats[0];
             m_pFormat[1] = PrimorialFormats[1];
             m_pFormat[2] = PrimorialFormats[2];
-            sprintf (cpTmpOutput, "Twin CC k*%" PRIu64"#+-1 & 2k*%" PRIu64"#+1 ", m_base_n, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Twin CC k*%" PRIu64"#+-1 & 2k*%" PRIu64"#+1 ", m_base_n, m_base_n);
             m_SigString += cpTmpOutput;
          }
          break;
@@ -617,7 +617,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[0] = NormFormats[1];
                m_pFormat[1] = NormFormats[18];
                m_pFormat[2] = NormFormats[20];
-               sprintf (cpTmpOutput, "CC-1st Len-%d k*%d^%" PRIu64"-1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC-1st Len-%d k*%d^%" PRIu64"-1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
             }
             else
             {
@@ -625,7 +625,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[0] = NormFormats[5];
                m_pFormat[1] = NormFormats[1];
                m_pFormat[2] = NormFormats[3];
-               sprintf (cpTmpOutput, "Generalized CC-1st Len-%d k*%d^%" PRIu64"-1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Generalized CC-1st Len-%d k*%d^%" PRIu64"-1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
             }
             m_SigString += cpTmpOutput;
          }
@@ -634,7 +634,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[0] = PrimorialFormats[1];
             m_pFormat[1] = PrimorialFormats[3];
             m_pFormat[2] = PrimorialFormats[7];
-            sprintf (cpTmpOutput, "CC-1st Len-%d k*%" PRIu64"#-1 ... ", m_nNumMultiPrime, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC-1st Len-%d k*%" PRIu64"#-1 ... ", m_nNumMultiPrime, m_base_n);
             m_SigString += cpTmpOutput;
          }
          if (m_nNumMultiPrime > 5)
@@ -668,7 +668,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[0] = NormFormats[0];
                m_pFormat[1] = NormFormats[17];
                m_pFormat[2] = NormFormats[19];
-               sprintf (cpTmpOutput, "CC-2nd Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC-2nd Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
             }
             else
             {
@@ -676,7 +676,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[0] = NormFormats[4];
                m_pFormat[1] = NormFormats[0];
                m_pFormat[2] = NormFormats[2];
-               sprintf (cpTmpOutput, "Generalized CC-2nd Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Generalized CC-2nd Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime, m_npg_b, m_base_n-1);
             }
             m_SigString += cpTmpOutput;
          }
@@ -685,7 +685,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[0] = PrimorialFormats[0];
             m_pFormat[1] = PrimorialFormats[2];
             m_pFormat[2] = PrimorialFormats[6];
-            sprintf (cpTmpOutput, "CC-2nd Len-%d k*%" PRIu64"#+1 ... ", m_nNumMultiPrime, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "CC-2nd Len-%d k*%" PRIu64"#+1 ... ", m_nNumMultiPrime, m_base_n);
             m_SigString += cpTmpOutput;
          }
          if (m_nNumMultiPrime > 5)
@@ -724,7 +724,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[3] = NormFormats[18];
                m_pFormat[4] = NormFormats[19];
                m_pFormat[5] = NormFormats[20];
-               sprintf (cpTmpOutput, "BiTwin Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime/2, m_npg_b, m_base_n-1);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "BiTwin Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime/2, m_npg_b, m_base_n-1);
             }
             else
             {
@@ -735,7 +735,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
                m_pFormat[3] = NormFormats[1];
                m_pFormat[4] = NormFormats[2];
                m_pFormat[5] = NormFormats[3];
-               sprintf (cpTmpOutput, "Generalized BiTwin Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime/2, m_npg_b, m_base_n-1);
+               snprintf(cpTmpOutput, sizeof(cpTmpOutput), "Generalized BiTwin Len-%d k*%d^%" PRIu64"+1 ... ", m_nNumMultiPrime/2, m_npg_b, m_base_n-1);
             }
             m_SigString += cpTmpOutput;
          }
@@ -747,7 +747,7 @@ void PFNewPGenFile::ProcessFirstLine(char *Line, uint64_t k, uint64_t n)
             m_pFormat[3] = PrimorialFormats[3];
             m_pFormat[4] = PrimorialFormats[6];
             m_pFormat[5] = PrimorialFormats[7];
-            sprintf (cpTmpOutput, "BiTwin Len-%d k*%" PRIu64"#+1 ... ", m_nNumMultiPrime/2, m_base_n);
+            snprintf(cpTmpOutput, sizeof(cpTmpOutput), "BiTwin Len-%d k*%" PRIu64"#+1 ... ", m_nNumMultiPrime/2, m_base_n);
             m_SigString += cpTmpOutput;
          }
          if (m_nNumMultiPrime > 10)
@@ -887,16 +887,16 @@ int PFNewPGenFile::GetNextLine(PFString &sLine, Integer *i, bool *b, PFSymbolTab
    if (m_bPrimorial)
    {
       if (m_bConsecutive)
-         sprintf (TmpBuf, m_pFormat[m_nCurrentMultiPrime], m_n, m_k);
+         snprintf (TmpBuf, sizeof(TmpBuf), m_pFormat[m_nCurrentMultiPrime], m_n, m_k);
       else
-         sprintf (TmpBuf, m_pFormat[m_nCurrentMultiPrime], m_k, m_n);
+         snprintf(TmpBuf, sizeof(TmpBuf), m_pFormat[m_nCurrentMultiPrime], m_k, m_n);
    }
    else
    {
       if (m_bConsecutive)
-         sprintf (TmpBuf, m_pFormat[m_nCurrentMultiPrime], m_npg_b, m_n, m_k);
+         snprintf(TmpBuf, sizeof(TmpBuf), m_pFormat[m_nCurrentMultiPrime], m_npg_b, m_n, m_k);
       else
-         sprintf (TmpBuf, m_pFormat[m_nCurrentMultiPrime], m_k, m_npg_b, m_n);
+         snprintf(TmpBuf, sizeof(TmpBuf), m_pFormat[m_nCurrentMultiPrime], m_k, m_npg_b, m_n);
    }
    sLine = TmpBuf;
 

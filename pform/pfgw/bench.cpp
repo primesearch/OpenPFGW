@@ -59,16 +59,16 @@ void dispTiming(double f, int x)
    char buf[30];
    char fmt[5];
 
-   if (f<1e-12) sprintf(buf,"---");
-   else if (f<1e-8) sprintf(buf, "%ld ps",(long)(1e12*f));
-   else if (f<1e-5) sprintf(buf, "%ld ns",(long)(1e9*f));
-   else if (f<1e-2) sprintf(buf, "%ld us",(long)(1e6*f));
-   else if (f<10)   sprintf(buf, "%ld ms",(long)(1e3*f));
-   else if (f<600)  sprintf(buf, "%ld s ",(long)(f));
-   else if (f<7200) sprintf(buf, "%ld mi",(long)(f/60));
-   else if (f<172800) sprintf(buf, "%ld hr",(long)(f/3600));
-   else sprintf(buf,"%ld dy",(long)(f/86400));
-   sprintf(fmt, "%%%ds", x);
+   if (f<1e-12) snprintf(buf, sizeof(buf), "---");
+   else if (f<1e-8) snprintf(buf, sizeof(buf), "%ld ps",(long)(1e12*f));
+   else if (f<1e-5) snprintf(buf, sizeof(buf), "%ld ns",(long)(1e9*f));
+   else if (f<1e-2) snprintf(buf, sizeof(buf), "%ld us",(long)(1e6*f));
+   else if (f<10)   snprintf(buf, sizeof(buf), "%ld ms",(long)(1e3*f));
+   else if (f<600)  snprintf(buf, sizeof(buf), "%ld s ",(long)(f));
+   else if (f<7200) snprintf(buf, sizeof(buf), "%ld mi",(long)(f/60));
+   else if (f<172800) snprintf(buf, sizeof(buf), "%ld hr",(long)(f/3600));
+   else snprintf(buf, sizeof(buf), "%ld dy",(long)(f/86400));
+   snprintf(fmt, sizeof(fmt), "%%%ds", x);
    PFPrintfLog(fmt, buf);
 }
 
@@ -450,7 +450,7 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
       }
       else if (!memcmp(cPtr, "sexp=", 5))
       {
-         sprintf(specialExpression, "%send1", cPtr+5);
+         snprintf(specialExpression, sizeof(specialExpression), "%send1", cPtr+5);
          doSpecial = false;
 
          if (sscanf(specialExpression, "(%lf*%u^n%d)/%dend%d", &k, &b, &c, &d, &error_code) == 5)       { doSpecial = haveSpecialExp = true; }

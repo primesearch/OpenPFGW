@@ -97,7 +97,7 @@ bool AreWeFirstAppRunning(HWND hWnd)
       g_MutexNum = g_MutexNum * 19 + *p;
 
 // Create our mutex
-   sprintf (Dirbuf, "WinPFGW %ld", g_MutexNum);
+   snprintf (Dirbuf, sizeof(Dirbuf), "WinPFGW %ld", g_MutexNum);
    g_hMutexInst = CreateMutex (NULL, FALSE, Dirbuf);
 
 // Test for failure

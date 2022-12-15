@@ -179,7 +179,7 @@ int PFSimpleFile::ReadLine(char *Line, int sizeofLine)
       *cp = 0;
       *(cp+2) = '(';
 
-      sprintf(divisor, ") %% %s\n", Line);
+      snprintf(divisor, sizeof(divisor), ") %% %s\n", Line);
       strcpy(Line, cp + 2);
       strcat(Line, divisor);
    }
@@ -418,7 +418,7 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
    fp = fopen(FileName, "rt");
    if (!fp)
    {
-      sprintf (s_ErrorMessage, "Error opening file %s", FileName);
+      snprintf (s_ErrorMessage, sizeof(s_ErrorMessage), "Error opening file %s", FileName);
       return NULL;
    }
    // Check for a NewPGen or JFCPAP signature
@@ -481,7 +481,7 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
    {
       // NOTE pf CAN be constructed, and still throw, so we MUST delete this item.
       delete pf;
-      sprintf (s_ErrorMessage, "Error %s opening file %s", s, FileName);
+      snprintf (s_ErrorMessage, sizeof(s_ErrorMessage), "Error %s opening file %s", s, FileName);
       return NULL;
    }
    return pf;

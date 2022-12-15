@@ -49,7 +49,7 @@ END_MESSAGE_MAP()
 
 // Woltman v22 stuff.
 void getCpuInfo();
-void getCpuDescription (char	*buf, int long_desc);
+void getCpuDescription (char	*buf, int bufferSize);
 
 #include "..\..\pform\pfgw\pfgw_version.h"
 

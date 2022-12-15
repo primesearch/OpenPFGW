@@ -101,7 +101,7 @@ void PFPrZFile::LoadFirstLine()
       m_MinNum = ipFileHead->KOffset();
    }
 
-   sprintf(m_Line1, "%s", ipFileHead->PrZ_GetFirstLine());
+   snprintf(m_Line1, ABCLINELEN, "%s", ipFileHead->PrZ_GetFirstLine());
    CutOutFirstLine();
 
    // do count this "first" line, we have to "reset" to line 0 numbering.
@@ -180,7 +180,7 @@ int PFPrZFile::SeekToLine(int LineNumber)
          m_MaxNum = LLONG_MAX;
          m_MinNum = ipFileHead->KOffset();
       }
-      sprintf(m_Line1, "%s", ipFileHead->PrZ_GetFirstLine());
+      snprintf(m_Line1, ABCLINELEN, "%s", ipFileHead->PrZ_GetFirstLine());
       CutOutFirstLine();
       m_nCurrentLineNum = 0;
       m_nCurrentPhysicalLineNum = 0;
@@ -259,7 +259,7 @@ void PFPrZ_newpgen_File::LoadFirstLine()
       m_MinNum = pFileHead->KOffset();
    }
 
-   sprintf(m_Line1, "%s", pFileHead->PrZ_GetFirstLine());
+   snprintf(m_Line1, ABCLINELEN, "%s", pFileHead->PrZ_GetFirstLine());
 
    // do count this "first" line, we have to "reset" to line 0 numbering.
    m_nCurrentLineNum = 0;
@@ -332,7 +332,7 @@ int PFPrZ_newpgen_File::SeekToLine(int LineNumber)
          m_MaxNum = LLONG_MAX;
          m_MinNum = pFileHead->KOffset();
       }
-      sprintf(m_Line1, "%s", pFileHead->PrZ_GetFirstLine());
+      snprintf(m_Line1, ABCLINELEN, "%s", pFileHead->PrZ_GetFirstLine());
       m_nCurrentLineNum = 0;
       m_nCurrentPhysicalLineNum = 0;
       PFNewPGenFile::ProcessFirstLine(m_Line1, pFileHead->KOffset(), pFileHead->getPrZ_Base());

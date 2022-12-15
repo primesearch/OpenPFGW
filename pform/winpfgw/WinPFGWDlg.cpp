@@ -617,22 +617,6 @@ afx_msg LRESULT CWinPFGWDlg::OnTrayNotification(WPARAM /*uID*/, LPARAM lEvent)
 
 afx_msg void CWinPFGWDlg::OnActivate( UINT nState, CWnd* /*pWndOther*/, BOOL /*bMinimized*/ )
 {
-   /*
-   char Buf[512];
-   sprintf (Buf, "****  Win Activated.  State is : ");
-   if (nState == WA_INACTIVE)
-      strcat(Buf, "WA_INACTIVE");
-   if (nState == WA_ACTIVE)
-      strcat(Buf, "WA_ACTIVE");
-   if (nState == WA_CLICKACTIVE)
-      strcat(Buf, "WA_CLICKACTIVE");
-
-   if (bMinimized)
-      strcat(Buf, " Minimized\n");
-   else
-      strcat(Buf, " not-Minimized\n");
-   TRACE(Buf);
-   */
    if (nState != WA_INACTIVE)
    {
       // Clear the flash icon IF it is set.
@@ -750,7 +734,7 @@ afx_msg LRESULT CWinPFGWDlg::OnWinPFGW_Message(WPARAM wParam, LPARAM lParam)
             {
                NextUpdate = GetTickCount() + 2000;
                char Buf[40];
-               sprintf(Buf, "%d", g_pIni->GetFileLineNum());
+               snprintf(Buf, sizeof(Buf), "%d", g_pIni->GetFileLineNum());
                GetDlgItem(IDC_LINE_IN_FILE)->SetWindowText(Buf);
                m_SmartEdit.AddString(cp);
             }
@@ -889,7 +873,7 @@ void CWinPFGWDlg::ThreadProc(void *m_ThisPointer)
 
    // Ok, now make the "magic" command line param.
    argv[argc] = new char [120];
-   sprintf(argv[argc++], "-$HWND=%" PRIu64" -Verbose=%d", (long long) This->m_hWnd, This->m_ScreenMode == eVerbose);
+   snprintf(argv[argc++], 120, "-$HWND=%" PRIu64" -Verbose=%d", (long long) This->m_hWnd, This->m_ScreenMode == eVerbose);
 
    This->PostMessage(WinPFGW_MSG, M_SAVEOPTS, 0);
 

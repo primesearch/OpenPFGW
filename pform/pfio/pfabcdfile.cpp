@@ -63,7 +63,7 @@ void PFABCDFile::CutOutFirstLine()
       if (!m_i64Accum[m_nAccum]  && *cp != '0')
       {
          char Msg[120];
-         sprintf (Msg, "Error, Not a valid ABCD Sieve file, argument %d in [] format not valid", m_nAccum+1);
+         snprintf (Msg, sizeof(Msg), "Error, Not a valid ABCD Sieve file, argument %d in [] format not valid", m_nAccum + 1);
          throw(Msg);
       }
       ++m_nAccum;
@@ -187,7 +187,7 @@ ReadLineAgain:;
    if (1 == m_nAccum)
    {
       if (!m_bIgnoreOutput)
-         sprintf (_Line, "%" PRIu64"\n", m_i64Accum[0]);
+         snprintf (_Line, sizeofLine, "%" PRIu64"\n", m_i64Accum[0]);
    }
    else
    {
@@ -261,12 +261,12 @@ ReadLineAgain:;
       if (!m_bIgnoreOutput)
       {
          cp = m_ABCLookingLine;
-         cp += sprintf (cp, "%" PRIu64"", m_i64Accum[0]);
+         cp += snprintf (cp, ABCLINELEN, "%" PRIu64"", m_i64Accum[0]);
          for (nArgs = 1; nArgs < m_nAccum; ++nArgs)
-            cp += sprintf (cp, " %" PRIu64"", m_i64Accum[nArgs]);
+            cp += snprintf (cp, ABCLINELEN, " %" PRIu64"", m_i64Accum[nArgs]);
 
          // Not sure the \n is needed, but it does not hurt
-         sprintf (cp, "\n");
+         snprintf (cp, ABCLINELEN, "\n");
          strncpy(_Line, m_ABCLookingLine, sizeofLine);
          _Line[sizeofLine-1] = 0;
       }

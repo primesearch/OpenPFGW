@@ -116,7 +116,7 @@ PFBoolean F_Smarandache::CallFunction(PFSymbolTable *pContext)
 
    int i=nMin;
    while(i <= nMax)
-      cp += sprintf(cp, "%d", i++);
+      cp += snprintf(cp, CharSize + 10, "%d", i++);
 
    r=new Integer;
    r->atoI(tmpBuf);
@@ -195,7 +195,7 @@ PFBoolean F_Smarandache_r::CallFunction(PFSymbolTable *pContext)
 
    int i = nMax;
    while(i >= nMin)
-      cp += sprintf(cp, "%d", i--);
+      cp += snprintf(cp, CharSize + 10, "%d", i--);
 
    r=new Integer;
    r->atoI(tmpBuf);

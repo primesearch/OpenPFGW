@@ -89,7 +89,7 @@ PrZ_FermFact_Section_Header::PrZ_FermFact_Section_Header(FILE *in, uint32_t nVal
    fread(&PrZ_MaxK, 1, 8, in);
    fread(&PrZ_max_pr, 1, 8, in);
    m_cpFirstLine = new char[500];
-   sprintf (m_cpFirstLine, "ABCD $a*2^%u+1 [%" PRIu64"] // FFact {prime,%" PRIu64"}{vals,%u}{k,%" PRIu64",%" PRIu64"){n,%u,%u}",
+   snprintf (m_cpFirstLine, 500, "ABCD $a*2^%u+1 [%" PRIu64"] // FFact {prime,%" PRIu64"}{vals,%u}{k,%" PRIu64",%" PRIu64"){n,%u,%u}",
       PrZ_n, PrZ_OffsetK, PrZ_max_pr, nValsLeft, PrZ_MinK, PrZ_MaxK, PrZ_n, PrZ_n);
 }
 
@@ -213,7 +213,7 @@ PrZ_NewPGen_Section_Header::PrZ_NewPGen_Section_Header(FILE *in, uint32_t nValsL
       fread(cp, 1, 1, in);
    }
    m_cpFirstLine = new char[strlen(Buf)+1];
-   sprintf (m_cpFirstLine, "%s", Buf);
+   snprintf (m_cpFirstLine, strlen(Buf) + 1, "%s", Buf);
 }
 
 // When "read" from an ABCD file (to create a PrZ)

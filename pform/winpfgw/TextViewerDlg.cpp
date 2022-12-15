@@ -149,7 +149,7 @@ void CTextViewerDlg::ShowFile(const char *FName)
    }
    else
       m_smartEdt.AddString("   !!! File not found !!!");
-   sprintf (Buf, "Help/Info File Viewer [%s]", FName);
+   snprintf (Buf, sizeof(Buf), "Help/Info File Viewer [%s]", FName);
    SetWindowText(Buf);
 
    m_smartEdt.ShowTopLine();

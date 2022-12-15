@@ -76,21 +76,21 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
    else
       gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
 
-   sprintf(testString, "%send1", expression);
+   snprintf(testString, sizeof(testString), "%send1", expression);
 
    if (sscanf(testString, "%lf*%u^%u%dend%d", &k, &b, &n, &c, &error_code) == 5)
    {
       // We can potentially use the faster modular reduction, but we need to
       // ensure that k, b, n, and c were correctly scanned as it is possible
       // that
-      sprintf(testString, "%.0lf*%u^%u%+d", k, b, n, c);
+      snprintf(testString, sizeof(testString), "%.0lf*%u^%u%+d", k, b, n, c);
       if (!strcmp(testString, expression) && k < 1e53)
          return CreateSpecialModulus(gmp, k, b, n, c);
    }
 
    if (sscanf(testString, "%u^%u%dend%d", &b, &n, &c, &error_code) == 4)
    {
-      sprintf(testString, "%u^%u%+d", b, n, c);
+      snprintf(testString, sizeof(testString), "%u^%u%+d", b, n, c);
       if (!strcmp(testString, expression))
          return CreateSpecialModulus(gmp, 1.0, b, n, c);
    }
@@ -101,14 +101,14 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
    {
       if (sscanf(testString, "(%lf*%u^%u%d)/%dend%d", &k, &b, &n, &c, &d, &error_code) == 6)
       {
-         sprintf(testString, "(%lf*%u^%u%+d)/%d", k, b, n, c, d);
+         snprintf(testString, sizeof(testString), "(%lf*%u^%u%+d)/%d", k, b, n, c, d);
          if (!strcmp(testString, expression) && k < 1e53 && EvenlyDivides((uint64_t) k, b, n, c, d))
             return CreateSpecialModulus(gmp, k, b, n, c);
       }
 
       if (sscanf(testString, "(%u^%u%d)/%dend%d", &b, &n, &c, &d, &error_code) == 5)
       {
-         sprintf(testString, "(%u^%u%+d)/%d", b, n, c, d);
+         snprintf(testString, sizeof(testString), "(%u^%u%+d)/%d", b, n, c, d);
          if (!strcmp(testString, expression) && EvenlyDivides(1, b, n, c, d))
             return CreateSpecialModulus(gmp, 1.0, b, n, c);
       }
@@ -116,14 +116,14 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
       // Phi(p,b) = (b^p-1)/(b-1)
       if (sscanf(testString, "Phi(%u,%u)/%dend%d", &n, &b, &d, &error_code) == 4)
       {
-         sprintf(testString, "Phi(%u,%u)/%d", n, b, d);
+         snprintf(testString, sizeof(testString), "Phi(%u,%u)/%d", n, b, d);
          if (!strcmp(testString, expression) && EvenlyDivides(1, b, n, -1, d))
             return CreateSpecialModulus(gmp, 1.0, b, n, -1);
       }
 
       if (sscanf(testString, "Phi(%u,%u)end%d", &n, &b, &error_code) == 3)
       {
-         sprintf(testString, "Phi(%u,%u)", n, b);
+         snprintf(testString, sizeof(testString), "Phi(%u,%u)", n, b);
          if (!strcmp(testString, expression))
             return CreateSpecialModulus(gmp, 1.0, b, n, -1);
       }
@@ -251,19 +251,18 @@ void getCpuInfo (void)
 
 void getCpuDescription (
    char   *buf,         /* A 512 byte buffer */
-   int   long_desc)      /* True for a very long description */
+   int   bufferSize)      /* True for a very long description */
 {
 
 /* Format a pretty CPU description */
 
-   sprintf (buf, "%s\nCPU speed: %.2f MHz", CPU_BRAND, CPU_SPEED);
+   snprintf (buf, bufferSize, "%s\nCPU speed: %.2f MHz", CPU_BRAND, CPU_SPEED);
    if (CPU_CORES > 1 && CPU_HYPERTHREADS > 1)
-      sprintf (buf + strlen (buf),
-          ", %d hyperthreaded cores", CPU_CORES);
+      snprintf (buf + strlen (buf), bufferSize, ", %d hyperthreaded cores", CPU_CORES);
    else if (CPU_CORES > 1)
-      sprintf (buf + strlen (buf), ", %d cores", CPU_CORES);
+      snprintf (buf + strlen (buf), bufferSize, ", %d cores", CPU_CORES);
    else if (CPU_HYPERTHREADS > 1)
-      sprintf (buf + strlen (buf), ", with hyperthreading");
+      snprintf (buf + strlen (buf), bufferSize, ", with hyperthreading");
    strcat (buf, "\n");
    if (CPU_FLAGS) {
       strcat (buf, "CPU features: ");
@@ -281,32 +280,32 @@ void getCpuDescription (
    }
    strcat (buf, "L1 cache size: ");
    if (CPU_L1_CACHE_SIZE < 0) strcat (buf, "unknown\n");
-   else sprintf (buf + strlen (buf), "%d KB\n", CPU_L1_CACHE_SIZE);
+   else snprintf (buf + strlen (buf), bufferSize, "%d KB\n", CPU_L1_CACHE_SIZE);
    strcat (buf, "L2 cache size: ");
    if (CPU_L2_CACHE_SIZE < 0) strcat (buf, "unknown\n");
    else {
       if (CPU_L2_CACHE_SIZE & 0x3FF)
-         sprintf (buf + strlen (buf), "%d KB\n", CPU_L2_CACHE_SIZE);
+         snprintf (buf + strlen (buf), bufferSize, "%d KB\n", CPU_L2_CACHE_SIZE);
       else
-         sprintf (buf + strlen (buf), "%d MB\n", CPU_L2_CACHE_SIZE >> 10);
+         snprintf (buf + strlen (buf), bufferSize, "%d MB\n", CPU_L2_CACHE_SIZE >> 10);
    }
    if (CPU_L3_CACHE_SIZE > 0) {
       if (CPU_L3_CACHE_SIZE & 0x3FF)
-         sprintf (buf + strlen (buf) - 1, ", L3 cache size: %d KB\n", CPU_L3_CACHE_SIZE);
+         snprintf (buf + strlen (buf) - 1, bufferSize, ", L3 cache size: %d KB\n", CPU_L3_CACHE_SIZE);
       else
-         sprintf (buf + strlen (buf) - 1, ", L3 cache size: %d MB\n", CPU_L3_CACHE_SIZE >> 10);
+         snprintf (buf + strlen (buf) - 1, bufferSize, ", L3 cache size: %d MB\n", CPU_L3_CACHE_SIZE >> 10);
    }
-   if (! long_desc) return;
+
    strcat (buf, "L1 cache line size: ");
    if (CPU_L1_CACHE_LINE_SIZE < 0) strcat (buf, "unknown\n");
-   else sprintf (buf+strlen(buf), "%d bytes\n", CPU_L1_CACHE_LINE_SIZE);
+   else snprintf (buf+strlen(buf), bufferSize, "%d bytes\n", CPU_L1_CACHE_LINE_SIZE);
    strcat (buf, "L2 cache line size: ");
    if (CPU_L2_CACHE_LINE_SIZE < 0) strcat (buf, "unknown\n");
-   else sprintf (buf+strlen(buf), "%d bytes\n", CPU_L2_CACHE_LINE_SIZE);
+   else snprintf (buf+strlen(buf), bufferSize, "%d bytes\n", CPU_L2_CACHE_LINE_SIZE);
    if (CPU_L1_DATA_TLBS > 0)
-      sprintf (buf + strlen (buf), "L1 TLBS: %d\n", CPU_L1_DATA_TLBS);
+      snprintf (buf + strlen (buf), bufferSize, "L1 TLBS: %d\n", CPU_L1_DATA_TLBS);
    if (CPU_L2_DATA_TLBS > 0)
-      sprintf (buf + strlen (buf), "%sTLBS: %d\n",
+      snprintf (buf + strlen (buf), bufferSize, "%sTLBS: %d\n",
           CPU_L1_DATA_TLBS > 0 ? "L2 " : "",
           CPU_L2_DATA_TLBS);
 }

@@ -105,16 +105,10 @@ bool TreeFactorize::BuildTree(mpz_t Candi, int64_t MaxPr, const char *UserDefine
 		if (FactorsAtLeaf & 1)
 			++FactorsAtLeaf;
 
-		cp += sprintf(cp, "%d", FactorsAtLeaf);
+		cp += snprintf(cp, sizeof(Buf), "%d", FactorsAtLeaf);
 		for (unsigned height = 1; height < treeheight; height++)
 		{
-			// At times these things help, but not that much.
-//			if (height == 1 && treeheight > 6)
-//				cp += sprintf(cp, ",3");
-//			else if (height == 1 && treeheight > 3)
-//				cp += sprintf(cp, ",3");
-//			else
-				cp += sprintf(cp, ",2");
+			cp += snprintf(cp, sizeof(Buf), ",2");
 
 			// NOTE this should never ever come close to this, but "just in case".
 			if (cp-Buf > 2000)

@@ -30,7 +30,7 @@ PFIntSymbol& PFIntSymbol::operator=(const PFIntSymbol &s) {
 PFString PFIntSymbol::GetStringValue() {
    PFString str;
    char buff[12];
-   sprintf(buff,"%d",m_i);
+   snprintf(buff, sizeof(buff), "%d", m_i);
    str=buff;
    return str;
 }

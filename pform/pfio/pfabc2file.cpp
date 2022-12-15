@@ -245,7 +245,7 @@ SkipThisLine:;
       {
          delete[] s_array[i]; // Fix a memory leak.
          s_array[i] = new char[40];
-         sprintf(s_array[i],"%" PRId64"",array[i]);
+         snprintf(s_array[i], 40, "%" PRId64"",array[i]);
       }
    }
 

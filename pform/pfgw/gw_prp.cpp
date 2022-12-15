@@ -235,13 +235,12 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N);
             static int lastLineLen;
             bFirst = false;
-            // 150 bytes will not overflow, since we "force" the max size within the sprintf()
             char Buf[150];
             if (errchk && gwdata.MAXDIFF < 1e10)
-               sprintf(Buf, "PRP: %.36s %d/%d mro=%.5g \r",
+               snprintf(Buf, sizeof(Buf), "PRP: %.36s %d/%d mro=%.5g \r",
                   sNumStr, iDone, iTotal, gw_get_maxerr(&gwdata));
             else
-               sprintf(Buf, "PRP: %.36s %d/%d\r", sNumStr, iDone, iTotal);
+               snprintf(Buf, sizeof(Buf), "PRP: %.36s %d/%d\r", sNumStr, iDone, iTotal);
             int thisLineLen = (int)strlen(Buf);
             if (iDone == 1 && iTotal > 50000)
                g_pIni->ForceFlush();
@@ -309,8 +308,8 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
    // Code "straight" from PRP.
    if (gw_test_illegal_sumout(&gwdata))
    {
-      sprintf(buffer1, "Detected in gw_test_illegal_sumout() in %s", caller);
-      sprintf(buffer2, "Iteration: %d/%d ERROR: ILLEGAL SUMOUT", currentIteration, maxIterations);
+      snprintf(buffer1, sizeof(buffer1), "Detected in gw_test_illegal_sumout() in %s", caller);
+      snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: ILLEGAL SUMOUT", currentIteration, maxIterations);
       buffer3[0] = 0;
       haveFatalError = true;
    }
@@ -321,23 +320,23 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
       suminp = gwX->suminp();
       sumout = gwX->sumout();
 
-      sprintf(buffer1, "Detected in gw_test_mismatched_sums() in %s", caller);
-      sprintf(buffer2, "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
-      sprintf(buffer3, "%.16g != %.16g\n  (Diff=%.0f max allowed=%.0f)", suminp, sumout, fabs(suminp - sumout), gwdata.MAXDIFF);
+      snprintf(buffer1, sizeof(buffer1), "Detected in gw_test_mismatched_sums() in %s", caller);
+      snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
+      snprintf(buffer3, sizeof(buffer3), "%.16g != %.16g\n  (Diff=%.0f max allowed=%.0f)", suminp, sumout, fabs(suminp - sumout), gwdata.MAXDIFF);
       haveFatalError = true;
    }
 
    if (!haveFatalError && gw_get_maxerr(&gwdata) > g_dMaxErrorAllowed)
    {
-      sprintf(buffer1, "Detected in MAXERR>%.2f (round off check) in %s", g_dMaxErrorAllowed, caller);
-      sprintf(buffer2, "Iteration: %d/%d ERROR: ROUND OFF %.5g>%.2f", currentIteration, maxIterations, gw_get_maxerr(&gwdata), g_dMaxErrorAllowed);
+      snprintf(buffer1, sizeof(buffer1), "Detected in MAXERR>%.2f (round off check) in %s", g_dMaxErrorAllowed, caller);
+      snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: ROUND OFF %.5g>%.2f", currentIteration, maxIterations, gw_get_maxerr(&gwdata), g_dMaxErrorAllowed);
       buffer3[0] = 0;
       haveFatalError = true;
    }
 
    if (haveFatalError)
    {
-      sprintf(buffer4, "PFGW will automatically rerun the test with -a%d", fftSize + 1);
+      snprintf(buffer4, sizeof(buffer4), "PFGW will automatically rerun the test with -a%d", fftSize + 1);
 
       PFWriteErrorToLog(g_cpTestString, buffer1, buffer2, buffer3, buffer4);
 

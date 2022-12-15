@@ -182,7 +182,7 @@ static int gwGF_LoadSubs(Integer *N, const char *sNumStr, Integer *k, uint32_t n
    for (uint32_t j = 0; j < GF_n_Subs; j++)
    {
       char GF_IntermedFName[120];
-      sprintf (GF_IntermedFName, "%s_%d_%d.gfi", k_text, n, GF_Subs[j].prime);
+      snprintf (GF_IntermedFName, sizeof(GF_IntermedFName), "%s_%d_%d.gfi", k_text, n, GF_Subs[j].prime);
 #ifdef _MSC_VER
       if (!_access_s(GF_IntermedFName, 0))
 #else
@@ -267,9 +267,9 @@ static int GFNDivisibilityTest(const char *outputFormat, Integer *N, const char 
             Timer.Start();
 
             if (x || y)
-               sprintf(temp, outputFormat, x, y, sNumStr, iDone, iTotal);
+               snprintf(temp, sizeof(temp), outputFormat, x, y, sNumStr, iDone, iTotal);
             else
-               sprintf(temp, outputFormat, base, sNumStr, iDone, iTotal);
+               snprintf(temp, sizeof(temp), outputFormat, base, sNumStr, iDone, iTotal);
 
             if (lastLineLength > strlen(temp))
                // When mixing stdio, stderr and redirection with a \r stderr output,

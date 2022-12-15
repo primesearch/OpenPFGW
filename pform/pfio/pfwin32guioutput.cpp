@@ -58,7 +58,7 @@ int PFWin32GUIOutput::PFPrintfStderr(const char *Fmt, va_list &va)
 
    if (strlen(pBuffer) < 150 && memcmp(pBuffer, "PFGW", 4))
    {
-      sprintf(g_cpTrayMsg, "WinPFGW: %s", pBuffer);
+      snprintf(g_cpTrayMsg, sizeof(g_cpTrayMsg), "WinPFGW: %s", pBuffer);
       ret = (int) strlen(g_cpTrayMsg) - 1;
       while (ret && (g_cpTrayMsg[ret] == '\n' || g_cpTrayMsg[ret] == '\r'))
       {
