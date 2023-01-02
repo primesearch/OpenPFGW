@@ -1,4 +1,4 @@
-Enhancements to: v4.0.4 Development Release - December 14, 2022
+Enhancements to: v4.0.4 Development Release - January 2, 2023
    - Upgraded to Visual Studio 2022.
    - Added -A allowing the specification of single CPU for pfgw to use.  This
      is supported only for Windows at this time and should be primarily used on CPUs
