@@ -101,10 +101,10 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\pfconfig\headers;..\..\;..\pfmath;..\pflib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_64BIT;_LIB;_CRT_SECURE_NO_WARNINGS;_ITERATOR_DEBUG_LEVEL=0</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_64BIT;_LIB;_CRT_SECURE_NO_WARNINGS;_ITERATOR_DEBUG_LEVEL=2</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>$(IntDir)pfio.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -155,6 +155,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="pfccfile.cpp" />
     <ClCompile Include="pfcheckfile.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -240,6 +241,7 @@
     <ClInclude Include="pfabcdfile.h" />
     <ClInclude Include="pfabcfile.h" />
     <ClInclude Include="pfabctaskcompleted.h" />
+    <ClInclude Include="pfccfile.h" />
     <ClInclude Include="pfcheckfile.h" />
     <ClInclude Include="pfcpapfile.h" />
     <ClInclude Include="pfdecimalfile.h" />

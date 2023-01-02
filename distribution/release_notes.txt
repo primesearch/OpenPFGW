@@ -3,7 +3,10 @@ Enhancements to: v4.0.4 Development Release - December 14, 2022
    - Added -A allowing the specification of single CPU for pfgw to use.  This
      is supported only for Windows at this time and should be primarily used on CPUs
      with a mix of efficiency and performance cores.
-   - Upgraded to gwnum v30.8b7.
+   - Added CC file format support.  This was added to support ccsieve (from the mtsieve
+     framework) as the format is easier to understand than the newpgen format.  Read
+     the ccfileformat.txt for more details.
+   - Upgraded to gwnum v30.10b2.
    
 Enhancements to: v4.0.2 Development Release - March 4, 2022
    - Changed Sm() and Smr() evaluators.  See pfgwdoc.txt for details.

@@ -8,6 +8,7 @@
 #include "pfnewpgenfile.h"
 #include "pfabcdfile.h"
 #include "pfabc2file.h"
+#include "pfccfile.h"
 #include "pfcpapfile.h"
 #include "pfscriptfile.h"
 #include "pfdecimalfile.h"
@@ -449,6 +450,8 @@ PFSimpleFile *openInputFile(const char *FileName, PFIni* pIniFile, const char **
             pf = new PFABCDFile(FileName);
          else if (!strncmp(Line, "ABC2 ", 5))
             pf = new PFABC2File(FileName);
+         else if (!strncmp(Line, "CC ", 3))
+            pf = new PFCCFile(FileName);
          else if (!strncmp(Line, "DECIMAL ", 8))
             pf = new PFDecimalFile(FileName);
          else if (!strncmp(Line, "PrZ", 3)) // In win32 this IS the string, but in Unix, it might not be, so only look at the first 3 chars

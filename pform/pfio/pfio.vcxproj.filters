@@ -65,6 +65,9 @@
     <ClCompile Include="pfdecimalfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pfccfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pfabc2file.h">
@@ -110,6 +113,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pfdecimalfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pfccfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

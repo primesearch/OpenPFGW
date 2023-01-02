@@ -1,4 +1,4 @@
-PrimeForm/GW documentation  PFGW v4.0.0 (March 2019)
+PrimeForm/GW documentation  PFGW v4.0.4 (January 2022)
 
 For the latest news on pfgw, see https://www.mersenneforum.org/showthread.php?t=13969.
 
@@ -23,18 +23,8 @@ A.1. What is PrimeForm/GW?
    Prime95, but allows us to use it ;)  It is an 'Open Source' project and is
    ported to Windows, Linux, and MacIntel.
    
-   The source code can be obtained at:
-    http://sourceforge.net/projects/openpfgw/
-   The most current development version, and the release version of PFGW 
-   can be obtained at:
-    http://openpfgw.svn.sourceforge.net/viewvc/openpfgw/ 
-   There are two mailing-lists concerned with PFGW:
-    http://groups.yahoo.com/group/primeform/
-     which is the "user's group"
-   and
-    http://groups.yahoo.com/group/openpfgw/
-     which is the "developer's group".
-   
+   The source code and latest build can be obtained at: http://sourceforge.net/projects/openpfgw/
+
 A.2. What is 'being prime'?
 
    A number is said to be prime when it cannot be divided by any integer
@@ -652,8 +642,12 @@ D) File Formats
    D.8  DECIMAL - file
         This takes a decimal value then extract substrings from it to 
         be PRP tested.
+           
+   D.9  CC - file
+        This is similar to an ABC file, but is used specifically for
+        Cunningham Chains.
         
-   D.9  Save/Resume files
+   D.10 Save/Resume files
         Although not actually a "input" file type, PFGW does save its
         processing "state" information, from time to time, while doing
         PRP testing.   The files saved, have "strange" names, and end
@@ -755,10 +749,12 @@ F) Other helpful programs
    F.3. Sieving programs
    F.3.1. sr<x>sieve   (*) http://www.mersenneforum.org/showthread.php?t=15833
    F.3.2. NewPGen          http://www.utm.edu/research/primes/programs/NewPGen/
-   F.3.3. APSieve          http://groups.yahoo.com/group/primeform/files/Sieving+Programs/
-   F.3.4. GFNSieve         http://groups.yahoo.com/group/primenumbers/files/
-   F.3.5. mtsieve      (*) http://mersenneforum.org/rogue/mtsieve.html, which includes:
-                              afsieve, mfsieve, cksieve, pixsieve, fbncsieve, gfndsieve, xyyxsieve
+   F.3.3. mtsieve      (*) http://mersenneforum.org/rogue/mtsieve.html has details on the software.
+                           https://sourceforge.net/projects/mtsieve/ is the software itself.
+                           
+                           The mtsieve framework includes a number of sieving programs including:
+                              afsieve, ccsieve, gcwsive, mfsieve, cksieve, pixsieve, fbncsieve
+                              gfndsieve, and xyyxsieve
                            see https://www.mersenneforum.org/showthread.php?t=23042 for updates
    
    F.3. Others
