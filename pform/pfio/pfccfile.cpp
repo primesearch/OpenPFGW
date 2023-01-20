@@ -192,7 +192,7 @@ void PFCCFile::ProcessFirstLine(char* FirstLine)
    while (expPtr[0] == ' ')
       expPtr++;
 
-   if (strchr(expPtr, '&') > 0 || strchr(expPtr, '|') > 0) {
+   if (strchr(expPtr, '&') != NULL || strchr(expPtr, '|') != NULL) {
       snprintf(errorMessage, sizeof(errorMessage), "\nCritical Error, first line in CC file does not support & or |\n");
       throw errorMessage;
 

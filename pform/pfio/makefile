@@ -5,7 +5,7 @@ vpath %.h .
 vpath %.asm .
 
 OSPECIAL =
-OLIB = pfcpapfile.o pffile.o pfnewpgenfile.o pfoutput.o pfconsoleoutput.o pfini.o \
+OLIB = pfcpapfile.o pffile.o pfccfile.o pfnewpgenfile.o pfoutput.o pfconsoleoutput.o pfini.o \
 	pfabcfile.o pfabc2file.o pfprzfile.o pfscriptfile.o pfscriptfns.o pfabcdfile.o \
 	pfdecimalfile.o pfcheckfile.o prz.o pfabctaskcompleted.o pffilesymbol.o
 OUTDIR = .libs

@@ -102,7 +102,7 @@ bool DeCompress_bits_From_PrZ_setup(uint32_t BitLevel, uint32_t _EscapeLevel, ui
 	cmpr_nvalsleft = _nvalsleft;
 	if (bNewPGenFile)
 	{
-		sprintf (cpp, "%" PRIu64" %u", OffsetK, Base);
+		snprintf (cpp, 30, "%" PRIu64" %u", OffsetK, Base);
 		return true;
 	}
 	return false;
@@ -130,7 +130,7 @@ bool DeCompress_bits_From_PrZ(FILE *fpIn, char *cpp, bool bDontOutput)
 	if (!bDontOutput)
 	{
 		if (bNewPGenFile)
-			sprintf (cpp, "%" PRIu64" %u", OffsetK, Base);
+			snprintf (cpp, 30, "%" PRIu64" %u", OffsetK, Base);
 		else
 			sprintf (cpp, "%" PRIu64"", OffsetK);
 	}
