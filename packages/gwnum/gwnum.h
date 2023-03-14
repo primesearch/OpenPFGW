@@ -16,7 +16,7 @@
 | threads IF AND ONLY IF each uses a different gwhandle structure
 | initialized by gwinit.
 | 
-|  Copyright 2002-2022 Mersenne Research, Inc.  All rights reserved.
+|  Copyright 2002-2023 Mersenne Research, Inc.  All rights reserved.
 +---------------------------------------------------------------------*/
 
 #ifndef _GWNUM_H
@@ -55,9 +55,9 @@ typedef gwnum *gwarray;
 /* are new prime95 versions without any changes in the gwnum code.  This version number is also embedded in the assembly code and */
 /* gwsetup verifies that the version numbers match.  This prevents bugs from accidentally linking in the wrong gwnum library. */
 
-#define GWNUM_VERSION		"30.10"
+#define GWNUM_VERSION		"30.11"
 #define GWNUM_MAJOR_VERSION	30
-#define GWNUM_MINOR_VERSION	10
+#define GWNUM_MINOR_VERSION	11
 
 /* Error codes returned by the three gwsetup routines */
 
@@ -255,7 +255,7 @@ void gwfree (
 /* Allocate an array and fill it with gwnums.  Uses a little less memory than allocating an array and calling gwalloc many times. */
 gwarray gwalloc_array (		/* Pointer to an array of gwnums */
 	gwhandle *gwdata,	/* Handle initialized by gwsetup */
-	int	n);		/* Size of the array of gwnums */
+	uint64_t n);		/* Size of the array of gwnums */
 
 /* Free a previously allocated array of gwnums */
 void gwfree_array (
@@ -777,7 +777,7 @@ int gwtogiant (gwhandle *, gwnum, giant);
 /* gwfftsub3(s1,s2,d)		DEPRECATED - use gwadd3.  Subtracts second FFTed number from first FFTed number */
 /* gwfftaddsub4(s1,s2,d1,d2)	DEPRECATED - use gwaddsub4.  Like gwfftaddsub but stores results in separate variables */
 /* gwsquare(x)			DEPRECATED - use gwsquare2.  Shortcut for gwsquare2(x,x,0) */
-/* gwsquare2(h,s,d) w/o options	DEPRECATED - use the new gwsquare2 and specify 0 for the options argument */
+/* gwsquare2(h,s,d) w/o options	DEPRECATED - use the new gwsquare2 and specify the proper options argument (or use gwsquare2_deprecated macro) */
 /* gwmul(s,d)			DEPRECATED - use gwmul3.  Computes d=s*d.  NOTE: s is replaced by its FFT */
 /* gwsafemul(s,d)		DEPRECATED - use gwmul3.  Like gwmul but s is not replaced with its FFT */
 /* gwfftmul(s,d)		DEPRECATED - use gwmul3.  Computes d=s*d.  NOTE: s must have been previously FFTed */
@@ -795,10 +795,11 @@ int gwtogiant (gwhandle *, gwnum, giant);
 
 /* Macros to implement deprecated routines */
 
-#define oldmulbyconst(h)		(((h)->NORMNUM & 2) ? GWMUL_MULBYCONST : 0)	 /* use deprecated gwsetnormroutine to multiplying result by mulbyconst */
+#define oldmulbyconst(h)		(((h)->NORMNUM & 2) ? GWMUL_MULBYCONST : 0)	 /* use deprecated gwsetnormroutine to multiply result by mulbyconst */
 #define oldstartnextfft(h)		((h)->GLOBAL_POSTFFT ? GWMUL_STARTNEXTFFT : 0)	 /* use deprecated gwstartnextfft for starting next forward FFT */
 
 #define gwsquare(h,s)			gwsquare2 (h,s,s,oldstartnextfft(h) | oldmulbyconst(h) | GWMUL_ADDINCONST)
+#define gwsquare2_deprecated(h,s,d)	gwsquare2 (h,s,d,oldstartnextfft(h) | oldmulbyconst(h) | GWMUL_ADDINCONST)
 #define gwmul(h,s,d)			gwmul3(h,s,d,d,GWMUL_FFT_S1 | oldstartnextfft(h) | oldmulbyconst(h) | GWMUL_ADDINCONST)
 #define gwsafemul(h,s,d)		gwmul3(h,s,d,d,GWMUL_PRESERVE_S1 | oldstartnextfft(h) | oldmulbyconst(h) | GWMUL_ADDINCONST)
 #define gwfftmul(h,s,d)			gwmul3(h,s,d,d,oldstartnextfft(h) | oldmulbyconst(h) | GWMUL_ADDINCONST)
@@ -1036,7 +1037,7 @@ struct gwhandle_struct {
 	char	use_spin_wait;		/* FALSE = use mutex, TRUE = spin wait.  Linus Torvalds hates spinning, see https://www.realworldtech.com/forum/?threadid=189711&curpostid=189723 */
 					/* GWNUM does use a spin lock, rather it can spin waiting for an atomic counter of active threads to reach zero. */
 					/* There is likely negligible difference between mutex wait and spin wait. */
-	char	unused_setup_flags[1];
+	char	scramble_arrays;	/* TRUE (the default) if gwalloc_array scrambles allocated gwnums in memory.  Polymult is often faster with scrambled set. */
 	int	bench_num_cores;	/* Set to expected number of cores that will FFT (affects select fastest FFT implementation) */
 	int	bench_num_workers;	/* Set to expected number of workers that will FFT (affects select fastest FFT implementation) */
 	/* End of variables affecting gwsetup */
