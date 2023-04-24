@@ -1,3 +1,8 @@
+Enhancements to: v4.0.6 Development Release - April 24, 2023
+   - Replaced sprintf/vsprintf with snprintf/vsnprintf.
+   - Added Gerbicz Error Checking to PRP testing.
+   - Upgraded to gwnum v30.12b1
+   
 Enhancements to: v4.0.4 Development Release - January 2, 2023
    - Upgraded to Visual Studio 2022.
    - Added -A allowing the specification of single CPU for pfgw to use.  This

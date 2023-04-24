@@ -40,10 +40,7 @@ bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32_t iDone, GWInteger *g
 // in gw_prp.cpp
 int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue);
 void bench_gwPRP(Integer *N, uint32_t iterations);
-int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize);
-
-// in phi_prp.cpp
-void PhiCofactorExperiment(PFSymbolTable *psym,const PFString &sPhi,const PFBoolean &bFactors,const PFBoolean &bDeep,const PFBoolean &bOnlyFactors);
+int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize, uint64_t q);
 
 // in gw_gapper.cpp
 void gw_gapper(const char *FName, int MinGap, uint64_t restart=0);
@@ -82,5 +79,24 @@ inline int ErrorCheck(int current, int max)
    return 1;
 }
 
+/* used to calculate frequency of Gerbicz Error Checks in gw_prp.c */
+/* from rosettacode.org */
+inline int64_t lsqrt(int64_t x) {
+   int64_t q = 1, r = 0;
+   while (q <= x) {
+      q <<= 2;
+   }
+   while (q > 1) {
+      int64_t t;
+      q >>= 2;
+      t = x - r - q;
+      r >>= 1;
+      if (t >= 0) {
+         x = t;
+         r += q;
+      }
+   }
+   return r;
+}
 
 #endif // PFGW_GLOBALS_H__
