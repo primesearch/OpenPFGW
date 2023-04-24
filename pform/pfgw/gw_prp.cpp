@@ -155,7 +155,11 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
    int   retval;
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate iiBase^X mod N
+
    int iTotal = numbits(X);
+
+   Integer intq(q);
+   if (q) (*N) = (*N) / intq;
 
    // Data for the save/restore file.
    char RestoreName[13];   // file name will fit an 8.3
@@ -215,7 +219,6 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       /* These variables are only used if we are doing Gerbicz Error Checking (GEC) during the prp test */
       int step = (int) (lsqrt(iTotal) + 1); /* how often to check for errors during GEC */
       int i0 = i; /* restore point for i if an error is detected during GEC */
-      Integer intq(q);
       Integer bq(iiBase % q);
       Integer rq(1); /* TODO: fix when RestoreState happens */
       Integer rq0 = rq; /* restore point for rq if an error is detected during GEC */
