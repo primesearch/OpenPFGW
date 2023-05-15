@@ -99,7 +99,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
       if (CreateModulus(Nq, g_cpTestString, true, fftSize)) return -2;
 
       if (!g_FFTSizeOnly)
-         testResult = prp_using_gwnum(Nq, iBase, sNumStr, p_n64ValidationResidue, fftSize, q);
+         testResult = prp_using_gwnum(Nq, iBase, sNumStr, p_n64ValidationResidue, fftSize, 0);
 
       DestroyModulus();
    } while (testResult == -1 && fftSize < 5 && !g_FFTSizeOnly);
@@ -219,12 +219,10 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       /* These variables are only used if we are doing Gerbicz Error Checking (GEC) during the prp test */
       int step = (int) (lsqrt(iTotal) + 1); /* how often to check for errors during GEC */
       int i0 = i; /* restore point for i if an error is detected during GEC */
-      Integer bq(iiBase % q);
+      Integer bq(iiBase % (q == 0 ? 1 : q));
       Integer rq(1); /* TODO: fix when RestoreState happens */
       Integer rq0 = rq; /* restore point for rq if an error is detected during GEC */
-      Integer res0(0);
-      res0 = gwX; /* restore point for X (our power residue) if an error is detected during GEC */
-      Integer tmpX(0); /* temp var to convert gwX so we can compute X%intq */
+
 
       double MaxSeenDiff = 0.;
       for (;i--;)
@@ -233,7 +231,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
 
          gw_clear_maxerr(&gwdata);
 
-         int state = 0;
+         char state = 0;
 
          if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
             state = 1;
@@ -296,31 +294,6 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
          }
       }
 
-      if (q)
-      { /* perform extra processing if we are using Gerbicz Error Checking */
-         rq = (rq * rq) % intq;
-
-         if (bit(X, i))
-            rq = (rq * bq) % intq;
-
-         if (i % step == 0 || i == 1)
-         { /* only calculate X%q every "step" iterations, or on final iteration */
-            tmpX = gwX;
-            if (tmpX % intq != rq)
-            { /* GEC error check failed, restore to last known good state */
-               printf("GEC detected error at iteration=%d, rolling back to iteration=%d", i, i0);
-               i = i0;
-               rq = rq0;
-               gwX = res0;
-            }
-            else
-            { /* GEC error check passed, save this state */
-               i0 = i;
-               rq0 = rq;
-               res0 = gwX;
-            }
-         }
-      }
 
       X = gwX;
 
