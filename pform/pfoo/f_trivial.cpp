@@ -50,6 +50,19 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
       PFFactorizationSymbol *pFactorization = new PFFactorizationSymbol("_TRIVIALFACTOR");
 
       Integer *pN = ((PFIntegerSymbol*)pSymbol)->GetValue();
+      // default to 31 bit trivial factor depth. This depth is needed for mobius and primative factoring, but for
+      // "normal" testing, trivial factoring this deep is actually way too much, and slows things down a lot. For
+      // "normal" testing, 2^6 is sufficient (GWIntegers may have problems below this size).
+      int nDepth = 31;
+      pSymbol = pContext->LookupSymbol("_trivial_depth");
+      if (pSymbol && pSymbol->GetSymbolType() == INTEGER_SYMBOL_TYPE)
+      {
+         PFIntegerSymbol* pI = (PFIntegerSymbol*)pSymbol;
+         Integer* g = pI->GetValue();
+         nDepth = (*g) & 0x1F;
+         if (nDepth < 6)
+            nDepth = 6;
+      }
 
       if ((*pN)<0)
       {
@@ -65,7 +78,7 @@ PFBoolean F_Trivial::CallFunction(PFSymbolTable *pContext)
          // Zero, one, two
          iResult = ((*pN) & INT_MAX);
       }
-      else if (numbits(*pN) < 40)
+      else if (numbits(*pN) < nDepth)
       {
          // If we do NOT dip into this code for numbers less than 2^31, then the
          // V() and Phi() functions start failing!!!  We need to check into this!!!
