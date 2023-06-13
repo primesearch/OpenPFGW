@@ -417,6 +417,62 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32_t minN, i
    PFfflush(stdout);
 }
 
+void benchmarkSpecialSizeOnly(PFSymbolTable* pContext, char* expression, int32_t minN, int32_t maxN, double k, uint32_t b, int32_t c, int32_t sizeGap)
+{
+   char     last_fftlen[200], next_fftlen[200];
+   int32_t  n;
+   int32_t  minNForFFTSize;
+
+   PFPrintfLog("\nBenchmarking special modular reduction for %s!\n", expression);
+
+   PFPrintfLog("  [min n]     [max n]   [FFT used]\n");
+   PFPrintfLog("--------------------------------------------------------------------------------\n");
+
+   minNForFFTSize = minN;
+
+   gwinit(&gwdata);
+   gwmap_to_fftlen(k, b, minN, c);
+   gwsetup(&gwdata, k, b, minN, c);
+
+   gwfft_description(&gwdata, last_fftlen);
+
+   gwdone(&gwdata);
+
+   for (n=minN+sizeGap; n<=maxN; n+=sizeGap)
+   {
+      if (g_bExitNow) break;
+
+      gwinit(&gwdata);
+      gwmap_to_fftlen(k, b, n, c);
+      gwsetup(&gwdata, k, b, n, c);
+
+      gwfft_description(&gwdata, next_fftlen);
+
+      if (strcmp(last_fftlen, next_fftlen))
+      {
+         PFPrintfLog("%9ld   ", minNForFFTSize);
+         PFPrintfLog("%9ld   ", n-1);
+
+         PFPrintfLog("     %s\n", last_fftlen);
+         PFfflush(stdout);
+
+         strcpy(last_fftlen, next_fftlen);
+         minNForFFTSize = n;
+      }
+
+      gwdone(&gwdata);
+   }
+
+   PFPrintfLog("%9ld   ", minNForFFTSize);
+   PFPrintfLog("%9ld   ", n-1);
+
+   PFPrintfLog("     %s\n", last_fftlen);
+   PFfflush(stdout);
+
+   PFPrintfLog("\n");
+   PFfflush(stdout);
+}
+
 void benchmark(PFSymbolTable *pContext, char *parameter)
 {
    char genericExpression[200], specialExpression[200];
@@ -424,11 +480,11 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
    int error_code;
    double  k;
    uint32_t b;
-   int32_t c, d;
+   int32_t c, d, sizeGap = 100;
    int32_t minN = 100, maxN = 10000000;
    int32_t minF = 100, maxF = 1000000;
    bool allFFT = false, haveGenericExp = false, haveSpecialExp = false;
-   bool doGeneric = false, doSpecial  = false, doFactor = false;
+   bool doGeneric = false, doSpecial  = false, doFactor = false, sizeOnly = false;
  
    cPtr = strtok(parameter, ",");
    if (!cPtr) { doSpecial = doGeneric = true; }
@@ -436,6 +492,7 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
    while (cPtr)
    {
       if (!strcmp(cPtr, "fft")) allFFT = true;
+      else if (!strcmp(cPtr, "sonly")) sizeOnly = true;
       else if (!strcmp(cPtr, "fact")) doFactor = true;
       else if (!strcmp(cPtr, "spec")) doSpecial = true;
       else if (!strcmp(cPtr, "gen")) doGeneric = true;
@@ -443,6 +500,7 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
       else if (!memcmp(cPtr, "maxf=", 5)) { doGeneric = true; maxF = atol(cPtr+5); }
       else if (!memcmp(cPtr, "minn=", 5)) { doSpecial = true; minN = atol(cPtr+5); }
       else if (!memcmp(cPtr, "maxn=", 5)) { doSpecial = true; maxN = atol(cPtr+5); }
+      else if (!memcmp(cPtr, "sgap=", 5)) { doSpecial = true; sizeGap = atol(cPtr+5); }
       else if (!memcmp(cPtr, "gexp=", 5))
       {
          strcpy(genericExpression, cPtr+5);
@@ -504,5 +562,8 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
       benchmarkGeneric(pContext, genericExpression, minF, maxF, allFFT);
 
    if (!g_bExitNow && doSpecial)
-      benchmarkSpecial(pContext, specialExpression, minN, maxN, k, b, c, allFFT);
+      if (sizeOnly)
+         benchmarkSpecialSizeOnly(pContext, specialExpression, minN, maxN, k, b, c, sizeGap);
+      else
+         benchmarkSpecial(pContext, specialExpression, minN, maxN, k, b, c, allFFT);
 }

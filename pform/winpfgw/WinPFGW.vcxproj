@@ -126,6 +126,8 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
       <ShowProgress>NotSet</ShowProgress>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>

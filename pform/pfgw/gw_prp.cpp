@@ -19,7 +19,7 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
+int gwPRP(Integer* N, const char* sNumStr, uint64_t* p_n64ValidationResidue)
 {
    // First check to see if N divides iBase
    if (N->gmp()->_mp_size == 1 && Integer(iBase) % *N == 0)
@@ -49,7 +49,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
    // function faster). If "generic" reduction is used instead, then these break over points are TOO
    // low, and GMP should be used much higher.  Unfortunately, I am not sure how to "quickly" determine
    // proth-2 mode quickly at this point
-   if ((iTotal < 650 && (CPU_FLAGS&CPU_SSE2) == 0) || (iTotal < 800 && (CPU_FLAGS&CPU_SSE2)))
+   if ((iTotal < 650 && (CPU_FLAGS & CPU_SSE2) == 0) || (iTotal < 800 && (CPU_FLAGS & CPU_SSE2)))
 #else
    if (iTotal < 600)
 #endif
@@ -83,23 +83,23 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
    int fftSize = g_CompositeAthenticationLevel - 1;
    int testResult = -1;
 
+   // With Gerbicz Error Checking (GEC) our modulus becomes N*q (q a large prime < 2^64), instead of N
+   // We will use q = 18314159265358979339, and create Nq = N*q
+   uint64_t q = 18314159265358979339ULL; /* large prime < 2^64 used with GEC */
+   Integer* Nq = new Integer(q);
+   (*Nq) = (*Nq) * (*N);
+
    do
    {
-      // With Gerbicz Error Checking (GEC) our modulus becomes N*q (q a large prime < 2^64), instead of N
-      // We will use q = 18314159265358979339, and create Nq = N*q
-      uint64_t q = 18314159265358979339ULL; /* large prime < 2^64 used with GEC */
-      Integer* Nq = new Integer(q);
-      (*Nq) = (*Nq) * (*N);
-      
       fftSize++;
 
-      gwinit2(&gwdata, sizeof(gwhandle), (char *)GWNUM_VERSION);
+      gwinit2(&gwdata, sizeof(gwhandle), (char*)GWNUM_VERSION);
       gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
 
       if (CreateModulus(Nq, g_cpTestString, true, fftSize)) return -2;
 
       if (!g_FFTSizeOnly)
-         testResult = prp_using_gwnum(Nq, iBase, sNumStr, p_n64ValidationResidue, fftSize, 0);
+         testResult = prp_using_gwnum(Nq, iBase, sNumStr, p_n64ValidationResidue, fftSize, q);
 
       DestroyModulus();
    } while (testResult == -1 && fftSize < 5 && !g_FFTSizeOnly);
@@ -150,16 +150,15 @@ void  bench_gwPRP(Integer *N, uint32_t iterations)
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize, uint64_t q)
+int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* p_n64ValidationResidue, int fftSize, uint64_t q)
 {
+   Integer intq(q);
+   if (q) (*N) = (*N) / intq;
+
    int   retval;
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate iiBase^X mod N
-
    int iTotal = numbits(X);
-
-   Integer intq(q);
-   if (q) (*N) = (*N) / intq;
 
    // Data for the save/restore file.
    char RestoreName[13];   // file name will fit an 8.3
@@ -179,7 +178,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       gwX = iiBase;               // initialise X to A^1.
       gwsetmulbyconst(&gwdata, iiBase);      // and multiplier
 
-                                             // keep a simple iteration counter just for rudimentary progress output
+      // keep a simple iteration counter just for rudimentary progress output
       int iDone = 0;
 
       bool bFirst = true;
@@ -217,21 +216,24 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
       }
 
       /* These variables are only used if we are doing Gerbicz Error Checking (GEC) during the prp test */
-      int step = (int) (lsqrt(iTotal) + 1); /* how often to check for errors during GEC */
+      int step = (int) sqrt((double) iTotal) + 1; /* how often to check for errors during GEC */
       int i0 = i; /* restore point for i if an error is detected during GEC */
-      Integer bq(iiBase % (q == 0 ? 1 : q));
-      Integer rq(1); /* TODO: fix when RestoreState happens */
+      Integer bq(iiBase % q);
+      Integer rq(0);
+      rq = gwX;
       Integer rq0 = rq; /* restore point for rq if an error is detected during GEC */
-
+      Integer res0(0);
+      res0 = gwX; /* restore point for X (our power residue) if an error is detected during GEC */
+      Integer tmpX(0); /* temp var to convert gwX so we can compute X%intq */
 
       double MaxSeenDiff = 0.;
-      for (;i--;)
+      for (; i--;)
       {
          int errchk = ErrorCheck(iDone, iTotal);
 
          gw_clear_maxerr(&gwdata);
 
-         char state = 0;
+         int state = 0;
 
          if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
             state = 1;
@@ -246,8 +248,34 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
          else
             inl_gwsquare2(gwX);
 
+         if (q)
+         { /* perform extra processing if we are using Gerbicz Error Checking */
+            rq = (rq * rq) % intq;
+
+            if (bit(X, i))
+               rq = (rq * bq) % intq;
+
+            if (i % step == 0 || i == 1)
+            { /* only calculate X%q every "step" iterations, or on final iteration */
+               tmpX = gwX;
+               if (tmpX % intq != rq)
+               { /* GEC error check failed, restore to last known good state */
+                  printf("GEC detected error at iteration=%d, rolling back to iteration=%d", i, i0);
+                  i = i0;
+                  rq = rq0;
+                  gwX = res0;
+               }
+               else
+               { /* GEC error check passed, save this state */
+                  i0 = i;
+                  rq0 = rq;
+                  res0 = gwX;
+               }
+            }
+         }
+
          iDone++;
-         if (g_nIterationCnt && (((iDone%g_nIterationCnt) == 0) || bFirst || !i))
+         if (g_nIterationCnt && (((iDone % g_nIterationCnt) == 0) || bFirst || !i))
          {
             if (*RestoreName)
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N);
@@ -294,7 +322,6 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
          }
       }
 
-
       X = gwX;
 
       // N < X only when N is of the form (k*b^n+c)/d as we used the modulus
@@ -318,7 +345,6 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
 
    return retval;
 }
-
 bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize)
 {
    char  buffer1[200], buffer2[200], buffer3[200], buffer4[200];
