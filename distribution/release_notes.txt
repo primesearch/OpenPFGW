@@ -1,6 +1,18 @@
+Enhancements to: v4.1.0 Development Release - July 5, 2023
+   - Upgrade to gwnum v30.13b1 which addresses a crash when primality testing.
+   - Added GEC (Gerbicz Error Checking) to PRP testing.
+   - Removed most of the help output from command line as it is in some cases
+     incomplete and wrong in other cases.  pfgwdoc.txt should be used as
+     the reference for all command line options.
+
+Enhancements to: v4.0.7 Development Release - June 6, 2023
+   - Fix an issue with primality testing of terms less than 40 bits in length as it
+     will show them as "factored" instead of doing the primality test.
+   - Added sonly and sgap benchmark parameters (see pfgw.txt).
+
 Enhancements to: v4.0.6 Development Release - April 24, 2023
    - Replaced sprintf/vsprintf with snprintf/vsnprintf.
-   - Added Gerbicz Error Checking to PRP testing.
+   - Added code to support Gerbicz Error Checking to PRP testing.  They are not enabled.
    - Upgraded to gwnum v30.12b1
    
 Enhancements to: v4.0.4 Development Release - January 2, 2023

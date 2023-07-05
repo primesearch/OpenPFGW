@@ -246,12 +246,15 @@ B.3. The options.
         can take one or more of the following comma delimited parameters:
            gen   --> benchmark generic modular reduction on f!-1 for 100<=f<=1000000
            spec  --> benchmark special modular reduction on 3*2^n+1 for 100<=n<=10000000
+           sonly --> benchmark (using sgap) to find where FFT sizes change
            fact  --> benchmark trial factoring
            fft   --> benchmark all FFT sizes
            minf= --> override min f on generic modular reduction benchmark
            maxf= --> override max f on generic modular reduction benchmark
            minn= --> override min n on special modular reduction benchmark
            maxn= --> override max n on special modular reduction benchmark
+           sgap  --> increase n by this value to determine FFT size for tha n (default 100)
+                     this is only used by the sonly parameter
            gexp= --> expression to use for benchmarking generic modular reduction, must use
                      the variable f, e.g. 500*f#+1, 3^(f*2)+4^f+1
            sexp= --> expression to use for benchmarking special modular reduction, must

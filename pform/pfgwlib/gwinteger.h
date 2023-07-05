@@ -33,6 +33,7 @@ public:
 	friend void inl_gwsquare2(GWInteger &s);
    friend void inl_gwsquare2_carefully(GWInteger &s);
 	friend void inl_gwmul(GWInteger &s, GWInteger &d);
+	friend void inl_gwmul3(GWInteger& s1, GWInteger& s2, GWInteger& d, int options = 0);
 	friend void inl_gwmul_carefully(GWInteger &s, GWInteger &d);
 	friend void inl_gwfftmul(GWInteger &s,GWInteger &d);
 	friend void inl_gwfftfftmul(const GWInteger &s,const GWInteger &s2,GWInteger &d);

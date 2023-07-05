@@ -30,6 +30,11 @@ GW_INLINE void inl_gwmul(GWInteger &s, GWInteger &d)
    gwmul (&gwdata, s.g, d.g);
 }
 
+GW_INLINE void inl_gwmul3(GWInteger& s1, GWInteger& s2, GWInteger& d, int options)
+{
+   gwmul3(&gwdata, s1.g, s2.g, d.g, options);
+}
+
 GW_INLINE void inl_gwmul_carefully(GWInteger &s, GWInteger &d)
 {
    gwmul_carefully (&gwdata, s.g, d.g);

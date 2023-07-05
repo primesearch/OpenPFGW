@@ -7,13 +7,14 @@
 #endif
 
 
+#define L_BITS   50 // tests will take 2/L times longer, L=50 gives 4% overhead
 
 extern int g_CompositeAthenticationLevel;
 extern const double g_dMaxErrorAllowed;
 extern bool g_FFTSizeOnly;
 extern bool g_bTerseOutput;
 
-bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize);
+bool CheckForFatalError(const char* caller, GWInteger* gwX, int currentIteration, int maxIterations, int fftSize);
 
 // -2 is used for incomplete processing (i.e. user told us to exit early).
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
@@ -83,12 +84,6 @@ int gwPRP(Integer* N, const char* sNumStr, uint64_t* p_n64ValidationResidue)
    int fftSize = g_CompositeAthenticationLevel - 1;
    int testResult = -1;
 
-   // With Gerbicz Error Checking (GEC) our modulus becomes N*q (q a large prime < 2^64), instead of N
-   // We will use q = 18314159265358979339, and create Nq = N*q
-   uint64_t q = 18314159265358979339ULL; /* large prime < 2^64 used with GEC */
-   Integer* Nq = new Integer(q);
-   (*Nq) = (*Nq) * (*N);
-
    do
    {
       fftSize++;
@@ -96,10 +91,10 @@ int gwPRP(Integer* N, const char* sNumStr, uint64_t* p_n64ValidationResidue)
       gwinit2(&gwdata, sizeof(gwhandle), (char*)GWNUM_VERSION);
       gwsetmaxmulbyconst(&gwdata, iBase); // maximum multiplier
 
-      if (CreateModulus(Nq, g_cpTestString, true, fftSize)) return -2;
+      if (CreateModulus(N, g_cpTestString, true, fftSize)) return -2;
 
       if (!g_FFTSizeOnly)
-         testResult = prp_using_gwnum(Nq, iBase, sNumStr, p_n64ValidationResidue, fftSize, q);
+         testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
 
       DestroyModulus();
    } while (testResult == -1 && fftSize < 5 && !g_FFTSizeOnly);
@@ -107,7 +102,7 @@ int gwPRP(Integer* N, const char* sNumStr, uint64_t* p_n64ValidationResidue)
    return testResult;
 }
 
-void  bench_gwPRP(Integer *N, uint32_t iterations)
+void  bench_gwPRP(Integer* N, uint32_t iterations)
 {
    int iDone = 0, iTotal;
    Integer testN;
@@ -117,7 +112,7 @@ void  bench_gwPRP(Integer *N, uint32_t iterations)
    iTotal = numbits(X);
 
    // create a context
-   gwinit2(&gwdata, sizeof(gwhandle), (char *)GWNUM_VERSION);
+   gwinit2(&gwdata, sizeof(gwhandle), (char*)GWNUM_VERSION);
 
    testN = *N;
    gwsetmaxmulbyconst(&gwdata, iBase);   // maximum multiplier
@@ -150,11 +145,8 @@ void  bench_gwPRP(Integer *N, uint32_t iterations)
 // -1 is an error (round off or mod reduction).  It is NOT prime or composite.  We have NO idea what it is.
 // 0 is composite.
 // 1 is prime (prp actually).
-int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* p_n64ValidationResidue, int fftSize, uint64_t q)
+int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* p_n64ValidationResidue, int fftSize)
 {
-   Integer intq(q);
-   if (q) (*N) = (*N) / intq;
-
    int   retval;
    Integer X = (*N);
    --X;            // X is the exponent, we are to calculate iiBase^X mod N
@@ -196,8 +188,8 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
          }
       }
 
-      // i MUST be handled outside of the loop below, since the resume code will have to modify it.
-      int i = iTotal;
+      // iLeft MUST be handled outside of the loop below, since the resume code will have to modify it.
+      int iLeft = iTotal;
       // Check for "existance" of a file which matches the hash pattern of this number.
 #ifdef _MSC_VER
       if (*RestoreName && !_access_s(RestoreName, 0))
@@ -210,24 +202,32 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
          {
             // The number not only passes the hash, but EVERY check was successful.  We are working with the right number.
             iDone = DoneBits;
-            i -= iDone;
+            iLeft -= iDone;
             PFPrintfLog("Resuming at bit %d\n", iDone);
          }
       }
 
-      /* These variables are only used if we are doing Gerbicz Error Checking (GEC) during the prp test */
-      int step = (int) sqrt((double) iTotal) + 1; /* how often to check for errors during GEC */
-      int i0 = i; /* restore point for i if an error is detected during GEC */
-      Integer bq(iiBase % q);
-      Integer rq(0);
-      rq = gwX;
-      Integer rq0 = rq; /* restore point for rq if an error is detected during GEC */
-      Integer res0(0);
-      res0 = gwX; /* restore point for X (our power residue) if an error is detected during GEC */
-      Integer tmpX(0); /* temp var to convert gwX so we can compute X%intq */
+
+      // The Gerbicz Error Correction routine used here was originally written by Robert Gerbicz for mpz
+      // Adapted to GWNUM and PFGW by David Cleaver
+      // Calculate ans=b^e mod n with strong error checking.
+      // b fits in 64 bits, L_BITS is the block length, error checking is done once per L_BITS^2 iterations
+      // need that n>2^L_BITS otherwise there is no check.
+      // Overhead: bitlength(e)*2/L_BITS iterations
+      int checklen = L_BITS * L_BITS;
+      Integer int_r1(0); // used for comparison
+      Integer int_r2(0); // used for comparison
+
+      GWInteger t;
+      GWInteger r1(gwX);
+      GWInteger r2;
+      GWInteger saved_r1(gwX);  // used to save/restore r1
+      GWInteger saved_res(gwX); // used to save/restore gwX
+
+      int saved_iLeft = iLeft; // used to save/restore iteration number
 
       double MaxSeenDiff = 0.;
-      for (; i--;)
+      for (; iLeft--;)
       {
          int errchk = ErrorCheck(iDone, iTotal);
 
@@ -235,47 +235,95 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
 
          int state = 0;
 
-         if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
+         if (iLeft > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !iLeft))
             state = 1;
 
          gwstartnextfft(&gwdata, state);
-         gwsetnormroutine(&gwdata, 0, errchk, bit(X, i));
+         gwsetnormroutine(&gwdata, 0, errchk, bit(X, iLeft));
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
          // error during the last iteration.
-         if (i < 50)
+         if (iLeft < 50)
             inl_gwsquare2_carefully(gwX);
          else
             inl_gwsquare2(gwX);
 
-         if (q)
-         { /* perform extra processing if we are using Gerbicz Error Checking */
-            rq = (rq * rq) % intq;
+         /* perform extra processing for Gerbicz Error Checking */
+         if (iLeft % L_BITS == 0)
+         {
+            int do_check = ((iLeft % checklen == 0) && ((iTotal - iLeft) > L_BITS));
 
-            if (bit(X, i))
-               rq = (rq * bq) % intq;
+            if (!do_check)
+            {
+               inl_gwmul(r1, gwX); // r1=(r1*res)%n
+            }
+            else
+            {
+               uint64_t w[(L_BITS >> 6) + 1]; // make w big enough to hold L_BITS bits
+               int count = 0;
+               for (int f = 0; f < L_BITS; f++)
+               {
+                  for (int g = f + iLeft; g < iTotal; g += L_BITS)
+                     if (bit(X, g))
+                        count++;
+                  uint64_t temp = (count % 2) << (f % 64);
+                  w[f >> 6] &= temp; // w[f] = count%2;
+                  count = count >> 1;
+               }
 
-            if (i % step == 0 || i == 1)
-            { /* only calculate X%q every "step" iterations, or on final iteration */
-               tmpX = gwX;
-               if (tmpX % intq != rq)
-               { /* GEC error check failed, restore to last known good state */
-                  printf("GEC detected error at iteration=%d, rolling back to iteration=%d", i, i0);
-                  i = i0;
-                  rq = rq0;
-                  gwX = res0;
+               inl_gwmul3(r1, gwX, r2); // r1=(r1*res)%n
+
+               int mbc = 0;
+               int len2 = 0;
+               int tmp = count;
+               while (tmp > 0)
+               {
+                  len2++;
+                  tmp >>= 1;
+               }
+               t = 1;
+               // calculate: t = b^count mod n
+               for (; len2--;)
+               {
+                  mbc = ((count >> len2) % 2 == 1 ? GWMUL_MULBYCONST : 0);
+                  inl_gwmul3(t, t, t, mbc); // t=(t^2)%n ; if bit(count,len)==1, then t=(t*b)%n
+               }
+
+               inl_gwmul3(r1, t, r1); // r1=(r1*t)%n
+
+               for (int f = L_BITS - 1; f >= 0; f--)
+               {
+                  uint64_t temp = 1ULL << (f % 64);
+                  mbc = ((w[f >> 6] & temp) == 1 ? GWMUL_MULBYCONST : 0);
+                  inl_gwmul3(r1, r1, r2, mbc); // r1=(r1^2)%n ; if bit(w,f)==1, then r1=(r1*b)%n
+               }
+
+               int_r1 = r1;
+               int_r2 = r2;
+               // printf("Strong error check at iteration=%llu.\n", iLeft);
+               if (int_r2 != int_r1)
+               {
+                  // printf("Found error at iteration=%d, fall back to iteration=%d.\n", iLeft, saved_it);
+                  char Buf[150];
+                  snprintf(Buf, sizeof(Buf), "\n * Found error at iteration=%d, falling back to iteration=%d.\n", iTotal - iLeft, iTotal - saved_iLeft);
+                  PFPrintfStderr("%s", Buf);
+                  PFfflush(stderr);
+
+                  iLeft = saved_iLeft;
+                  inl_gwcopy(saved_r1, r1);
+                  inl_gwcopy(saved_res, gwX);
                }
                else
-               { /* GEC error check passed, save this state */
-                  i0 = i;
-                  rq0 = rq;
-                  res0 = gwX;
+               {
+                  saved_iLeft = iLeft;
+                  inl_gwcopy(r1, saved_r1);
+                  inl_gwcopy(gwX, saved_res);
                }
             }
          }
 
          iDone++;
-         if (g_nIterationCnt && (((iDone % g_nIterationCnt) == 0) || bFirst || !i))
+         if (g_nIterationCnt && (((iDone % g_nIterationCnt) == 0) || bFirst || !iLeft))
          {
             if (*RestoreName)
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N);
@@ -345,7 +393,8 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
 
    return retval;
 }
-bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration, int maxIterations, int fftSize)
+
+bool CheckForFatalError(const char* caller, GWInteger* gwX, int currentIteration, int maxIterations, int fftSize)
 {
    char  buffer1[200], buffer2[200], buffer3[200], buffer4[200];
    bool  haveFatalError = false;

@@ -40,7 +40,7 @@ bool SaveState(ePRPType e_gwPRP, char *RestoreName, uint32_t iDone, GWInteger *g
 // in gw_prp.cpp
 int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue);
 void bench_gwPRP(Integer *N, uint32_t iterations);
-int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize, uint64_t q);
+int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *p_n64ValidationResidue, int fftSize);
 
 // in gw_gapper.cpp
 void gw_gapper(const char *FName, int MinGap, uint64_t restart=0);

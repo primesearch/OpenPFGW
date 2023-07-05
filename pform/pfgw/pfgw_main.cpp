@@ -243,17 +243,17 @@ LPCTSTR Help_Text1 = "\
 --===COPYRIGHT AND LICENSE===--\n\
 \n\
 PrimeForm/GW - a program to perform a variety of primality tests.\n\
-Copyright (C) 1999-2022, The OpenPFGW project at sourceforge.\n\
+Copyright (C) 1999-2023, The OpenPFGW project at sourceforge.\n\
 \n\
 See the accompanying LICENSE.pfgw for the Terms and Conditions\n\
 regarding the use of this product and third-party libraries therein.\n\
 \n\
 This product uses the gwnum libraries (version 30) by George Woltman.\n\
-Copyright 1995-2022 Mersenne Research, Inc., all rights reserved.\n\
+Copyright 1995-2023 Mersenne Research, Inc., all rights reserved.\n\
 See the accomanying LICENSE file, (also see http://www.mersenne.org/prize.htm)\n\
 \n\
 This product uses the GNU Multiple Precision Library (version 6.1.2).\n\
-Copyright (C) 1991-2019 Free Software Foundation, Inc.\n\
+Copyright (C) 1991-2023 Free Software Foundation, Inc.\n\
 See the accompanying COPYING.LIB for Terms and Conditions.\n\
 \n\
 ";
@@ -267,104 +267,16 @@ pfgw filename\n\
 which proceeds directly to a probable primality test of every number in the\n\
 specified file, one expression per line.\n\
 \n\
---===OPTIONS===--\n\
-\n\
-In addition, the following command-line flags are supported. Flags may appear\n\
+In addition, many command-line flags are supported. Flags may appear\n\
 in any order on the command-line, and are prefixed by a '-' sign.\n\
+The full list of command-line flags are specified in pfgwdoc.txt\n\
 \n\
 -q<expression> enter the \"q\"uick expression to be tested.\n\
 \n\
 --  Use a double dash to have PFGW query you for an expression to test Any\n\
 file name entered will be ignored when using either the -- or -q options\n\
 \n\
--l<logfilename> will output all text not only to the screen, but also to \n\
-the logfilename file (if <logfilename> is not specified, then pfgw.out is used\n\
-\n";
-//test.  (-d is also used to \"deep\" test NewPGen multi-prime searches)\n";
-LPCTSTR Help_Text3 = "\
---===MORE OPTIONS===--\n\
-\n\
--? This help message.\n\
-\n\
--f<percent> trial-factors every number before attempting any primality test. If\n\
-a factor is found, the PRP test is not performed. Optional <percent> is the\n\
-percent of what pfgw \"normally\" trial factors to.  i.e. default is -f100.\n\
-The <percent> can be from 1 up to 65535.  <percent> ignored if -e switch used.\n\
-\n\
--d will perform deep factoring, when used along with -f. In -f mode, if a\n\
-factor is found, processing of that number stops. The -d flag continues to\n\
-find factors until the trial-factoring limit, or until the number is\n\
-completely factored. If a cofactor exists, it is passed to the primality\n\
-test.\n\
-\n\
--s<number>\n\
--e<number>\n\
-Used in conjunction with the -f and -v flags, the minimum and maximum\n\
-values for trial-factoring can be set. The defaults are -s0, and -e\n\
-determined by an internal algorithm.\n\
-\n\
--k produces terse output\n\
-\n\
--o (or -od) factor [O]nly mode. In this mode instead of performing a primality\n\
-test, the expression or factors are written to stdout.  If the switch -od is\n\
-used, then the decimal expansion of the number is output.\n\
-";
-LPCTSTR Help_Text4 = "\
---===MORE OPTIONS===--\n\
-\n\
--b<number> allows you to override the PRP testing base, which defaults\n\
-to 3. Legal bases are in the range 2 to 255.\n\
-\n\
--v will process the numbers in the input file in modular vector form.\n\
-For each prime in a factor range set by the -s and -e flags, the value\n\
-of each number modulo that prime is output to stdout.\n\
-\n\
--g<o> Test for factors of GFN's. If -go then ONLY test for factors (no PRP).\n\
--gx<o> Test for factors of \"extended\" GFN's. xGFN's form is a^2^n+b^2^n\n\
-\n";
-LPCTSTR Help_Text5 = "\
---===ADVANCED OPTIONS FOR DETERMINSTIC TESTS===--\n\
-\n\
--t currently performs a deterministic test. By default this is an N-1\n\
-test, but N+1 testing may be selected with '-tp'. N-1 or N+1 is\n\
-factored, and Pocklington's or Morrison's Theorem is applied. If 33%%\n\
-size of N prime factors are available, the Brillhart-Lehmer-Selfridge\n\
-test is applied for conclusive proof of primality. If less than 33%%\n\
-is factored, this test provides 'F-strong' probable primality with\n\
-respect to the factored part F.\n\
-\n\
--tc performs a combined N-1 and N+1 test. Both tests are executed to\n\
-get strong probable primality to two factored parts F and G.\n\
-If F<G and F.G^3>N, the N+1 variant of BLS can give a proof.\n\
-If F>G and F^3.G>N, the N-1 variant of BLS can give a proof.\n\
-In either case, results just short of the target may still give a\n\
-proof with sufficient loop tests for perfect squares.\n\
-\n\
--h<filename> allows you to include known factors of N-1, N, or N+1\n\
-from a file. It is your responsibility to ensure this file includes\n\
-only prime expressions, one per line, or the results may be incorrect.\n\
-This is most often useful to provide known factors discovered using\n\
-another program, which will be sufficient to complete a proof.\n\
-\n";
-LPCTSTR Help_Text6 = "\
---===ADVANCED OPTIONS FOR DETERMINSTIC TESTS===--\n\
-\n\
--x<depth> for deterministic tests to prove a number prime, factorization of\n\
-33%% of N-1 (or N+1) is required.  Ocasionally, a number will be just short\n\
-of this required amount. If you receive a message stating \"Proof incomplete\n\
-rerun with -x24000\" then rerun the proof using the -x switch with whatever\n\
-number pfgw stated.  PFGW will attempt to perform some square free loops to\n\
-attempt to prove the number (even though it is just short of 33%% factorized)\n\
-\n\
--r enables round off error checking for all iterations of all tests\n\
-\n\
--a<number> Authenticates composites.  Using a -a0 will PRP test using the\n\
-\"normal\" FFT sizes.  A switch of -a1 will test using 1 less bit per\n\
-FFT limb.  This will take more time but will also eliminate any chance of\n\
-rounding errors inherant with FFT multiplies.  The lower 62 bits of the\n\
-results of a PRP test will be listed (on composites only).  This allows\n\
-checking for math library errors.  If a run on the same numbers using -a0\n\
-and a -a1 results in different residues, then there were round off errors.\n\
+The full list of supported command line options is documented in pfgwdoc.txt.\n\
 ";
 
    // Hmm, input and output.  This code should probably NOT happen for a Windows gui app).
@@ -378,28 +290,6 @@ and a -a1 results in different residues, then there were round off errors.\n\
    PFOutput::EnableOneLineForceScreenOutput();
    PFPrintfStderr(Help_Text2);
    PFPrintfStderr("-- Press enter to continue, or ^C to break --");
-   fgetc(stdin);
-   if (g_bExitNow)
-      return;
-   PFPrintfStderr(Help_Text3);
-   PFPrintfStderr("-- Press enter to continue, or ^C to break --");
-   fgetc(stdin);
-   PFPrintfStderr(Help_Text4);
-   PFPrintfStderr("-- Press enter to continue, or ^C to break --");
-   fgetc(stdin);
-   if (g_bExitNow)
-      return;
-   PFOutput::EnableOneLineForceScreenOutput();
-   PFPrintfStderr(Help_Text5);
-   PFOutput::EnableOneLineForceScreenOutput();
-    PFPrintfStderr("-- Press enter to continue, or ^C to break --");
-    fgetc(stdin);
-   if (g_bExitNow)
-      return;
-   PFOutput::EnableOneLineForceScreenOutput();
-   PFPrintfStderr(Help_Text6);
-   PFOutput::EnableOneLineForceScreenOutput();
-    PFPrintfStderr("-- Press enter to continue, or ^C to break --");
    if (bIsWinPFGW == false)
        fgetc(stdin);
 }
