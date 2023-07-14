@@ -167,7 +167,7 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
       GWInteger gwX;
 
       // I think we're ready to go, let's do it.
-      gwX = iiBase;               // initialise X to A^1.
+      gwX = 1;  // 1 is needed for new GEC code : old value = iiBase;               // initialise X to A^1.
       gwsetmulbyconst(&gwdata, iiBase);      // and multiplier
 
       // keep a simple iteration counter just for rudimentary progress output
@@ -208,8 +208,8 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
       }
 
 
-      // The Gerbicz Error Correction routine used here was originally written by Robert Gerbicz for mpz
-      // Adapted to GWNUM and PFGW by David Cleaver
+      // The Gerbicz Error Correction routine used here was developed and written by Robert Gerbicz for GMP
+      // It was adapted to GWNUM and PFGW by David Cleaver
       // Calculate ans=b^e mod n with strong error checking.
       // b fits in 64 bits, L_BITS is the block length, error checking is done once per L_BITS^2 iterations
       // need that n>2^L_BITS otherwise there is no check.
@@ -255,23 +255,22 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
 
             if (!do_check)
             {
-               inl_gwmul(r1, gwX); // r1=(r1*res)%n
+               inl_gwmul3(r1, gwX, r1, 0); // r1=(r1*res)%n
             }
             else
             {
-               uint64_t w[(L_BITS >> 6) + 1]; // make w big enough to hold L_BITS bits
+               uint64_t w[L_BITS + 1]; // make w big enough to hold L_BITS bits
                int count = 0;
                for (int f = 0; f < L_BITS; f++)
                {
                   for (int g = f + iLeft; g < iTotal; g += L_BITS)
                      if (bit(X, g))
                         count++;
-                  uint64_t temp = (count % 2) << (f % 64);
-                  w[f >> 6] &= temp; // w[f] = count%2;
+                  w[f] = count % 2; // w[f] = count%2;
                   count = count >> 1;
                }
 
-               inl_gwmul3(r1, gwX, r2); // r1=(r1*res)%n
+               inl_gwmul3(r1, gwX, r2, 0); // r2=(r1*res)%n
 
                int mbc = 0;
                int len2 = 0;
@@ -289,13 +288,12 @@ int prp_using_gwnum(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_t* 
                   inl_gwmul3(t, t, t, mbc); // t=(t^2)%n ; if bit(count,len)==1, then t=(t*b)%n
                }
 
-               inl_gwmul3(r1, t, r1); // r1=(r1*t)%n
+               inl_gwmul3(r1, t, r1, 0); // r1=(r1*t)%n
 
                for (int f = L_BITS - 1; f >= 0; f--)
                {
-                  uint64_t temp = 1ULL << (f % 64);
-                  mbc = ((w[f >> 6] & temp) == 1 ? GWMUL_MULBYCONST : 0);
-                  inl_gwmul3(r1, r1, r2, mbc); // r1=(r1^2)%n ; if bit(w,f)==1, then r1=(r1*b)%n
+                  mbc = (w[f] == 1 ? GWMUL_MULBYCONST : 0);
+                  inl_gwmul3(r1, r1, r1, mbc); // r1=(r1^2)%n ; if bit(w,f)==1, then r1=(r1*b)%n
                }
 
                int_r1 = r1;
