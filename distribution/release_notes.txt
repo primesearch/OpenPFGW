@@ -7,7 +7,7 @@ Enhancements to: v4.1.0 Development Release - July 21, 2023
 Enhancements to: v4.0.7 Development Release - June 6, 2023
    - Fix an issue with primality testing of terms less than 40 bits in length as it
      will show them as "factored" instead of doing the primality test.
-   - Added sonly and sgap benchmark parameters (see pfgw.txt).
+   - Added sonly and sgap benchmark parameters (see pfgwdoc.txt).
 
 Enhancements to: v4.0.6 Development Release - April 24, 2023
    - Replaced sprintf/vsprintf with snprintf/vsnprintf.
