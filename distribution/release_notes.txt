@@ -1,6 +1,5 @@
-Enhancements to: v4.1.0 Development Release - July 5, 2023
-   - Upgrade to gwnum v30.13b1 which addresses a crash when primality testing.
-   - Added GEC (Gerbicz Error Checking) to PRP testing.
+Enhancements to: v4.1.0 Development Release - July 21, 2023
+   - Upgrade to gwnum v30.14b1 which addresses a crash when primality testing.
    - Removed most of the help output from command line as it is in some cases
      incomplete and wrong in other cases.  pfgwdoc.txt should be used as
      the reference for all command line options.
