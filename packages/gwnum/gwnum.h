@@ -55,9 +55,9 @@ typedef gwnum *gwarray;
 /* are new prime95 versions without any changes in the gwnum code.  This version number is also embedded in the assembly code and */
 /* gwsetup verifies that the version numbers match.  This prevents bugs from accidentally linking in the wrong gwnum library. */
 
-#define GWNUM_VERSION		"30.14"
+#define GWNUM_VERSION		"30.15"
 #define GWNUM_MAJOR_VERSION	30
-#define GWNUM_MINOR_VERSION	14
+#define GWNUM_MINOR_VERSION	15
 
 /* Error codes returned by the three gwsetup routines */
 
@@ -1229,7 +1229,7 @@ unsigned long gwmap_to_estimated_size (double, unsigned long, unsigned long, sig
 /* Generate a human-readable string for k*b^n+c */
 void gw_as_string(char *buf, double k, unsigned long b, unsigned long n, signed long c);
 
-/* Other routines used internally */
+/* Other routines used (mostly) internally */
 int gwinfo (gwhandle *, double, unsigned long, unsigned long, signed long);
 double virtual_bits_per_word (gwhandle *);
 unsigned long addr_offset (gwhandle *, unsigned long);
@@ -1241,6 +1241,27 @@ void bitaddr (gwhandle *, unsigned long, unsigned long *, unsigned long *);
 void specialmodg (gwhandle *, giant);
 #define gw_set_max_allocs(h,n)	if ((h)->gwnum_alloc==NULL) (h)->gwnum_alloc_array_size=n
 void init_FFT1 (gwhandle *);
+
+/* Use this iterator for faster incrementing through FFT data elements */
+typedef struct gwiter_struct {
+	gwhandle *gwdata;		/* Saved gwhandle */
+	gwnum	g;			/* Saved pointer to gwnum to iterate through */
+	uint32_t index;			/* Element the iterator is currently positioned on */
+	intptr_t addr_offset;		/* Offset to address of the FFT data */
+	bool	big_word;		/* TRUE if element is a big word */
+	uint32_t switcher;		/* Combination of CPU_FLAGS, one vs. two pass, FFT type */
+	uint32_t ao_values[9];		/* Nine values used to accelerate next addr_offset calculations */
+	uint64_t cached_data[12];	/* Cached data to accelerate sequential access to a gwnum */
+} gwiter;
+void gwiter_init_zero (gwhandle *h, gwiter *iter, gwnum g);					/* Init iterator to gwnum g element zero */
+void gwiter_init (gwhandle *h, gwiter *iter, gwnum g, uint32_t);				/* Init iterator to gwnum g and given element */
+void gwiter_next (gwiter *iter);								/* Position to next element */
+#define gwiter_index(iter)		((iter)->index)						/* Return element iterator is positioned on */
+#define gwiter_addr_offset(iter)	((iter)->addr_offset)					/* Return byte offset to address of the FFT data element */
+#define gwiter_addr(iter)		((double *)((char *)((iter)->g) + (iter)->addr_offset))	/* Return pointer to FFT data element */
+#define gwiter_is_big_word(iter)	((iter)->big_word)					/* Return TRUE if FFT data element is a big word */
+int gwiter_get_fft_value (gwiter *iter, int32_t *);						/* Return unweighted value of FFT data element */
+void gwiter_set_fft_value (gwiter *iter, int32_t);						/* Weight and set FFT data element */
 
 /* Specialized routines that let the internal giants code share the free memory pool used by gwnums. */
 // void gwfree_temporarily (gwhandle *, gwnum);		DEPRECATED
