@@ -1,3 +1,7 @@
+Enhancements to: v4.1.2 Development Release - October 29, 2023
+   - Upgrade to gwnum v30.18b2 which has a number of performance improvements
+     over previous releases and addresses bugs from v30.15b1.
+   
 Enhancements to: v4.1.1 Development Release - August 14, 2023
    - Upgrade to gwnum v30.15b1 which addresses a crash when primality testing.
 

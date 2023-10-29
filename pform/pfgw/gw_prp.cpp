@@ -236,7 +236,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
             static int lastLineLen;
             bFirst = false;
             char Buf[150];
-            if (errchk && gwdata.MAXDIFF < 1e10)
+            if (errchk)
                snprintf(Buf, sizeof(Buf), "PRP: %.36s %d/%d mro=%.5g \r",
                   sNumStr, iDone, iTotal, gw_get_maxerr(&gwdata));
             else
@@ -322,7 +322,7 @@ bool CheckForFatalError(const char *caller, GWInteger *gwX, int currentIteration
 
       snprintf(buffer1, sizeof(buffer1), "Detected in gw_test_mismatched_sums() in %s", caller);
       snprintf(buffer2, sizeof(buffer2), "Iteration: %d/%d ERROR: SUM(INPUTS) != SUM(OUTPUTS),", currentIteration, maxIterations);
-      snprintf(buffer3, sizeof(buffer3), "%.16g != %.16g\n  (Diff=%.0f max allowed=%.0f)", suminp, sumout, fabs(suminp - sumout), gwdata.MAXDIFF);
+      snprintf(buffer3, sizeof(buffer3), "%.16g != %.16g", suminp, sumout);
       haveFatalError = true;
    }
 
@@ -537,7 +537,7 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
             static int lastLineLen;
             bFirst = false;
             char Buf[150];
-            if (errchk && gwdata.MAXDIFF < 1e10)
+            if (errchk)
                snprintf(Buf, sizeof(Buf), "PRP: %.36s %d/%d mro=%.5g \r",
                   sNumStr, iDone, iTotal, gw_get_maxerr(&gwdata));
             else

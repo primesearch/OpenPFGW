@@ -10,7 +10,7 @@
  *	    20 Apr 97  RDW
  *
  *	c. 1997 Perfectly Scientific, Inc.
- *	c. 1998-2022 Mersenne Research, Inc.
+ *	c. 1998-2023 Mersenne Research, Inc.
  *	All Rights Reserved.
  *
  **************************************************************/
@@ -101,10 +101,11 @@ void 	gtog(giant src, giant dest);
 /* Integer -> giant. */
 #define setzero(g)	(g)->sign = 0
 #define setone(g)	(g)->sign = (g)->n[0] = 1
-void 	itog(int n, giant g);
+void 	itog(int32_t n, giant g);
 void 	ultog(uint32_t n, giant g);
 
 /* Long long -> giant. */
+void 	slltog(int64_t n, giant g);
 void 	ulltog(uint64_t n, giant g);
 
 /* Double -> giant. */
@@ -262,12 +263,9 @@ int 	gcdgi(ghandle *, int, giant n, giant x);
 
 extern void addhlp (uint32_t *res, uint32_t *carry, uint32_t val);
 extern void subhlp (uint32_t *res, uint32_t *carry, uint32_t val);
-extern void muladdhlp (uint32_t *res, uint32_t *carryl,
-		       uint32_t *carryh, uint32_t val1, uint32_t val2);
-extern void muladd2hlp (uint32_t *res, uint32_t *carryl,
-			uint32_t *carryh, uint32_t val1, uint32_t val2);
-extern void mulsubhlp (uint32_t *res, uint32_t *carryl,
-		       uint32_t *carryh, uint32_t val1, uint32_t val2);
+extern void muladdhlp (uint32_t *res, uint32_t *carryl, uint32_t *carryh, uint32_t val1, uint32_t val2);
+extern void muladd2hlp (uint32_t *res, uint32_t *carryl, uint32_t *carryh, uint32_t val1, uint32_t val2);
+extern void mulsubhlp (uint32_t *res, uint32_t *carryl, uint32_t *carryh, uint32_t val1, uint32_t val2);
 
 /* External routine pointers. */
 

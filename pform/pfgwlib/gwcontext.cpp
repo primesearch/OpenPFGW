@@ -161,9 +161,6 @@ int CreateSpecialModulus(mpz_ptr gmp, double k, unsigned long b, unsigned long n
    // size of the modulus
    gwset_carefully_count(&gwdata, -1);
 
-   if (g_CompositeAthenticationLevel > 0)
-      gwdata.MAXDIFF *= 1000.0;
-
    return 0;
 }
 
@@ -200,8 +197,6 @@ int CreateGenericModulus(mpz_ptr gmp)
    // Passing -1 will tell GWNUM to determine how many based upon the
    // size of the modulus
    gwset_carefully_count(&gwdata, -1);
-
-   gwdata.MAXDIFF *= 1000.0;
 
    return 0;
 }
