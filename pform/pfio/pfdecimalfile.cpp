@@ -17,7 +17,7 @@
 extern bool g_bTerseOutput;
 extern bool g_ShowTestResult;
 
-#define MAX_INPUT_LINE_LENGTH 5000100
+#define MAX_INPUT_LINE_LENGTH 1000000100
 
 PFDecimalFile::PFDecimalFile(const char* FileName)
    : PFSimpleFile(FileName)
