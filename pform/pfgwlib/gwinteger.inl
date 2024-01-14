@@ -52,12 +52,12 @@ GW_INLINE void inl_gwfftfftmul(const GWInteger &s,const GWInteger &s2,GWInteger 
 
 GW_INLINE void inl_gwadd(const GWInteger &s,GWInteger &d)
 {
-   gwadd3 (&gwdata, s.g, d.g, d.g);
+   gwadd3o(&gwdata, s.g, d.g, d.g, GWADD_SQUARE_INPUT);
 }
 
 GW_INLINE void inl_gwadd3(const GWInteger &s1,const GWInteger &s2,GWInteger &d)
 {
-   gwadd3 (&gwdata, s1.g, s2.g, d.g);
+   gwadd3o(&gwdata, s1.g, s2.g, d.g, GWADD_SQUARE_INPUT);
 }
 
 GW_INLINE void inl_gwsub3(const GWInteger &s1,const GWInteger &s2,GWInteger &d)
