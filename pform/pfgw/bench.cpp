@@ -417,7 +417,7 @@ void benchmarkSpecial(PFSymbolTable *pContext, char *expression, int32_t minN, i
    PFfflush(stdout);
 }
 
-void benchmarkSpecialSizeOnly(PFSymbolTable* pContext, char* expression, int32_t minN, int32_t maxN, double k, uint32_t b, int32_t c, int32_t sizeGap)
+void benchmarkSpecialSizeOnly(char* expression, int32_t minN, int32_t maxN, double k, uint32_t b, int32_t c, int32_t sizeGap)
 {
    char     last_fftlen[200], next_fftlen[200];
    int32_t  n;
@@ -478,9 +478,9 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
    char genericExpression[200], specialExpression[200];
    char *cPtr;
    int error_code;
-   double  k;
-   uint32_t b;
-   int32_t c, d, sizeGap = 100;
+   double  k = 0.0;
+   uint32_t b = 0;
+   int32_t c = 0, d, sizeGap = 100;
    int32_t minN = 100, maxN = 10000000;
    int32_t minF = 100, maxF = 1000000;
    bool allFFT = false, haveGenericExp = false, haveSpecialExp = false;
@@ -563,7 +563,7 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
 
    if (!g_bExitNow && doSpecial)
       if (sizeOnly)
-         benchmarkSpecialSizeOnly(pContext, specialExpression, minN, maxN, k, b, c, sizeGap);
+         benchmarkSpecialSizeOnly(specialExpression, minN, maxN, k, b, c, sizeGap);
       else
          benchmarkSpecial(pContext, specialExpression, minN, maxN, k, b, c, allFFT);
 }

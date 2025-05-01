@@ -6,7 +6,19 @@
 #include <unistd.h>
 #endif
 
-#define L_BITS   50 // tests will take 2/L times longer, L=50 gives 4% overhead
+// With Gerbicz Error Correction (GEC), prp tests will take (1 + 2/L) times longer,
+// L=50 gives 4% overhead (can catch errors every iteration update [2500 iterations, by default])
+// L=100 gives 2% overhead (can catch errors every 4 iteration updates)
+// L=250 gives 0.8% overhead (can catch errors every 25 iteration updates)
+// L=500 gives 0.4% overhead (can catch errors every 100 iteration updates)
+// L=1000 gives 0.2% overhead (can catch errors every 400 iteration updates)
+// For a large number (25Mbit), if an iteration update happens every 6.5 minutes, GEC recovery goes back in time:
+// L=50, 6.5 minutes ago [1 * 6.5 minutes]
+// L=100, 26 minutes ago [4 * 6.5 minutes]
+// L=250, 162 minutes ago (2.7 hours) [25 * 6.5 minutes]
+// L=500, 650 minutes ago (10.8 hours) [100 * 6.5 minutes]
+// L=1000, 2600 minutes ago (43.3 hours) [400 * 6.5 minutes]
+#define L_BITS   250
 
 extern int g_CompositeAthenticationLevel;
 extern const double g_dMaxErrorAllowed;
@@ -93,7 +105,7 @@ int gwPRP(Integer *N, const char *sNumStr, uint64_t *p_n64ValidationResidue)
       if (CreateModulus(N, g_cpTestString, true, fftSize)) return -2;
 
       if (!g_FFTSizeOnly)
-         testResult = prp_using_gwnum(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
+         testResult = prp_using_gwnumGEC(N, iBase, sNumStr, p_n64ValidationResidue, fftSize);
 
       DestroyModulus();
    } while (testResult == -1 && fftSize < 5 && !g_FFTSizeOnly);
@@ -218,7 +230,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
          if (i > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !i))
             state = 1;
 
-         gwstartnextfft(&gwdata, state);
+         gwstartnextfft(&gwdata, (char) state);
          gwsetnormroutine(&gwdata, 0, errchk, bit(X, i));
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
@@ -272,7 +284,7 @@ int prp_using_gwnum(Integer *N, uint32_t iiBase, const char *sNumStr, uint64_t *
             if (*RestoreName)
                SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N, true);
 
-            return -2; // we really do not know at this time.  It is NOT a true error, but is undetermined, due to not comple processing
+            return -2; // we really do not know at this time.  It is NOT a true error, but is undetermined, due to not complete processing
          }
       }
 
@@ -365,7 +377,11 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
    char RestoreName[13];   // file name will fit an 8.3
    *RestoreName = 0;
    if (iTotal > 50000)
-      CreateRestoreName(N, RestoreName);
+      CreateRestoreNameGEC(N, RestoreName);
+
+   int MaxFail = 5;    // Only allow this many GEC errors, at a given iteration, before abandoning this test
+   int FailCount = 0;  // keep track of how many times GEC has detected an error for a given iteration
+   int LastFail = -1;  // if GEC detects an error, this keeps track of the iteration where it was detected
 
    int ThisLineLen_Final = 0;
 
@@ -374,6 +390,11 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
    {
       // prepare the gw buffers we need
       GWInteger gwX;
+      GWInteger r1;
+      if (iTotal%L_BITS == 0)
+         r1 = iiBase;
+      else
+         r1 = 1;
 
       // I think we're ready to go, let's do it.
       gwX = iiBase;  // initialise X to A^1.
@@ -407,7 +428,7 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
 #endif
       {
          uint32_t DoneBits;
-         if (RestoreState(e_gwPRP, RestoreName, &DoneBits, &gwX, iiBase, e_gwnum))
+         if (RestoreStateGEC(e_gwPRP, RestoreName, &DoneBits, &gwX, &r1, iiBase, e_gwnum))
          {
             // The number not only passes the hash, but EVERY check was successful.  We are working with the right number.
             iDone = DoneBits;
@@ -428,9 +449,8 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
       Integer int_r2(0); // used for comparison
 
       GWInteger t;
-      GWInteger r1(gwX);
       GWInteger r2;
-      GWInteger saved_r1(gwX);  // used to save/restore r1
+      GWInteger saved_r1(r1);  // used to save/restore r1
       GWInteger saved_res(gwX); // used to save/restore gwX
 
       int saved_iLeft = iLeft; // used to save/restore iteration number
@@ -447,7 +467,7 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
          if (iLeft > 29 && g_nIterationCnt && ((((iDone + 1) % g_nIterationCnt) == 0) || bFirst || !iLeft))
             state = 1;
 
-         gwstartnextfft(&gwdata, state);
+         gwstartnextfft(&gwdata, (char) state);
          gwsetnormroutine(&gwdata, 0, errchk, bit(X, iLeft));
 
          // Use square_carefully for the last 30 iterations as some PRPs have a ROUND OFF
@@ -468,18 +488,18 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
             }
             else
             {
+               inl_gwmul3(r1, gwX, r2, 0); // r2=(r1*res)%n
+
                uint64_t w[L_BITS + 1]; // make w big enough to hold L_BITS bits
                int count = 0;
                for (int f = 0; f < L_BITS; f++)
                {
-                  for (int g = f + iLeft; g < iTotal; g += L_BITS)
+                  for (int g = f + iLeft; g <= iTotal; g += L_BITS)
                      if (bit(X, g))
                         count++;
                   w[f] = count % 2; // w[f] = count%2;
                   count = count >> 1;
                }
-
-               inl_gwmul3(r1, gwX, r2, 0); // r2=(r1*res)%n
 
                int mbc = 0;
                int len2 = 0;
@@ -510,6 +530,18 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
                // printf("Strong error check at iteration=%llu.\n", iLeft);
                if (int_r2 != int_r1)
                {
+                  if (LastFail != iTotal - iLeft) {
+                     LastFail = iTotal - iLeft;
+                     FailCount = 1;
+                  }
+                  else {
+                     FailCount++;
+                  }
+                  if (FailCount >= MaxFail) {
+                     printf(" *** Error: too many GEC errors (%d) at iteration=%d, quitting.\n\n", FailCount, LastFail);
+                     return -2;
+                  }
+
                   // printf("Found error at iteration=%d, fall back to iteration=%d.\n", iLeft, saved_it);
                   char Buf[150];
                   snprintf(Buf, sizeof(Buf), "\n * Found error at iteration=%d, falling back to iteration=%d.\n", iTotal - iLeft, iTotal - saved_iLeft);
@@ -519,12 +551,17 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
                   iLeft = saved_iLeft;
                   inl_gwcopy(saved_r1, r1);
                   inl_gwcopy(saved_res, gwX);
+
+                  iDone = iTotal - iLeft - 1;
                }
                else
                {
                   saved_iLeft = iLeft;
                   inl_gwcopy(r1, saved_r1);
                   inl_gwcopy(gwX, saved_res);
+
+                  LastFail = -1;
+                  FailCount = 0;
                }
             }
          }
@@ -533,7 +570,7 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
          if (g_nIterationCnt && (((iDone % g_nIterationCnt) == 0) || bFirst || !iLeft))
          {
             if (*RestoreName)
-               SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N);
+               SaveStateGEC(e_gwPRP, RestoreName, iDone, &gwX, &r1, iiBase, e_gwnum, N);
             static int lastLineLen;
             bFirst = false;
             char Buf[150];
@@ -567,13 +604,18 @@ int prp_using_gwnumGEC(Integer* N, uint32_t iiBase, const char* sNumStr, uint64_
             remove(RestoreName);
             return -1;
          }
+         if (CheckForFatalError("prp_using_gwnum", &r1, iDone, iTotal, fftSize))
+         {
+            remove(RestoreName);
+            return -1;
+         }
 
          if (g_bExitNow)
          {
             if (*RestoreName)
-               SaveState(e_gwPRP, RestoreName, iDone, &gwX, iiBase, e_gwnum, N, true);
+               SaveStateGEC(e_gwPRP, RestoreName, iDone, &gwX, &r1, iiBase, e_gwnum, N, true);
 
-            return -2; // we really do not know at this time.  It is NOT a true error, but is undetermined, due to not comple processing
+            return -2; // we really do not know at this time.  It is NOT a true error, but is undetermined, due to not complete processing
          }
       }
 

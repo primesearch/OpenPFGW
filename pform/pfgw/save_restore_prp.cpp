@@ -253,3 +253,224 @@ bool SaveState(ePRPType ePRP, char *RestoreName, uint32_t iDone, GWInteger *gwX,
 
    return true;
 }
+
+void CreateRestoreNameGEC(Integer *N, char RestoreName[13])
+{
+   // Neuter the function for now
+// strcpy(RestoreName, "foobar");
+   // Set the NextSave time
+// NextSave = clock() + SAVE_TIMEOUT_MINUTES * 600000 * clocks_per_sec;
+// return ;
+   // end of Neuter the function for now
+
+   // Restore Name is lower 40 bits of the number (in base-36).  This fits perfectly into 8 of an 8.3 file name.
+   // The extension will become .frp  for PfgwSaveFile, but reversed.
+
+   uint32_t uRes = (*N) % 2147483629;  // 2^31-19 which is prime.  This give a pretty good 2^31 bit mix of file names
+   uRes += (1u << 31);  // make sure that number is larger than 36^6 so that we get 7 characters
+
+   // Now convert to a "string" in base 36
+   const static char *Base = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+   int i;
+   //for (i = 0; i < 8; ++i)
+   for (i = 0; i < 7; ++i)
+   {
+      RestoreName[i] = Base[(uRes%36)];
+      uRes /= 36;
+   }
+   strcpy(&RestoreName[i], ".gec"); // PFgwRestore
+
+   // Set the NextSave time
+   NextSave = clock() + SAVE_TIMEOUT_MINUTES * 60 * clocks_per_sec;
+}
+
+bool RestoreStateGEC(ePRPType ePRP, char *RestoreName, uint32_t *iDone, GWInteger *gwX, GWInteger *r1, uint32_t _iBase, eContextType eCType)
+{
+   bool Ret = false;
+   uint32_t t_iDone;
+   uint32_t n;
+   unsigned char c;
+   unsigned char Buffer[256], *cp=Buffer;
+   Integer N;
+   uint32_t   bytelen;
+
+   FILE *in = fopen(RestoreName, "rb");
+   if (!in)
+      return false;
+
+   // Write the signature.  Keep this a "fixed" 24 bytes long.
+   fread(Buffer, 1, SAVE_SIGNATURE_LEN, in);
+   if (strncmp((char*)Buffer, SAVE_SIGNATURE, SAVE_SIGNATURE_LEN)) goto BailOut;
+
+   // Try to do a few things to distinguish what type of CPU wrote the file.
+   fread(&c, 1, 1, in);
+   if (c != sizeof(uint32_t)) goto BailOut;
+
+   // little endian or big endian marker.  Currently there is no code to handle conversion, and most likely
+   // if this is run on a big endian, then the FFT will certainly be different, so it does not matter any way.
+   fread(&n, 1, sizeof(n), in);
+   if (n != 0x12345678) goto BailOut;
+
+   // Read the the saved checksum
+   uint32_t crc_val, crc_stored;
+   initCrc(crc_val);
+   fread (&crc_stored, 1, sizeof(crc_stored), in);
+
+   // read the length of the stored string.
+   fread(&n, 1, sizeof(n), in);
+   updatecrcbuf(crc_val, &n, sizeof(n));
+   // Now read the "stored string"
+   if (!n || n > sizeof(Buffer)) goto BailOut;
+   fread(Buffer, 1, n, in);
+   if (strncmp((char*)Buffer, g_cpTestString, n)) goto BailOut;
+   updatecrcbuf(crc_val, Buffer, n);
+
+   // now read the file data
+   fread(Buffer, 1, 4 + 2*sizeof(uint32_t) +10*sizeof(uint32_t), in);
+
+   if (*cp++ != ePRP) goto BailOut;
+   if (*cp++ != eCType) goto BailOut;
+   // skip the 2 reseved bytes
+   cp+=2;
+   t_iDone = *(uint32_t*)cp;
+   cp += sizeof(t_iDone);
+   if (*(uint32_t*)cp != _iBase) goto BailOut; // different base is a CRITICAL error
+   cp += sizeof(_iBase);
+
+   // Skip any reserved space.
+   cp += 10*sizeof(uint32_t);
+
+   updatecrcbuf(crc_val, Buffer, (int) (cp-Buffer));
+
+   // Now read in the GWInteger gwX.
+
+   fread (&bytelen, 1, sizeof(bytelen), in);
+   updatecrcbuf(crc_val, &bytelen, sizeof(bytelen));
+
+   // This isn't a great call. This single bit sits in
+   // a vast chunk of memory, just to force gmp to allocate.
+   N = 1;
+   N <<= bytelen * 8 - 1;
+
+   fread (N.gmp()->_mp_d, 1, bytelen, in);
+   updatecrcbuf(crc_val, N.gmp()->_mp_d, bytelen);
+
+   *gwX = N;
+
+   // Now read in the GWInteger r1.
+
+   fread (&bytelen, 1, sizeof(bytelen), in);
+   updatecrcbuf(crc_val, &bytelen, sizeof(bytelen));
+
+   // This isn't a great call. This single bit sits in
+   // a vast chunk of memory, just to force gmp to allocate.
+   N = 1;
+   N <<= bytelen * 8 - 1;
+
+   fread (N.gmp()->_mp_d, 1, bytelen, in);
+   updatecrcbuf(crc_val, N.gmp()->_mp_d, bytelen);
+
+   *r1 = N;
+
+   if (crc_val == crc_stored)
+   {
+      Ret = true;
+      *iDone = t_iDone;
+   }
+BailOut:;
+   fclose(in);
+   return Ret;
+}
+
+bool SaveStateGEC(ePRPType ePRP, char *RestoreName, uint32_t iDone, GWInteger *gwX, GWInteger *r1, uint32_t _iBase, eContextType eCType, Integer * /*N*/, bool bForce)
+{
+   if (clock() < NextSave && !bForce)
+      return false;
+
+   // Set the NextSave time
+   NextSave = clock() + SAVE_TIMEOUT_MINUTES * 60 * clocks_per_sec;
+
+   uint32_t str_len;
+   unsigned char Buffer[16388], *cp=Buffer;
+   FILE *out = fopen(RestoreName, "wb");
+   if (!out)
+      return false;
+
+   // Write the signature.  Keep this a "fixed" 24 bytes long.
+   fwrite(SAVE_SIGNATURE, 1, SAVE_SIGNATURE_LEN, out);
+
+   // Try to do a few things to distinguish what type of CPU wrote the file.
+   unsigned char c;
+   c = sizeof(uint32_t);
+   fwrite(&c, 1, 1, out);
+   // little endian or big endian marker.  Currently there is no code to handle conversion, and most likely
+   // if this is run on a big endian, then the FFT will certainly be different, so it does not matter any way.
+   uint32_t n = 0x12345678;
+   fwrite(&n, 1, sizeof(n), out);
+
+   // Store a placeholder for the checksum
+   uint32_t crc_val;
+   initCrc(crc_val);
+   long loc = ftell(out);
+   fwrite (&crc_val, 1, sizeof(crc_val), out);
+
+   // Write the length of the prime string, and the string.  The string will NOT be null terminated.
+   str_len = (uint32_t) strlen(g_cpTestString);
+   fwrite (&str_len, 1, sizeof(str_len), out);
+   if (str_len > 256)
+      str_len = 256;
+   updatecrcbuf(crc_val, &str_len, sizeof(str_len));
+   fwrite(g_cpTestString, 1, str_len, out);
+   updatecrcbuf(crc_val, g_cpTestString, str_len);
+
+   // now write the file data
+   *cp++ = (uint8_t)ePRP;
+   *cp++ = (uint8_t)eCType;
+   // 2 reserved bytes (re alignes us to 4 bytes again)
+   *cp++ = 0;
+   *cp++ = 0;
+   *(uint32_t*)cp = iDone;
+   cp += sizeof(iDone);
+   *(uint32_t*)cp = _iBase;
+   cp += sizeof(_iBase);
+
+   // Resserved space, 10 DWORDS
+   memset(cp, 0, 4*10);
+   cp += sizeof(uint32_t)*10;
+
+   updatecrcbuf(crc_val, Buffer, (int) (cp-Buffer));
+   fwrite(Buffer, 1, cp-Buffer, out);
+
+   // Now write out the GWInteger gwX
+
+   Integer N;
+   uint32_t   bytelen;
+
+   N = *gwX;
+   bytelen = N.gmp()->_mp_size * sizeof (mp_limb_t);
+
+   fwrite (&bytelen, 1, sizeof(bytelen), out);
+   updatecrcbuf(crc_val, &bytelen, sizeof(bytelen));
+
+   fwrite (N.gmp()->_mp_d, 1, bytelen, out);
+   updatecrcbuf(crc_val, N.gmp()->_mp_d, bytelen);
+
+   // Now write out the GWInteger r1
+
+   N = *r1;
+   bytelen = N.gmp()->_mp_size * sizeof (mp_limb_t);
+
+   fwrite (&bytelen, 1, sizeof(bytelen), out);
+   updatecrcbuf(crc_val, &bytelen, sizeof(bytelen));
+
+   fwrite (N.gmp()->_mp_d, 1, bytelen, out);
+   updatecrcbuf(crc_val, N.gmp()->_mp_d, bytelen);
+
+   fseek(out, loc, SEEK_SET);
+   fwrite(&crc_val, 1, sizeof(crc_val), out);
+
+   fclose(out);
+
+   return true;
+}

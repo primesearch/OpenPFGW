@@ -72,9 +72,9 @@ int CreateModulus(Integer *NN, char *expression, bool kbncdEligible, int increas
    StripTrailingWhiteSpace(expression);
 
    if (increaseFFTSize == 0)
-      gwset_larger_fftlen_count(&gwdata, g_CompositeAthenticationLevel);
+      gwset_larger_fftlen_count(&gwdata, (char) g_CompositeAthenticationLevel);
    else
-      gwset_larger_fftlen_count(&gwdata, increaseFFTSize);
+      gwset_larger_fftlen_count(&gwdata, (char) increaseFFTSize);
 
    snprintf(testString, sizeof(testString), "%send1", expression);
 
