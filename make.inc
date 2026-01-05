@@ -15,7 +15,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(UNAME_S),Darwin)
-   LDFLAGS+=-lpthread -lc++ -Wl,-no_pie
+   LDFLAGS+=-lpthread
 else
    LDFLAGS+=-no-pie -lpthread -ldl -lstdc++
 endif

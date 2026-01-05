@@ -132,7 +132,7 @@ bool DeCompress_bits_From_PrZ(FILE *fpIn, char *cpp, bool bDontOutput)
 		if (bNewPGenFile)
 			snprintf (cpp, 30, "%" PRIu64" %u", OffsetK, Base);
 		else
-			sprintf (cpp, "%" PRIu64"", OffsetK);
+			snprintf (cpp, 30, "%" PRIu64"", OffsetK);
 	}
 	++bits_set;
 	return true;

@@ -562,8 +562,10 @@ void benchmark(PFSymbolTable *pContext, char *parameter)
       benchmarkGeneric(pContext, genericExpression, minF, maxF, allFFT);
 
    if (!g_bExitNow && doSpecial)
+   {
       if (sizeOnly)
          benchmarkSpecialSizeOnly(specialExpression, minN, maxN, k, b, c, sizeGap);
       else
          benchmarkSpecial(pContext, specialExpression, minN, maxN, k, b, c, allFFT);
+   }
 }
